@@ -6,13 +6,6 @@ using Microsoft.Xna.Framework;
 
 namespace NeedForSpeed.Parsers
 {
-    enum PolygonShape
-    {
-        Unknown = 0,
-        Triangle = 0x83,
-        Quad = 0x84,
-        UnTexturedQuad = 0x8C
-    }
 
     enum PolygonType
     {
@@ -26,7 +19,6 @@ namespace NeedForSpeed.Parsers
     class Polygon
     {
         private string _textureName;
-        private PolygonShape _shape;
         private PolygonType _type;
         List<Vector3> _vertices = new List<Vector3>();
         List<Vector2> _textureCoords = new List<Vector2>();
@@ -35,23 +27,13 @@ namespace NeedForSpeed.Parsers
 
         public string PartName { get; set; }
 
-        public PolygonShape Shape
-        {
-            get { return _shape; }
-            set { _shape = value; }
-        }
-
         internal PolygonType Type
         {
             get { return _type; }
             set { _type = value; }
         }
 
-        public string TextureName
-        {
-            get { return _textureName; }
-            set { _textureName = value; }
-        }
+        public string MaterialName {get; set; }
 
         public List<Vector3> Vertices
         {
@@ -65,19 +47,15 @@ namespace NeedForSpeed.Parsers
             set { _textureCoords = value; }
         }
 
-        public Texture2D Texture
-        {
-            get { return _texture; }
-        }
+        public bool DoubleSided { get; set; }
+
+        public Texture2D Texture {get; set; }
 
         public int VertexCount
         {
             get
             {
-                if (_shape == PolygonShape.Triangle)
-                    return 3;
-                else
-                    return 6;
+                return 3;
             }
         }
 
@@ -86,26 +64,23 @@ namespace NeedForSpeed.Parsers
             get { return _vertexBufferIndex; }
             set { _vertexBufferIndex = value; }
         }
-
-        public Polygon(PolygonShape type, string part)
+        
+        public Polygon(string part)
         {
-            _shape = type;
             PartName = part;
         }
 
         public void ResolveTexture(BitmapEntry texture)
         {
             _texture = texture.Texture;
-            if (_shape == PolygonShape.UnTexturedQuad)
-                return;
-
-            for (int i =0; i < _textureCoords.Count; i++)
-            {
-                Vector2 coord = _textureCoords[i];
-                coord.X /= texture.Texture.Width;
-                coord.Y /= texture.Texture.Height;
-                _textureCoords[i] = coord;
-            }
+            
+            //for (int i =0; i < _textureCoords.Count; i++)
+            //{
+            //    Vector2 coord = _textureCoords[i];
+            //    coord.X /= texture.Texture.Width;
+            //    coord.Y /= texture.Texture.Height;
+            //    _textureCoords[i] = coord;
+            //}
         }
 
         public List<VertexPositionNormalTexture> GetVertices()

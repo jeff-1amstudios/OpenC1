@@ -13,7 +13,8 @@ namespace NeedForSpeed
 {
     class PlayGameMode : IGameMode
     {
-        MeshChunk _mesh;
+        DatFileParser _mesh;
+        ActFileParser _actors;
         float _rotation;
 
         public PlayGameMode()
@@ -22,13 +23,21 @@ namespace NeedForSpeed
             //camera.Reset();
             SimpleCamera camera = new SimpleCamera();
             Engine.Instance.Camera = camera;
-            camera.SetPosition(new Vector3(0, 0, 50));
+            //camera.SetPosition(
 
             Engine.Instance.Player = new Player();
+            Engine.Instance.Player.Position = new Vector3(0, 20, 50);
 
-            _mesh = new MeshChunk();
-            _mesh.Parse(@"C:\Games\carma1\\data\\models\\otis.DAT");
-            _mesh.Resolve(null, "*");
+            PixFileParser pix = new PixFileParser();
+            pix.Parse(@"C:\Games\carma1\data\pixelmap\CHUKPINT.PIX");
+            _mesh = new DatFileParser();
+            _mesh.Parse(@"C:\Games\carma1\data\models\CHUKPINT.DAT");
+            _actors = new ActFileParser();
+            _actors.Parse(@"C:\Games\carma1\data\actors\CHUKPINT.ACT");
+            MatFileParser matFile = new MatFileParser();
+            matFile.Parse(@"C:\Games\carma1\data\material\CHUKPINT.MAT");
+            _mesh.Resolve(matFile, pix);
+            
         }
 
 
@@ -42,8 +51,12 @@ namespace NeedForSpeed
 
         public void Draw()
         {
-            //Engine.Instance.Player.Draw();
-            _mesh.Render(Matrix.CreateRotationY(_rotation) * Matrix.CreateScale(200f) * Matrix.CreateTranslation(new Vector3(30, -30, -280)));
+            //Engine.Instance.GraphicsUtils.AddSquareGrid(Matrix.Identity, 20, Color.Green);
+
+            _actors.Render(
+                Matrix.CreateRotationY(_rotation) * Matrix.CreateScale(30),
+                _mesh);
+            
             _rotation += 0.01f;
         }
 

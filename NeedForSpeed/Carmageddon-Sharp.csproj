@@ -85,9 +85,14 @@
     <Compile Include="EndianBinaryReader.cs" />
     <Compile Include="EndianBitConverter.cs" />
     <Compile Include="Endianness.cs" />
+    <Compile Include="Parsers\ActFileParser.cs" />
     <Compile Include="Parsers\BaseChunk.cs" />
+    <Compile Include="Parsers\BaseParser.cs" />
     <Compile Include="Parsers\BitmapChunk.cs" />
-    <Compile Include="Parsers\MeshChunk.cs" />
+    <Compile Include="Parsers\MatFileParser.cs" />
+    <Compile Include="Parsers\DatFileParser.cs" />
+    <Compile Include="Parsers\PaletteFileParser.cs" />
+    <Compile Include="Parsers\PixFileParser.cs" />
     <Compile Include="Parsers\Polygon.cs" />
     <Compile Include="Parsers\Track\SkyboxGenerator.cs" />
     <Compile Include="Parsers\Track\TrackFile.cs" />

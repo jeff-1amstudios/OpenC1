@@ -48,6 +48,11 @@ namespace NeedForSpeed
 
             Engine.Initialize(this, _graphics);
 
+            //enable per-pixel transparency
+            Engine.Instance.Device.RenderState.AlphaTestEnable = true;
+            Engine.Instance.Device.RenderState.ReferenceAlpha = 50;
+            Engine.Instance.Device.RenderState.AlphaFunction = CompareFunction.Greater;
+
             //IsFixedTimeStep = false;
             //ChaseCamera cam = new ChaseCamera();
             //cam.DesiredPositionOffset = new Vector3(0.0f, 10.0f, 50.0f);
@@ -103,7 +108,7 @@ namespace NeedForSpeed
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            _graphics.GraphicsDevice.Clear(Color.Black);
+            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             base.Draw(gameTime);
         }
