@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using PlatformEngine;
 
-namespace NeedForSpeed.Parsers
+namespace Carmageddon.Parsers
 {
     class PixMap
     {
@@ -19,7 +19,7 @@ namespace NeedForSpeed.Parsers
         public Texture2D Texture { get; set; }
     }
 
-    class PixFileParser : BaseParser
+    class PixFile : BaseDataFile
 	{
 		enum PixBlockType
 		{
@@ -32,12 +32,11 @@ namespace NeedForSpeed.Parsers
 
         List<PixMap> _pixMaps = new List<PixMap>();
 
-		public void Parse(string filename)
+        public PixFile(string filename)
 		{
             if (_palette == null)
             {
-                PaletteFileParser paletteFile = new PaletteFileParser();
-                paletteFile.Parse("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
+                PaletteFile paletteFile = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
                 _palette = paletteFile.Palette;
             }
 
@@ -74,7 +73,7 @@ namespace NeedForSpeed.Parsers
 
                         Texture2D texture = new Texture2D(Engine.Instance.Device, currentPix.Width, currentPix.Height, 1, TextureUsage.None, SurfaceFormat.Color);
                         texture.SetData<byte>(GetBytesForImage(pixels, currentPix.Width, currentPix.Height));
-                        texture.Save("c:\\temp\\" + currentPix.Name + ".png", ImageFileFormat.Png);
+                        //texture.Save("c:\\temp\\" + currentPix.Name + ".png", ImageFileFormat.Png);
                         currentPix.Texture = texture;
 						break;
 

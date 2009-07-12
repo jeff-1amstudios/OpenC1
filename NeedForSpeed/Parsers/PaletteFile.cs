@@ -6,9 +6,9 @@ using MiscUtil.IO;
 using MiscUtil.Conversion;
 using System.IO;
 
-namespace NeedForSpeed.Parsers
+namespace Carmageddon.Parsers
 {
-    class PaletteFileParser : BaseParser
+    class PaletteFile : BaseDataFile
     {
 
         enum PaletteBlockType
@@ -20,7 +20,7 @@ namespace NeedForSpeed.Parsers
 
         public byte[] Palette { get; private set; }
 
-        public void Parse(string filename)
+        public PaletteFile(string filename)
         {
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
 

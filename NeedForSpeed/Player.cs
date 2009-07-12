@@ -7,7 +7,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 using PlatformEngine;
 
-namespace NeedForSpeed
+namespace Carmageddon
 {
     public class Player : GameObject
     {
@@ -101,7 +101,7 @@ namespace NeedForSpeed
             Strafe(input.Strafe * 40.0f);
 
 
-            //Engine.Instance.Camera.FollowObject(this);
+            Engine.Instance.Camera.FollowObject(this);
         }
 
         public override void Draw()

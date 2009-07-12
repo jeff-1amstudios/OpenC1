@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using MiscUtil.IO;
 
-namespace NeedForSpeed.Parsers
+namespace Carmageddon.Parsers
 {
-    class BaseParser
+    class BaseDataFile
     {
 
         protected string ReadNullTerminatedString(EndianBinaryReader reader)

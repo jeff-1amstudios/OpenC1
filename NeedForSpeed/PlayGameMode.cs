@@ -4,40 +4,29 @@ using System.Text;
 using PlatformEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NeedForSpeed.Parsers;
-using NeedForSpeed.Parsers.Track;
+using Carmageddon.Parsers;
+using Carmageddon.Parsers.Track;
 using Microsoft.Xna.Framework.Input;
 using NFSEngine;
 
-namespace NeedForSpeed
+namespace Carmageddon
 {
     class PlayGameMode : IGameMode
     {
-        DatFileParser _mesh;
-        ActFileParser _actors;
-        float _rotation;
+        Car _car;
 
         public PlayGameMode()
         {
-            //ChaseCamera camera = new ChaseCamera();
-            //camera.Reset();
+            Engine.Instance.Device.SamplerStates[0].MagFilter = TextureFilter.Anisotropic;
+            Engine.Instance.Device.SamplerStates[0].MinFilter = TextureFilter.Anisotropic;
+
+            _car = new Car(@"C:\Games\carma1\data\cars\blkeagle.txt");
+
             SimpleCamera camera = new SimpleCamera();
-            Engine.Instance.Camera = camera;
-            //camera.SetPosition(
+            Engine.Instance.Camera = new FPSCamera(Engine.Instance.Game);// camera;
 
             Engine.Instance.Player = new Player();
             Engine.Instance.Player.Position = new Vector3(0, 20, 50);
-
-            PixFileParser pix = new PixFileParser();
-            pix.Parse(@"C:\Games\carma1\data\pixelmap\CHUKPINT.PIX");
-            _mesh = new DatFileParser();
-            _mesh.Parse(@"C:\Games\carma1\data\models\CHUKPINT.DAT");
-            _actors = new ActFileParser();
-            _actors.Parse(@"C:\Games\carma1\data\actors\CHUKPINT.ACT");
-            MatFileParser matFile = new MatFileParser();
-            matFile.Parse(@"C:\Games\carma1\data\material\CHUKPINT.MAT");
-            _mesh.Resolve(matFile, pix);
-            
         }
 
 
@@ -47,17 +36,13 @@ namespace NeedForSpeed
         {
             Engine.Instance.Camera.Update(gameTime);
             Engine.Instance.Player.Update(gameTime);
+
+            _car.Update(gameTime);
         }
 
         public void Draw()
         {
-            //Engine.Instance.GraphicsUtils.AddSquareGrid(Matrix.Identity, 20, Color.Green);
-
-            _actors.Render(
-                Matrix.CreateRotationY(_rotation) * Matrix.CreateScale(30),
-                _mesh);
-            
-            _rotation += 0.01f;
+            _car.Render();
         }
 
         #endregion

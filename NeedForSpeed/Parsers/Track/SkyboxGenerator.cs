@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using PlatformEngine;
 
-namespace NeedForSpeed.Parsers.Track
+namespace Carmageddon.Parsers.Track
 {
     class SkyboxGenerator
     {

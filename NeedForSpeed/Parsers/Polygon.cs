@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace NeedForSpeed.Parsers
+namespace Carmageddon.Parsers
 {
 
     enum PolygonType
@@ -68,19 +68,6 @@ namespace NeedForSpeed.Parsers
         public Polygon(string part)
         {
             PartName = part;
-        }
-
-        public void ResolveTexture(BitmapEntry texture)
-        {
-            _texture = texture.Texture;
-            
-            //for (int i =0; i < _textureCoords.Count; i++)
-            //{
-            //    Vector2 coord = _textureCoords[i];
-            //    coord.X /= texture.Texture.Width;
-            //    coord.Y /= texture.Texture.Height;
-            //    _textureCoords[i] = coord;
-            //}
         }
 
         public List<VertexPositionNormalTexture> GetVertices()

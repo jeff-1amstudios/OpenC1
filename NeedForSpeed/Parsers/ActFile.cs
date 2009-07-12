@@ -9,15 +9,17 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace NeedForSpeed.Parsers
+namespace Carmageddon.Parsers
 {
 
     class Actor
     {
         public string Name { get; set; }
         public string ModelName { get; set; }
+        public string MaterialName { get; set; }
+        public Texture2D Texture { get; set; }
         public Matrix Matrix { get; set; }
-        public List<Actor> Children { get; set; }
+        internal List<Actor> Children { get; set; }
 
         public Actor()
         {
@@ -25,7 +27,7 @@ namespace NeedForSpeed.Parsers
         }
     }
 
-    class ActFileParser : BaseParser
+    class ActFile : BaseDataFile
     {
         enum ActorBlockType
         {
@@ -43,12 +45,13 @@ namespace NeedForSpeed.Parsers
 
         List<Actor> _actors = new List<Actor>();
 
-        public void Parse(string filename)
+        public ActFile(string filename)
         {
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
 
             Actor currentActor = null;
             Stack<Actor> _actorStack = new Stack<Actor>();
+            List<Actor> actorsTemp = new List<Actor>();
 
             while (true)
             {
@@ -66,7 +69,7 @@ namespace NeedForSpeed.Parsers
                             _actorStack.Peek().Children.Add(currentActor);
                         else
                         {
-                            _actors.Add(currentActor);
+                            actorsTemp.Add(currentActor);
                         }
 
                         _actorStack.Push(currentActor);
@@ -111,19 +114,12 @@ namespace NeedForSpeed.Parsers
                         break;
 
                     case ActorBlockType.MaterialNames:
-                        string material = ReadNullTerminatedString(reader);
+                        currentActor.MaterialName = ReadNullTerminatedString(reader);
                         break;
 
                     case ActorBlockType.ModelName:
                         currentActor.ModelName = ReadNullTerminatedString(reader);
                         Debug.WriteLine("ModelName: " + currentActor.ModelName);
-
-                        for (int i = _actors.Count - 1; i >= 0; i--)
-                        {
-                            if (_actors[i].ModelName != null)
-                                break;
-                            _actors[i].ModelName = currentActor.ModelName;
-                        }
                         break;
 
                     case ActorBlockType.Null:
@@ -138,33 +134,49 @@ namespace NeedForSpeed.Parsers
             }
             reader.Close();
 
+            // Flatten out the tree structure for performance
+            foreach (Actor a in actorsTemp)
+                ResolveHierarchy(a, Matrix.Identity);
+
             foreach (Actor a in _actors)
-                Resolve(a, Matrix.Identity);
+                a.Children = null;
         }
 
-        private void Resolve(Actor a, Matrix world)
+        private void ResolveHierarchy(Actor a, Matrix world)
         {
-            a.Matrix = world * a.Matrix;   
+            a.Matrix = world * a.Matrix;
+            _actors.Add(a);
             foreach (Actor child in a.Children)
-                Resolve(child, a.Matrix);
+                ResolveHierarchy(child, a.Matrix);
         }
 
 
-        public void Render(Matrix world, DatFileParser models)
+        public void ResolveMaterials(MatFile materials, PixFile pix)
+        {
+            foreach (Actor a in _actors)
+            {
+                if (a.MaterialName != null)
+                {
+                    Material material = materials.GetMaterial(a.MaterialName);
+                    if (material != null)
+                    {
+                        PixMap pixMap = pix.GetPixelMap(material.PixName);
+                        if (pixMap != null)
+                            a.Texture = pixMap.Texture;
+                    }
+                }
+            }
+        }
+
+
+        public void Render(Matrix world, DatFile models)
         {
             BasicEffect effect = models.SetupRender();
             foreach (Actor a in _actors)
             {
-                RenderInternal(a, world, effect, models);
+                if (a.ModelName != null) models.Render(a.Matrix * world, effect, a);
             }
             models.DoneRender(effect);
-        }
-
-        private void RenderInternal(Actor a, Matrix world, BasicEffect effect, DatFileParser models)
-        {
-            if (a.ModelName != null) models.Render(a.Matrix * world, effect, a.ModelName);
-            foreach (Actor child in a.Children)
-                RenderInternal(child, world, effect, models);
         }
     }
 }

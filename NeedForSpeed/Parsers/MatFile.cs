@@ -7,7 +7,7 @@ using MiscUtil.Conversion;
 using System.IO;
 using System.Diagnostics;
 
-namespace NeedForSpeed.Parsers
+namespace Carmageddon.Parsers
 {
     class Material
     {
@@ -16,7 +16,7 @@ namespace NeedForSpeed.Parsers
         public bool DoubleSided { get; set; }
     }
 
-    class MatFileParser : BaseParser
+    class MatFile : BaseDataFile
     {
         enum MaterialBlockType
         {
@@ -29,7 +29,7 @@ namespace NeedForSpeed.Parsers
 
         public List<Material> _materials = new List<Material>();
 
-        public void Parse(string filename)
+        public MatFile(string filename)
         {
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
 
@@ -54,17 +54,14 @@ namespace NeedForSpeed.Parsers
                         currentMaterial.DoubleSided = flags[0] == 0x10;
                         currentMaterial.Name = ReadNullTerminatedString(reader);
                         
-                        //Debug.WriteLine("Name: " + name + ", flags: " + flags[0] + " " + flags[1]);
                         break;
 
                     case MaterialBlockType.TextureName:
                         currentMaterial.PixName = ReadNullTerminatedString(reader);
-                        //Debug.WriteLine("TextureName: " + modeName);
                         break;
 
                     case MaterialBlockType.TabName:
                         string tabName = ReadNullTerminatedString(reader);
-                        Debug.WriteLine("TabName: " + tabName);
                         break;
 
                     case MaterialBlockType.Null:

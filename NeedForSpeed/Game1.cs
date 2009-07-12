@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Storage;
 using PlatformEngine;
 using NFSEngine;
 
-namespace NeedForSpeed
+namespace Carmageddon
 {
     /// <summary>
     /// This is the main type for your game

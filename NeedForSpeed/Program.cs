@@ -1,6 +1,6 @@
 using System;
 
-namespace NeedForSpeed
+namespace Carmageddon
 {
     static class Program
     {

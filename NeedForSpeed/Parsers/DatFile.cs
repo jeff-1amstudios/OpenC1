@@ -9,7 +9,7 @@ using System.Diagnostics;
 using MiscUtil.IO;
 using MiscUtil.Conversion;
 
-namespace NeedForSpeed.Parsers
+namespace Carmageddon.Parsers
 {
     enum BlockType
     {
@@ -22,7 +22,7 @@ namespace NeedForSpeed.Parsers
         Faces = 53
     }
 
-    class DatFileParser : BaseParser
+    class DatFile : BaseDataFile
     {
         List<Vector3> _vertices = new List<Vector3>();
         List<Vector2> _vertexTextureMap = new List<Vector2>();
@@ -33,7 +33,7 @@ namespace NeedForSpeed.Parsers
         string _currentPartName;
         int _currentPolygonIndex;
 
-        public void Parse(string filename)
+        public DatFile(string filename)
         {
 
             EndianBinaryReader reader = new EndianBinaryReader(new BigEndianBitConverter(), File.Open(filename, FileMode.Open));
@@ -135,7 +135,9 @@ namespace NeedForSpeed.Parsers
 
             for (int i = 0; i < nbrFaceMaterials; i++)
             {
-                _polygons[_currentPolygonIndex+i].MaterialName = _materialNames[reader.ReadInt16() - 1]; //-1 because it is 1-based
+                int matIndex = reader.ReadInt16() - 1;
+                if (matIndex > -1)
+                    _polygons[_currentPolygonIndex + i].MaterialName = _materialNames[matIndex]; //-1 because it is 1-based
             }
         }
 
@@ -166,7 +168,7 @@ namespace NeedForSpeed.Parsers
         }
 
 
-        public void Resolve(MatFileParser matFile, PixFileParser pix)
+        public void Resolve(MatFile matFile, PixFile pix)
         {
             int vertCount = 0;
             
@@ -176,11 +178,17 @@ namespace NeedForSpeed.Parsers
                 if (poly.MaterialName != null)
                 {
                     Material m = matFile.GetMaterial(poly.MaterialName);
-                    poly.DoubleSided = m.DoubleSided;
+                    if (m != null)
+                    {
+                        poly.DoubleSided = m.DoubleSided;
 
-                    PixMap pixmap = pix.GetPixelMap(m.PixName);
-                    if (pixmap != null)
-                        poly.Texture = pixmap.Texture;
+                        PixMap pixmap = pix.GetPixelMap(m.PixName);
+                        if (pixmap != null)
+                            poly.Texture = pixmap.Texture;
+                    }
+                }
+                if (poly.Texture == null)
+                {
                 }
 
                 poly.VertexBufferIndex = vertCount;
@@ -203,6 +211,12 @@ namespace NeedForSpeed.Parsers
             BasicEffect effect = new BasicEffect(Engine.Instance.Device, null);
             effect.LightingEnabled = true;
             effect.EnableDefaultLighting();
+            
+
+            effect.FogEnabled = true;
+            effect.FogColor = new Vector3(245, 245, 245);
+            effect.FogStart = 2500;
+            effect.FogEnd = 4000;
             //effect.AmbientLightColor = new Vector3(0.09f, 0.09f, 0.1f);
             //effect.DirectionalLight0.Direction = new Vector3(1.0f, -1.0f, -1.0f);
             effect.View = Engine.Instance.Camera.View;
@@ -210,17 +224,15 @@ namespace NeedForSpeed.Parsers
             
             effect.TextureEnabled = true;
             effect.Begin(SaveStateMode.SaveState);
-            //effect.CurrentTechnique.Passes[0].Begin();
             return effect;
         }
 
         public void DoneRender(BasicEffect effect)
         {
-            //effect.CurrentTechnique.Passes[0].End();
             effect.End();
         }
 
-        public void Render(Matrix world, BasicEffect effect, string model)
+        public void Render(Matrix world, BasicEffect effect, Actor actor)
         {
             GraphicsDevice device = Engine.Instance.Device;
             effect.World = world;
@@ -228,19 +240,16 @@ namespace NeedForSpeed.Parsers
 
             foreach (Polygon poly in _polygons)
             {
-                if (poly.PartName != model) continue;
+                if (poly.PartName != actor.ModelName) continue;
 
                 device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
-                device.Textures[0] = poly.Texture;
+                if (poly.Texture != null)
+                    device.Textures[0] = poly.Texture;
+                else
+                    device.Textures[0] = actor.Texture;
 
-
-                //foreach (EffectPass pass in effect.CurrentTechnique.Passes)
-                //{
-                //  pass.Begin();
                 Engine.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, poly.VertexBufferIndex, poly.VertexCount / 3);
-                //pass.End();
-                //}
-
+                
             }
             effect.CurrentTechnique.Passes[0].End();
         }
