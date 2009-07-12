@@ -168,7 +168,7 @@ namespace Carmageddon.Parsers
         }
 
 
-        public void Resolve(MatFile matFile, PixFile pix)
+        public void Resolve(ResourceCache resources)
         {
             int vertCount = 0;
             
@@ -177,20 +177,17 @@ namespace Carmageddon.Parsers
             {
                 if (poly.MaterialName != null)
                 {
-                    Material m = matFile.GetMaterial(poly.MaterialName);
+                    Material m = resources.GetMaterial(poly.MaterialName);
                     if (m != null)
                     {
                         poly.DoubleSided = m.DoubleSided;
 
-                        PixMap pixmap = pix.GetPixelMap(m.PixName);
+                        PixMap pixmap = resources.GetPixelMap(m.PixName);
                         if (pixmap != null)
                             poly.Texture = pixmap.Texture;
                     }
                 }
-                if (poly.Texture == null)
-                {
-                }
-
+                
                 poly.VertexBufferIndex = vertCount;
                 vertCount += poly.VertexCount;
                 allVerts.AddRange(poly.GetVertices());

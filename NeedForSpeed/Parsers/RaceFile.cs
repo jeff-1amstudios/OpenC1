@@ -53,8 +53,11 @@ namespace Carmageddon.Parsers
             int nbrModels = ReadLineAsInt();
             ModelFile = ReadLine();
 
-            int nbrLowMemModels = ReadLineAsInt();
-            SkipLines(nbrLowMemModels);
+            if (version == "VERSION 6")
+            {
+                int nbrLowMemModels = ReadLineAsInt();
+                SkipLines(nbrLowMemModels);
+            }
 
             ActorFile = ReadLine();
             SkipLines(1); //low mem actor
@@ -66,9 +69,7 @@ namespace Carmageddon.Parsers
             ReadLine();
             DepthCueMode = ReadLine();
 
-
-
-
+            CloseFile();
         }
     }
 }

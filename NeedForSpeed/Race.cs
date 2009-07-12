@@ -9,33 +9,34 @@ using Carmageddon.Parsers;
 
 namespace Carmageddon
 {
-    class Car
+    class Race
     {
 
         DatFile _models;
         ActFile _actors;
         ResourceCache _resourceCache;
 
-        public Car(string filename)
+        public Race(string filename)
         {
-            CarFile car = new CarFile(filename);
+            RaceFile race = new RaceFile(filename);
 
             _resourceCache = new ResourceCache();
-            foreach (string pixFileName in car.PixFiles)
+            
+            foreach (string pixFileName in race.PixFiles)
             {
                 PixFile pixFile = new PixFile(@"C:\Games\carma1\data\pixelmap\" + pixFileName);
                 _resourceCache.Add(pixFile);
             }
 
-            foreach (string matFileName in car.MaterialFiles)
+            foreach (string matFileName in race.MaterialFiles)
             {
                 MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
                 _resourceCache.Add(matFile);
             }
+            
+            _models = new DatFile(@"C:\Games\carma1\data\models\" + race.ModelFile);
 
-            _models = new DatFile(@"C:\Games\carma1\data\models\" + car.ModelFile);
-
-            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + car.ActorFile);
+            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + race.ActorFile);
             _actors.ResolveMaterials(_resourceCache);
             _models.Resolve(_resourceCache);
         }
@@ -46,13 +47,7 @@ namespace Carmageddon
 
         public void Render()
         {
-            Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Clamp;
-            Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Clamp;
-
             _actors.Render(Matrix.CreateScale(30), _models);
-
-            Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
-            Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
         }
     }
 }

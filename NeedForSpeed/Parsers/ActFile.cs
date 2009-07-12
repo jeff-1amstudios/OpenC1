@@ -151,16 +151,16 @@ namespace Carmageddon.Parsers
         }
 
 
-        public void ResolveMaterials(MatFile materials, PixFile pix)
+        public void ResolveMaterials(ResourceCache resources)
         {
             foreach (Actor a in _actors)
             {
                 if (a.MaterialName != null)
                 {
-                    Material material = materials.GetMaterial(a.MaterialName);
+                    Material material = resources.GetMaterial(a.MaterialName);
                     if (material != null)
                     {
-                        PixMap pixMap = pix.GetPixelMap(material.PixName);
+                        PixMap pixMap = resources.GetPixelMap(material.PixName);
                         if (pixMap != null)
                             a.Texture = pixMap.Texture;
                     }

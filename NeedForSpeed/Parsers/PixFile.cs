@@ -32,6 +32,11 @@ namespace Carmageddon.Parsers
 
         List<PixMap> _pixMaps = new List<PixMap>();
 
+        internal List<PixMap> PixMaps
+        {
+            get { return _pixMaps; }
+        }
+
         public PixFile(string filename)
 		{
             if (_palette == null)

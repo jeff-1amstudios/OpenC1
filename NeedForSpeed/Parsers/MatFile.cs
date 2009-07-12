@@ -27,7 +27,12 @@ namespace Carmageddon.Parsers
         }
 
 
-        public List<Material> _materials = new List<Material>();
+        List<Material> _materials = new List<Material>();
+
+        internal List<Material> Materials
+        {
+            get { return _materials; }
+        }
 
         public MatFile(string filename)
         {

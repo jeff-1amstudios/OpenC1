@@ -22,6 +22,7 @@ namespace Carmageddon.Parsers
 
         protected void SkipLines(int skip)
         {
+            if (skip == 0) return;
             int count = 0;
             while (true)
             {
@@ -53,7 +54,7 @@ namespace Carmageddon.Parsers
             while (true)
             {
                 string line = _file.ReadLine();
-                if (!line.StartsWith("//"))
+                if (!line.StartsWith("//") && line != "")
                 {
                     return line.Split(new string[] { "//" }, StringSplitOptions.None)[0].Trim();
                 }

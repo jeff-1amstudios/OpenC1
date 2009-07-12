@@ -97,11 +97,13 @@
     <Compile Include="Parsers\Polygon.cs" />
     <Compile Include="Parsers\RaceFile.cs" />
     <Compile Include="Parsers\Track\SkyboxGenerator.cs" />
+    <Compile Include="ResourceCache.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PlayGameMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="Race.cs" />
     <Compile Include="SimpleCamera.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -14,13 +14,16 @@ namespace Carmageddon
     class PlayGameMode : IGameMode
     {
         Car _car;
+        Race _race;
 
         public PlayGameMode()
         {
             Engine.Instance.Device.SamplerStates[0].MagFilter = TextureFilter.Anisotropic;
             Engine.Instance.Device.SamplerStates[0].MinFilter = TextureFilter.Anisotropic;
 
-            _car = new Car(@"C:\Games\carma1\data\cars\blkeagle.txt");
+            //_car = new Car(@"C:\Games\carma1\data\cars\blkeagle.txt");
+
+            _race = new Race(@"C:\Games\carma1\data\races\zebra.TXT");
 
             SimpleCamera camera = new SimpleCamera();
             Engine.Instance.Camera = new FPSCamera(Engine.Instance.Game);// camera;
@@ -37,12 +40,13 @@ namespace Carmageddon
             Engine.Instance.Camera.Update(gameTime);
             Engine.Instance.Player.Update(gameTime);
 
-            _car.Update(gameTime);
+            //_car.Update(gameTime);
         }
 
         public void Draw()
         {
-            _car.Render();
+            //_car.Render();
+            _race.Render();
         }
 
         #endregion
