@@ -18,7 +18,7 @@ namespace PlatformEngine
             get { return textures; }
             set { textures = value; }
         }
-        Effect effect;
+        Effect _effect;
 
         VertexBuffer vertices;
         IndexBuffer indices;
@@ -62,16 +62,8 @@ namespace PlatformEngine
         
         public void LoadResources()
         {
-            textures[0] = Engine.Instance.ContentManager.Load<Texture2D>("Content\\Skybox\\back");
-            textures[1] = Engine.Instance.ContentManager.Load<Texture2D>("Content\\Skybox\\front");
-            textures[2] = Engine.Instance.ContentManager.Load<Texture2D>("Content\\Skybox\\bottom");
-            textures[3] = Engine.Instance.ContentManager.Load<Texture2D>("Content\\Skybox\\top");
-            textures[4] = Engine.Instance.ContentManager.Load<Texture2D>("Content\\Skybox\\left");
-            textures[5] = Engine.Instance.ContentManager.Load<Texture2D>("Content\\Skybox\\right");
-
-            effect = Engine.Instance.ContentManager.Load<Effect>("Content\\Skybox\\skybox");
-
-
+            _effect = Engine.Instance.ContentManager.Load<Effect>("Content\\Skybox\\skybox");
+            
             vertexDecl = new VertexDeclaration(Engine.Instance.Device,
                 new VertexElement[] {
                     new VertexElement(0,0,VertexElementFormat.Vector3,
@@ -92,7 +84,7 @@ namespace PlatformEngine
             float y = 0.3f;
 
             #region Define Vertexes
-            Vector3 vExtents = new Vector3(6000, 3000, 6000);
+            Vector3 vExtents = new Vector3(8000, 2000, 8000);
             //back
             data[0].Position = new Vector3(vExtents.X, -vExtents.Y * y, -vExtents.Z);
             data[0].TextureCoordinate.X = 1.0f; data[0].TextureCoordinate.Y = 1.0f;
@@ -192,8 +184,9 @@ namespace PlatformEngine
             if (vertices == null)
                 return;
 
-            effect.Begin();
-            effect.Parameters["worldViewProjection"].SetValue(
+            _effect.Begin();
+            
+            _effect.Parameters["worldViewProjection"].SetValue(
                              worldMatrix * viewMatrix * projectionMatrix);
             
             
@@ -206,16 +199,16 @@ namespace PlatformEngine
 
                 device.Indices = indices;
 
-                effect.Parameters["baseTexture"].SetValue(textures[x]);
-                effect.Techniques[0].Passes[0].Begin();
+                _effect.Parameters["baseTexture"].SetValue(textures[x]);
+                _effect.Techniques[0].Passes[0].Begin();
                 
                 device.DrawIndexedPrimitives(PrimitiveType.TriangleList,
                     0, x * 4, 4, x * 6, 2);
-                effect.Techniques[0].Passes[0].End();
+                _effect.Techniques[0].Passes[0].End();
                 
             }
 
-            effect.End();
+            _effect.End();
         }
     }
 }

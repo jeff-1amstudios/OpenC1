@@ -26,10 +26,10 @@ namespace Carmageddon
         private float _jumpingVelocity;
 
         private const float VelocityInversionMultiplier = 20.0f;
-        private const float Acceleration = 30.0f;
+        private const float Acceleration = 20.0f;
         private const float Deceleration = -10.0f;
         private const float JumpVelocity = 0.23f;
-        private const float MaxSpeed = 45.0f;
+        private const float MaxSpeed = 15.0f;
 
         private bool _shouldJump;
         private float _worldHeight;
@@ -73,30 +73,15 @@ namespace Carmageddon
 
         public override void Update(GameTime gameTime)
         {
-            InputProvider input = Engine.Instance.InputProvider;
+            InputProvider input = Engine.Instance.Input;
             float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             _forwardDelta = input.MoveForward * elapsedTime * Acceleration;
 
             _strafeDelta = input.Strafe * elapsedTime * Acceleration;
 
-            if (input.Jump)
-                Jump(JumpVelocity);
-
-
-            //_worldHeight = Engine.Instance.World.GetHeightAtPoint(_position);
-
-            //if (IsInAir)
-            //{
-            //    if (_posture == Posture.Standing)
-            //        _posture = Posture.Falling;
-            //}
-            //else if (_worldHeight < _position.Y + 3)
-            //    _position.Y = _worldHeight;
-
-
-            Rotate(input.LookLeftRightDelta * -1);
-            Pitch(input.LookUpDownDelta * -1);
+            Rotate(input.RightThumbDelta * -1);
+            Pitch(input.LeftThumbDelta * -1);
             UpdatePosition(gameTime);
             Strafe(input.Strafe * 40.0f);
 
@@ -104,7 +89,7 @@ namespace Carmageddon
             Engine.Instance.Camera.FollowObject(this);
         }
 
-        public override void Draw()
+        public override void Render()
         {
 
         }
@@ -131,7 +116,7 @@ namespace Carmageddon
 
         private void UpdateVelocity(GameTime gameTime)
         {
-            float elapsedTimeSec = (float)gameTime.ElapsedRealTime.TotalSeconds;
+            float elapsedTimeSec = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Accelerate or decelerate as camera is moved forward or backward.
             float acceleration = Acceleration;

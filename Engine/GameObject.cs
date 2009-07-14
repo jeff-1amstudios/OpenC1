@@ -153,7 +153,7 @@ namespace PlatformEngine
         }
 
         public abstract void Update(GameTime gameTime);
-        public abstract void Draw();
+        public abstract void Render();
 
         public virtual void OnPlayerSelect() { }
 

@@ -19,12 +19,13 @@ namespace PlatformEngine
         private InputProvider _inputProvider;
         private GraphicsUtilities _graphicsUtils;
         private IWorld _world;
-        private IGameMode _mode;
+        private IGameScreen _mode;
         private HeightmapTerrain _terrain;
-        private SoundEngine _soundEngine;
         private GraphicsDeviceManager _graphics;
+        private BasicEffect _currentEffect;
+        private SpriteBatch _spriteBatch;
 
-        
+                
         public static Engine Instance
         {
             get
@@ -58,6 +59,7 @@ namespace PlatformEngine
             //Game bits
             _inputProvider = new InputProvider(base.Game);
             _graphicsUtils = new GraphicsUtilities();
+            _spriteBatch = new SpriteBatch(Device);
             base.Game.Components.Add(this);
         }
         
@@ -67,7 +69,8 @@ namespace PlatformEngine
             base.Update(gameTime);
             
             _inputProvider.Update(gameTime);
-            SoundEngine.Instance.Update();
+            SoundEngine2.Instance.Update(gameTime);
+            //SoundEngine.Instance.Update();
 
             _mode.Update(gameTime);
 
@@ -81,7 +84,7 @@ namespace PlatformEngine
             _mode.Draw();
             _graphicsUtils.Draw();
             ScreenEffects.Instance.Draw();
-            _graphicsUtils.DrawText();            
+            _graphicsUtils.DrawText();
         }
 
         public ContentManager ContentManager
@@ -92,7 +95,13 @@ namespace PlatformEngine
         public GraphicsDevice Device
         {
             get { return _graphics.GraphicsDevice; }
-        }    
+        }
+        
+        public BasicEffect CurrentEffect
+        {
+            get { return _currentEffect; }
+            set { _currentEffect = value; }
+        }
 
         public GraphicsUtilities GraphicsUtils
         {
@@ -111,7 +120,7 @@ namespace PlatformEngine
             set { _camera = value; }
         }
 
-        public InputProvider InputProvider
+        public InputProvider Input
         {
             get { return _inputProvider; }
             set { _inputProvider = value; }
@@ -123,10 +132,15 @@ namespace PlatformEngine
             set { _player = value; }
         }
 
-        public IGameMode Mode
+        public IGameScreen Mode
         {
             get { return _mode; }
             set { _mode = value; }
+        }
+
+        public SpriteBatch SpriteBatch
+        {
+            get { return _spriteBatch; }
         }
 
         public HeightmapTerrain Terrain

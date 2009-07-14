@@ -16,6 +16,7 @@ namespace Carmageddon.Parsers
     {
         public string Name { get; set; }
         public string ModelName { get; set; }
+        public Model Model { get; set; }
         public string MaterialName { get; set; }
         public Texture2D Texture { get; set; }
         public Matrix Matrix { get; set; }
@@ -45,7 +46,7 @@ namespace Carmageddon.Parsers
 
         List<Actor> _actors = new List<Actor>();
 
-        public ActFile(string filename)
+        public ActFile(string filename, DatFile modelFile)
         {
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
 
@@ -76,7 +77,7 @@ namespace Carmageddon.Parsers
 
                         reader.Seek(2, SeekOrigin.Current);
                         currentActor.Name = ReadNullTerminatedString(reader);
-                        Debug.WriteLine("Name: " + currentActor.Name);
+                        //Debug.WriteLine("Name: " + currentActor.Name);
                         break;
 
                     case ActorBlockType.TransformMatrix:
@@ -100,7 +101,7 @@ namespace Carmageddon.Parsers
                         matrix.M44 = 1;
                         
                         currentActor.Matrix = matrix;
-                        Debug.WriteLine(matrix);
+                        //Debug.WriteLine(matrix);
 
                         break;
 
@@ -109,7 +110,7 @@ namespace Carmageddon.Parsers
                         break;
 
                     case ActorBlockType.ActorEnd:
-                        Debug.WriteLine("Actor end");
+                        //Debug.WriteLine("Actor end");
                         _actorStack.Pop();
                         break;
 
@@ -119,6 +120,7 @@ namespace Carmageddon.Parsers
 
                     case ActorBlockType.ModelName:
                         currentActor.ModelName = ReadNullTerminatedString(reader);
+                        currentActor.Model = modelFile.GetModel(currentActor.ModelName);
                         Debug.WriteLine("ModelName: " + currentActor.ModelName);
                         break;
 
@@ -172,9 +174,19 @@ namespace Carmageddon.Parsers
         public void Render(Matrix world, DatFile models)
         {
             BasicEffect effect = models.SetupRender();
-            foreach (Actor a in _actors)
+            if (GameConfig.Model > -1)
             {
-                if (a.ModelName != null) models.Render(a.Matrix * world, effect, a);
+                while (_actors[GameConfig.Model].Model == null)
+                    GameConfig.Model++;
+                models.Render(_actors[GameConfig.Model].Matrix * world, effect, _actors[GameConfig.Model]);
+                NFSEngine.GameConsole.WriteLine(_actors[GameConfig.Model].ModelName, 0);
+            }
+            else
+            {
+                foreach (Actor a in _actors)
+                {
+                    if (a.Model != null) models.Render(a.Matrix * world, effect, a);
+                }
             }
             models.DoneRender(effect);
         }

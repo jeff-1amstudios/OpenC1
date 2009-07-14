@@ -33,10 +33,11 @@ namespace Carmageddon
                 MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
                 _resourceCache.Add(matFile);
             }
+            _resourceCache.Add(new MatFile(@"C:\Games\carma1\data\material\" + "drkcurb.mat"));
             
             _models = new DatFile(@"C:\Games\carma1\data\models\" + race.ModelFile);
 
-            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + race.ActorFile);
+            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + race.ActorFile, _models);
             _actors.ResolveMaterials(_resourceCache);
             _models.Resolve(_resourceCache);
         }

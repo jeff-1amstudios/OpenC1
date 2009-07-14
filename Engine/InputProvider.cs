@@ -33,7 +33,8 @@ namespace PlatformEngine
 
     public class InputProvider : GameComponent
     {
-        private GamePadState _gamePadState;
+        private GamePadState _gamePadState, _previousGamePadState;
+
         private KeyboardState _keyboardState, _previousKeyboardState;
         private MouseState _mouseState;
         private Vector2 _mouseDelta;
@@ -60,15 +61,25 @@ namespace PlatformEngine
             Mouse.SetPosition((int)screenCenter.X, (int)screenCenter.Y);
         }
 
+        public GamePadState GamePadState
+        {
+            get { return _gamePadState; }
+        }
 
+        public MouseState MouseState
+        {
+            get { return _mouseState; }
+        }
 
         public override void Update(GameTime gameTime)
         {
             float frameTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _perFrameMultiplier = frameTime * SENSITIVITY;
-            _gamePadState = GamePad.GetState(PlayerIndex.One);
+            
             _previousKeyboardState = _keyboardState;
+            _previousGamePadState = _gamePadState;
             _keyboardState = Keyboard.GetState();
+            _gamePadState = GamePad.GetState(PlayerIndex.One);
 
             if (_previousKeyboardState == null)
                 _previousKeyboardState = _keyboardState;
@@ -129,7 +140,7 @@ namespace PlatformEngine
             }
         }
 
-        public float LookUpDownDelta
+        public float LeftThumbDelta
         {
             get
             {
@@ -142,7 +153,7 @@ namespace PlatformEngine
             }
         }
 
-        public float LookLeftRightDelta
+        public float RightThumbDelta
         {
             get
             {
@@ -155,32 +166,15 @@ namespace PlatformEngine
             }
         }
 
-        public bool Jump
-        {
-            get
-            {
-                return _gamePadState.Buttons.A == ButtonState.Pressed || _mouseState.RightButton == ButtonState.Pressed;
-            }
-        }
 
-        public bool Quit {
-            get
-            {
-                return _gamePadState.Buttons.Back == ButtonState.Pressed || _keyboardState.IsKeyDown(Keys.Escape);
-            }
-        }
-
-        public bool Start
-        {
-            get
-            {
-                return _gamePadState.Buttons.Start == ButtonState.Pressed || _keyboardState.IsKeyDown(Keys.Enter);
-            }
-        }
-
-        public bool IsKeyPressed(Keys key)
+        public bool WasPressed(Keys key)
         {
             return _previousKeyboardState.IsKeyDown(key) && !_keyboardState.IsKeyDown(key);
+        }
+
+        public bool WasPressed(Buttons button)
+        {
+            return _previousGamePadState.IsButtonDown(button) && !_gamePadState.IsButtonDown(button);
         }
 
         public bool IsKeyDown(Keys key)
@@ -212,24 +206,12 @@ namespace PlatformEngine
             get { return new Vector2(_mouseState.X, _mouseState.Y); }
         }
 
-        public bool Fire
-        {
-            get { return _mouseState.LeftButton == ButtonState.Pressed || _gamePadState.Buttons.A == ButtonState.Pressed; }
-        }
-
 
         /// <summary>
         /// Filters the mouse movement based on a weighted sum of mouse
         /// movement from previous frames to ensure that the mouse movement
         /// this frame is smooth.
-        /// <para>
-        /// For further details see:
-        ///  Nettle, Paul "Smooth Mouse Filtering", flipCode's Ask Midnight column.
-        ///  http://www.flipcode.com/cgi-bin/fcarticles.cgi?show=64462
-        /// </para>
         /// </summary>
-        /// <param name="deltaX">Horizontal mouse distance from window center.</param>
-        /// <param name="deltaY">Vertice mouse distance from window center.</param>
         private void SmoothMouseMovement()
         {
             // Shuffle all the entries in the cache.

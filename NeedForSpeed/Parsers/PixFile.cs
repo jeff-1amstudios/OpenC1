@@ -28,8 +28,6 @@ namespace Carmageddon.Parsers
 			Attributes = 3
 		}
 
-        private static byte[] _palette;
-
         List<PixMap> _pixMaps = new List<PixMap>();
 
         internal List<PixMap> PixMaps
@@ -39,12 +37,6 @@ namespace Carmageddon.Parsers
 
         public PixFile(string filename)
 		{
-            if (_palette == null)
-            {
-                PaletteFile paletteFile = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
-                _palette = paletteFile.Palette;
-            }
-
 			EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
             PixMap currentPix=null;
 
@@ -118,7 +110,7 @@ namespace Carmageddon.Parsers
                     }
                     else
                     {
-                        byte[] rgb = GetRGBForPixel(pixel);
+                        byte[] rgb = GameConfig.Palette.GetRGBBytesForPixel(pixel);
                         imgData[curPosition] = rgb[2];
                         imgData[curPosition + 1] = rgb[1];
                         imgData[curPosition + 2] = rgb[0];
@@ -131,14 +123,7 @@ namespace Carmageddon.Parsers
             return imgData;
         }
 
-        private byte[] GetRGBForPixel(int pixel)
-        {
-            byte[] rgb = new byte[3];
-            rgb[0] = _palette[pixel * 4 + 1];
-            rgb[1] = _palette[pixel * 4 + 2];
-            rgb[2] = _palette[pixel * 4 + 3];
-            return rgb;
-        }
+        
 
         public PixMap GetPixelMap(string name)
         {

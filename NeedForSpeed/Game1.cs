@@ -34,6 +34,7 @@ namespace Carmageddon
 
             _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;
             _graphics.MinimumPixelShaderProfile = ShaderProfile.PS_2_0;
+
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace Carmageddon
         protected override void Update(GameTime gameTime)
         {
             //check for exit
-            if (Engine.Instance.InputProvider.Quit)
+            if (Engine.Instance.Input.WasPressed(Keys.Escape))
             {
                 Exit();
             }
@@ -108,7 +109,7 @@ namespace Carmageddon
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            _graphics.GraphicsDevice.Clear(Color.WhiteSmoke);
+            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             base.Draw(gameTime);
         }

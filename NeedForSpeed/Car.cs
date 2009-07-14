@@ -35,7 +35,7 @@ namespace Carmageddon
 
             _models = new DatFile(@"C:\Games\carma1\data\models\" + car.ModelFile);
 
-            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + car.ActorFile);
+            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + car.ActorFile, _models);
             _actors.ResolveMaterials(_resourceCache);
             _models.Resolve(_resourceCache);
         }

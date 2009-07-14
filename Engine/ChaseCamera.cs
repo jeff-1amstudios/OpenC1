@@ -3,27 +3,47 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using PlatformEngine;
+using System.Diagnostics;
 
 namespace NFSEngine
 {
+    
     public class ChaseCamera : ICamera
     {
-        #region Chased object properties (set externally each frame)
+		private Vector3 _chasePosition;
+		private Vector3 _chaseDirection = new Vector3(0, 0, -1);
+		private Vector3 _up = Vector3.Up;
+		private Vector3 _desiredPositionOffset = new Vector3(0, 2.0f, 2.0f);
+		private Vector3 _desiredPosition;
+		private Vector3 _lookAtOffset = new Vector3(0, 2.8f, 0);
+		private Vector3 _lookAt;
+		private float _stiffness = 1800.0f;
+		private float _zstiffness = 2.0f;
+		private float _damping = 600.0f;
+		private float _mass = 50.0f;
+		private Vector3 _position;
+		private Vector3 _velocity;
+		private float _aspectRatio = 4.0f / 3.0f;
+		private float _fieldOfView = MathHelper.ToRadians(45.0f);
+		private float _nearPlaneDistance = 1.0f;
+		private float _farPlaneDistance = 15000.0f;
+		private Matrix _view;
+		private Matrix _projection;
 
+        
         /// <summary>
         /// Position of object being chased.
         /// </summary>
         public Vector3 ChasePosition
         {
-            get { return chasePosition; }
-            set { chasePosition = value; }
-        }
-        private Vector3 chasePosition;
+            get { return _chasePosition; }
+            set { _chasePosition = value; }
+        }        
 
         public void FollowObject(GameObject obj)
         {
-            chasePosition = obj.Position;
-            chaseDirection = obj.Orientation;
+            _chasePosition = obj.Position;
+            _chaseDirection = obj.Orientation;
         }
 
         /// <summary>
@@ -31,35 +51,28 @@ namespace NFSEngine
         /// </summary>
         public Vector3 ChaseDirection
         {
-            get { return chaseDirection; }
-            set { chaseDirection = value; }
-        }
-        private Vector3 chaseDirection = new Vector3(0, 0, -1);
+            get { return _chaseDirection; }
+            set { _chaseDirection = value; }
+        }        
 
         /// <summary>
         /// Chased object's Up vector.
         /// </summary>
         public Vector3 Up
         {
-            get { return up; }
-            set { up = value; }
+            get { return _up; }
+            set { _up = value; }
         }
-        private Vector3 up = Vector3.Up;
-
-        #endregion
-
-        #region Desired camera positioning (set when creating camera or changing view)
 
         /// <summary>
         /// Desired camera position in the chased object's coordinate system.
         /// </summary>
         public Vector3 DesiredPositionOffset
         {
-            get { return desiredPositionOffset; }
-            set { desiredPositionOffset = value; }
+            get { return _desiredPositionOffset; }
+            set { _desiredPositionOffset = value; }
         }
-        private Vector3 desiredPositionOffset = new Vector3(0, 2.0f, 2.0f);
-
+        
         /// <summary>
         /// Desired camera position in world space.
         /// </summary>
@@ -70,21 +83,19 @@ namespace NFSEngine
                 // Ensure correct value even if update has not been called this frame
                 UpdateWorldPositions();
 
-                return desiredPosition;
+                return _desiredPosition;
             }
         }
-        private Vector3 desiredPosition;
-
+		
         /// <summary>
         /// Look at point in the chased object's coordinate system.
         /// </summary>
         public Vector3 LookAtOffset
         {
-            get { return lookAtOffset; }
-            set { lookAtOffset = value; }
+            get { return _lookAtOffset; }
+            set { _lookAtOffset = value; }
         }
-        private Vector3 lookAtOffset = new Vector3(0, 2.8f, 0);
-
+		
         /// <summary>
         /// Look at point in world space.
         /// </summary>
@@ -95,73 +106,67 @@ namespace NFSEngine
                 // Ensure correct value even if update has not been called this frame
                 UpdateWorldPositions();
 
-                return lookAt;
+                return _lookAt;
             }
         }
-        private Vector3 lookAt;
-
-        #endregion
-
-        #region Camera physics (typically set when creating camera)
-
+		
         /// <summary>
         /// Physics coefficient which controls the influence of the camera's position
-        /// over the spring force. The stiffer the spring, the closer it will stay to
+        /// over the spring force. The stiffer the spring, the closer it will stay
         /// the chased object.
         /// </summary>
         public float Stiffness
         {
-            get { return stiffness; }
-            set { stiffness = value; }
+            get { return _stiffness; }
+            set { _stiffness = value; }
         }
-        private float stiffness = 10400.0f;
-
+		
+		/// <summary>
+		/// Controls how hard the camera tries to keep up with the chased object 
+		/// </summary>
+        public float ZStiffness
+        {
+            get { return _zstiffness; }
+            set { _zstiffness = value; }
+        }
+		
         /// <summary>
         /// Physics coefficient which approximates internal friction of the spring.
         /// Sufficient damping will prevent the spring from oscillating infinitely.
         /// </summary>
         public float Damping
         {
-            get { return damping; }
-            set { damping = value; }
+            get { return _damping; }
+            set { _damping = value; }
         }
-        private float damping = 800.0f;
-
+		
         /// <summary>
         /// Mass of the camera body. Heaver objects require stiffer springs with less
         /// damping to move at the same rate as lighter objects.
         /// </summary>
         public float Mass
         {
-            get { return mass; }
-            set { mass = value; }
+            get { return _mass; }
+            set { _mass = value; }
         }
-        private float mass = 50.0f;
-
-        #endregion
-
-        #region Current camera properties (updated by camera physics)
+		
 
         /// <summary>
         /// Position of camera in world space.
         /// </summary>
         public Vector3 Position
         {
-            get { return position; }
+            get { return _position; }
         }
-        private Vector3 position;
-
+		
         /// <summary>
         /// Velocity of camera.
         /// </summary>
         public Vector3 Velocity
         {
-            get { return velocity; }
+            get { return _velocity; }
         }
-        private Vector3 velocity;
-
-        #endregion
-
+		
 
         #region Perspective properties
 
@@ -170,67 +175,56 @@ namespace NFSEngine
         /// </summary>
         public float AspectRatio
         {
-            get { return aspectRatio; }
-            set { aspectRatio = value; }
+            get { return _aspectRatio; }
+            set { _aspectRatio = value; }
         }
-        private float aspectRatio = 4.0f / 3.0f;
-
+		
         /// <summary>
         /// Perspective field of view.
         /// </summary>
         public float FieldOfView
         {
-            get { return fieldOfView; }
-            set { fieldOfView = value; }
+            get { return _fieldOfView; }
+            set { _fieldOfView = value; }
         }
-        private float fieldOfView = MathHelper.ToRadians(45.0f);
-
+		
         /// <summary>
         /// Distance to the near clipping plane.
         /// </summary>
         public float NearPlaneDistance
         {
-            get { return nearPlaneDistance; }
-            set { nearPlaneDistance = value; }
+            get { return _nearPlaneDistance; }
+            set { _nearPlaneDistance = value; }
         }
-        private float nearPlaneDistance = 1.0f;
-
+		
         /// <summary>
         /// Distance to the far clipping plane.
         /// </summary>
         public float FarPlaneDistance
         {
-            get { return farPlaneDistance; }
-            set { farPlaneDistance = value; }
+            get { return _farPlaneDistance; }
+            set { _farPlaneDistance = value; }
         }
-        private float farPlaneDistance = 10000.0f;
-
+		
         #endregion
 
-        #region Matrix properties
 
         /// <summary>
         /// View transform matrix.
         /// </summary>
         public Matrix View
         {
-            get { return view; }
+            get { return _view; }
         }
-        private Matrix view;
-
+		
         /// <summary>
         /// Projecton transform matrix.
         /// </summary>
         public Matrix Projection
         {
-            get { return projection; }
+            get { return _projection; }
         }
-        private Matrix projection;
 
-        #endregion
-
-
-        #region Methods
 
         /// <summary>
         /// Rebuilds object space values in world space. Invoke before publicly
@@ -238,17 +232,14 @@ namespace NFSEngine
         /// </summary>
         private void UpdateWorldPositions()
         {
-            // Construct a matrix to transform from object space to worldspace
             Matrix transform = Matrix.Identity;
             transform.Forward = ChaseDirection;
             transform.Up = Up;
             transform.Right = Vector3.Cross(Up, ChaseDirection);
 
             // Calculate desired camera properties in world space
-            desiredPosition = ChasePosition +
-                Vector3.TransformNormal(DesiredPositionOffset, transform);
-            lookAt = ChasePosition +
-                Vector3.TransformNormal(LookAtOffset, transform);
+            _desiredPosition = ChasePosition + Vector3.TransformNormal(DesiredPositionOffset, transform);
+            _lookAt = ChasePosition + Vector3.TransformNormal(LookAtOffset, transform);
         }
 
         /// <summary>
@@ -256,8 +247,8 @@ namespace NFSEngine
         /// </summary> 
         private void UpdateMatrices()
         {
-            view = Matrix.CreateLookAt(this.Position, this.LookAt, this.Up);
-            projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView,
+            _view = Matrix.CreateLookAt(this.Position, this.LookAt, this.Up);
+            _projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView,
                 AspectRatio, NearPlaneDistance, FarPlaneDistance);
         }
 
@@ -272,10 +263,10 @@ namespace NFSEngine
             UpdateWorldPositions();
 
             // Stop motion
-            velocity = Vector3.Zero;
+            _velocity = Vector3.Zero;
 
             // Force desired position
-            position = desiredPosition;
+            _position = _desiredPosition;
 
             UpdateMatrices();
         }
@@ -287,32 +278,35 @@ namespace NFSEngine
         /// </summary>
         public void Update(GameTime gameTime)
         {
-            if (gameTime == null)
-                throw new ArgumentNullException("gameTime");
-
+            
             UpdateWorldPositions();
 
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Calculate spring force
-            Vector3 stretch = position - desiredPosition;
-            Vector3 force = -stiffness * stretch - damping * velocity;
+            Vector3 stretch = (_position - _desiredPosition);
+            
+            Vector3 force = -_stiffness * stretch - _damping * _velocity;
 
             // Apply acceleration
-            Vector3 acceleration = force / mass;
-            velocity += acceleration * elapsed;
+            Vector3 acceleration = force / _mass;
+            _velocity += acceleration * elapsed;
 
             // Apply velocity
-            position += velocity * elapsed;
+            _position += _velocity * elapsed;
+
+			// Keep up with chased object
+            //if (Vector3.Distance(_chasePosition, _position) > 50)
+            //{
+            _position += _chaseDirection * elapsed * (Vector3.Distance(_chasePosition, _position)) * _zstiffness;
+            //}
 
             UpdateMatrices();
         }
 
-        #endregion
-
         public void SetPosition(Vector3 position)
         {
-            this.position = position;
+            _position = position;
         }
     }
 }

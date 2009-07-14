@@ -85,7 +85,7 @@ namespace PlatformEngine
             
         }
 
-        public override void Draw()
+        public override void Render()
         {
             
         }

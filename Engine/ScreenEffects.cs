@@ -31,10 +31,15 @@ namespace PlatformEngine
         private Color _fadeColor;
         private float _alpha;
         private FadeDirection _fadeDirection;
+        private Texture2D _fadeTexture;
+        public float FadeSpeed = 350;
 
         private ScreenEffects()
         {
             _fadeDirection = FadeDirection.None;
+
+            _fadeTexture = new Texture2D(Engine.Instance.Device, 1, 1);
+            _fadeTexture.SetData<Color>(new Color[] { Color.Black });
         }
 
         /// <summary>
@@ -59,17 +64,17 @@ namespace PlatformEngine
         {
             if (_fadeDirection == FadeDirection.FadeOut)
             {
-                _alpha += 350.0f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _alpha += FadeSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 if (_alpha >= 255)
                     CompleteFade();
             }
             else if (_fadeDirection == FadeDirection.FadeIn)
             {
-                _alpha -= 250.0f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _alpha -= FadeSpeed * 0.5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 if (_alpha <= 0)
                     CompleteFade();
             }
-            
+
         }
 
         public void Draw()
@@ -78,15 +83,14 @@ namespace PlatformEngine
             {
                 Viewport viewport = Engine.Instance.Device.Viewport;
 
-                SpriteBatch spriteBatch = new SpriteBatch(Engine.Instance.Device);
-                spriteBatch.Begin();
+                Engine.Instance.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
 
-                
-                spriteBatch.Draw(Engine.Instance.ContentManager.Load<Texture2D>("Content\\Textures\\blank"),
+
+                Engine.Instance.SpriteBatch.Draw(_fadeTexture,
                                  new Rectangle(0, 0, viewport.Width, viewport.Height),
-                                 new Color(0, 0, 0, (byte)_alpha));
+                                 new Color(255, 255, 255, (byte)_alpha));
 
-                spriteBatch.End();
+                Engine.Instance.SpriteBatch.End();
             }
         }
 
@@ -100,5 +104,15 @@ namespace PlatformEngine
         }
 
         #endregion
+
+        public static Texture2D TakeScreenshot()
+        {
+            int w = Engine.Instance.Device.PresentationParameters.BackBufferWidth;
+            int h = Engine.Instance.Device.PresentationParameters.BackBufferHeight;
+
+            ResolveTexture2D screenshot = new ResolveTexture2D(Engine.Instance.Device, w, h, 1, Engine.Instance.Device.PresentationParameters.BackBufferFormat);
+            Engine.Instance.Device.ResolveBackBuffer(screenshot);
+            return screenshot;
+        }
     }
 }

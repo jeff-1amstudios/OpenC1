@@ -5,6 +5,7 @@ using System.Text;
 using MiscUtil.IO;
 using MiscUtil.Conversion;
 using System.IO;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.Parsers
 {
@@ -18,7 +19,7 @@ namespace Carmageddon.Parsers
             Attributes = 3
         }
 
-        public byte[] Palette { get; private set; }
+        byte[] _paletteData;
 
         public PaletteFile(string filename)
         {
@@ -42,7 +43,7 @@ namespace Carmageddon.Parsers
                     case PaletteBlockType.PixelData:
                         int entryCount = reader.ReadInt32();
                         int bytesPerEntry = reader.ReadInt32();
-                        Palette = reader.ReadBytes(entryCount * bytesPerEntry);
+                        _paletteData = reader.ReadBytes(entryCount * bytesPerEntry);
 
                         break;
 
@@ -58,6 +59,23 @@ namespace Carmageddon.Parsers
             }
 
             reader.Close();
+        }
+
+        public byte[] GetRGBBytesForPixel(int pixel)
+        {
+            byte[] rgb = new byte[3];
+            rgb[0] = _paletteData[pixel * 4 + 1];
+            rgb[1] = _paletteData[pixel * 4 + 2];
+            rgb[2] = _paletteData[pixel * 4 + 3];
+            return rgb;
+        }
+        public Color GetRGBColorForPixel(int pixel)
+        {
+            byte[] rgb = new byte[3];
+            rgb[0] = _paletteData[pixel * 4 + 1];
+            rgb[1] = _paletteData[pixel * 4 + 2];
+            rgb[2] = _paletteData[pixel * 4 + 3];
+            return new Color(rgb[0], rgb[1], rgb[2], 255);
         }
     }
 }

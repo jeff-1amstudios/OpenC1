@@ -6,6 +6,8 @@ using MiscUtil.IO;
 using MiscUtil.Conversion;
 using System.IO;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
+using PlatformEngine;
 
 namespace Carmageddon.Parsers
 {
@@ -14,6 +16,26 @@ namespace Carmageddon.Parsers
         public string Name { get; set; }
         public string PixName { get; set; }
         public bool DoubleSided { get; set; }
+        public int BaseColor { get; set; }
+        Texture2D _baseTexture;
+
+        public Texture2D BaseTexture
+        {
+            get
+            {
+                if (_baseTexture == null)
+                {
+                    _baseTexture = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+                    _baseTexture.SetData<Color>(new Color[] { GameConfig.Palette.GetRGBColorForPixel(BaseColor) });
+                }
+                return _baseTexture;
+            }
+        }
+
+        public bool IsSimpMat
+        {
+            get { return PixName == null; }
+        }
     }
 
     class MatFile : BaseDataFile
@@ -55,7 +77,9 @@ namespace Carmageddon.Parsers
                         byte[] color = reader.ReadBytes(4);
                         byte[] otherColors = reader.ReadBytes(16);
                         byte[] flags = reader.ReadBytes(2);
-                        byte[] transform = reader.ReadBytes(26);
+                        byte[] transform = reader.ReadBytes(24);
+                        currentMaterial.BaseColor = reader.ReadByte();
+                        reader.ReadByte(); //unk
                         currentMaterial.DoubleSided = flags[0] == 0x10;
                         currentMaterial.Name = ReadNullTerminatedString(reader);
                         
@@ -87,5 +111,6 @@ namespace Carmageddon.Parsers
         {
             return _materials.Find(m => m.Name == name); 
         }
+
     }
 }

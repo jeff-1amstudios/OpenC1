@@ -54,7 +54,7 @@ namespace PlatformEngine
             CreateLineEffect();
             CreateShapeEffect();
             CreateCube();
-
+            
             mFont1 = Engine.Instance.ContentManager.Load<SpriteFont>("content\\fonts\\Arial_14");
             mSpriteBatch = new SpriteBatch(Engine.Instance.Device);
 
@@ -75,16 +75,20 @@ namespace PlatformEngine
             // Draw shapes
             if (sShapeList.Count > 0)
             {
+                int nbrPrimitives = 0;
                 foreach (ShapeData shapeData in sShapeList)
                 {
+
                     switch (shapeData.mType)
                     {
                         case ShapeType.Cube:
                             Engine.Instance.Device.Vertices[0].SetSource(mCubeVertexBuffer, 0, VertexPositionNormalTexture.SizeInBytes);
+                            nbrPrimitives = 12;
+                            Engine.Instance.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
                             break;
                     }
 
-                    Engine.Instance.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
+                    
                     Engine.Instance.Device.VertexDeclaration = mBasicShapeVertexDecl;
 
                     mBasicShapeEffect.DiffuseColor = shapeData.mColor.ToVector3() * 0.5f;
@@ -102,7 +106,7 @@ namespace PlatformEngine
                     foreach (EffectPass pass in mBasicShapeEffect.CurrentTechnique.Passes)
                     {
                         pass.Begin();
-                        Engine.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, 12);
+                        Engine.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, nbrPrimitives);
                         pass.End();
                     }
                     mBasicShapeEffect.End();
@@ -183,6 +187,9 @@ namespace PlatformEngine
             if (sShapeList.Count >= MAX_SHAPES)
             {
                 return;
+            }
+            if (sShapeList.Count > 4)
+            {
             }
             ShapeData shapeData = new ShapeData();
             shapeData.mType = type;
@@ -530,6 +537,7 @@ namespace PlatformEngine
             Vector3 leftNormal = new Vector3(-1.0f, 0.0f, 0.0f);
             Vector3 rightNormal = new Vector3(1.0f, 0.0f, 0.0f);
 
+
             // Front face.
             mCubeVertices[0] = new VertexPositionNormalTexture(topLeftFront, frontNormal, textureTopLeft);
             mCubeVertices[1] = new VertexPositionNormalTexture(bottomLeftFront, frontNormal, textureBottomLeft);
@@ -585,6 +593,7 @@ namespace PlatformEngine
             mCubeVertexBuffer.SetData<VertexPositionNormalTexture>(mCubeVertices);
         }
 
+        
 
         // Internal data types
         struct TextData

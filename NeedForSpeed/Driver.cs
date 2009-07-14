@@ -25,7 +25,7 @@ namespace Carmageddon
         {           
         }
 
-        public override void Draw()
+        public override void Render()
         {
             
         }

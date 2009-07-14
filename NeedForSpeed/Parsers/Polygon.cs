@@ -19,27 +19,19 @@ namespace Carmageddon.Parsers
     class Polygon
     {
         private string _textureName;
-        private PolygonType _type;
+
         List<Vector3> _vertices = new List<Vector3>();
         List<Vector2> _textureCoords = new List<Vector2>();
         private int _vertexBufferIndex;
         private Texture2D _texture;
-
-        public string PartName { get; set; }
-
-        internal PolygonType Type
-        {
-            get { return _type; }
-            set { _type = value; }
-        }
-
-        public string MaterialName {get; set; }
 
         public List<Vector3> Vertices
         {
             get { return _vertices; }
             set { _vertices = value; }
         }
+
+        public int MaterialIndex { get; set; }
 
         public List<Vector2> TextureCoords
         {
@@ -63,11 +55,6 @@ namespace Carmageddon.Parsers
         {
             get { return _vertexBufferIndex; }
             set { _vertexBufferIndex = value; }
-        }
-        
-        public Polygon(string part)
-        {
-            PartName = part;
         }
 
         public List<VertexPositionNormalTexture> GetVertices()

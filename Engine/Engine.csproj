@@ -13,16 +13,16 @@
     <XnaCrossPlatformGroupID>93f21dfc-1174-45e7-a69b-cfdb57b16ac4</XnaCrossPlatformGroupID>
     <XnaUpgrade>
     </XnaUpgrade>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <OldToolsVersion>2.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <PublishUrl>publish\</PublishUrl>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <PublishUrl>http://localhost/NFSEngine/</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
@@ -31,7 +31,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -68,9 +68,6 @@
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
@@ -78,22 +75,31 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AverageValueVector3.cs" />
     <Compile Include="ChaseCamera.cs" />
     <Compile Include="Engine.cs" />
+    <Compile Include="FixedChaseCamera.cs" />
     <Compile Include="FPSCamera.cs" />
+    <Compile Include="FPSCounter.cs" />
     <Compile Include="GameConsole.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GraphicsUtilities.cs" />
     <Compile Include="ICamera.cs" />
     <Compile Include="IDrawableObject.cs" />
-    <Compile Include="IGameMode.cs" />
+    <Compile Include="IGameScreen.cs" />
     <Compile Include="InputProvider.cs" />
     <Compile Include="IWorld.cs" />
+    <Compile Include="ParticleSystem\ParticleEmitter.cs" />
+    <Compile Include="ParticleSystem\ParticleSettings.cs" />
+    <Compile Include="ParticleSystem\ParticleSystem.cs" />
+    <Compile Include="ParticleSystem\ParticleVertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScreenEffects.cs" />
+    <Compile Include="SimpleCamera.cs" />
     <Compile Include="SkyBox.cs" />
-    <Compile Include="SoundEngine.cs" />
     <Compile Include="HeightmapTerrain.cs" />
+    <Compile Include="SoundEngine2.cs" />
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <NestedContentProject Include="Content\Content.contentproj">
