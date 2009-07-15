@@ -63,7 +63,7 @@ namespace Carmageddon.Parsers
                         _models.Add(currentModel);
                         reader.Seek(2, SeekOrigin.Current);
                         currentModel.Name = ReadNullTerminatedString(reader);
-                        Debug.WriteLine("Model: " + currentModel.Name);
+                        Debug.WriteLine("Model: " + currentModel.Name );
                         break;
 
                     case (int)BlockType.Vertices:
@@ -187,7 +187,7 @@ namespace Carmageddon.Parsers
             {
                 foreach (Polygon poly in model.Polygons)
                 {
-                    if (poly.MaterialIndex >= 0)
+                    if (poly.MaterialIndex >= 0 && model.MaterialNames != null)
                     {
                         Material m = resources.GetMaterial(model.MaterialNames[poly.MaterialIndex]);
                         if (m != null)

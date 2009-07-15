@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace Carmageddon.Parsers
 {
@@ -15,6 +17,9 @@ namespace Carmageddon.Parsers
         public string AdditionalActorFile { get; private set; }
         public string SkyboxTexture { get; private set; }
         public string DepthCueMode { get; private set; }
+        public Vector3 GridPosition;
+        public int GridDirection;
+        public Matrix WorldToMapTransform;
 
         public RaceFile(string filename) : base(filename)
         {
@@ -23,8 +28,10 @@ namespace Carmageddon.Parsers
             PixFiles = new List<string>();
                         
             string version = ReadLine();
-            string gridPosition = ReadLine();
-            int gridDirection = ReadLineAsInt();
+            
+            GridPosition = ReadLineAsVector3();
+
+            GridDirection = ReadLineAsInt();
             string initialTimerPerSkill = ReadLine();
             int lapCount = ReadLineAsInt();
             SkipLines(3);
@@ -68,6 +75,36 @@ namespace Carmageddon.Parsers
             ReadLine();
             ReadLine();
             DepthCueMode = ReadLine();
+            ReadLine(); //degree of dark
+
+            int defaultEngineNoise = ReadLineAsInt();
+            int nbrSpecialEffectsVolumes = ReadLineAsInt();
+            SkipLines(12 + ((nbrSpecialEffectsVolumes - 1) * 16)); //first line is DEFAULT WATER (12 lines)
+
+            SkipLines(4); //reflective windscreen stuff
+
+            string mapPixName = ReadLine();
+            Debug.Assert(mapPixName.EndsWith(".PIX"));
+            WorldToMapTransform = new Matrix();
+            Vector3 matrixLine = ReadLineAsVector3(false);
+            WorldToMapTransform.M11 = matrixLine.X;
+            WorldToMapTransform.M12 = matrixLine.Y;
+            WorldToMapTransform.M13 = matrixLine.Z;
+            matrixLine = ReadLineAsVector3(false);
+            WorldToMapTransform.M21 = matrixLine.X;
+            WorldToMapTransform.M22 = matrixLine.Y;
+            WorldToMapTransform.M23 = matrixLine.Z;
+            matrixLine = ReadLineAsVector3(false);
+            WorldToMapTransform.M31 = matrixLine.X;
+            WorldToMapTransform.M32 = matrixLine.Y;
+            WorldToMapTransform.M33 = matrixLine.Z;
+            matrixLine = ReadLineAsVector3(false);
+            WorldToMapTransform.M41 = matrixLine.X;
+            WorldToMapTransform.M42 = matrixLine.Y;
+            WorldToMapTransform.M43 = matrixLine.Z;
+            WorldToMapTransform.M44 = 1;
+
+            //GridPosition = Vector3.Transform(GridPosition, WorldToMapTransform);
 
             CloseFile();
         }

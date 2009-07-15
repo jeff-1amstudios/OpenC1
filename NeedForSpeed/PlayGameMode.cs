@@ -23,15 +23,15 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
 
-            //_car = new Car(@"C:\Games\carma1\data\cars\blkeagle.txt");
+            _car = new Car(@"C:\Games\carma1\data\cars\blkeagle.txt");
 
-            _race = new Race(@"C:\Games\carma1\data\races\cityb2.TXT");
+            _race = new Race(@"C:\Games\carma1\data\races\citya1.TXT");
 
-            SimpleCamera camera = new SimpleCamera();
             Engine.Instance.Camera = new FPSCamera(Engine.Instance.Game);// camera;
 
             Engine.Instance.Player = new Player();
-            Engine.Instance.Player.Position = new Vector3(0, 20, 50);
+            Engine.Instance.Player.Position = _race.RaceFile.GridPosition;
+            Engine.Instance.Player.SetRotation(MathHelper.ToRadians(_race.RaceFile.GridDirection));
         }
 
 
@@ -45,7 +45,8 @@ namespace Carmageddon
 
         public void Draw()
         {
-            //_car.Render();
+            GameConsole.WriteLine(Engine.Instance.Camera.Position, 0);
+            _car.Render();
             _race.Render();
         }
 

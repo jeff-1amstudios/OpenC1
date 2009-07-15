@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace Carmageddon.Parsers
 {
@@ -65,6 +67,19 @@ namespace Carmageddon.Parsers
         {
             string line = ReadLine();
             return int.Parse(line);
+        }
+
+        protected Vector3 ReadLineAsVector3()
+        {
+            return ReadLineAsVector3(true);
+        }
+
+        protected Vector3 ReadLineAsVector3(bool scale)
+        {
+            string line = ReadLine();
+            string[] tokens = line.Split(new char[] {',', '\t', ' '}, StringSplitOptions.RemoveEmptyEntries);
+            Debug.Assert(tokens.Length == 3);
+            return new Vector3(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2])) * GameVariables.Scale;
         }
     }
 }

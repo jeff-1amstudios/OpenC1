@@ -25,6 +25,7 @@ namespace Carmageddon.Parsers
         internal List<Actor> Children { get; set; }
         public int Level { get; set; }
         public BoundingBox BoundingBox;
+        public byte[] Flags;
 
         public Actor()
         {
@@ -69,7 +70,6 @@ namespace Carmageddon.Parsers
             Actor currentActor = null;
             Stack<Actor> actorStack = new Stack<Actor>();
             List<Actor> flatActorList = new List<Actor>();
-            
 
             while (true)
             {
@@ -96,7 +96,8 @@ namespace Carmageddon.Parsers
                         flatActorList.Add(currentActor);
                         actorStack.Push(currentActor);
 
-                        reader.Seek(2, SeekOrigin.Current);
+                        currentActor.Flags = reader.ReadBytes(2);
+                        //reader.Seek(2, SeekOrigin.Current);
                         currentActor.Name = ReadNullTerminatedString(reader);
                         break;
 
@@ -136,6 +137,7 @@ namespace Carmageddon.Parsers
 
                     case ActorBlockType.ModelName:
                         string modelName = ReadNullTerminatedString(reader);
+                        currentActor.ModelName = modelName;
                         currentActor.Model = modelFile.GetModel(modelName);
                         //Debug.WriteLine("ModelName: " + modelName);
                         break;
@@ -158,41 +160,56 @@ namespace Carmageddon.Parsers
                     break;
             }
             reader.Close();
-
-            // Pre-calculate recursive transformations
-            foreach (Actor actor in _actors)
-                ResolveTransformations(actor, Matrix.Identity, 0);
-
-            Matrix scale = Matrix.CreateScale(GameVariables.Scale);
-            foreach (Actor a in flatActorList)
-                a.Matrix = a.Matrix * scale;
+            
+            ResolveTransformations();
         }
 
-        private void ResolveTransformations(Actor actor, Matrix world, int level)
-        {
-            actor.Level = level;
-            //Debug.WriteLine(level + " - " + actor.Name);
-            actor.Matrix = world * actor.Matrix;
-            foreach (Actor child in actor.Children)
-                ResolveTransformations(child, actor.Matrix, level + 1);
+        /// <summary>
+        /// Pre-calculate recursive transformations and apply scaling
+        /// </summary>
+        private void ResolveTransformations()
+        {            
+            Action<Matrix, Actor> resolver = null;
+            resolver = (world, actor) =>
+            {
+                Debug.WriteLine(actor.Name + ", " + actor.ModelName + ", " + actor.Flags[0] + ":" + actor.Flags[1]);
+                actor.Matrix = world * actor.Matrix;
+                foreach (Actor child in actor.Children)
+                    resolver(actor.Matrix, child);
+            };
+            resolver(Matrix.Identity, _actors[0]);
+
+            Matrix scale = Matrix.CreateScale(GameVariables.Scale);
+            Action<Actor> scaler = null;
+            scaler = (actor) =>
+            {
+                actor.Matrix *= scale;
+                foreach (Actor child in actor.Children)
+                    scaler(child);
+            };
+            scaler(_actors[0]);
         }
 
 
         public void ResolveMaterials(ResourceCache resources)
         {
-            foreach (Actor a in _actors)
+            Action<Actor> resolver = null;
+            resolver = (actor) =>
             {
-                if (a.MaterialName != null)
+                if (actor.MaterialName != null)
                 {
-                    Material material = resources.GetMaterial(a.MaterialName);
+                    Material material = resources.GetMaterial(actor.MaterialName);
                     if (material != null)
                     {
                         PixMap pixMap = resources.GetPixelMap(material.PixName);
                         if (pixMap != null)
-                            a.Texture = pixMap.Texture;
+                            actor.Texture = pixMap.Texture;
                     }
                 }
-            }
+                foreach (Actor child in actor.Children)
+                    resolver(child);
+            };
+            resolver(_actors[0]);
         }
 
 
@@ -210,7 +227,7 @@ namespace Carmageddon.Parsers
 
             models.DoneRender();
 
-            GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered, 0);
+            //GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered, 0);
         }
 
         private void RenderChildren(BoundingFrustum frustum, Actor actor, BasicEffect effect)
