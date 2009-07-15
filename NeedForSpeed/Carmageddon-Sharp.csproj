@@ -86,7 +86,7 @@
     <Compile Include="EndianBinaryReader.cs" />
     <Compile Include="EndianBitConverter.cs" />
     <Compile Include="Endianness.cs" />
-    <Compile Include="GameConfig.cs" />
+    <Compile Include="GameVariables.cs" />
     <Compile Include="Parsers\ActFile.cs" />
     <Compile Include="Parsers\BaseDataFile.cs" />
     <Compile Include="Parsers\BaseTextFile.cs" />

@@ -26,7 +26,7 @@ namespace Carmageddon.Parsers
                 if (_baseTexture == null)
                 {
                     _baseTexture = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
-                    _baseTexture.SetData<Color>(new Color[] { GameConfig.Palette.GetRGBColorForPixel(BaseColor) });
+                    _baseTexture.SetData<Color>(new Color[] { GameVariables.Palette.GetRGBColorForPixel(BaseColor) });
                 }
                 return _baseTexture;
             }

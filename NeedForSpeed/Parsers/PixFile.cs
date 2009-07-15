@@ -110,7 +110,7 @@ namespace Carmageddon.Parsers
                     }
                     else
                     {
-                        byte[] rgb = GameConfig.Palette.GetRGBBytesForPixel(pixel);
+                        byte[] rgb = GameVariables.Palette.GetRGBBytesForPixel(pixel);
                         imgData[curPosition] = rgb[2];
                         imgData[curPosition + 1] = rgb[1];
                         imgData[curPosition + 2] = rgb[0];

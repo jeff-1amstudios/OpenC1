@@ -44,7 +44,7 @@ namespace PlatformEngine
         
         public const float DEFAULT_FOVX = 60.0f;
         public const float DEFAULT_ROTATION_SPEED = 0.25f;
-        public const float DEFAULT_ZFAR = 10000.0f;
+        public const float DEFAULT_ZFAR = 3000.0f;
         public const float DEFAULT_ZNEAR = 0.1f;
 
         private const float GRAVITY = -9.8f;

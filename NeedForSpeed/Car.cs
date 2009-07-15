@@ -49,7 +49,7 @@ namespace Carmageddon
             Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Clamp;
             Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Clamp;
 
-            _actors.Render(Matrix.CreateScale(30), _models);
+            _actors.Render(_models);
 
             Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
             Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;

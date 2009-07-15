@@ -31,11 +31,9 @@ namespace Carmageddon.Parsers
 
     class DatFile : BaseDataFile
     {
-        
         private VertexBuffer _vertexBuffer;
+        private BasicEffect _effect;
         
-        int _currentPolygonIndex;
-
         List<Model> _models = new List<Model>();
 
         public DatFile(string filename)
@@ -110,6 +108,7 @@ namespace Carmageddon.Parsers
             for (int i = 0; i < vertexCount; i++)
             {
                 Vector3 vertex = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                //vertex *= GameConfig.Scale;
                 vertices.Add(vertex);
             }
         }
@@ -146,7 +145,7 @@ namespace Carmageddon.Parsers
             {
                 int matIndex = reader.ReadInt16() - 1;   //-1 because it is 1-based
                 if (matIndex > -1)
-                    currentModel.Polygons[_currentPolygonIndex + i].MaterialIndex = matIndex;
+                    currentModel.Polygons[i].MaterialIndex = matIndex;
             }
         }
 
@@ -225,47 +224,31 @@ namespace Carmageddon.Parsers
             device.RenderState.FillMode = FillMode.Solid;
             device.VertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionNormalTexture.VertexElements);
 
-            BasicEffect effect = new BasicEffect(Engine.Instance.Device, null);
-            //effect.LightingEnabled = true;
-            //effect.EnableDefaultLighting();
-            
-
-            effect.FogEnabled = true;
-            effect.FogColor = new Vector3(245, 245, 245);
-            effect.FogStart = 1200;
-            effect.FogEnd = 2500;
-            //effect.AmbientLightColor = new Vector3(0.09f, 0.09f, 0.1f);
-            //effect.DirectionalLight0.Direction = new Vector3(1.0f, -1.0f, -1.0f);
-            effect.View = Engine.Instance.Camera.View;
-            effect.Projection = Engine.Instance.Camera.Projection;
-            
-            effect.TextureEnabled = true;
-            effect.Begin(SaveStateMode.SaveState);
-            return effect;
-        }
-
-        public void DoneRender(BasicEffect effect)
-        {
-            effect.End();
-        }
-
-        public void Render(Matrix world, BasicEffect effect, Actor actor)
-        {
-            GraphicsDevice device = Engine.Instance.Device;
-            effect.World = world;
-            effect.CurrentTechnique.Passes[0].Begin();
-
-            foreach (Polygon poly in actor.Model.Polygons)
+            if (_effect == null)
             {
-                device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
-                if (poly.Texture != null)
-                    device.Textures[0] = poly.Texture;
-                else
-                    device.Textures[0] = actor.Texture;
-
-                Engine.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, poly.VertexBufferIndex, poly.VertexCount / 3);
+                _effect = new BasicEffect(Engine.Instance.Device, null);
+                _effect.FogEnabled = true;
+                _effect.FogColor = new Vector3(245, 245, 245);
+                _effect.FogStart = 1200;
+                _effect.FogEnd = 2500;
+                //effect.LightingEnabled = true;
+                //effect.EnableDefaultLighting();
+                //effect.AmbientLightColor = new Vector3(0.09f, 0.09f, 0.1f);
+                //effect.DirectionalLight0.Direction = new Vector3(1.0f, -1.0f, -1.0f);
+                _effect.TextureEnabled = true;
             }
-            effect.CurrentTechnique.Passes[0].End();
+
+            _effect.View = Engine.Instance.Camera.View;
+            _effect.Projection = Engine.Instance.Camera.Projection;
+
+            _effect.Begin(SaveStateMode.None);
+            return _effect;
+        }
+
+
+        public void DoneRender()
+        {
+            _effect.End();
         }
 
         public Model GetModel(string name)

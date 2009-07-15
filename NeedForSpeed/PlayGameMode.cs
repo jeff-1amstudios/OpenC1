@@ -21,11 +21,11 @@ namespace Carmageddon
             //Engine.Instance.Device.SamplerStates[0].MagFilter = TextureFilter.Anisotropic;
             //Engine.Instance.Device.SamplerStates[0].MinFilter = TextureFilter.Anisotropic;
 
-            GameConfig.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
+            GameVariables.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
 
             //_car = new Car(@"C:\Games\carma1\data\cars\blkeagle.txt");
 
-            _race = new Race(@"C:\Games\carma1\data\races\cityb1.TXT");
+            _race = new Race(@"C:\Games\carma1\data\races\cityb2.TXT");
 
             SimpleCamera camera = new SimpleCamera();
             Engine.Instance.Camera = new FPSCamera(Engine.Instance.Game);// camera;
@@ -41,11 +41,6 @@ namespace Carmageddon
         {
             Engine.Instance.Camera.Update(gameTime);
             Engine.Instance.Player.Update(gameTime);
-
-            if (Engine.Instance.Input.WasPressed(Keys.P))
-                GameConfig.Model++;
-            else if (Engine.Instance.Input.WasPressed(Keys.O))
-                if (GameConfig.Model < 10) GameConfig.Model = -1; else GameConfig.Model--;
         }
 
         public void Draw()

@@ -8,6 +8,8 @@ using System.IO;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PlatformEngine;
+using NFSEngine;
 
 namespace Carmageddon.Parsers
 {
@@ -21,11 +23,24 @@ namespace Carmageddon.Parsers
         public Texture2D Texture { get; set; }
         public Matrix Matrix { get; set; }
         internal List<Actor> Children { get; set; }
+        public int Level { get; set; }
+        public BoundingBox BoundingBox;
 
         public Actor()
         {
             Children = new List<Actor>();
         }
+
+        public bool IsTopLevel
+        {
+            get { return Name.Contains(" ") && Level > 0; }
+        }
+    }
+
+    class Hierarchy
+    {
+        internal List<Actor> Children { get; set; }
+
     }
 
     class ActFile : BaseDataFile
@@ -45,14 +60,16 @@ namespace Carmageddon.Parsers
 
 
         List<Actor> _actors = new List<Actor>();
-
+        bool _cullingDisabled = false;
+        
         public ActFile(string filename, DatFile modelFile)
         {
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
 
             Actor currentActor = null;
-            Stack<Actor> _actorStack = new Stack<Actor>();
-            List<Actor> actorsTemp = new List<Actor>();
+            Stack<Actor> actorStack = new Stack<Actor>();
+            List<Actor> flatActorList = new List<Actor>();
+            
 
             while (true)
             {
@@ -66,18 +83,21 @@ namespace Carmageddon.Parsers
 
                         currentActor = new Actor();
 
-                        if (_actorStack.Count > 0)
-                            _actorStack.Peek().Children.Add(currentActor);
+                        if (actorStack.Count == 0)
+                        {
+                            _actors.Add(currentActor);
+                        }
                         else
                         {
-                            actorsTemp.Add(currentActor);
+                            actorStack.Peek().Children.Add(currentActor);
+                            currentActor.Level = actorStack.Peek().Level + 1;
                         }
 
-                        _actorStack.Push(currentActor);
+                        flatActorList.Add(currentActor);
+                        actorStack.Push(currentActor);
 
                         reader.Seek(2, SeekOrigin.Current);
                         currentActor.Name = ReadNullTerminatedString(reader);
-                        //Debug.WriteLine("Name: " + currentActor.Name);
                         break;
 
                     case ActorBlockType.TransformMatrix:
@@ -86,32 +106,28 @@ namespace Carmageddon.Parsers
                         matrix.M11 = reader.ReadSingle();
                         matrix.M12 = reader.ReadSingle();
                         matrix.M13 = reader.ReadSingle();
-
                         matrix.M21 = reader.ReadSingle();
                         matrix.M22 = reader.ReadSingle();
                         matrix.M23 = reader.ReadSingle();
-
                         matrix.M31 = reader.ReadSingle();
                         matrix.M32 = reader.ReadSingle();
                         matrix.M33 = reader.ReadSingle();
-
                         matrix.M41 = reader.ReadSingle();
                         matrix.M42 = reader.ReadSingle();
                         matrix.M43 = reader.ReadSingle();
                         matrix.M44 = 1;
-                        
+
                         currentActor.Matrix = matrix;
-                        //Debug.WriteLine(matrix);
 
                         break;
 
                     case ActorBlockType.HierarchyStart:
-                        Debug.WriteLine("Hierarchy start");
+                        //Debug.WriteLine("Hierarchy start");
                         break;
 
                     case ActorBlockType.ActorEnd:
-                        //Debug.WriteLine("Actor end");
-                        _actorStack.Pop();
+                        actorStack.Pop();
+                        //Debug.WriteLine("Hierarchy end");
                         break;
 
                     case ActorBlockType.MaterialNames:
@@ -119,9 +135,16 @@ namespace Carmageddon.Parsers
                         break;
 
                     case ActorBlockType.ModelName:
-                        currentActor.ModelName = ReadNullTerminatedString(reader);
-                        currentActor.Model = modelFile.GetModel(currentActor.ModelName);
-                        Debug.WriteLine("ModelName: " + currentActor.ModelName);
+                        string modelName = ReadNullTerminatedString(reader);
+                        currentActor.Model = modelFile.GetModel(modelName);
+                        //Debug.WriteLine("ModelName: " + modelName);
+                        break;
+
+                    case ActorBlockType.BoundingBox:
+                        currentActor.BoundingBox = new BoundingBox(
+                            new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) * GameVariables.Scale,
+                            new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) * GameVariables.Scale
+                            );
                         break;
 
                     case ActorBlockType.Null:
@@ -136,20 +159,22 @@ namespace Carmageddon.Parsers
             }
             reader.Close();
 
-            // Flatten out the tree structure for performance
-            foreach (Actor a in actorsTemp)
-                ResolveHierarchy(a, Matrix.Identity);
+            // Pre-calculate recursive transformations
+            foreach (Actor actor in _actors)
+                ResolveTransformations(actor, Matrix.Identity, 0);
 
-            foreach (Actor a in _actors)
-                a.Children = null;
+            Matrix scale = Matrix.CreateScale(GameVariables.Scale);
+            foreach (Actor a in flatActorList)
+                a.Matrix = a.Matrix * scale;
         }
 
-        private void ResolveHierarchy(Actor a, Matrix world)
+        private void ResolveTransformations(Actor actor, Matrix world, int level)
         {
-            a.Matrix = world * a.Matrix;
-            _actors.Add(a);
-            foreach (Actor child in a.Children)
-                ResolveHierarchy(child, a.Matrix);
+            actor.Level = level;
+            //Debug.WriteLine(level + " - " + actor.Name);
+            actor.Matrix = world * actor.Matrix;
+            foreach (Actor child in actor.Children)
+                ResolveTransformations(child, actor.Matrix, level + 1);
         }
 
 
@@ -171,24 +196,73 @@ namespace Carmageddon.Parsers
         }
 
 
-        public void Render(Matrix world, DatFile models)
+        public void Render(DatFile models)
         {
+            GameVariables.NbrSectionsRendered = GameVariables.NbrSectionsChecked = 0;
+
             BasicEffect effect = models.SetupRender();
-            if (GameConfig.Model > -1)
+            BoundingFrustum frustum = new BoundingFrustum(Engine.Instance.Camera.View * Engine.Instance.Camera.Projection);
+            
+            for (int i = 0; i < _actors.Count; i++)
             {
-                while (_actors[GameConfig.Model].Model == null)
-                    GameConfig.Model++;
-                models.Render(_actors[GameConfig.Model].Matrix * world, effect, _actors[GameConfig.Model]);
-                NFSEngine.GameConsole.WriteLine(_actors[GameConfig.Model].ModelName, 0);
+                RenderChildren(frustum, _actors[i], effect);
             }
-            else
+
+            models.DoneRender();
+
+            GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered, 0);
+        }
+
+        private void RenderChildren(BoundingFrustum frustum, Actor actor, BasicEffect effect)
+        {
+            bool intersects;
+            
+            intersects = actor.BoundingBox.Max.X == 0;
+            if (!intersects)
             {
-                foreach (Actor a in _actors)
+                frustum.Intersects(ref actor.BoundingBox, out intersects);
+                GameVariables.NbrSectionsChecked++;
+            }
+            
+            if (intersects)
+            {
+                //Vector3 center = (_topLevelActors[i].BoundingBox.Max + _topLevelActors[i].BoundingBox.Min) / 2;
+                //Vector3 size = _topLevelActors[i].BoundingBox.Max - _topLevelActors[i].BoundingBox.Min;
+                //Engine.Instance.GraphicsUtils.AddWireframeCube(Matrix.CreateScale(size) * Matrix.CreateTranslation(center), Color.Yellow);
+                
+                if (actor.Model != null)
                 {
-                    if (a.Model != null) models.Render(a.Matrix * world, effect, a);
+                    Render(effect, actor);
+                    GameVariables.NbrSectionsRendered++;
                 }
+                foreach (Actor child in actor.Children)
+                    RenderChildren(frustum, child, effect);
+            }            
+        }
+                
+
+        public void Render(BasicEffect effect, Actor actor)
+        {
+            GraphicsDevice device = Engine.Instance.Device;
+            effect.World = actor.Matrix;
+            effect.CurrentTechnique.Passes[0].Begin();
+
+            foreach (Polygon poly in actor.Model.Polygons)
+            {
+                if (_cullingDisabled != poly.DoubleSided)
+                {
+                    device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
+                    _cullingDisabled = poly.DoubleSided;
+                }
+                
+                if (poly.Texture != null)
+                    device.Textures[0] = poly.Texture;
+                else
+                    device.Textures[0] = actor.Texture;
+
+                Engine.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, poly.VertexBufferIndex, poly.VertexCount / 3);
             }
-            models.DoneRender(effect);
+            effect.CurrentTechnique.Passes[0].End();
         }
     }
 }

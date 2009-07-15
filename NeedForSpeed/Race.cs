@@ -48,7 +48,7 @@ namespace Carmageddon
 
         public void Render()
         {
-            _actors.Render(Matrix.CreateScale(30), _models);
+            _actors.Render(_models);
         }
     }
 }
