@@ -4,16 +4,19 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using PlatformEngine;
 
-namespace Carmageddon.Parsers.Track
+
+namespace Carmageddon.Track
 {
     class SkyboxGenerator
     {
         Texture2D _horizon;
         Texture2D _topTexture, _bottomTexture;
+        Texture2D _sideTexture;
 
         public SkyboxGenerator(Texture2D horizonTexture)
         {
             _horizon = horizonTexture;
+
             Color[] pixels = new Color[_horizon.Width * _horizon.Height];
             _horizon.GetData<Color>(pixels);
 
@@ -22,27 +25,31 @@ namespace Carmageddon.Parsers.Track
 
             _bottomTexture = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
             _bottomTexture.SetData<Color>(new Color[] { pixels[pixels.Length - 1] }); //bottom right pixel
-        }
 
-        public Texture2D Top
-        {
-            get
+            _sideTexture = new Texture2D(Engine.Instance.Device, _horizon.Width, _horizon.Height, 1, TextureUsage.None, SurfaceFormat.Color);
+            int ptr = 0;
+            Color[] flippedPixels = new Color[pixels.Length];
+            for (int h = 0; h < _horizon.Height; h++)
             {
-                return _topTexture;
+                for (int w = 0; w < _horizon.Width; w++)
+                {
+                    flippedPixels[ptr] = pixels[h * _horizon.Width + (_horizon.Width - w) - 1];
+                    ptr++;
+                }
             }
+            _sideTexture.SetData<Color>(flippedPixels);
         }
 
-        public Texture2D Bottom
+        public SkyBox Generate()
         {
-            get
-            {
-                return _bottomTexture;
-            }
-        }
-
-        public Texture2D Side
-        {
-            get { return _horizon; }
+            SkyBox skyBox = new SkyBox();
+            skyBox.Textures[0] = _horizon;
+            skyBox.Textures[1] = _horizon;
+            skyBox.Textures[2] = _bottomTexture;
+            skyBox.Textures[3] = _topTexture;
+            skyBox.Textures[4] = _sideTexture;
+            skyBox.Textures[5] = _sideTexture;
+            return skyBox;
         }
     }
 }

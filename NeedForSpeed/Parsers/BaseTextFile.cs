@@ -29,7 +29,7 @@ namespace Carmageddon.Parsers
             while (true)
             {
                 string line = _file.ReadLine();
-                if (!line.StartsWith("//")) count++; //ignore comment lines
+                if (!line.StartsWith("//") && line != "") count++; //ignore comment lines
 
                 if (count == skip)
                     break;

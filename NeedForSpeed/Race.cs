@@ -14,6 +14,7 @@ namespace Carmageddon
         DatFile _models;
         ActFile _actors;
         ResourceCache _resourceCache;
+        public Texture2D HorizonTexture;
 
         public RaceFile RaceFile { get; private set; }
 
@@ -41,6 +42,9 @@ namespace Carmageddon
             _actors = new ActFile(@"C:\Games\carma1\data\actors\" + RaceFile.ActorFile, _models);
             _actors.ResolveMaterials(_resourceCache);
             _models.Resolve(_resourceCache);
+
+            PixFile horizonPix = new PixFile(@"C:\Games\carma1\data\pixelmap\" + RaceFile.SkyboxTexture);
+            HorizonTexture = horizonPix.PixMaps[0].Texture;
         }
 
         public void Update(GameTime gameTime)

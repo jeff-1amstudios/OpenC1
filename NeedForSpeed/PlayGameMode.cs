@@ -5,9 +5,9 @@ using PlatformEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
-using Carmageddon.Parsers.Track;
 using Microsoft.Xna.Framework.Input;
 using NFSEngine;
+using Carmageddon.Track;
 
 namespace Carmageddon
 {
@@ -15,6 +15,7 @@ namespace Carmageddon
     {
         Car _car;
         Race _race;
+        SkyBox _skybox;
 
         public PlayGameMode()
         {
@@ -27,6 +28,9 @@ namespace Carmageddon
 
             _race = new Race(@"C:\Games\carma1\data\races\citya1.TXT");
 
+            SkyboxGenerator gen = new SkyboxGenerator(_race.HorizonTexture);
+            _skybox = gen.Generate();
+            
             Engine.Instance.Camera = new FPSCamera(Engine.Instance.Game);// camera;
 
             Engine.Instance.Player = new Player();
@@ -39,6 +43,7 @@ namespace Carmageddon
 
         public void Update(GameTime gameTime)
         {
+            _skybox.Update(gameTime);
             Engine.Instance.Camera.Update(gameTime);
             Engine.Instance.Player.Update(gameTime);
         }
@@ -46,8 +51,10 @@ namespace Carmageddon
         public void Draw()
         {
             GameConsole.WriteLine(Engine.Instance.Camera.Position, 0);
-            _car.Render();
+            _skybox.Draw();
+            
             _race.Render();
+            _car.Render();
         }
 
         #endregion

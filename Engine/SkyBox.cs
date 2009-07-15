@@ -81,10 +81,10 @@ namespace PlatformEngine
 
             VertexPositionTexture[] data = new VertexPositionTexture[4 * 6];
 
-            float y = 0.3f;
+            float y = 1f;
 
             #region Define Vertexes
-            Vector3 vExtents = new Vector3(8000, 2000, 8000);
+            Vector3 vExtents = new Vector3(2000, 2000, 2000);
             //back
             data[0].Position = new Vector3(vExtents.X, -vExtents.Y * y, -vExtents.Z);
             data[0].TextureCoordinate.X = 1.0f; data[0].TextureCoordinate.Y = 1.0f;
