@@ -228,13 +228,20 @@ namespace Carmageddon.Parsers
             {
                 _effect = new BasicEffect(Engine.Instance.Device, null);
                 _effect.FogEnabled = true;
-                _effect.FogColor = new Vector3(245, 245, 245);
-                _effect.FogStart = 1200;
-                _effect.FogEnd = 2500;
+                if (GameVariables.DepthCueMode == "dark")
+                    _effect.FogColor = new Vector3(0, 0, 0);
+                else if (GameVariables.DepthCueMode == "fog" || GameVariables.DepthCueMode == "none")
+                    _effect.FogColor = new Vector3(245, 245, 245);
+                else
+                {
+                    Debug.Assert(false);
+                }
+                _effect.FogStart = GameVariables.DrawDistance - 1000;
+                _effect.FogEnd = GameVariables.DrawDistance;
                 //effect.LightingEnabled = true;
                 //effect.EnableDefaultLighting();
                 //effect.AmbientLightColor = new Vector3(0.09f, 0.09f, 0.1f);
-                //effect.DirectionalLight0.Direction = new Vector3(1.0f, -1.0f, -1.0f);
+                //effect.DirectionalLight0.Direction = new Vector3(1.0f, -1.0f, -1.0f); 
                 _effect.TextureEnabled = true;
             }
 

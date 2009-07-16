@@ -42,9 +42,13 @@ namespace Carmageddon
             _actors = new ActFile(@"C:\Games\carma1\data\actors\" + RaceFile.ActorFile, _models);
             _actors.ResolveMaterials(_resourceCache);
             _models.Resolve(_resourceCache);
-
-            PixFile horizonPix = new PixFile(@"C:\Games\carma1\data\pixelmap\" + RaceFile.SkyboxTexture);
-            HorizonTexture = horizonPix.PixMaps[0].Texture;
+            
+            if (RaceFile.SkyboxTexture != "none")
+            {
+                PixFile horizonPix = new PixFile(@"C:\Games\carma1\data\pixelmap\" + RaceFile.SkyboxTexture);
+                HorizonTexture = horizonPix.PixMaps[0].Texture;
+            }
+            GameVariables.DepthCueMode = RaceFile.DepthCueMode;
         }
 
         public void Update(GameTime gameTime)

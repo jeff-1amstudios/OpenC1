@@ -9,46 +9,38 @@ namespace Carmageddon.Track
 {
     class SkyboxGenerator
     {
-        Texture2D _horizon;
-        Texture2D _topTexture, _bottomTexture;
-        Texture2D _sideTexture;
-
-        public SkyboxGenerator(Texture2D horizonTexture)
+        public static SkyBox Generate(Texture2D horizon, float repetionsX)
         {
-            _horizon = horizonTexture;
+            
+            Color[] pixels = new Color[horizon.Width * horizon.Height];
+            horizon.GetData<Color>(pixels);
 
-            Color[] pixels = new Color[_horizon.Width * _horizon.Height];
-            _horizon.GetData<Color>(pixels);
+            Texture2D topTexture = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+            topTexture.SetData<Color>(new Color[] { pixels[0] });  //top left pixel
 
-            _topTexture = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
-            _topTexture.SetData<Color>(new Color[] { pixels[0] });  //top left pixel
+            Texture2D bottomTexture = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+            bottomTexture.SetData<Color>(new Color[] { pixels[pixels.Length - 1] }); //bottom right pixel
 
-            _bottomTexture = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
-            _bottomTexture.SetData<Color>(new Color[] { pixels[pixels.Length - 1] }); //bottom right pixel
-
-            _sideTexture = new Texture2D(Engine.Instance.Device, _horizon.Width, _horizon.Height, 1, TextureUsage.None, SurfaceFormat.Color);
+            Texture2D sideTexture = new Texture2D(Engine.Instance.Device, horizon.Width, horizon.Height, 1, TextureUsage.None, SurfaceFormat.Color);
             int ptr = 0;
             Color[] flippedPixels = new Color[pixels.Length];
-            for (int h = 0; h < _horizon.Height; h++)
+            for (int h = 0; h < horizon.Height; h++)
             {
-                for (int w = 0; w < _horizon.Width; w++)
+                for (int w = 0; w < horizon.Width; w++)
                 {
-                    flippedPixels[ptr] = pixels[h * _horizon.Width + (_horizon.Width - w) - 1];
+                    flippedPixels[ptr] = pixels[h * horizon.Width + (horizon.Width - w) - 1];
                     ptr++;
                 }
             }
-            _sideTexture.SetData<Color>(flippedPixels);
-        }
+            sideTexture.SetData<Color>(flippedPixels);
 
-        public SkyBox Generate()
-        {
-            SkyBox skyBox = new SkyBox();
-            skyBox.Textures[0] = _horizon;
-            skyBox.Textures[1] = _horizon;
-            skyBox.Textures[2] = _bottomTexture;
-            skyBox.Textures[3] = _topTexture;
-            skyBox.Textures[4] = _sideTexture;
-            skyBox.Textures[5] = _sideTexture;
+            SkyBox skyBox = new SkyBox(repetionsX);
+            skyBox.Textures[0] = horizon;
+            skyBox.Textures[1] = horizon;
+            skyBox.Textures[2] = bottomTexture;
+            skyBox.Textures[3] = topTexture;
+            skyBox.Textures[4] = sideTexture;
+            skyBox.Textures[5] = sideTexture;
             return skyBox;
         }
     }

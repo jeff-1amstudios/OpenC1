@@ -9,14 +9,14 @@ using Carmageddon.Parsers;
 
 namespace Carmageddon
 {
-    class Car
+    class Vehicle
     {
 
         DatFile _models;
         ActFile _actors;
         ResourceCache _resourceCache;
 
-        public Car(string filename)
+        public Vehicle(string filename)
         {
             CarFile car = new CarFile(filename);
 

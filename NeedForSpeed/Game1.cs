@@ -30,7 +30,7 @@ namespace Carmageddon
             _graphics.PreferredBackBufferHeight = 768;
             _graphics.PreferMultiSampling = true;
             //_graphics.IsFullScreen = true;
-
+            //_graphics.SynchronizeWithVerticalRetrace = false;
 
             _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;
             _graphics.MinimumPixelShaderProfile = ShaderProfile.PS_2_0;
@@ -109,7 +109,7 @@ namespace Carmageddon
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+            _graphics.GraphicsDevice.Clear(Color.WhiteSmoke);
 
             base.Draw(gameTime);
         }

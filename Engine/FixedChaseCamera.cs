@@ -106,7 +106,7 @@ namespace NFSEngine
             float distance = 70;
             _lookAt.AddValue(new Vector3(0, 25, 0) + (-_chaseDirection * new Vector3(distance, distance, distance)));
             Vector3 avgLookAt = _lookAt.GetAveragedValue();
-            Vector3 cameraPosition = _position +avgLookAt;
+            Vector3 cameraPosition = _position + avgLookAt;
             _view = Matrix.CreateLookAt(cameraPosition, cameraPosition - avgLookAt + new Vector3(0,15,0), UpVector);
             _projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlaneDistance, FarPlaneDistance);
 

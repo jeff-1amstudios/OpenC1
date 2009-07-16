@@ -16,6 +16,7 @@ namespace Carmageddon.Parsers
         public string ActorFile { get; private set; }
         public string AdditionalActorFile { get; private set; }
         public string SkyboxTexture { get; private set; }
+        public float SkyboxPositionY, SkyboxRepetitionsX;
         public string DepthCueMode { get; private set; }
         public Vector3 GridPosition;
         public int GridDirection;
@@ -67,45 +68,47 @@ namespace Carmageddon.Parsers
             }
 
             ActorFile = ReadLine();
-            SkipLines(1); //low mem actor
+            if (version == "VERSION 6")
+            {
+                SkipLines(1); //low mem actor
+            }
             AdditionalActorFile = ReadLine();
 
-            SkyboxTexture = ReadLine();
-            int skyboxRepetitionsX = ReadLineAsInt();
+            SkyboxTexture = ReadLine().ToLower();
+            SkyboxRepetitionsX = ReadLineAsInt();
             ReadLine();
-            ReadLine();
-            DepthCueMode = ReadLine();
+            SkyboxPositionY = ReadLineAsInt() * GameVariables.Scale.Y;
+            DepthCueMode = ReadLine().ToLower();
             ReadLine(); //degree of dark
 
             int defaultEngineNoise = ReadLineAsInt();
             int nbrSpecialEffectsVolumes = ReadLineAsInt();
-            SkipLines(12 + ((nbrSpecialEffectsVolumes - 1) * 16)); //first line is DEFAULT WATER (12 lines)
+            //SkipLines(12 + ((nbrSpecialEffectsVolumes - 1) * 16)); //first line is DEFAULT WATER (12 lines)
 
-            SkipLines(4); //reflective windscreen stuff
+            //SkipLines(4); //reflective windscreen stuff
 
-            string mapPixName = ReadLine();
-            Debug.Assert(mapPixName.EndsWith(".PIX"));
-            WorldToMapTransform = new Matrix();
-            Vector3 matrixLine = ReadLineAsVector3(false);
-            WorldToMapTransform.M11 = matrixLine.X;
-            WorldToMapTransform.M12 = matrixLine.Y;
-            WorldToMapTransform.M13 = matrixLine.Z;
-            matrixLine = ReadLineAsVector3(false);
-            WorldToMapTransform.M21 = matrixLine.X;
-            WorldToMapTransform.M22 = matrixLine.Y;
-            WorldToMapTransform.M23 = matrixLine.Z;
-            matrixLine = ReadLineAsVector3(false);
-            WorldToMapTransform.M31 = matrixLine.X;
-            WorldToMapTransform.M32 = matrixLine.Y;
-            WorldToMapTransform.M33 = matrixLine.Z;
-            matrixLine = ReadLineAsVector3(false);
-            WorldToMapTransform.M41 = matrixLine.X;
-            WorldToMapTransform.M42 = matrixLine.Y;
-            WorldToMapTransform.M43 = matrixLine.Z;
-            WorldToMapTransform.M44 = 1;
+            //string mapPixName = ReadLine();
+            //Debug.Assert(mapPixName.EndsWith(".PIX"));
+            //WorldToMapTransform = new Matrix();
+            //Vector3 matrixLine = ReadLineAsVector3(false);
+            //WorldToMapTransform.M11 = matrixLine.X;
+            //WorldToMapTransform.M12 = matrixLine.Y;
+            //WorldToMapTransform.M13 = matrixLine.Z;
+            //matrixLine = ReadLineAsVector3(false);
+            //WorldToMapTransform.M21 = matrixLine.X;
+            //WorldToMapTransform.M22 = matrixLine.Y;
+            //WorldToMapTransform.M23 = matrixLine.Z;
+            //matrixLine = ReadLineAsVector3(false);
+            //WorldToMapTransform.M31 = matrixLine.X;
+            //WorldToMapTransform.M32 = matrixLine.Y;
+            //WorldToMapTransform.M33 = matrixLine.Z;
+            //matrixLine = ReadLineAsVector3(false);
+            //WorldToMapTransform.M41 = matrixLine.X;
+            //WorldToMapTransform.M42 = matrixLine.Y;
+            //WorldToMapTransform.M43 = matrixLine.Z;
+            //WorldToMapTransform.M44 = 1;
 
-            //GridPosition = Vector3.Transform(GridPosition, WorldToMapTransform);
-
+            
             CloseFile();
         }
     }

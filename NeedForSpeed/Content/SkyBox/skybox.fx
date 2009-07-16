@@ -11,7 +11,7 @@ sampler_state
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
-    ADDRESSU = CLAMP;
+    //ADDRESSU = CLAMP;
     ADDRESSV = CLAMP;
 };
 
@@ -70,12 +70,5 @@ technique Simple
 
         VertexShader = compile vs_1_1 SimpleVS();
         PixelShader = compile ps_1_1 SimplePS();
-        
-        LIGHTING = TRUE;
-        ZENABLE = TRUE;
-        ZWRITEENABLE = TRUE;
-        ALPHATESTENABLE = FALSE;
-        ALPHABLENDENABLE = FALSE;
    }
-
 }
