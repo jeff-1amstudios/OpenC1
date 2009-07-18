@@ -79,7 +79,7 @@ namespace NFSEngine
 			get { return farPlaneDistance; }
 			set { farPlaneDistance = value; }
 		}
-		private float farPlaneDistance = 15000.0f;
+		private float farPlaneDistance = 3000;
 
 
 		/// <summary>
@@ -110,7 +110,7 @@ namespace NFSEngine
             _view = Matrix.CreateLookAt(cameraPosition, cameraPosition - avgLookAt + new Vector3(0,15,0), UpVector);
             _projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlaneDistance, FarPlaneDistance);
 
-            Engine.Instance.GraphicsUtils.AddSolidShape(ShapeType.Cube, Matrix.CreateScale(3) * Matrix.CreateTranslation(_position + avgLookAt), Microsoft.Xna.Framework.Graphics.Color.Yellow, null);
+            //Engine.Instance.GraphicsUtils.AddSolidShape(ShapeType.Cube, Matrix.CreateScale(3) * Matrix.CreateTranslation(_position + avgLookAt), Microsoft.Xna.Framework.Graphics.Color.Yellow, null);
 		}
 
 		public void SetPosition(Vector3 position)

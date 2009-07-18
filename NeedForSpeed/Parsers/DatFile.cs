@@ -262,5 +262,10 @@ namespace Carmageddon.Parsers
         {
             return _models.Find(m => m.Name == name); 
         }
+
+        public List<Model> GetModels()
+        {
+            return _models;
+        }
     }
 }

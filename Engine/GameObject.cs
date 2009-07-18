@@ -65,7 +65,7 @@ namespace PlatformEngine
             _position.X -= (float)((Math.Sin(_orientation.X) * Math.Cos(_orientation.Y)) * _velocity);
             _position.Z -= (float)((Math.Cos(_orientation.X) * Math.Cos(_orientation.Y)) * _velocity);
             if (!_lockToGround)
-                _position.Y -= _orientation.Y * _velocity;
+                _position.Y = _orientation.Y * _velocity;
         }
 
         public Vector3 GetLookAt(float distance)
@@ -73,7 +73,7 @@ namespace PlatformEngine
             Vector3 lookAt = _position;
             lookAt.X -= (float)((Math.Sin(_orientation.X) * Math.Cos(_orientation.Y)) * distance);
             lookAt.Z -= (float)((Math.Cos(_orientation.X) * Math.Cos(_orientation.Y)) * distance);
-            lookAt.Y -= _orientation.Y * distance;
+            lookAt.Y = _orientation.Y * distance;
             return lookAt;
         }
 
@@ -96,7 +96,7 @@ namespace PlatformEngine
         {
             get
             {
-                Matrix world = Matrix.CreateFromYawPitchRoll(_orientation.X, -_orientation.Y, _orientation.Z);
+                Matrix world = Matrix.CreateFromYawPitchRoll(_orientation.X, _orientation.Y, _orientation.Z);
                 world *= Matrix.CreateScale(_size);
                 world *= Matrix.CreateTranslation(_position);
                 return world;

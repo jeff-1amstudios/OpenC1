@@ -49,7 +49,7 @@ namespace PlatformEngine
 
         private const float GRAVITY = -9.8f;
         private const float DECELERATION = -0.5f;
-        private const float STRAFE_SPEED_MULTIPLIER = 1.5f;
+        private const float STRAFE_SPEED_MULTIPLIER = 15.5f;
         
                
         private float fovx;

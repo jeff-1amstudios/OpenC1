@@ -11,6 +11,7 @@ using Carmageddon.Track;
 using JigLibX.Physics;
 using JigLibX.Collision;
 using Carmageddon.Physics;
+using JigLibX.Geometry;
 
 namespace Carmageddon
 {
@@ -45,7 +46,7 @@ namespace Carmageddon
             _camera = new FixedChaseCamera();
             Engine.Instance.Camera = _camera; // new FPSCamera(Engine.Instance.Game);// camera;
 
-            Engine.Instance.Player = new Player();
+            Engine.Instance.Player = new Driver();
             Engine.Instance.Player.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Player.SetRotation(MathHelper.ToRadians(_race.RaceFile.GridDirection));
             
@@ -63,13 +64,14 @@ namespace Carmageddon
             _physicSystem.NumContactIterations = 8;
             _physicSystem.NumPenetrationRelaxtionTimesteps = 15;
 
-            PlaneObject planeObj = new PlaneObject(Engine.Instance.Game, null, 180.0f);
+            //PlaneObject planeObj = new PlaneObject(Engine.Instance.Game, null, 220.0f);
+            TriangleMeshObject tri = new TriangleMeshObject(Engine.Instance.Game, _race.GetTrackActors());           
 
             _carObject = new CarObject(Engine.Instance.Game, null, null,
                 true,   // front wheel drive 
                 true,   // rear wheel drive 
-                35.0f,  // max steering angle 
-                5f,     // steering rate 
+                30.0f,  // max steering angle 
+                4f,     // steering rate 
                 3.6f,   // front lateral traction 
                 3.1f,   // rear lateral traction 
                 1f,     // front longintudinal traction 
@@ -84,18 +86,18 @@ namespace Carmageddon
                 2.0f,   // slide speed factor 
                 0.7f,   // traction loss factor on slip 
                 0.3f,   // suspension travel 
-                0.45f,  // wheel radius 
+                0.90f,  // wheel radius 
                 -0.10f, // wheel mounting point  
                 0.6f,   // spring rate 
                 0.6f,   // shock dampening 
-                2,      // wheel rays 
+                4,      // wheel rays 
                 2.0f,   // roll resistance 
-                300.0f, // top speed 
-                500.0f, // torque 
+                5600.0f, // top speed 
+                2000.0f, // torque 
                 _physicSystem.Gravity.Length() // gravity  
                 );
 
-            _carObject.Car.Chassis.Body.MoveTo(Engine.Instance.Player.Position * new Vector3(1,-1,1), Matrix.Identity);
+            _carObject.Car.Chassis.Body.MoveTo(Engine.Instance.Player.Position + new Vector3(0, 20,0), Matrix.Identity);
             _carObject.Car.EnableCar();
             _carObject.Car.Chassis.Body.AllowFreezing = false;
         }

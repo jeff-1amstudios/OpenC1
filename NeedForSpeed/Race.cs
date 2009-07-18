@@ -59,5 +59,15 @@ namespace Carmageddon
         {
             _actors.Render(_models);
         }
+
+        public ActFile GetTrackActors()
+        {
+            return _actors;
+        }
+
+        public DatFile GetTrackModels()
+        {
+            return _models;
+        }
     }
 }

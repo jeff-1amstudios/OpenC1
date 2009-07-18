@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="BigEndianBitConverter.cs" />
     <Compile Include="Physics\PlaneObject.cs" />
+    <Compile Include="Physics\TriangleMeshObject.cs" />
     <Compile Include="Vehicle.cs" />
     <Compile Include="Driver.cs" />
     <Compile Include="EndianBinaryReader.cs" />

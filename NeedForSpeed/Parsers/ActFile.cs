@@ -212,6 +212,20 @@ namespace Carmageddon.Parsers
             resolver(_actors[0]);
         }
 
+        public List<Actor> GetAllActors()
+        {
+            List<Actor> actors = new List<Actor>();
+            Action<Actor> resolver = null;
+            resolver = (actor) =>
+            {
+                actors.Add(actor);
+                foreach (Actor child in actor.Children)
+                    resolver(child);
+            };
+            resolver(_actors[0]);
+            return actors;
+        }
+
 
         public void Render(DatFile models)
         {

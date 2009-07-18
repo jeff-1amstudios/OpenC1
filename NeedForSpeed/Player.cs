@@ -29,7 +29,7 @@ namespace Carmageddon
         private const float Acceleration = 20.0f;
         private const float Deceleration = -10.0f;
         private const float JumpVelocity = 0.23f;
-        private const float MaxSpeed = 15.0f;
+        private const float MaxSpeed = 4.0f;
 
         private bool _shouldJump;
         private float _worldHeight;

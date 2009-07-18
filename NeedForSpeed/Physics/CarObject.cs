@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using JigLibX.Vehicles;
 using JigLibX.Collision;
 using PlatformEngine;
+using NFSEngine;
 
 namespace Carmageddon.Physics
 {
@@ -55,7 +56,7 @@ namespace Carmageddon.Physics
             startSlideFactor, thresh1SlideFactor, thresh2SlideFactor,
             slideThreshold1, slideThreshold2, slideSpeed, slipFactor, wheelTravel,
             wheelRadius, wheelZOffset, wheelRestingFrac, wheelDampingFrac,
-            wheelNumRays, rollResistance, topSpeed, driveTorque, gravity);
+            wheelNumRays, rollResistance, topSpeed, driveTorque, gravity, new Vector3(2.3f, 1.6f, 6f) * new Vector3(2.5f));
 
             this.body = car.Chassis.Body;
             this.collision = car.Chassis.Skin;
@@ -90,6 +91,8 @@ namespace Carmageddon.Physics
             DrawWheel(car.Wheels[3], false);
 
             base.Draw(gameTime);
+
+            GameConsole.WriteLine("Speed: " + Vector3.Dot(car.Chassis.Body.Velocity, Vector3.Forward), 2);
         }
 
         public Car Car
@@ -116,6 +119,7 @@ namespace Carmageddon.Physics
 
         public override void ApplyEffects(BasicEffect effect)
         {
+            
             //
         }
     }
