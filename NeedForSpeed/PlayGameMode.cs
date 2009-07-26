@@ -36,7 +36,7 @@ namespace Carmageddon
 
             _car = new Vehicle(@"C:\Games\carma1\data\cars\blkeagle.txt");
 
-            _race = new Race(@"C:\Games\carma1\data\races\citya1.TXT");
+            _race = new Race(@"C:\Games\carma1\data\races\COLICIUM.TXT");
 
             if (_race.HorizonTexture != null)
             {
@@ -44,7 +44,7 @@ namespace Carmageddon
                 _skybox.HeightOffset = _race.RaceFile.SkyboxPositionY * 0.012f;
             }
             _camera = new FixedChaseCamera();
-            Engine.Instance.Camera = _camera; // new FPSCamera(Engine.Instance.Game);// camera;
+            Engine.Instance.Camera = _camera;// new FPSCamera(Engine.Instance.Game);// camera;
 
             Engine.Instance.Player = new Driver();
             Engine.Instance.Player.Position = _race.RaceFile.GridPosition;
@@ -56,7 +56,7 @@ namespace Carmageddon
         private void SetupPhysics()
         {
             _physicSystem = new PhysicsSystem();
-            _physicSystem.CollisionSystem = new CollisionSystemSAP();
+            _physicSystem.CollisionSystem = new CollisionSystemBrute();
             _physicSystem.EnableFreezing = true;
             _physicSystem.SolverType = PhysicsSystem.Solver.Normal;
             _physicSystem.CollisionSystem.UseSweepTests = true;

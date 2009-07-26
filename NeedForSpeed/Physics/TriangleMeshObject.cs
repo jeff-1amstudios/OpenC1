@@ -26,23 +26,37 @@ namespace Carmageddon.Physics
             List<Vector3> vertexList = new List<Vector3>();
             List<TriangleVertexIndices> indexList = new List<TriangleVertexIndices>();
 
-            int vIndex=0;
             foreach (Actor actor in actors.GetAllActors())
             {
                 if (actor.Model == null) continue;
+                //if (actor.BoundingBox.Max.X == 0) continue;
 
                 foreach (Polygon poly in actor.Model.Polygons)
                 {
-                    foreach (Vector3 vec in poly.Vertices)
+                    int v0, v1, v2;
+
+                    Vector3 transformedVec = Vector3.Transform(poly.Vertices[0], actor.Matrix);
+                    v0 = vertexList.FindIndex(v => v == transformedVec);
+                    if (v0 == -1)
                     {
-                        vertexList.Add(Vector3.Transform(vec, actor.Matrix));
+                        vertexList.Add(transformedVec);
+                        v0 = vertexList.Count - 1;
                     }
-                    //{
-                        //vertexList.AddRange(poly.Vertices);
-                        
-                        indexList.Add(new TriangleVertexIndices(vIndex, vIndex + 1, vIndex + 2));
-                        vIndex += 3;
-                    //}
+                    transformedVec = Vector3.Transform(poly.Vertices[1], actor.Matrix);
+                    v1 = vertexList.FindIndex(v => v == transformedVec);
+                    if (v1 == -1)
+                    {
+                        vertexList.Add(transformedVec);
+                        v1 = vertexList.Count - 1;
+                    }
+                    transformedVec = Vector3.Transform(poly.Vertices[2], actor.Matrix);
+                    v2 = vertexList.FindIndex(v => v == transformedVec);
+                    if (v2 == -1)
+                    {
+                        vertexList.Add(transformedVec);
+                        v2 = vertexList.Count - 1;
+                    }
+                    indexList.Add(new TriangleVertexIndices(v0, v1, v2));
                 }
             }
 
