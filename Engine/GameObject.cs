@@ -65,7 +65,7 @@ namespace PlatformEngine
             _position.X -= (float)((Math.Sin(_orientation.X) * Math.Cos(_orientation.Y)) * _velocity);
             _position.Z -= (float)((Math.Cos(_orientation.X) * Math.Cos(_orientation.Y)) * _velocity);
             if (!_lockToGround)
-                _position.Y = _orientation.Y * _velocity;
+                _position.Y -= _orientation.Y * _velocity;
         }
 
         public Vector3 GetLookAt(float distance)

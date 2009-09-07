@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.Parsers
 {
-    class PaletteFile : BaseDataFile
+    class PaletteFile : BaseDataFile, IPalette
     {
 
         enum PaletteBlockType
@@ -20,6 +20,11 @@ namespace Carmageddon.Parsers
         }
 
         byte[] _paletteData;
+
+        public PaletteFile(byte[] paletteData)
+        {
+            _paletteData = paletteData;
+        }
 
         public PaletteFile(string filename)
         {
@@ -69,6 +74,7 @@ namespace Carmageddon.Parsers
             rgb[2] = _paletteData[pixel * 4 + 3];
             return rgb;
         }
+
         public Color GetRGBColorForPixel(int pixel)
         {
             byte[] rgb = new byte[3];

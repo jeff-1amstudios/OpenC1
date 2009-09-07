@@ -8,6 +8,7 @@ using System.Diagnostics;
 
 namespace Carmageddon.Parsers
 {
+    
     class RaceFile : BaseTextFile
     {
         public List<string> MaterialFiles { get; private set; }
@@ -82,34 +83,54 @@ namespace Carmageddon.Parsers
             ReadLine(); //degree of dark
 
             int defaultEngineNoise = ReadLineAsInt();
-            int nbrSpecialEffectsVolumes = ReadLineAsInt();
-            //SkipLines(12 + ((nbrSpecialEffectsVolumes - 1) * 16)); //first line is DEFAULT WATER (12 lines)
+            
+            ReadSpecialEffectsVolumes();
 
-            //SkipLines(4); //reflective windscreen stuff
+            SkipLines(3);  //reflective windscreen stuff
+            int nbrAlternativeReflections = ReadLineAsInt();
+            SkipLines(nbrAlternativeReflections * 2);
+            SkipLines(5); // map name, map matrix
 
-            //string mapPixName = ReadLine();
-            //Debug.Assert(mapPixName.EndsWith(".PIX"));
-            //WorldToMapTransform = new Matrix();
-            //Vector3 matrixLine = ReadLineAsVector3(false);
-            //WorldToMapTransform.M11 = matrixLine.X;
-            //WorldToMapTransform.M12 = matrixLine.Y;
-            //WorldToMapTransform.M13 = matrixLine.Z;
-            //matrixLine = ReadLineAsVector3(false);
-            //WorldToMapTransform.M21 = matrixLine.X;
-            //WorldToMapTransform.M22 = matrixLine.Y;
-            //WorldToMapTransform.M23 = matrixLine.Z;
-            //matrixLine = ReadLineAsVector3(false);
-            //WorldToMapTransform.M31 = matrixLine.X;
-            //WorldToMapTransform.M32 = matrixLine.Y;
-            //WorldToMapTransform.M33 = matrixLine.Z;
-            //matrixLine = ReadLineAsVector3(false);
-            //WorldToMapTransform.M41 = matrixLine.X;
-            //WorldToMapTransform.M42 = matrixLine.Y;
-            //WorldToMapTransform.M43 = matrixLine.Z;
-            //WorldToMapTransform.M44 = 1;
-
+            ReadFunkSection();
             
             CloseFile();
+        }
+
+        private void ReadSpecialEffectsVolumes()
+        {
+            int nbrSpecialEffectsVolumes = ReadLineAsInt();
+            for (int i = 0; i < nbrSpecialEffectsVolumes; i++)
+            {
+                string name = ReadLine();
+                if (name != "DEFAULT WATER")
+                {
+                    Matrix m = ReadMatrix();
+                }
+                SkipLines(11);
+            }
+        }
+
+        private void ReadFunkSection()
+        {
+            List<BaseFunk> funks = new List<BaseFunk>();
+            string start = ReadLine();
+            Debug.Assert(start == "START OF FUNK");
+            while (true)
+            {
+                string line = ReadLine();
+                if (line == "NEXT FUNK")
+                    continue;
+                else if (line == "END OF FUNK")
+                    break;
+                
+                BaseFunk funk = new BaseFunk(this, line);
+                funks.Add(funk);
+            }
+        }
+
+        private void ReadGrooveSection()
+        {
+
         }
     }
 }

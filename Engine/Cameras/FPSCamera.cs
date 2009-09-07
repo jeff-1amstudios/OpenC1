@@ -39,12 +39,12 @@ namespace PlatformEngine
     /// MapActionToKey() method. Most of the code in this class is used to
     /// simulate camera view bobbing, crouching, and jumping.
     /// </summary>
-    public class FPSCamera : GameObject, ICamera
+    public class FPSCamera : ICamera
     {
         
         public const float DEFAULT_FOVX = 60.0f;
         public const float DEFAULT_ROTATION_SPEED = 0.25f;
-        public const float DEFAULT_ZFAR = 3000.0f;
+        
         public const float DEFAULT_ZNEAR = 0.1f;
 
         private const float GRAVITY = -9.8f;
@@ -54,40 +54,27 @@ namespace PlatformEngine
                
         private float fovx;
         private float znear;
-        private float zfar;
         
-        private Matrix _viewMatrix;
-        private Matrix _projMatrix;
+
+        public Vector3 Position { get; set; }
+        public Vector3 Orientation { get; set; }
+        public float DrawDistance { get; set; }
+        
+        public Matrix View {get; private set; }
+        public Matrix Projection {get; private set; }
 
         public FPSCamera(Game game)
         {
-
             fovx = DEFAULT_FOVX;
-            znear = DEFAULT_ZNEAR;
-            zfar = DEFAULT_ZFAR;            
+            znear = DEFAULT_ZNEAR;         
             
-            _position = new Vector3(0.0f, 0.0f, 0.0f);
-           
-
             int w = game.Window.ClientBounds.Width;
             int h = game.Window.ClientBounds.Height;
             float aspect = (float)w / (float)h;
 
             // Setup initial default view and projection matrices.
-            Perspective(DEFAULT_FOVX, aspect, DEFAULT_ZNEAR, DEFAULT_ZFAR);
-            _viewMatrix = Matrix.Identity;
-
-
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            
-        }
-
-        public override void Render()
-        {
-            
+            SetPerspective(DEFAULT_FOVX, aspect, DEFAULT_ZNEAR, DrawDistance);
+            View = Matrix.Identity;
         }
 
                
@@ -100,11 +87,10 @@ namespace PlatformEngine
         /// <param name="aspect">Aspect ratio.</param>
         /// <param name="znear">Near plane distance.</param>
         /// <param name="zfar">Far plane distance.</param>
-        public void Perspective(float fovx, float aspect, float znear, float zfar)
+        public void SetPerspective(float fovx, float aspect, float znear, float zfar)
         {
             this.fovx = fovx;
             this.znear = znear;
-            this.zfar = zfar;
 
             float e = 1.0f / (float)Math.Tan(MathHelper.ToRadians(fovx) / 2.0f);
             float aspectInv = 1.0f / aspect;
@@ -112,65 +98,26 @@ namespace PlatformEngine
             float xScale = 1.0f / (float)Math.Tan(0.5f * fovy);
             float yScale = xScale / aspectInv;
 
-            _projMatrix.M11 = xScale;
-            _projMatrix.M12 = 0.0f;
-            _projMatrix.M13 = 0.0f;
-            _projMatrix.M14 = 0.0f;
+            Matrix projection = new Matrix();
 
-            _projMatrix.M21 = 0.0f;
-            _projMatrix.M22 = yScale;
-            _projMatrix.M23 = 0.0f;
-            _projMatrix.M24 = 0.0f;
-
-            _projMatrix.M31 = 0.0f;
-            _projMatrix.M32 = 0.0f;
-            _projMatrix.M33 = (zfar + znear) / (znear - zfar);
-            _projMatrix.M34 = -1.0f;
-
-            _projMatrix.M41 = 0.0f;
-            _projMatrix.M42 = 0.0f;
-            _projMatrix.M43 = (2.0f * zfar * znear) / (znear - zfar);
-            _projMatrix.M44 = 0.0f;
-        }
-
-
-        public void FollowObject(GameObject obj)
-        {
-            _position = -obj.GetCameraPosition();
-            _orientation = obj.Orientation;
-            UpdateViewMatrix();
-        } 
-
-        private void UpdateViewMatrix()
-        {
-            Matrix view = Matrix.CreateTranslation(_position);
-            view *= Matrix.CreateRotationY(-_orientation.X);
-            view *= Matrix.CreateRotationX(_orientation.Y);
-            view *= Matrix.CreateRotationZ(_orientation.Z);
+            projection.M11 = xScale;
+            projection.M22 = yScale;
+            projection.M33 = (zfar + znear) / (znear - zfar);
+            projection.M34 = -1.0f;
+            projection.M43 = (2.0f * zfar * znear) / (znear - zfar);
             
-            _viewMatrix = view;
-        }
-       
-
-        /// <summary>
-        /// Returns the camera's current view matrix.
-        /// </summary>
-        public Matrix View
-        {
-            get { return _viewMatrix; }
+            Projection = projection;
         }
 
-        /// <summary>
-        /// Returns the camera's current perspective projection matrix.
-        /// </summary>
-        public Matrix Projection
+        public void Update(GameTime gameTime)
         {
-            get { return _projMatrix; }
-        }
+            Matrix view = Matrix.CreateTranslation(-Position);
+            view *= Matrix.CreateRotationY(-Orientation.X);
+            view *= Matrix.CreateRotationX(Orientation.Y);
+            view *= Matrix.CreateRotationZ(Orientation.Z);
 
-        public void SetPosition(Vector3 position)
-        {
-            _position = position;
+            View = view;
+            SetPerspective(DEFAULT_FOVX, 4f/3f, DEFAULT_ZNEAR, DrawDistance);
         }
     }
 }

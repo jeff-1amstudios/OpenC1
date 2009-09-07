@@ -27,22 +27,28 @@ namespace Carmageddon.Parsers
         public string Name { get; set; }
         public List<string> MaterialNames { get; set; }
         public List<Polygon> Polygons { get; set; }
+        public int VertexCount { get; set; }
+        public int VertexBaseIndex { get; set; }
+        public int IndexBufferStart { get; set; }
     }
 
     class DatFile : BaseDataFile
     {
         private VertexBuffer _vertexBuffer;
+        private IndexBuffer _indexBuffer;
+        private VertexDeclaration _vertexDeclaration;
         private BasicEffect _effect;
         
         List<Model> _models = new List<Model>();
-
+        List<Vector3> _vertexPositions = new List<Vector3>();
+        List<Vector2> _vertexTextureMap = new List<Vector2>();
+        public VertexPositionNormalTexture[] _vertices;
+        public List<ushort> _indicies;
+        
         public DatFile(string filename)
         {
-            //List<Polygon> _polygons = new List<Polygon>();
-            List<Vector3> vertices = new List<Vector3>();
-            List<Vector2> vertexTextureMap = new List<Vector2>();
-            
-            Model currentModel=null;
+
+            Model currentModel = null;
 
             EndianBinaryReader reader = new EndianBinaryReader(new BigEndianBitConverter(), File.Open(filename, FileMode.Open));
 
@@ -67,15 +73,15 @@ namespace Carmageddon.Parsers
                         break;
 
                     case (int)BlockType.Vertices:
-                        ReadVertexBlock(reader, vertices);
+                        ReadVertexBlock(reader, currentModel);
                         break;
 
                     case (int)BlockType.Faces:
-                        ReadPolygonBlock(reader, currentModel, vertices, vertexTextureMap);
+                        ReadPolygonBlock(reader, currentModel);
                         break;
 
                     case (int)BlockType.TextureCoords:
-                        ReadTextureMapBlock(reader, vertexTextureMap);
+                        ReadTextureMapBlock(reader, _vertexTextureMap);
                         break;
 
                     case (int)BlockType.Materials:
@@ -100,22 +106,20 @@ namespace Carmageddon.Parsers
             
         }
 
-        private void ReadVertexBlock(EndianBinaryReader reader, List<Vector3> vertices)
+        private void ReadVertexBlock(EndianBinaryReader reader, Model currentModel)
         {
-            vertices.Clear();
-            int vertexCount = reader.ReadInt32();
+            currentModel.VertexBaseIndex = _vertexPositions.Count;
+            currentModel.VertexCount = reader.ReadInt32();
             
-            for (int i = 0; i < vertexCount; i++)
+            for (int i = 0; i < currentModel.VertexCount; i++)
             {
                 Vector3 vertex = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-                //vertex *= GameConfig.Scale;
-                vertices.Add(vertex);
+                _vertexPositions.Add(vertex);
             }
         }
 
         private void ReadTextureMapBlock(EndianBinaryReader reader, List<Vector2> vertexUVs)
         {
-            vertexUVs.Clear();
             int texturePointsCount = reader.ReadInt32();
             for (int i = 0; i < texturePointsCount; i++)
             {
@@ -149,29 +153,28 @@ namespace Carmageddon.Parsers
             }
         }
 
-        private void ReadPolygonBlock(EndianBinaryReader reader, Model model, List<Vector3> vertices, List<Vector2> textureUVs)
+        private void ReadPolygonBlock(EndianBinaryReader reader, Model model)
         {
             model.Polygons = new List<Polygon>();
-
+            
             int polygonCount = reader.ReadInt32();
 
             for (int i = 0; i < polygonCount; i++)
             {
-                Polygon polygon = new Polygon();
+                UInt16 v1 = reader.ReadUInt16();
+                UInt16 v2 = reader.ReadUInt16();
+                UInt16 v3 = reader.ReadUInt16();
 
-                int v1 = reader.ReadInt16();
-                int v2 = reader.ReadInt16();
-                int v3 = reader.ReadInt16();
                 byte unk1 = reader.ReadByte();
                 byte unk2 = reader.ReadByte();
                 byte unk3 = reader.ReadByte();
 
-                polygon.Vertices.Add(vertices[v1]);
-                polygon.Vertices.Add(vertices[v2]);
-                polygon.Vertices.Add(vertices[v3]);
-                polygon.TextureCoords.Add(textureUVs[v1]);
-                polygon.TextureCoords.Add(textureUVs[v2]);
-                polygon.TextureCoords.Add(textureUVs[v3]);
+                if (v1 == 99)
+                {
+                }
+
+                Polygon polygon = new Polygon(v1, v2, v3);
+                polygon.CalculateNormal(_vertexPositions);
 
                 model.Polygons.Add(polygon);
             }
@@ -180,13 +183,21 @@ namespace Carmageddon.Parsers
 
         public void Resolve(ResourceCache resources)
         {
-            int vertCount = 0;
+            _vertices = new VertexPositionNormalTexture[_vertexPositions.Count];
+            int idx=0;
             
-            List<VertexPositionNormalTexture> allVerts = new List<VertexPositionNormalTexture>();
+            List<UInt16> vertIndexes = new List<UInt16>(_vertexPositions.Count);
+            
             foreach (Model model in _models)
             {
+                model.IndexBufferStart = vertIndexes.Count;
+
                 foreach (Polygon poly in model.Polygons)
                 {
+                    vertIndexes.Add(poly.Vertex1);
+                    vertIndexes.Add(poly.Vertex2);
+                    vertIndexes.Add(poly.Vertex3);
+
                     if (poly.MaterialIndex >= 0 && model.MaterialNames != null)
                     {
                         Material m = resources.GetMaterial(model.MaterialNames[poly.MaterialIndex]);
@@ -206,23 +217,39 @@ namespace Carmageddon.Parsers
                             }
                         }
                     }
-                    poly.VertexBufferIndex = vertCount;
-                    vertCount += poly.VertexCount;
-                    allVerts.AddRange(poly.GetVertices());
+                }
+                for (int i = 0; i < model.VertexCount; i++)
+                {
+                    Vector3 normal = model.Polygons[i / 3].Normal;
+                    _vertices[idx++] = new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], normal, _vertexTextureMap[i + model.VertexBaseIndex]);
                 }
             }
 
-            _vertexBuffer = new VertexBuffer(Engine.Instance.Device, VertexPositionNormalTexture.SizeInBytes * vertCount, BufferUsage.WriteOnly);
-            _vertexBuffer.SetData<VertexPositionNormalTexture>(allVerts.ToArray());
+            _vertexBuffer = new VertexBuffer(Engine.Instance.Device, VertexPositionNormalTexture.SizeInBytes * _vertices.Length, BufferUsage.WriteOnly);
+            _vertexBuffer.SetData<VertexPositionNormalTexture>(_vertices);
+
+            _indexBuffer = new IndexBuffer(Engine.Instance.Device, typeof(UInt16), vertIndexes.Count, BufferUsage.WriteOnly);
+            _indexBuffer.SetData<UInt16>(vertIndexes.ToArray());
+            _indicies = vertIndexes;
+
+            _vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionNormalTexture.VertexElements);
+            _vertexTextureMap=null; //dont need this data anymore
+            _vertexPositions = null;
+        }
+
+        private void Rebuffer()
+        {
+
         }
 
         public BasicEffect SetupRender()
         {
             GraphicsDevice device = Engine.Instance.Device;
             device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionNormalTexture.SizeInBytes);
+            device.Indices = _indexBuffer;
             device.RenderState.CullMode = CullMode.CullClockwiseFace;
             device.RenderState.FillMode = FillMode.Solid;
-            device.VertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionNormalTexture.VertexElements);
+            device.VertexDeclaration = _vertexDeclaration;
 
             if (_effect == null)
             {
@@ -236,8 +263,8 @@ namespace Carmageddon.Parsers
                 {
                     Debug.Assert(false);
                 }
-                _effect.FogStart = GameVariables.DrawDistance - 1000;
-                _effect.FogEnd = GameVariables.DrawDistance;
+                _effect.FogStart = Engine.Instance.DrawDistance - 45 * GameVariables.Scale.Z;
+                _effect.FogEnd = Engine.Instance.DrawDistance;
                 //effect.LightingEnabled = true;
                 //effect.EnableDefaultLighting();
                 //effect.AmbientLightColor = new Vector3(0.09f, 0.09f, 0.1f);
@@ -266,6 +293,19 @@ namespace Carmageddon.Parsers
         public List<Model> GetModels()
         {
             return _models;
+        }
+
+        public void Crush(CrushSection crush)
+        {
+            foreach (CrushData data in crush.Data)
+            {
+                Vector3 pos = _vertices[data.RefVertex].Position;
+                //Engine.Instance.GraphicsUtils.AddSolidShape(ShapeType.Cube, Matrix.CreateTranslation(pos), Color.White, null);
+                Vector3 v = Vector3.Lerp(data.V1, data.V2, (float)new Random().NextDouble());
+                _vertices[data.RefVertex].Position = v;// = Vector3.Transform(pos, data.Matrix);
+            }
+
+            _vertexBuffer.SetData<VertexPositionNormalTexture>(_vertices);
         }
     }
 }

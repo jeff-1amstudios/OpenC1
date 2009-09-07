@@ -25,6 +25,7 @@ namespace PlatformEngine
         private BasicEffect _currentEffect;
         private SpriteBatch _spriteBatch;
 
+        public float DrawDistance { get; set; }
                 
         public static Engine Instance
         {
@@ -53,6 +54,8 @@ namespace PlatformEngine
         private void EngineStartup(GraphicsDeviceManager graphics)
         {
             _graphics = graphics;
+
+            DrawDistance = 3000;
 
             _contentManager = new ContentManager(base.Game.Services);
 
@@ -117,7 +120,11 @@ namespace PlatformEngine
         public ICamera Camera
         {
             get { return _camera; }
-            set { _camera = value; }
+            set
+            {
+                _camera = value;
+                _camera.DrawDistance = DrawDistance;
+            }
         }
 
         public InputProvider Input

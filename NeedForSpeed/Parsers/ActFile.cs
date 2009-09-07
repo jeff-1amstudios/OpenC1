@@ -278,20 +278,25 @@ namespace Carmageddon.Parsers
             effect.World = actor.Matrix;
             effect.CurrentTechnique.Passes[0].Begin();
 
-            foreach (Polygon poly in actor.Model.Polygons)
+            int baseVert = actor.Model.VertexBaseIndex;
+            int indexBufferStart = actor.Model.IndexBufferStart;
+
+            for (int i = 0; i < actor.Model.Polygons.Count; i++)
             {
+                Polygon poly = actor.Model.Polygons[i];
+
                 if (_cullingDisabled != poly.DoubleSided)
                 {
                     device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
                     _cullingDisabled = poly.DoubleSided;
                 }
-                
+
                 if (poly.Texture != null)
                     device.Textures[0] = poly.Texture;
                 else
                     device.Textures[0] = actor.Texture;
 
-                Engine.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, poly.VertexBufferIndex, poly.VertexCount / 3);
+                Engine.Instance.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3, indexBufferStart + i * 3, 1);
             }
             effect.CurrentTechnique.Passes[0].End();
         }

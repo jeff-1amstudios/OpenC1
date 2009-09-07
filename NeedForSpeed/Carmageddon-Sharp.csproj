@@ -62,12 +62,13 @@
     <XnaCompressContent>True</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JigLibX, Version=0.3.1.0, Culture=neutral, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
+    <Reference Include="StillDesign.CommonLibrary, Version=1.0.3129.38324, Culture=neutral, PublicKeyToken=221f46dbfd06dc01, processorArchitecture=MSIL" />
+    <Reference Include="StillDesign.PhysX.Net, Version=0.9.1.1, Culture=neutral, PublicKeyToken=221f46dbfd06dc01, processorArchitecture=x86" />
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -82,8 +83,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigEndianBitConverter.cs" />
-    <Compile Include="Physics\PlaneObject.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="IPalette.cs" />
+    <Compile Include="Parsers\FliFile.cs" />
+    <Compile Include="Parsers\Funk.cs" />
+    <Compile Include="Physics\ContactReport.cs" />
+    <Compile Include="Physics\Hasher.cs" />
+    <Compile Include="Physics\IOHelper.cs" />
+    <Compile Include="Physics\PhysicsVehicle.cs" />
+    <Compile Include="Physics\PhysX.cs" />
+    <Compile Include="Physics\TrackMesh.cs" />
     <Compile Include="Physics\TriangleMeshObject.cs" />
+    <Compile Include="Physics\VehicleDimensions.cs" />
     <Compile Include="Vehicle.cs" />
     <Compile Include="Driver.cs" />
     <Compile Include="EndianBinaryReader.cs" />
@@ -101,8 +112,6 @@
     <Compile Include="Parsers\Polygon.cs" />
     <Compile Include="Parsers\RaceFile.cs" />
     <Compile Include="Parsers\Track\SkyboxGenerator.cs" />
-    <Compile Include="Physics\CarObject.cs" />
-    <Compile Include="Physics\PhysicObject.cs" />
     <Compile Include="ResourceCache.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PlayGameMode.cs" />
@@ -110,12 +119,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Race.cs" />
-    <Compile Include="SimpleCamera.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
-    <Content Include="Lib\JigLibX.dll" />
+    <Content Include="Lib\StillDesign.CommonLibrary.dll" />
+    <Content Include="Lib\StillDesign.PhysX.Net.dll" />
   </ItemGroup>
   <ItemGroup>
     <NestedContentProject Include="Content\Content.contentproj">

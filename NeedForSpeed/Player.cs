@@ -26,10 +26,10 @@ namespace Carmageddon
         private float _jumpingVelocity;
 
         private const float VelocityInversionMultiplier = 20.0f;
-        private const float Acceleration = 20.0f;
-        private const float Deceleration = -10.0f;
+        private const float Acceleration = 5.0f;
+        private const float Deceleration = -5.0f;
         private const float JumpVelocity = 0.23f;
-        private const float MaxSpeed = 4.0f;
+        private const float MaxSpeed = 0.5f;
 
         private bool _shouldJump;
         private float _worldHeight;
@@ -83,10 +83,11 @@ namespace Carmageddon
             Rotate(input.RightThumbDelta * -1);
             Pitch(input.LeftThumbDelta * -1);
             UpdatePosition(gameTime);
-            Strafe(input.Strafe * 40.0f);
+            Strafe(input.Strafe * 1.0f);
 
-
-            Engine.Instance.Camera.FollowObject(this);
+            Engine.Instance.Camera.Orientation = _orientation;
+            Engine.Instance.Camera.Position = _position;
+            
         }
 
         public override void Render()
@@ -107,9 +108,7 @@ namespace Carmageddon
 
             // Update position along the XZ plane.
             MoveForward();
-            //Move(_velocity.X, 0.0f, _velocity.Z);
-
-            Engine.Instance.Camera.SetPosition(_position);
+            //Move(_velocity.X, 0.0f, _velocity.Z)
 
         }
 

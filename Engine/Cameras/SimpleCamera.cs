@@ -14,36 +14,15 @@ namespace NFSEngine
 		{
 		}
 
-        public Vector3 RightVec = Vector3.Right;
-        public Vector3 UpVector = Vector3.Up;
-
 		/// <summary>
 		/// Look at point in world space.
 		/// </summary>
-		public Vector3 LookAt
-		{
-			get
-			{
-				return lookAt;
-			}
-			set
-			{
-				lookAt = value;
-			}
-		}
-		private Vector3 lookAt;
-
-
+		public Vector3 Orientation {get; set; }
+		
 		/// <summary>
 		/// Position of camera in world space.
 		/// </summary>
-		public Vector3 Position
-		{
-			get { return _position; }
-			set { _position = value; }
-		}
-		private Vector3 _position;
-
+		public Vector3 Position {get; set; }
 
 		/// <summary>
 		/// Perspective aspect ratio. Default value should be overriden by application.
@@ -78,13 +57,7 @@ namespace NFSEngine
 		/// <summary>
 		/// Distance to the far clipping plane.
 		/// </summary>
-		public float FarPlaneDistance
-		{
-			get { return farPlaneDistance; }
-			set { farPlaneDistance = value; }
-		}
-        private float farPlaneDistance = 15000.0f;
-
+		public float DrawDistance {get; set; }
 
 		/// <summary>
 		/// View transform matrix.
@@ -112,18 +85,9 @@ namespace NFSEngine
 		/// </summary>
 		public void Update(GameTime gameTime)
 		{
-            view = Matrix.CreateLookAt(this.Position, this.LookAt, UpVector);
+            view = Matrix.CreateLookAt(this.Position, this.Orientation, Vector3.Up);
 			projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView,
-				AspectRatio, NearPlaneDistance, FarPlaneDistance);
-		}
-
-		public void SetPosition(Vector3 position)
-		{
-			_position = position;
-		}
-
-		public void FollowObject(GameObject obj)
-		{
+				AspectRatio, NearPlaneDistance, DrawDistance);
 		} 
 	}
 }

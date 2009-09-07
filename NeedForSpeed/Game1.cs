@@ -48,6 +48,7 @@ namespace Carmageddon
             base.Initialize();
 
             Engine.Initialize(this, _graphics);
+            Engine.Instance.DrawDistance = 100;
 
             //enable per-pixel transparency
             Engine.Instance.Device.RenderState.AlphaTestEnable = true;
@@ -60,8 +61,6 @@ namespace Carmageddon
             ////cam.LookAtOffset = new Vector3(0.0f, 150.0f, 0.0f);
             //cam.Reset();
 
-            //JiggleGame.JigCamera jigCam = new JiggleGame.JigCamera(this);
-            //jigCam.Position = Vector3.Down * 7 + Vector3.Backward * 30.0f;
             Engine.Instance.Mode = new PlayGameMode();
             
             
@@ -109,7 +108,7 @@ namespace Carmageddon
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            _graphics.GraphicsDevice.Clear(Color.WhiteSmoke);
+            _graphics.GraphicsDevice.Clear(Color.Black);
 
             base.Draw(gameTime);
         }

@@ -76,15 +76,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AverageValueVector3.cs" />
-    <Compile Include="ChaseCamera.cs" />
+    <Compile Include="Cameras\ChaseCamera.cs" />
     <Compile Include="Engine.cs" />
-    <Compile Include="FixedChaseCamera.cs" />
-    <Compile Include="FPSCamera.cs" />
+    <Compile Include="Cameras\FixedChaseCamera.cs" />
+    <Compile Include="Cameras\FPSCamera.cs" />
     <Compile Include="FPSCounter.cs" />
     <Compile Include="GameConsole.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GraphicsUtilities.cs" />
-    <Compile Include="ICamera.cs" />
+    <Compile Include="Cameras\ICamera.cs" />
     <Compile Include="IDrawableObject.cs" />
     <Compile Include="IGameScreen.cs" />
     <Compile Include="InputProvider.cs" />
@@ -94,8 +94,9 @@
     <Compile Include="ParticleSystem\ParticleSystem.cs" />
     <Compile Include="ParticleSystem\ParticleVertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomNumber.cs" />
     <Compile Include="ScreenEffects.cs" />
-    <Compile Include="SimpleCamera.cs" />
+    <Compile Include="Cameras\SimpleCamera.cs" />
     <Compile Include="SkyBox.cs" />
     <Compile Include="HeightmapTerrain.cs" />
     <Compile Include="SoundEngine2.cs" />

@@ -7,69 +7,30 @@ using Microsoft.Xna.Framework;
 namespace Carmageddon.Parsers
 {
 
-    enum PolygonType
-    {
-        Normal,
-        WheelFrontLeft,
-        WheelFrontRight,
-        WheelRearRight,
-        WheelRearLeft
-    }
-
     class Polygon
     {
-        private string _textureName;
-
-        List<Vector3> _vertices = new List<Vector3>();
-        List<Vector2> _textureCoords = new List<Vector2>();
-        private int _vertexBufferIndex;
-        private Texture2D _texture;
-
-        public List<Vector3> Vertices
-        {
-            get { return _vertices; }
-            set { _vertices = value; }
-        }
+        public UInt16 Vertex1 { get; private set; }
+        public UInt16 Vertex2 { get; private set; }
+        public UInt16 Vertex3 { get; private set; }
+        public Vector3 Normal { get; private set; }
 
         public int MaterialIndex { get; set; }
-
-        public List<Vector2> TextureCoords
-        {
-            get { return _textureCoords; }
-            set { _textureCoords = value; }
-        }
-
         public bool DoubleSided { get; set; }
-
         public Texture2D Texture {get; set; }
 
-        public int VertexCount
+        public Polygon(UInt16 v1, UInt16 v2, UInt16 v3)
         {
-            get
-            {
-                return 3;
-            }
+            Vertex1 = v1;
+            Vertex2 = v2;
+            Vertex3 = v3;
         }
 
-        public int VertexBufferIndex
+        public void CalculateNormal(List<Vector3> vertices)
         {
-            get { return _vertexBufferIndex; }
-            set { _vertexBufferIndex = value; }
-        }
-
-        public List<VertexPositionNormalTexture> GetVertices()
-        {
-            List<VertexPositionNormalTexture> verts = new List<VertexPositionNormalTexture>();
-
-            Vector3 ab = _vertices[0] - _vertices[2];
-            Vector3 ac = _vertices[0] - _vertices[1];
-            Vector3 normal = Vector3.Cross(ab, ac);
-            normal.Normalize();
-            verts.Add(new VertexPositionNormalTexture(_vertices[0], normal, _textureCoords[0]));
-            verts.Add(new VertexPositionNormalTexture(_vertices[1], normal, _textureCoords[1]));
-            verts.Add(new VertexPositionNormalTexture(_vertices[2], normal, _textureCoords[2]));
-            
-            return verts;
+            Vector3 ab = vertices[Vertex1] - vertices[Vertex3];
+            Vector3 ac = vertices[Vertex1] - vertices[Vertex2];
+            Normal = Vector3.Cross(ab, ac);
+            Normal.Normalize();
         }
     }
 }

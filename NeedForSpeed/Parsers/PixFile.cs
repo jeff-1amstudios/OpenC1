@@ -69,7 +69,7 @@ namespace Carmageddon.Parsers
                         byte[] pixels = reader.ReadBytes(pixelCount * bytesPerPixel);
 
                         Texture2D texture = new Texture2D(Engine.Instance.Device, currentPix.Width, currentPix.Height, 1, TextureUsage.None, SurfaceFormat.Color);
-                        texture.SetData<byte>(GetBytesForImage(pixels, currentPix.Width, currentPix.Height));
+                        texture.SetData<byte>(Helpers.GetBytesForImage(pixels, currentPix.Width, currentPix.Height, GameVariables.Palette));
                         //texture.Save("c:\\temp\\" + currentPix.Name + ".png", ImageFileFormat.Png);
                         currentPix.Texture = texture;
 						break;
@@ -86,43 +86,7 @@ namespace Carmageddon.Parsers
 			}
 
 			reader.Close();
-		}
-
-        private byte[] GetBytesForImage(byte[] pixels, int width, int height)
-        {
-            int overhang = 0;// (4 - ((width * 4) % 4));
-            int stride = (width * 4) + overhang;
-
-            byte[] imgData = new byte[stride * height];
-            int curPosition = 0;
-            for (int i = 0; i < height; i++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    byte pixel = pixels[width * i + x];
-
-                    if (pixel == 0)
-                    {
-                        imgData[curPosition] = 0;
-                        imgData[curPosition + 1] = 0;
-                        imgData[curPosition + 2] = 0;
-                        imgData[curPosition + 3] = 0;
-                    }
-                    else
-                    {
-                        byte[] rgb = GameVariables.Palette.GetRGBBytesForPixel(pixel);
-                        imgData[curPosition] = rgb[2];
-                        imgData[curPosition + 1] = rgb[1];
-                        imgData[curPosition + 2] = rgb[0];
-                        imgData[curPosition + 3] = 0xFF;
-                    }
-                    curPosition += 4;
-                }
-                curPosition += overhang;
-            }
-            return imgData;
-        }
-
+		}        
         
 
         public PixMap GetPixelMap(string name)

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
+using Carmageddon.Physics;
 
 namespace Carmageddon
 {
@@ -49,6 +50,9 @@ namespace Carmageddon
                 HorizonTexture = horizonPix.PixMaps[0].Texture;
             }
             GameVariables.DepthCueMode = RaceFile.DepthCueMode;
+
+
+            Carmageddon.Physics.TrackMesh.Generate(_actors, _models);
         }
 
         public void Update(GameTime gameTime)

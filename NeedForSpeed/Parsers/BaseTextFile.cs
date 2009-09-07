@@ -22,7 +22,7 @@ namespace Carmageddon.Parsers
             _file.Close();
         }
 
-        protected void SkipLines(int skip)
+        public void SkipLines(int skip)
         {
             if (skip == 0) return;
             int count = 0;
@@ -36,7 +36,7 @@ namespace Carmageddon.Parsers
             }
         }
 
-        protected string SkipLinesTillComment(string comment)
+        public string SkipLinesTillComment(string comment)
         {
             while (true)
             {
@@ -51,7 +51,7 @@ namespace Carmageddon.Parsers
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        protected string ReadLine()
+        public string ReadLine()
         {
             while (true)
             {
@@ -63,23 +63,59 @@ namespace Carmageddon.Parsers
             }
         }
 
-        protected int ReadLineAsInt()
+        public int ReadLineAsInt()
         {
             string line = ReadLine();
             return int.Parse(line);
         }
 
-        protected Vector3 ReadLineAsVector3()
+        public Vector3 ReadLineAsVector3()
         {
             return ReadLineAsVector3(true);
         }
 
-        protected Vector3 ReadLineAsVector3(bool scale)
+        public Vector3 ReadLineAsVector3(bool scale)
         {
             string line = ReadLine();
             string[] tokens = line.Split(new char[] {',', '\t', ' '}, StringSplitOptions.RemoveEmptyEntries);
             Debug.Assert(tokens.Length == 3);
-            return new Vector3(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2])) * GameVariables.Scale;
+            Vector3 vec = new Vector3(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2]));
+            if (scale) vec *= GameVariables.Scale;
+            return vec;
+        }
+
+        public Vector2 ReadLineAsVector2(bool scale)
+        {
+            string line = ReadLine();
+            string[] tokens = line.Split(new char[] { ',', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            Debug.Assert(tokens.Length == 2);
+            Vector2 vec = new Vector2(float.Parse(tokens[0]), float.Parse(tokens[1]));
+            if (scale) vec *= new Vector2(GameVariables.Scale.X, GameVariables.Scale.Y);
+            return vec;
+        }
+
+        public Matrix ReadMatrix()
+        {
+            Matrix m = new Matrix();
+            Vector3 v = ReadLineAsVector3(false);
+            m.M11 = v.X;
+            m.M12 = v.Y;
+            m.M13 = v.Z;
+            v = ReadLineAsVector3(false);
+            m.M21 = v.X;
+            m.M22 = v.Y;
+            m.M23 = v.Z;
+            v = ReadLineAsVector3(false);
+            m.M31 = v.X;
+            m.M32 = v.Y;
+            m.M33 = v.Z;
+            v = ReadLineAsVector3(false);
+            m.M41 = v.X;
+            m.M42 = v.Y;
+            m.M43 = v.Z;
+            m.M44 = 1;
+            
+            return m;
         }
     }
 }

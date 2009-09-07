@@ -18,10 +18,8 @@ namespace NFSEngine
 		private Vector3 _lookAtOffset = new Vector3(0, 2.8f, 0);
 		private Vector3 _lookAt;
 		private float _stiffness = 1800.0f;
-		private float _zstiffness = 2.0f;
 		private float _damping = 600.0f;
 		private float _mass = 50.0f;
-		private Vector3 _position;
 		private Vector3 _velocity;
 		private float _aspectRatio = 4.0f / 3.0f;
 		private float _fieldOfView = MathHelper.ToRadians(45.0f);
@@ -40,20 +38,10 @@ namespace NFSEngine
             set { _chasePosition = value; }
         }        
 
-        public void FollowObject(GameObject obj)
-        {
-            _chasePosition = obj.Position;
-            _chaseDirection = obj.Orientation;
-        }
-
         /// <summary>
         /// Direction the chased object is facing.
         /// </summary>
-        public Vector3 ChaseDirection
-        {
-            get { return _chaseDirection; }
-            set { _chaseDirection = value; }
-        }        
+        public Vector3 Orientation {get; set; }
 
         /// <summary>
         /// Chased object's Up vector.
@@ -120,15 +108,7 @@ namespace NFSEngine
             get { return _stiffness; }
             set { _stiffness = value; }
         }
-		
-		/// <summary>
-		/// Controls how hard the camera tries to keep up with the chased object 
-		/// </summary>
-        public float ZStiffness
-        {
-            get { return _zstiffness; }
-            set { _zstiffness = value; }
-        }
+
 		
         /// <summary>
         /// Physics coefficient which approximates internal friction of the spring.
@@ -154,10 +134,7 @@ namespace NFSEngine
         /// <summary>
         /// Position of camera in world space.
         /// </summary>
-        public Vector3 Position
-        {
-            get { return _position; }
-        }
+        public Vector3 Position {get; set; }
 		
         /// <summary>
         /// Velocity of camera.
@@ -200,11 +177,7 @@ namespace NFSEngine
         /// <summary>
         /// Distance to the far clipping plane.
         /// </summary>
-        public float FarPlaneDistance
-        {
-            get { return _farPlaneDistance; }
-            set { _farPlaneDistance = value; }
-        }
+        public float DrawDistance {get ;set; }
 		
         #endregion
 
@@ -233,9 +206,9 @@ namespace NFSEngine
         private void UpdateWorldPositions()
         {
             Matrix transform = Matrix.Identity;
-            transform.Forward = ChaseDirection;
+            transform.Forward = Orientation;
             transform.Up = Up;
-            transform.Right = Vector3.Cross(Up, ChaseDirection);
+            transform.Right = Vector3.Cross(Up, Orientation);
 
             // Calculate desired camera properties in world space
             _desiredPosition = ChasePosition + Vector3.TransformNormal(DesiredPositionOffset, transform);
@@ -249,7 +222,7 @@ namespace NFSEngine
         {
             _view = Matrix.CreateLookAt(this.Position, this.LookAt, this.Up);
             _projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView,
-                AspectRatio, NearPlaneDistance, FarPlaneDistance);
+                AspectRatio, NearPlaneDistance, DrawDistance);
         }
 
         /// <summary>
@@ -266,7 +239,7 @@ namespace NFSEngine
             _velocity = Vector3.Zero;
 
             // Force desired position
-            _position = _desiredPosition;
+            Position = _desiredPosition;
 
             UpdateMatrices();
         }
@@ -284,7 +257,7 @@ namespace NFSEngine
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Calculate spring force
-            Vector3 stretch = (_position - _desiredPosition);
+            Vector3 stretch = (Position - _desiredPosition);
             
             Vector3 force = -_stiffness * stretch - _damping * _velocity;
 
@@ -293,20 +266,9 @@ namespace NFSEngine
             _velocity += acceleration * elapsed;
 
             // Apply velocity
-            _position += _velocity * elapsed;
-
-			// Keep up with chased object
-            //if (Vector3.Distance(_chasePosition, _position) > 50)
-            //{
-            _position += _chaseDirection * elapsed * (Vector3.Distance(_chasePosition, _position)) * _zstiffness;
-            //}
+            Position += _velocity * elapsed;
 
             UpdateMatrices();
-        }
-
-        public void SetPosition(Vector3 position)
-        {
-            _position = position;
         }
     }
 }
