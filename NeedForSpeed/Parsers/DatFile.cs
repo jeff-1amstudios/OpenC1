@@ -263,7 +263,7 @@ namespace Carmageddon.Parsers
                 {
                     Debug.Assert(false);
                 }
-                _effect.FogStart = Engine.Instance.DrawDistance - 45 * GameVariables.Scale.Z;
+                _effect.FogStart = Engine.Instance.DrawDistance - 20 * GameVariables.Scale.Z;
                 _effect.FogEnd = Engine.Instance.DrawDistance;
                 //effect.LightingEnabled = true;
                 //effect.EnableDefaultLighting();

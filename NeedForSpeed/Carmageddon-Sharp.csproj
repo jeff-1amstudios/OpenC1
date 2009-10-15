@@ -114,7 +114,7 @@
     <Compile Include="Parsers\Track\SkyboxGenerator.cs" />
     <Compile Include="ResourceCache.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="PlayGameMode.cs" />
+    <Compile Include="PlayGameScreen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />

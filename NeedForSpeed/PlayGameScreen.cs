@@ -12,7 +12,7 @@ using Carmageddon.Track;
 
 namespace Carmageddon
 {
-    class PlayGameMode : IGameScreen
+    class PlayGameScreen : IGameScreen
     {
         Vehicle _car;
         Race _race;
@@ -22,7 +22,7 @@ namespace Carmageddon
 
         FixedChaseCamera _camera;
 
-        public PlayGameMode()
+        public PlayGameScreen()
         {
             //Engine.Instance.Device.SamplerStates[0].MagFilter = TextureFilter.Anisotropic;
             //Engine.Instance.Device.SamplerStates[0].MinFilter = TextureFilter.Anisotropic;
@@ -31,7 +31,7 @@ namespace Carmageddon
 
             //_car = new Vehicle(@"C:\Games\carma1\data\cars\blkeagle.txt");
 
-            _race = new Race(@"C:\Games\carma1\data\races\citya1.TXT");
+            _race = new Race(@"C:\Games\carma1\data\races\cityb2.TXT");
             _basicVehicle = new Carmageddon.Physics.PhysicsVehicle(Carmageddon.Physics.PhysX.Instance.Scene, _race.RaceFile.GridPosition, 1);
 
             //if (_race.HorizonTexture != null)
@@ -89,27 +89,18 @@ namespace Carmageddon
             if (input.IsKeyDown(Keys.Left) || input.IsKeyDown(Keys.Right))
             {
                 if (input.IsKeyDown(Keys.Left))
-                    _basicVehicle.Steer(-0.78f);
+                    _basicVehicle.SteerLeft();
                 else
-                    _basicVehicle.Steer(0.78f);
+                    _basicVehicle.SteerRight();
             }
             else
-                _basicVehicle.Steer(0.0f);
-
-            //if (input.IsKeyDown(Keys.B))
-            //    _carObject.Car.HBrake = 1.0f;
-            //else
-            //    _carObject.Car.HBrake = 0.0f;
+                _basicVehicle.StopSteering();
 
             _camera.Position = _basicVehicle.VehicleGlobalPosition;
             _camera.Orientation = _basicVehicle.VehicleGlobalOrientation.Forward;
 
-
-            //float timeStep = (float)gameTime.ElapsedGameTime.Ticks / TimeSpan.TicksPerSecond;
-            //if (timeStep < 1.0f / 60.0f) _physicSystem.Integrate(timeStep);
-            //else _physicSystem.Integrate(1.0f / 60.0f);
-
-            GameConsole.WriteLine(Engine.Instance.Camera.Position, 0);
+            GameConsole.WriteLine(Engine.Instance.Camera.Position);
+            GameConsole.WriteLine("Speed " + _basicVehicle.Speed);
         }
 
         public void Draw()

@@ -35,7 +35,7 @@ namespace NFSEngine
             frameCounter++;
 
             string fps = string.Format("fps: {0}", frameRate);
-            GameConsole.WriteLine(fps, 10);
+            GameConsole.WriteLine(fps);
         }
     }
 }

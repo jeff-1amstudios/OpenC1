@@ -25,7 +25,7 @@ namespace Carmageddon
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
+            
             _graphics.PreferredBackBufferWidth = 1024;
             _graphics.PreferredBackBufferHeight = 768;
             _graphics.PreferMultiSampling = true;
@@ -48,7 +48,7 @@ namespace Carmageddon
             base.Initialize();
 
             Engine.Initialize(this, _graphics);
-            Engine.Instance.DrawDistance = 100;
+            Engine.Instance.DrawDistance = 140;
 
             //enable per-pixel transparency
             Engine.Instance.Device.RenderState.AlphaTestEnable = true;
@@ -61,7 +61,7 @@ namespace Carmageddon
             ////cam.LookAtOffset = new Vector3(0.0f, 150.0f, 0.0f);
             //cam.Reset();
 
-            Engine.Instance.Mode = new PlayGameMode();
+            Engine.Instance.Mode = new PlayGameScreen();
             
             
         }
@@ -108,7 +108,7 @@ namespace Carmageddon
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            _graphics.GraphicsDevice.Clear(Color.Black);
+            _graphics.GraphicsDevice.Clear(Color.WhiteSmoke);
 
             base.Draw(gameTime);
         }

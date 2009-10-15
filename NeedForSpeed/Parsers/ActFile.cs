@@ -241,7 +241,7 @@ namespace Carmageddon.Parsers
 
             models.DoneRender();
 
-            //GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered, 0);
+            GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered);
         }
 
         private void RenderChildren(BoundingFrustum frustum, Actor actor, BasicEffect effect)

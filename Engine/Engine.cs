@@ -69,6 +69,8 @@ namespace PlatformEngine
 
         public override void Update(GameTime gameTime)
         {
+            GameConsole.Clear();
+
             base.Update(gameTime);
             
             _inputProvider.Update(gameTime);

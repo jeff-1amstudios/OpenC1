@@ -49,7 +49,7 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
             
             SceneDescription sceneDescription = new SceneDescription();
-            sceneDescription.Gravity = new Vector3(0f, -9.81f, 0f);
+            sceneDescription.Gravity = new Vector3(0f, -9.81f*2, 0f);  //double gravity
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
             sceneDescription.MaximumTimestep = 0.01666667f;
             sceneDescription.MaximumIterations = 8;

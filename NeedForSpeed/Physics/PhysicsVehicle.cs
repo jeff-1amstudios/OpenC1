@@ -18,6 +18,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StillDesign.PhysX;
 using OneamEngine;
+using NFSEngine;
 #endregion
 
 namespace Carmageddon.Physics
@@ -37,16 +38,18 @@ namespace Carmageddon.Physics
         private WheelShape FRWheel;
         private WheelShape BLWheel;
         private WheelShape BRWheel;
-        private bool wheelOnGround; // Cause we only colorize the ground if the car touches it
-        private float airTime; // Time spent in air
+        private bool _wheelOnGround; // Cause we only colorize the ground if the car touches it
+        private float _airTime; // Time spent in air
 
-        float endSteerangle = 0f; // Desired steering angle
-        bool backwards = false;
-        float currentTorque = 0f;
-        // aktuelle Lenkwinkel, Motor- und Bremskraft
-        float cSteerangle = 0.0f;
-        float cMotortorque = 0.0f;
-        float cBraketorque = 0.0f;
+        float _desiredSteerAngle = 0f; // Desired steering angle
+        bool _backwards = false;
+        float _currentTorque = 0f;
+        float _tireStiffness;
+        Vector3 _centerOfMass;
+
+        float _steerAngle = 0.0f;
+        float _motorTorque = 0.0f;
+        float _brakeTorque = 0.0f;
 
         // Buggy Pose
         Matrix mBuggyPose = Matrix.Identity;
@@ -103,12 +106,13 @@ namespace Carmageddon.Physics
         const short BR_WHEEL_ID = 4;
 
         // sonstige
-        float speed = 0.0f;
+        float _speed = 0.0f;
         bool boost = false;
 
         Vector3 DOWNFORCE = new Vector3(0.0f, -20000.0f, 0.0f); // To keep the car from flipping over too easily
         Vector3 ROCKETIMPACT = new Vector3(0, -900, 0); // Impact of fireing a rocket
-        public float sideTilt = 0;
+        public float _sideTilt = 0;
+
 
         // We use two different tire descriptions depending on the car's speed
         TireFunctionDescription HS_latTFD;
@@ -147,8 +151,8 @@ namespace Carmageddon.Physics
         }
 
 
-        public float Speed { get { return speed; } }
-        public float CurrentMotortorque { get { return cMotortorque; } }
+        public float Speed { get { return _speed; } }
+        public float CurrentMotortorque { get { return _motorTorque; } }
         public Vector3 Velocity
         {
             get { return vSpeed; }
@@ -156,7 +160,7 @@ namespace Carmageddon.Physics
 
         public bool OnGround
         {
-            get { return wheelOnGround; }
+            get { return _wheelOnGround; }
         }
 
         public bool Boost
@@ -165,7 +169,7 @@ namespace Carmageddon.Physics
             set
             {
                 boost = value;
-                Accelerate(currentTorque);
+                Accelerate(_currentTorque);
             }
         }
 
@@ -173,8 +177,8 @@ namespace Carmageddon.Physics
         {
             get
             {
-                if (wheelOnGround) return -1f;
-                return airTime;
+                if (_wheelOnGround) return -1f;
+                return _airTime;
             }
         }
 
@@ -199,7 +203,6 @@ namespace Carmageddon.Physics
                 IOHelper.WriteToErrorLog("Could not load Vehicle dimensions: " + e.ToString());
                 vehicleDims = new VehicleDimensions();
             }
-            //ScreenManager.vehicleDataHash = Hasher.GetMD5HashFromString(vehicleDims.ToString());
 
             float x;
             float y;
@@ -219,7 +222,7 @@ namespace Carmageddon.Physics
             float h = vehicleDims.Heigth - vehicleDims.dTop;
             float l = vehicleDims.Length;
             boxDesc.Size = new Vector3(w, h, l);
-            boxDesc.LocalPosition = new Vector3(0.0f, -(vehicleDims.Heigth - h) / 2, 0.0f);
+            boxDesc.LocalPosition = new Vector3(0.0f, -(vehicleDims.Heigth - h) / 2 + 0.3f, 0.0f);
             actorDesc.Shapes.Add(boxDesc);
 
             // obere Collision-Box des Vehicles
@@ -229,7 +232,7 @@ namespace Carmageddon.Physics
             boxDesc = new BoxShapeDescription(w, h, l);
 
             z = (float)((vehicleDims.dFront + l / 2) - vehicleDims.Length / 2);
-            boxDesc.LocalPosition = new Vector3(0.0f, (vehicleDims.Heigth - h) / 2, z);
+            boxDesc.LocalPosition = new Vector3(0.0f, (vehicleDims.Heigth - h) / 2 + 0.3f, z);
             actorDesc.Shapes.Add(boxDesc);
 
             // Actor erstellen
@@ -249,18 +252,18 @@ namespace Carmageddon.Physics
 
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 1.0f;
-            lngTFD.ExtremumValue = 0.02f;
+            lngTFD.ExtremumValue = 20000f;
             lngTFD.AsymptoteSlip = 2.0f;
-            lngTFD.AsymptoteValue = 0.01f;
-            lngTFD.StiffnessFactor = 10000000.0f;
+            lngTFD.AsymptoteValue = 10000f;
+            lngTFD.StiffnessFactor = 1;
 
             // ----------------------
             TireFunctionDescription latTfd = new TireFunctionDescription();
             latTfd.ExtremumSlip = 1.0f;
-            latTfd.ExtremumValue = 0.01f;
+            latTfd.ExtremumValue = 1250f;
             latTfd.AsymptoteSlip = 2.0f;
-            latTfd.AsymptoteValue = 0.008f;
-            latTfd.StiffnessFactor = 60000.0f; // war 60000.0f
+            latTfd.AsymptoteValue = 625f;
+            latTfd.StiffnessFactor = 1; // war 60000.0f
 
             LS_latTFD = latTfd; // low speed
 
@@ -287,7 +290,7 @@ namespace Carmageddon.Physics
             MaterialDescription md = new MaterialDescription();
             md.Restitution = 0.3f;
             md.DynamicFriction = 0.0f;
-            md.StaticFriction = 0.9f;
+            md.StaticFriction = 0.5f;
             Material m = scene.CreateMaterial(md);
             wheelDesc.Material = m;
             //wheelDesc.Material.Flags = MaterialFlag.DisableFriction;
@@ -312,17 +315,17 @@ namespace Carmageddon.Physics
             FLWheel = (WheelShape)VehicleBody.CreateShape(wheelDesc);
             FLWheel.Name = "FL-Wheel";
 
-            // back left
-            wheelDesc.LocalPosition = wheelPosBack;
-            BLWheel = (WheelShape)VehicleBody.CreateShape(wheelDesc);
-            BLWheel.SteeringAngle = 0.0f;
-            BLWheel.Name = "BL-Wheel";
-
             // front right
             wheelPosFront.X *= -1;
             wheelDesc.LocalPosition = wheelPosFront;
             FRWheel = (WheelShape)VehicleBody.CreateShape(wheelDesc);
             FRWheel.Name = "FR-Wheel";
+
+            // back left
+            wheelDesc.LocalPosition = wheelPosBack;
+            BLWheel = (WheelShape)VehicleBody.CreateShape(wheelDesc);
+            BLWheel.SteeringAngle = 0.0f;
+            BLWheel.Name = "BL-Wheel";
 
             // back right
             wheelPosBack.X *= -1;
@@ -332,10 +335,13 @@ namespace Carmageddon.Physics
             BRWheel.Name = "BR-Wheel";
 
             Vector3 massPos = VehicleBody.CenterOfMassLocalPosition;
-            massPos.Y -= 0.75f;
+            massPos.Y -= 0.45f;
+            _centerOfMass = massPos;
+
             VehicleBody.SetCenterOfMassOffsetLocalPosition(massPos);
             VehicleBody.AngularDamping = 2.0f;
-            VehicleBody.LinearDamping = 0.0005f; // war 0.005f
+
+            VehicleBody.LinearDamping = 0.005f; // war 0.005f
             VehicleBody.WakeUp(60.0f);
 
             // --- SuspensionPose ------------------------------
@@ -345,34 +351,13 @@ namespace Carmageddon.Physics
             dh_front = (FLWheel.SuspensionTravel - vehicleDims.FW_Radius) / 0.6f;
             // -------------------------------------------------
 
-            // Matritzen für RM
-            //RenderingManager.AddBuggyTransformsMatrix(mBuggyPose);
-            //RenderingManager.AddTireTransformsList(mFLWheelGlobalPose);
-            //RenderingManager.AddTireTransformsList(mFRWheelGlobalPose);
-            //RenderingManager.AddTireTransformsList(mBLWheelGlobalPose);
-            //RenderingManager.AddTireTransformsList(mBRWheelGlobalPose);
-            //RenderingManager.AddRimTransformsList(mFLWheelGlobalPose);
-            //RenderingManager.AddRimTransformsList(mBLWheelGlobalPose);
-            //RenderingManager.AddRimTransformsList(mFRRimGloabalPose);
-            //RenderingManager.AddRimTransformsList(mBRRimGloabalPose);
-            //RenderingManager.AddBSuspensionLeftTransforms(sPoseBL);
-            //RenderingManager.AddBSuspensionRightTransforms(sPoseBR);
-            //RenderingManager.AddFSuspensionLeftTransforms(sPoseFL);
-            //RenderingManager.AddFSuspensionRightTransforms(sPoseFR);
-
             //BLSpring = Matrix.CreateRotationZ(MathHelper.ToRadians(30));
             BLSpring = mBLSpring;
             BRSpring = mBRSpring;
             FLSpring = mFLSpring;
             FRSpring = mFRSpring;
-            //RenderingManager.AddSpringTransforms(BLSpring);
-            //RenderingManager.AddSpringTransforms(BRSpring);
-            //RenderingManager.AddSpringTransforms(FLSpring);
-            //RenderingManager.AddSpringTransforms(FRSpring);
 
-
-
-			VehicleBody.RaiseBodyFlag(BodyFlag.Visualization);
+            VehicleBody.RaiseBodyFlag(BodyFlag.Visualization);
 
             //VehicleBody.ClearBodyFlag(BodyFlag.Visualization);
 
@@ -382,9 +367,6 @@ namespace Carmageddon.Physics
         {
             VehicleBody.Dispose();
             VehicleBody = null;
-#if DEBUG
-            Console.WriteLine("Auto deleted");
-#endif
         }
 
         #endregion
@@ -396,33 +378,33 @@ namespace Carmageddon.Physics
             vSpeed = VehicleBody.LinearVelocity;
             Vector3 vDirection = VehicleBody.GlobalOrientation.Forward;
             Vector3 vNormal = vSpeed * vDirection;
-            speed = vNormal.Length() * 5f; // Changed to LinearVelocity.. Any disadvantages?
-            //if (Math.Sign(vNormal.X) != Math.Sign(vDirection.X) && Math.Sign(vNormal.Z) != Math.Sign(vDirection.Z)) speed = -speed;
-            float endLocal = endSteerangle / (1 + speed * 0.02f);
-            float diff = Math.Abs(endLocal - cSteerangle);
+            _speed = vNormal.Length() * 2f; // Changed to LinearVelocity.. Any disadvantages?
+
+            float endLocal = _desiredSteerAngle / (1 + _speed * 0.02f);
+            float diff = Math.Abs(endLocal - _steerAngle);
             if (diff > 0.0025f) // Is the current steering angle ~= desired steering angle?
             { // If not, adjust carefully
-                if (diff > 0.4f)
-                    diff = 0.05f; // Steps shouldn't be too large
+                if (diff > 0.025f)
+                    diff = 0.025f; // Steps shouldn't be too large
                 else
-                    diff *= 0.125f;
+                    diff *= 0.05f;
                 // This will make steering independent of framerate
                 diff *= (gameTime.ElapsedGameTime.Milliseconds / 16.66667f); // Magic number: duration of a frame @ 60fps;
-                if (endLocal > cSteerangle)
+                if (endLocal > _steerAngle)
                 {
-                    cSteerangle += diff;
+                    _steerAngle += diff;
                 }
                 else
                 {
-                    cSteerangle -= diff;
+                    _steerAngle -= diff;
                 }
-                FLWheel.SteeringAngle = cSteerangle;
-                FRWheel.SteeringAngle = cSteerangle;
+                FLWheel.SteeringAngle = _steerAngle;
+                FRWheel.SteeringAngle = _steerAngle;
             }
             cAxleSpeed_LeftSide *= Matrix.CreateRotationX(MathHelper.ToRadians(BLWheel.AxleSpeed));
             cAxleSpeed_RightSide *= Matrix.CreateRotationX(MathHelper.ToRadians(BRWheel.AxleSpeed));
 
-            wheelOnGround = false;
+            _wheelOnGround = false;
 
             // Positionen Updaten
             mBuggyPose = VehicleBody.GlobalPose;
@@ -443,54 +425,90 @@ namespace Carmageddon.Physics
             FRSpring = mFRSpring * VehicleBody.GlobalPose;
             // -----------------
 
-            if (wheelOnGround)
-                airTime = 0;
+            if (_wheelOnGround)
+                _airTime = 0;
             else
-                airTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _airTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             Vector3 orientation = VehicleBody.GlobalOrientation.Up;
 
-            if (orientation.Y < 0 && speed < 1f)
+            if (orientation.Y < 0 && _speed < 1f)
                 Reset();
 
-            if (speed < 10f) // Change between breaking and accelerating;
+            if (_speed < 1f) // Change between breaking and accelerating;
             {
-                if (backwards && currentTorque > 0.01f)
+                if (_backwards && _currentTorque > 0.01f)
                 {
-                    backwards = false;
-                    Accelerate(currentTorque);
+                    _backwards = false;
+                    Accelerate(_currentTorque);
                 }
-                else if (!backwards && currentTorque < 0.01f)
+                else if (!_backwards && _currentTorque < 0.01f)
                 {
-                    backwards = true;
-                    Accelerate(currentTorque);
+                    _backwards = true;
+                    Accelerate(_currentTorque);
                 }
             }
-
 
             // NPS (non-player stabilizer)
-            Vector3 v2 = VehicleBody.GlobalOrientation.Up;//Vector3.Transform(v1, VehicleBody.GlobalOrientation);
-            v2.Z = 0;
-            v2.Normalize();
-            Vector3 v1 = new Vector3(0, 1, 0);
-            sideTilt = MathHelper.ToDegrees((float)Math.Acos(Vector3.Dot(v1, v2)));//MathHelper.ToDegrees((float) Math.Acos( Vector3.Dot(v1, v2)));
+            //Vector3 v2 = VehicleBody.GlobalOrientation.Up;
+            //v2.Z = 0;
+            //v2.Normalize();
+            //Vector3 v1 = new Vector3(0, 1, 0);
+            //_sideTilt = MathHelper.ToDegrees((float)Math.Acos(Vector3.Dot(v1, v2)));
 
-            if ((sideTilt > 25) && (speed > 60))
-            {
-                BRWheel.LateralTireForceFunction = HS_latTFD;
-                BLWheel.LateralTireForceFunction = HS_latTFD;
-            }
+            //if ((_sideTilt > 15)) // && (_speed > 60))
+            //{
+            //    BRWheel.LateralTireForceFunction = HS_latTFD;
+            //    BLWheel.LateralTireForceFunction = HS_latTFD;
 
-            else
-            {
-                BRWheel.LateralTireForceFunction = LS_latTFD;
-                BLWheel.LateralTireForceFunction = LS_latTFD;
-            }
+            //    GameConsole.WriteLine("slide");
+            //    if (!ax)
+            //    {
+            //        Vector3 massPos = VehicleBody.CenterOfMassLocalPosition;
+            //        massPos.Y -= 0.40f;
+            //        //VehicleBody.SetCenterOfMassOffsetLocalPosition(massPos);
+            //    }
+            //    ax = true;
+            //}
 
-            if (!wheelOnGround || boost)
-            {
-                VehicleBody.AddForce(DOWNFORCE, ForceMode.Force);
-            }
+            //else
+            //{
+            //    if (ax)
+            //    {
+            //        Vector3 massPos = VehicleBody.CenterOfMassLocalPosition;
+            //        massPos.Y += 0.40f;
+            //        //VehicleBody.SetCenterOfMassOffsetLocalPosition(massPos);
+            //    }
+            //    BRWheel.LateralTireForceFunction = LS_latTFD;
+            //    BLWheel.LateralTireForceFunction = LS_latTFD;
+            //    ax = false;
+            //}
+
+            //LS_latTFD.StiffnessFactor = speed * 150000.0f;
+            //GameConsole.WriteLine(LS_latTFD.StiffnessFactor);
+            UpdateTireStiffness();
+        }
+        bool ax;
+
+        private void UpdateTireStiffness()
+        {
+            Vector3 com = _centerOfMass;
+            float offset = Math.Min(_speed * 0.02f, 0.53f);
+            com.Y -= offset;
+            GameConsole.WriteLine("Center of mass: " + offset);
+            VehicleBody.SetCenterOfMassOffsetLocalPosition(com);
+            //PlatformEngine.Engine.Instance.GraphicsUtils.AddSolidShape(PlatformEngine.ShapeType.Cube, Matrix.CreateTranslation(VehicleGlobalPosition) * Matrix.CreateTranslation(com), Color.Yellow, null);
+
+            offset = 1 - Math.Min(0.8f + _speed * 0.001f, 0.991f);
+
+            GameConsole.WriteLine("Tire stiffness: " + offset);
+            LS_latTFD.StiffnessFactor = offset;
+            FRWheel.LateralTireForceFunction = LS_latTFD;
+            FLWheel.LateralTireForceFunction = LS_latTFD;
+            //LS_latTFD.StiffnessFactor = Math.Min(offset * 1.5f, 1);
+            //BLWheel.LateralTireForceFunction = LS_latTFD;
+            //BRWheel.LateralTireForceFunction = LS_latTFD;
+
         }
 
         #endregion
@@ -499,51 +517,63 @@ namespace Carmageddon.Physics
 
         public void Accelerate(float torque)
         {
-            //bool forward = VehicleBody.;
-
-            currentTorque = torque;
+            _currentTorque = torque;
             if (torque > 0.0001f)
             {
-                if (backwards)
+                if (_backwards)
                 {
-                    cMotortorque = 0f;
-                    cBraketorque = torque * 300f;
+                    _motorTorque = 0f;
+                    _brakeTorque = torque * 700f;
                 }
                 else
                 {
-                    cMotortorque = -torque * 300f;
-                    if (boost) cMotortorque *= 1.25f;
-                    cBraketorque = 0.0f;
+                    _motorTorque = -torque * 1400f;
+                    if (boost) _motorTorque *= 1.25f;
+                    _brakeTorque = 0.0f;
                 }
             }
 
             else if (torque < -0.0001f)
             {
-                if (backwards)
+                if (_backwards)
                 {
-                    cMotortorque = -torque * 90f;
-                    cBraketorque = 0f;
+                    _motorTorque = -torque * 500f;
+                    _brakeTorque = 0f;
                 }
                 else
                 {
-                    cMotortorque = 0.0f;
-                    cBraketorque = -torque * 700f;
+                    _motorTorque = 0.0f;
+                    _brakeTorque = -torque * 1000f;
                 }
             }
 
             else
             {
-                cMotortorque = 0.0f;
-                cBraketorque = 50f;
+                _motorTorque = 0.0f;
+                _brakeTorque = 250f;
             }
 
             UpdateTorque();
             VehicleBody.WakeUp();
         }
 
-        public void Steer(float angle)
+        public void SteerLeft()
         {
-            endSteerangle = -angle; // Just set the desired steering angle, steering is handled in Update()
+            //float ratio = Math.Min(1, (1/_speed)*20);
+            _desiredSteerAngle = 0.50f;// *ratio;
+            //GameConsole.WriteLine(ratio);
+        }
+
+        public void SteerRight()
+        {
+            //float ratio = Math.Min(1, (1/_speed)*20);
+            _desiredSteerAngle = -0.50f; // *ratio;
+            //GameConsole.WriteLine(ratio);
+        }
+
+        public void StopSteering()
+        {
+            _desiredSteerAngle = 0;
         }
 
         #endregion
@@ -552,15 +582,15 @@ namespace Carmageddon.Physics
 
         private void UpdateTorque()
         {
-            //FLWheel.MotorTorque = cMotortorque;
-            //FRWheel.MotorTorque = cMotortorque;
-            BLWheel.MotorTorque = cMotortorque;
-            BRWheel.MotorTorque = cMotortorque;
+            //FLWheel.MotorTorque = _motorTorque;
+            //FRWheel.MotorTorque = _motorTorque;
+            BLWheel.MotorTorque = _motorTorque;
+            BRWheel.MotorTorque = _motorTorque;
 
-            FLWheel.BrakeTorque = cBraketorque;
-            FRWheel.BrakeTorque = cBraketorque;
-            BLWheel.BrakeTorque = cBraketorque;
-            BRWheel.BrakeTorque = cBraketorque;
+            FLWheel.BrakeTorque = _brakeTorque;
+            FRWheel.BrakeTorque = _brakeTorque;
+            BLWheel.BrakeTorque = _brakeTorque;
+            BRWheel.BrakeTorque = _brakeTorque;
         }
 
 
@@ -603,7 +633,7 @@ namespace Carmageddon.Physics
             }
             else
             {
-                wheelOnGround = true;
+                _wheelOnGround = true;
                 cSuspensionLength = wcd.ContactPosition - cWheel.Radius;
             }
 
@@ -619,7 +649,6 @@ namespace Carmageddon.Physics
             else
                 return mTranslation * mWorld;
         }
-
 
         /// <summary>
         /// Vehicle nach dem Überschlag wieder horizontal ausrichten
@@ -647,12 +676,6 @@ namespace Carmageddon.Physics
         public void RocketImpact()
         {
             VehicleBody.AddLocalForceAtLocalPosition(ROCKETIMPACT, new Vector3(1, 0, .5f), ForceMode.Impulse);
-        }
-
-        public void Force(Vector3 vector3)
-        {
-            vector3.Y += 25f;
-            VehicleBody.AddForceAtLocalPosition(vector3, Vector3.Backward, ForceMode.Impulse, true);
         }
     }
 }

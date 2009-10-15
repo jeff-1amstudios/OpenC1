@@ -70,6 +70,7 @@ namespace Carmageddon.Parsers
 
                         Texture2D texture = new Texture2D(Engine.Instance.Device, currentPix.Width, currentPix.Height, 1, TextureUsage.None, SurfaceFormat.Color);
                         texture.SetData<byte>(Helpers.GetBytesForImage(pixels, currentPix.Width, currentPix.Height, GameVariables.Palette));
+                        //texture.GenerateMipMaps(TextureFilter.Linear);
                         //texture.Save("c:\\temp\\" + currentPix.Name + ".png", ImageFileFormat.Png);
                         currentPix.Texture = texture;
 						break;
