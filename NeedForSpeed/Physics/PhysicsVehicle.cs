@@ -107,7 +107,7 @@ namespace Carmageddon.Physics
 
         // sonstige
         float _speed = 0.0f;
-        bool boost = false;
+        bool _boost = true;
 
         Vector3 DOWNFORCE = new Vector3(0.0f, -20000.0f, 0.0f); // To keep the car from flipping over too easily
         Vector3 ROCKETIMPACT = new Vector3(0, -900, 0); // Impact of fireing a rocket
@@ -165,10 +165,10 @@ namespace Carmageddon.Physics
 
         public bool Boost
         {
-            get { return boost; }
+            get { return _boost; }
             set
             {
-                boost = value;
+                _boost = value;
                 Accelerate(_currentTorque);
             }
         }
@@ -181,6 +181,8 @@ namespace Carmageddon.Physics
                 return _airTime;
             }
         }
+
+        public bool Handbrake { get; set; }
 
         #endregion
 
@@ -255,7 +257,7 @@ namespace Carmageddon.Physics
             lngTFD.ExtremumValue = 20000f;
             lngTFD.AsymptoteSlip = 2.0f;
             lngTFD.AsymptoteValue = 10000f;
-            lngTFD.StiffnessFactor = 1;
+            lngTFD.StiffnessFactor = 2.5f;
 
             // ----------------------
             TireFunctionDescription latTfd = new TireFunctionDescription();
@@ -293,13 +295,14 @@ namespace Carmageddon.Physics
             md.StaticFriction = 0.5f;
             Material m = scene.CreateMaterial(md);
             wheelDesc.Material = m;
-            //wheelDesc.Material.Flags = MaterialFlag.DisableFriction;
+            wheelDesc.Material.Flags = MaterialFlag.DisableFriction;
 
-            SpringDescription spring = new SpringDescription();
-            float heightModifier = (suspensionSettings.WheelSuspension + wheelDesc.Radius) / suspensionSettings.WheelSuspension;
-            spring.SpringCoefficient = suspensionSettings.SpringRestitution * heightModifier;
-            spring.DamperCoefficient = suspensionSettings.SpringDamping * heightModifier;
-            spring.TargetValue = suspensionSettings.SpringBias * heightModifier;
+            SpringDescription spring = new SpringDescription(5000f, 0.5f, 0);
+            //float heightModifier = (suspensionSettings.WheelSuspension + wheelDesc.Radius) / suspensionSettings.WheelSuspension;
+            //spring.SpringCoefficient = suspensionSettings.SpringRestitution * heightModifier;
+            //spring.DamperCoefficient = suspensionSettings.SpringDamping * heightModifier;
+            //spring.TargetValue = suspensionSettings.SpringBias * heightModifier;
+            
             wheelDesc.Suspension = spring;
 
             // wheels
@@ -335,7 +338,7 @@ namespace Carmageddon.Physics
             BRWheel.Name = "BR-Wheel";
 
             Vector3 massPos = VehicleBody.CenterOfMassLocalPosition;
-            massPos.Y -= 0.45f;
+            massPos.Y -= 0.35f;
             _centerOfMass = massPos;
 
             VehicleBody.SetCenterOfMassOffsetLocalPosition(massPos);
@@ -496,19 +499,33 @@ namespace Carmageddon.Physics
             float offset = Math.Min(_speed * 0.02f, 0.53f);
             com.Y -= offset;
             GameConsole.WriteLine("Center of mass: " + offset);
-            VehicleBody.SetCenterOfMassOffsetLocalPosition(com);
-            //PlatformEngine.Engine.Instance.GraphicsUtils.AddSolidShape(PlatformEngine.ShapeType.Cube, Matrix.CreateTranslation(VehicleGlobalPosition) * Matrix.CreateTranslation(com), Color.Yellow, null);
-
-            offset = 1 - Math.Min(0.8f + _speed * 0.001f, 0.991f);
+            //VehicleBody.SetCenterOfMassOffsetLocalPosition(com);
+            
+            offset = 1 - Math.Min(0.75f + _speed * 0.001f, 0.991f);
 
             GameConsole.WriteLine("Tire stiffness: " + offset);
             LS_latTFD.StiffnessFactor = offset;
             FRWheel.LateralTireForceFunction = LS_latTFD;
             FLWheel.LateralTireForceFunction = LS_latTFD;
             //LS_latTFD.StiffnessFactor = Math.Min(offset * 1.5f, 1);
-            //BLWheel.LateralTireForceFunction = LS_latTFD;
-            //BRWheel.LateralTireForceFunction = LS_latTFD;
 
+            if (Handbrake)
+            {
+                TireFunctionDescription desc = BLWheel.LateralTireForceFunction;
+                desc.StiffnessFactor = 0.2f;
+                BLWheel.LateralTireForceFunction = desc;
+                BRWheel.LateralTireForceFunction = desc;
+            }
+            else
+            {
+                TireFunctionDescription desc = BLWheel.LateralTireForceFunction;
+                desc.StiffnessFactor = 1.0f;
+                BLWheel.LateralTireForceFunction = desc;
+                BRWheel.LateralTireForceFunction = desc;
+            }
+            WheelContactData contact = BRWheel.GetContactData();
+            GameConsole.WriteLine(String.Format("Wheel latSlip: {0}", contact.LateralSlip));
+            GameConsole.WriteLine(String.Format("Wheel lngSlip: {0}", contact.LongitudalSlip));
         }
 
         #endregion
@@ -528,7 +545,7 @@ namespace Carmageddon.Physics
                 else
                 {
                     _motorTorque = -torque * 1400f;
-                    if (boost) _motorTorque *= 1.25f;
+                    if (_boost) _motorTorque *= 1.5f;
                     _brakeTorque = 0.0f;
                 }
             }
@@ -584,8 +601,18 @@ namespace Carmageddon.Physics
         {
             //FLWheel.MotorTorque = _motorTorque;
             //FRWheel.MotorTorque = _motorTorque;
-            BLWheel.MotorTorque = _motorTorque;
-            BRWheel.MotorTorque = _motorTorque;
+            if (Handbrake)
+            {
+                BLWheel.MotorTorque = BRWheel.MotorTorque = 0;
+                BLWheel.BrakeTorque = -1000;
+                BRWheel.BrakeTorque = -1000;
+                return;
+            }
+            else
+            {
+                BLWheel.MotorTorque = _motorTorque;
+                BRWheel.MotorTorque = _motorTorque;
+            }
 
             FLWheel.BrakeTorque = _brakeTorque;
             FRWheel.BrakeTorque = _brakeTorque;

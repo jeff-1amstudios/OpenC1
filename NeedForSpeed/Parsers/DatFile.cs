@@ -30,6 +30,31 @@ namespace Carmageddon.Parsers
         public int VertexCount { get; set; }
         public int VertexBaseIndex { get; set; }
         public int IndexBufferStart { get; set; }
+
+        public void Render(Texture2D texture)
+        {
+            GraphicsDevice device = Engine.Instance.Device;
+            int baseVert = VertexBaseIndex;
+            int indexBufferStart = IndexBufferStart;
+
+            for (int i = 0; i < Polygons.Count; i++)
+            {
+                Polygon poly = Polygons[i];
+
+                if (GameVariables.CullingDisabled != poly.DoubleSided)
+                {
+                    device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
+                    GameVariables.CullingDisabled = poly.DoubleSided;
+                }
+
+                if (poly.Texture != null)
+                    device.Textures[0] = poly.Texture;
+                else
+                    device.Textures[0] = texture;
+
+                Engine.Instance.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3, indexBufferStart + i * 3, 1);
+            }
+        }
     }
 
     class DatFile : BaseDataFile

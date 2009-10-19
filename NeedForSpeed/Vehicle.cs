@@ -51,7 +51,9 @@ namespace Carmageddon
         {
             Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Clamp;
             Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Clamp;
-
+            //_models.SetupRender();
+            BasicEffect effect = _models.SetupRender();
+            _models.GetModels()[0].Render(null);
             _actors.Render(_models);
 
             Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;

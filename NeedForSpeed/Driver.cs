@@ -23,6 +23,7 @@ namespace Carmageddon
 
         public override void Update(GameTime gameTime)
         {           
+
         }
 
         public override void Render()

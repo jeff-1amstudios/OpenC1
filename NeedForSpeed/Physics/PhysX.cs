@@ -49,7 +49,7 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
             
             SceneDescription sceneDescription = new SceneDescription();
-            sceneDescription.Gravity = new Vector3(0f, -9.81f*2, 0f);  //double gravity
+            sceneDescription.Gravity = new Vector3(0f, -9.81f, 0f);  //double gravity
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
             sceneDescription.MaximumTimestep = 0.01666667f;
             sceneDescription.MaximumIterations = 8;
@@ -67,9 +67,9 @@ namespace Carmageddon.Physics
             Scene.SetActorGroupPairFlags(ds.VehicleGroupID, ds.ItemGroupID, ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
             Scene.UserContactReport = new ContactReport(Scene);
             MaterialDescription description = new MaterialDescription();
-            description.Restitution = 0.5f;
-            description.StaticFriction = 0.5f;
-            description.DynamicFriction = 0.5f;
+            description.Restitution = 0.4f;
+            description.StaticFriction = 0.2f;
+            description.DynamicFriction = 0.2f;
             Scene.DefaultMaterial.LoadFromDescription(description);
             InitScene();
         }

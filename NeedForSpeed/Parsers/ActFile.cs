@@ -263,42 +263,17 @@ namespace Carmageddon.Parsers
                 
                 if (actor.Model != null)
                 {
-                    Render(effect, actor);
+                    //Render
+                    effect.World = actor.Matrix;
+                    effect.CurrentTechnique.Passes[0].Begin();
+                    actor.Model.Render(actor.Texture);
+                    effect.CurrentTechnique.Passes[0].End();
+
                     GameVariables.NbrSectionsRendered++;
                 }
                 foreach (Actor child in actor.Children)
                     RenderChildren(frustum, child, effect);
             }            
-        }
-                
-
-        public void Render(BasicEffect effect, Actor actor)
-        {
-            GraphicsDevice device = Engine.Instance.Device;
-            effect.World = actor.Matrix;
-            effect.CurrentTechnique.Passes[0].Begin();
-
-            int baseVert = actor.Model.VertexBaseIndex;
-            int indexBufferStart = actor.Model.IndexBufferStart;
-
-            for (int i = 0; i < actor.Model.Polygons.Count; i++)
-            {
-                Polygon poly = actor.Model.Polygons[i];
-
-                if (_cullingDisabled != poly.DoubleSided)
-                {
-                    device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
-                    _cullingDisabled = poly.DoubleSided;
-                }
-
-                if (poly.Texture != null)
-                    device.Textures[0] = poly.Texture;
-                else
-                    device.Textures[0] = actor.Texture;
-
-                Engine.Instance.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3, indexBufferStart + i * 3, 1);
-            }
-            effect.CurrentTechnique.Passes[0].End();
         }
     }
 }

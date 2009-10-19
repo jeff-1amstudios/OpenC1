@@ -13,6 +13,7 @@ namespace Carmageddon
         public static Vector3 Scale = new Vector3(4);
         public static int NbrSectionsRendered = 0;
         public static int NbrSectionsChecked = 0;
+        public static bool CullingDisabled { get; set; }
         
         public static string DepthCueMode = "dark";
         public static int MarkedVert = 158;

@@ -96,6 +96,15 @@ namespace Carmageddon
             else
                 _basicVehicle.StopSteering();
 
+            if (input.IsKeyDown(Keys.Space))
+            {
+                _basicVehicle.Handbrake = true;
+            }
+            else
+            {
+                _basicVehicle.Handbrake = false;
+            }
+
             _camera.Position = _basicVehicle.VehicleGlobalPosition;
             _camera.Orientation = _basicVehicle.VehicleGlobalOrientation.Forward;
 
