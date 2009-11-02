@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using System.IO;
 using System.Diagnostics;
@@ -38,6 +38,18 @@ namespace Carmageddon.Parsers
         }
     }
 
+    class PhysicalProperties
+    {
+        public List<Vector3> WheelPositions = new List<Vector3>();
+        public BoundingBox BoundingBox;
+
+        public float NonDrivenWheelRadius, DrivenWheelRadius;
+        public float RideHeight;
+        public float SuspensionDamping;
+        public Vector3 CenterOfMass;
+        public float Mass;
+    }
+
     class CarFile : BaseTextFile
     {
         public List<string> MaterialFiles { get; private set; }
@@ -47,6 +59,7 @@ namespace Carmageddon.Parsers
         public string ActorFile { get; private set; }
         public string BonnetActorFile { get; private set; }
         public List<CrushSection> CrushSections = new List<CrushSection>();
+        public PhysicalProperties PhysicalProperties=new PhysicalProperties();
 
         public CarFile(string filename)
             : base(filename)
@@ -104,14 +117,17 @@ namespace Carmageddon.Parsers
             Debug.Assert(nbrSteerableWheels == 2);
             int wheel1Ref = ReadLineAsInt();
             int wheel2Ref = ReadLineAsInt();
-            SkipLines(8); //suspension refs, wheel diameters
+            SkipLines(6); //suspension refs
+
+            PhysicalProperties.NonDrivenWheelRadius = ReadLineAsFloat() / 2f;
+            PhysicalProperties.DrivenWheelRadius = ReadLineAsFloat() / 2f;
 
             ReadFunkSection();
             ReadGrooveSection();
 
             ReadCrushDataSection();
 
-            //read stuff for physics when we have it
+            ReadMechanicsSection();
 
             CloseFile();
         }
@@ -164,6 +180,36 @@ namespace Carmageddon.Parsers
                     }
                 }
             }
+        }
+
+        private void ReadMechanicsSection()
+        {
+            string startOfMechanics = ReadLine();
+            Debug.Assert(startOfMechanics.StartsWith("START OF MECHANICS"));
+
+            for (int i = 0; i < 4; i++)
+            {
+                Vector3 wheelpos = ReadLineAsVector3();
+            }
+
+            PhysicalProperties.CenterOfMass = ReadLineAsVector3(true);
+            if (startOfMechanics.EndsWith("2"))
+            {
+                int nbrBoxes = ReadLineAsInt();
+                Debug.Assert(nbrBoxes == 1);
+            }
+            PhysicalProperties.BoundingBox = new BoundingBox(ReadLineAsVector3(), ReadLineAsVector3());
+            //PhysicalProperties.BoundingBox.Max -= v;
+            //PhysicalProperties.BoundingBox.Min -= v;
+            if (!startOfMechanics.EndsWith("2"))
+            {
+                int nbrPoints = ReadLineAsInt();
+                SkipLines(nbrPoints);
+            }
+            SkipLines(2);
+            PhysicalProperties.RideHeight = ReadLineAsFloat();
+            PhysicalProperties.SuspensionDamping = ReadLineAsFloat(false);
+            PhysicalProperties.Mass = ReadLineAsFloat(false) * 1000;
         }
     }
 }

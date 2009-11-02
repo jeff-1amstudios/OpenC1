@@ -12,15 +12,15 @@ namespace NFSEngine
     public class FixedChaseCamera : ICamera
     {
         private Vector3 _chaseDistance;
-        public FixedChaseCamera(float chaseDistance)
+        public FixedChaseCamera(float chaseDistance, float height)
 		{
-            _chaseDistance = new Vector3(chaseDistance);
+            _chaseDistance = new Vector3(chaseDistance, height, chaseDistance);
             AspectRatio = 4f/3f;
             FieldOfView = MathHelper.ToRadians(45.0f);
             NearPlaneDistance = 1.0f;
 		}
 
-        AverageValueVector3 _lookAt = new AverageValueVector3(60);
+        AverageValueVector3 _lookAt = new AverageValueVector3(45);
 		
 		/// <summary>
 		/// Position of camera in world space.
@@ -61,7 +61,7 @@ namespace NFSEngine
 		
         public void Update(GameTime gameTime)
 		{
-            _lookAt.AddValue(new Vector3(0, 5, 0) + (-Orientation * _chaseDistance));
+            _lookAt.AddValue(new Vector3(0, _chaseDistance.Y, 0) + (-Orientation * _chaseDistance));
             Vector3 avgLookAt = _lookAt.GetAveragedValue();
             Vector3 cameraPosition = Position + avgLookAt;
             View = Matrix.CreateLookAt(cameraPosition, cameraPosition - avgLookAt + new Vector3(0,3,0), Vector3.Up);

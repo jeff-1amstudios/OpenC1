@@ -21,14 +21,14 @@ namespace NFSEngine
             Engine.Instance.GraphicsUtils.AddText(new Vector2(20, (_lines++) * 18 + 500), o.ToString(), Justify.MIDDLE_LEFT, Color.White);
         }
 
-        public static void WriteLine(Vector3 vec)
+        public static void WriteLine(string s, float o)
         {
-            vec.X = (float)Math.Round(vec.X,0);
-            vec.Y = (float)Math.Round(vec.Y, 0);
-            vec.Z = (float)Math.Round(vec.Z, 0);
-            WriteLine(vec.ToString());
+            WriteLine(s + ": " + o.ToString("0.00"));
         }
 
-
+        public static void WriteLine(string s, Vector3 vec)
+        {
+            WriteLine(s + ": " + vec.X.ToString("0.00, ") + vec.Y.ToString("0.00, ") + vec.Z.ToString("0.00"));
+        }
     }
 }

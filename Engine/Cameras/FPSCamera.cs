@@ -50,30 +50,44 @@ namespace PlatformEngine
         private const float GRAVITY = -9.8f;
         private const float DECELERATION = -0.5f;
         private const float STRAFE_SPEED_MULTIPLIER = 15.5f;
+
+        private const float VelocityInversionMultiplier = 20.0f;
+        private const float Acceleration = 5.0f;
+        private const float Deceleration = -5.0f;
+        private const float JumpVelocity = 0.23f;
+        private const float MaxSpeed = 0.5f;
         
                
         private float fovx;
         private float znear;
-        
 
-        public Vector3 Position { get; set; }
-        public Vector3 Orientation { get; set; }
+        private float _strafeDelta, _forwardDelta, _velocity;
+
+        private Vector3 _orientation, _position;
+
+        public Vector3 Position
+        {
+            get { return _position; }
+            set { _position = value; }
+        }
+        public Vector3 Orientation
+        {
+            get { return _orientation; }
+            set { _orientation = value; }
+        }
+
         public float DrawDistance { get; set; }
         
         public Matrix View {get; private set; }
         public Matrix Projection {get; private set; }
 
-        public FPSCamera(Game game)
+        public FPSCamera()
         {
             fovx = DEFAULT_FOVX;
-            znear = DEFAULT_ZNEAR;         
-            
-            int w = game.Window.ClientBounds.Width;
-            int h = game.Window.ClientBounds.Height;
-            float aspect = (float)w / (float)h;
+            znear = DEFAULT_ZNEAR;
 
             // Setup initial default view and projection matrices.
-            SetPerspective(DEFAULT_FOVX, aspect, DEFAULT_ZNEAR, DrawDistance);
+            SetPerspective(DEFAULT_FOVX, 4f/3f, DEFAULT_ZNEAR, DrawDistance);
             View = Matrix.Identity;
         }
 
@@ -111,13 +125,94 @@ namespace PlatformEngine
 
         public void Update(GameTime gameTime)
         {
+            InputProvider input = Engine.Instance.Input;
+            float elapsedTime = Engine.Instance.ElapsedSeconds;
+
+            _forwardDelta = input.MoveForward * elapsedTime * Acceleration;
+
+            _strafeDelta = input.Strafe * elapsedTime * Acceleration;
+
+
+            _orientation.X += input.RightThumbDelta * -1;
+            _orientation.Y += input.LeftThumbDelta * -1;
+            
+            UpdateVelocity(gameTime);
+            MoveForward();
+
+            _position.X += (float)(Math.Cos(_orientation.X) * input.Strafe);
+            _position.Z -= (float)(Math.Sin(_orientation.X) * input.Strafe);
+            
+
+            Engine.Instance.Camera.Orientation = Orientation;
+            Engine.Instance.Camera.Position = Position;
+
             Matrix view = Matrix.CreateTranslation(-Position);
-            view *= Matrix.CreateRotationY(-Orientation.X);
-            view *= Matrix.CreateRotationX(Orientation.Y);
-            view *= Matrix.CreateRotationZ(Orientation.Z);
+            view *= Matrix.CreateRotationY(-_orientation.X);
+            view *= Matrix.CreateRotationX(_orientation.Y);
+            view *= Matrix.CreateRotationZ(_orientation.Z);
 
             View = view;
             SetPerspective(DEFAULT_FOVX, 4f/3f, DEFAULT_ZNEAR, DrawDistance);
+        }
+
+        private void UpdateVelocity(GameTime gameTime)
+        {
+            float elapsedTimeSec = Engine.Instance.ElapsedSeconds;
+
+            // Accelerate or decelerate as camera is moved forward or backward.
+            float acceleration = Acceleration;
+
+            if (_forwardDelta != 0.0f)
+            {
+                // Speed up the transition from moving backwards to moving
+                // forwards and vice versa. Otherwise there will be too much
+                // of a delay as the camera slows down and then accelerates.
+                if ((_forwardDelta > 0.0f && _velocity < 0.0f) ||
+                    (_forwardDelta < 0.0f && _velocity > 0.0f))
+                {
+                    acceleration *= VelocityInversionMultiplier;
+                }
+
+                _velocity += _forwardDelta * acceleration;
+            }
+            else
+            {
+
+                if (_velocity > 0.0f)
+                {
+                    _velocity += Deceleration * elapsedTimeSec;
+
+                    if (_velocity < 0.0f)
+                        _velocity = 0.0f;
+                }
+                else if (_velocity < 0.0f)
+                {
+                    _velocity -= Deceleration * elapsedTimeSec;
+
+                    if (_velocity > 0.0f)
+                        _velocity = 0.0f;
+                }
+
+            }
+
+            if (_velocity > MaxSpeed)
+            {
+                _velocity = MaxSpeed;
+                acceleration = 0;
+            }
+
+            if (_velocity < -MaxSpeed)
+            {
+                _velocity = -MaxSpeed;
+                acceleration = 0;
+            }
+        }
+
+        public void MoveForward()
+        {
+            _position.X -= (float)((Math.Sin(_orientation.X) * Math.Cos(_orientation.Y)) * _velocity);
+            _position.Z -= (float)((Math.Cos(_orientation.X) * Math.Cos(_orientation.Y)) * _velocity);
+            _position.Y -= _orientation.Y * _velocity;
         }
     }
 }

@@ -64,13 +64,13 @@ namespace PlatformEngine
         {
             if (_fadeDirection == FadeDirection.FadeOut)
             {
-                _alpha += FadeSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _alpha += FadeSpeed * Engine.Instance.ElapsedSeconds;
                 if (_alpha >= 255)
                     CompleteFade();
             }
             else if (_fadeDirection == FadeDirection.FadeIn)
             {
-                _alpha -= FadeSpeed * 0.5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _alpha -= FadeSpeed * 0.5f * Engine.Instance.ElapsedSeconds;
                 if (_alpha <= 0)
                     CompleteFade();
             }

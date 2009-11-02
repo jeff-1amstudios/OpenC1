@@ -48,7 +48,7 @@ namespace Carmageddon
             base.Initialize();
 
             Engine.Initialize(this, _graphics);
-            Engine.Instance.DrawDistance = 140;
+            Engine.Instance.DrawDistance = GameVariables.Scale.Z * 100;
 
             //enable per-pixel transparency
             Engine.Instance.Device.RenderState.AlphaTestEnable = true;
@@ -56,14 +56,8 @@ namespace Carmageddon
             Engine.Instance.Device.RenderState.AlphaFunction = CompareFunction.Greater;
 
             //IsFixedTimeStep = false;
-            //ChaseCamera cam = new ChaseCamera();
-            //cam.DesiredPositionOffset = new Vector3(0.0f, 10.0f, 50.0f);
-            ////cam.LookAtOffset = new Vector3(0.0f, 150.0f, 0.0f);
-            //cam.Reset();
-
-            Engine.Instance.Mode = new PlayGameScreen();
             
-            
+            Engine.Instance.Screen = new PlayGameScreen();
         }
 
         /// <summary>
@@ -108,7 +102,7 @@ namespace Carmageddon
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            _graphics.GraphicsDevice.Clear(Color.WhiteSmoke);
+            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             base.Draw(gameTime);
         }

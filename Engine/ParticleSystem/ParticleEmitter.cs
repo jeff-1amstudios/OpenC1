@@ -10,6 +10,7 @@
 #region Using Statements
 using System;
 using Microsoft.Xna.Framework;
+using PlatformEngine;
 #endregion
 
 namespace Particle3DSample
@@ -71,7 +72,7 @@ namespace Particle3DSample
         {
             
             // Work out how much time has passed since the previous update.
-            float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float elapsedTime = Engine.Instance.ElapsedSeconds;
 
             if (Enabled && elapsedTime > 0)
             {

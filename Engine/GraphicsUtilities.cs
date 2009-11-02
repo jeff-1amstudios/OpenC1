@@ -182,20 +182,18 @@ namespace PlatformEngine
 
         #region Utilities (Line/Text/Object drawing)
 
-        public void AddSolidShape(ShapeType type, Matrix worldTransform, Color color, Texture2D texture)
+        public void AddCube(Matrix worldTransform, Color color)
         {
             if (sShapeList.Count >= MAX_SHAPES)
             {
                 return;
             }
-            if (sShapeList.Count > 4)
-            {
-            }
+            
             ShapeData shapeData = new ShapeData();
-            shapeData.mType = type;
+            shapeData.mType =  ShapeType.Cube;
             shapeData.mWorldMatrix = worldTransform;
             shapeData.mColor = color;
-            shapeData.mTexture = texture;
+            shapeData.mTexture = null;
             sShapeList.Add(shapeData);
         }
 
@@ -277,9 +275,9 @@ namespace PlatformEngine
         /// <param name="scale">Scale on drawn lines (1.0 units by default).</param>
         public void AddAxis(Matrix worldTransform, float scale)
         {
-            AddLine(worldTransform.Translation, worldTransform.Translation + worldTransform.Forward, Color.Red);
-            AddLine(worldTransform.Translation, worldTransform.Translation + worldTransform.Left, Color.Green);
-            AddLine(worldTransform.Translation, worldTransform.Translation + worldTransform.Up, Color.Blue);
+            AddLine(worldTransform.Translation, worldTransform.Translation + worldTransform.Forward * scale, Color.Red);
+            AddLine(worldTransform.Translation, worldTransform.Translation + worldTransform.Left * scale, Color.Green);
+            AddLine(worldTransform.Translation, worldTransform.Translation + worldTransform.Up * scale, Color.Blue);
         }
 
 

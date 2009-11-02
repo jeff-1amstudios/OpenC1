@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
@@ -23,7 +23,7 @@ namespace Carmageddon.Physics
 
             int maxactor = 1200;
 
-            for( int i = 0; i < actorsList.Count; i++)
+            for (int i = 0; i < actorsList.Count; i++)
             {
                 Carmageddon.Parsers.Actor actor = actorsList[i];
                 if (actor.Model == null) continue;
@@ -55,10 +55,8 @@ namespace Carmageddon.Physics
                         Vector3 transformedVec = Vector3.Transform(models._vertices[index].Position, actor.Matrix);
                         verts[index] = transformedVec;
                     }
-                    
+
                 }
-                if (i > maxactor)
-                    break;
             }
 
             //PhysX wants indices as ints not ushorts...
@@ -109,7 +107,7 @@ namespace Carmageddon.Physics
             ActorDescription actorDescription = new ActorDescription()
             {
                 GlobalPose = Matrix.CreateTranslation(0, 0, 0),
-                Shapes = { shape }
+                Shapes = { shape },
             };
 
             StillDesign.PhysX.Actor a = PhysX.Instance.Scene.CreateActor(actorDescription);

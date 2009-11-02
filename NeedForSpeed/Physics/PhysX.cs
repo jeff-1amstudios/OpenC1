@@ -38,7 +38,7 @@ namespace Carmageddon.Physics
             {
                 //ScreenManager.Graphics.IsFullScreen = false;
                 //ScreenManager.Graphics.ApplyChanges();
-                IOHelper.WriteToErrorLog("Error intializing PhysX: " + exception.ToString());
+                
                 //MessageBox.Show("Error initializing PhysX.\n- Did you install the nVidia PhysX System Software?\n\n" + exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
@@ -49,12 +49,11 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
             
             SceneDescription sceneDescription = new SceneDescription();
-            sceneDescription.Gravity = new Vector3(0f, -9.81f, 0f);  //double gravity
+            sceneDescription.Gravity = new Vector3(0f, -9.81f*1.5f, 0f);  //double gravity
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
-            sceneDescription.MaximumTimestep = 0.01666667f;
-            sceneDescription.MaximumIterations = 8;
+            
             sceneDescription.Flags = SceneFlag.EnableMultithread | SceneFlag.SimulateSeperateThread;
-            sceneDescription.InternalThreadCount = 1; // HexaChromeGame.ProcessorCount - 1;
+            //sceneDescription.InternalThreadCount = 1; // HexaChromeGame.ProcessorCount - 1;
             sceneDescription.ThreadMask = 0xfffffffe;
             Scene = Core.CreateScene(sceneDescription);
             Scene.SetGroupCollisionFlag(ds.HeightfieldGroupID, ds.VehicleGroupID, true);
@@ -72,28 +71,6 @@ namespace Carmageddon.Physics
             description.DynamicFriction = 0.2f;
             Scene.DefaultMaterial.LoadFromDescription(description);
             InitScene();
-        }
-
-        public void CreateBox()
-        {
-            ActorDescription actorDescription = new ActorDescription();
-            BodyDescription description2 = new BodyDescription();
-            BoxShapeDescription item = new BoxShapeDescription();
-            item.Size = new Vector3(0.5f, 0.5f, 0.5f);
-            item.Mass = 10f;
-            actorDescription.Shapes.Add(item);
-            actorDescription.BodyDescription = description2;
-            actorDescription.Density = 10f;
-            actorDescription.GlobalPose = Matrix.CreateTranslation(0f, 50f, 0f);
-            Scene.CreateActor(actorDescription);
-        }
-
-        private void CreatePlane()
-        {
-            PlaneShapeDescription item = new PlaneShapeDescription();
-            ActorDescription actorDescription = new ActorDescription();
-            actorDescription.Shapes.Add(item);
-            Scene.CreateActor(actorDescription);
         }
 
         public void Delete()
@@ -165,7 +142,7 @@ namespace Carmageddon.Physics
         {
             Scene.Simulate((float)(gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0));
             Scene.FlushStream();
-            Scene.FetchResults(SimulationStatus.AllFinished, true);
+            Scene.FetchResults(SimulationStatus.RigidBodyFinished, true);
         }
     }
 }

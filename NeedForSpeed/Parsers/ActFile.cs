@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using MiscUtil.IO;
 using MiscUtil.Conversion;
@@ -16,7 +16,7 @@ namespace Carmageddon.Parsers
 
     class Actor
     {
-        public string Name { get; set; }
+        public string Name { get; private set; }
         public string ModelName { get; set; }
         public Model Model { get; set; }
         public string MaterialName { get; set; }
@@ -26,15 +26,16 @@ namespace Carmageddon.Parsers
         public int Level { get; set; }
         public BoundingBox BoundingBox;
         public byte[] Flags;
-
+        public bool IsWheel;
         public Actor()
         {
             Children = new List<Actor>();
         }
 
-        public bool IsTopLevel
+        public void SetName(string name)
         {
-            get { return Name.Contains(" ") && Level > 0; }
+            Name = name;
+            IsWheel = (name.StartsWith("FLPIVOT") || name.StartsWith("FRPIVOT") || name.StartsWith("RLWHEEL") || name.StartsWith("RRWHEEL"));
         }
     }
 
@@ -63,7 +64,7 @@ namespace Carmageddon.Parsers
         List<Actor> _actors = new List<Actor>();
         bool _cullingDisabled = false;
         
-        public ActFile(string filename, DatFile modelFile)
+        public ActFile(string filename, DatFile modelFile, bool resolveTransforms)
         {
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
 
@@ -97,8 +98,7 @@ namespace Carmageddon.Parsers
                         actorStack.Push(currentActor);
 
                         currentActor.Flags = reader.ReadBytes(2);
-                        //reader.Seek(2, SeekOrigin.Current);
-                        currentActor.Name = ReadNullTerminatedString(reader);
+                        currentActor.SetName(ReadNullTerminatedString(reader));
                         break;
 
                     case ActorBlockType.TransformMatrix:
@@ -161,33 +161,28 @@ namespace Carmageddon.Parsers
             }
             reader.Close();
             
-            ResolveTransformations();
+            if (resolveTransforms)
+                ResolveTransformations(Matrix.Identity, _actors[0]);
+
+            ScaleTransformations(Matrix.CreateScale(GameVariables.Scale), _actors[0]);
         }
 
         /// <summary>
         /// Pre-calculate recursive transformations and apply scaling
         /// </summary>
-        private void ResolveTransformations()
-        {            
-            Action<Matrix, Actor> resolver = null;
-            resolver = (world, actor) =>
-            {
-                Debug.WriteLine(actor.Name + ", " + actor.ModelName + ", " + actor.Flags[0] + ":" + actor.Flags[1]);
-                actor.Matrix = world * actor.Matrix;
-                foreach (Actor child in actor.Children)
-                    resolver(actor.Matrix, child);
-            };
-            resolver(Matrix.Identity, _actors[0]);
+        private void ResolveTransformations(Matrix world, Actor actor)
+        {                
+            Debug.WriteLine(actor.Name + ", " + actor.ModelName + ", " + actor.Flags[0] + ":" + actor.Flags[1]);
+            actor.Matrix = world * actor.Matrix;
+            foreach (Actor child in actor.Children)
+                ResolveTransformations(actor.Matrix, child);
+        }
 
-            Matrix scale = Matrix.CreateScale(GameVariables.Scale);
-            Action<Actor> scaler = null;
-            scaler = (actor) =>
-            {
-                actor.Matrix *= scale;
-                foreach (Actor child in actor.Children)
-                    scaler(child);
-            };
-            scaler(_actors[0]);
+        private void ScaleTransformations(Matrix scale, Actor actor)
+        {
+            actor.Matrix *= scale;
+            foreach (Actor child in actor.Children)
+                ScaleTransformations(scale, child);
         }
 
 
@@ -226,26 +221,47 @@ namespace Carmageddon.Parsers
             return actors;
         }
 
+        public Actor First
+        {
+            get { return _actors[0]; }
+        }  
 
-        public void Render(DatFile models)
+        public Actor GetByName(string name)
+        {
+            string nameWithExt = name + ".ACT";
+            List<Actor> all = GetAllActors();
+            return all.Find(a => a.Name == nameWithExt || a.Name == name);
+        }
+
+
+        public void Render(DatFile models, Matrix world)
         {
             GameVariables.NbrSectionsRendered = GameVariables.NbrSectionsChecked = 0;
 
-            BasicEffect effect = models.SetupRender();
             BoundingFrustum frustum = new BoundingFrustum(Engine.Instance.Camera.View * Engine.Instance.Camera.Projection);
-            
+
+            Engine.Instance.CurrentEffect = models.SetupRender();
+
+            bool overrideActor = world != Matrix.Identity;
+
+            Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].Begin();
+
             for (int i = 0; i < _actors.Count; i++)
             {
-                RenderChildren(frustum, _actors[i], effect);
+                RenderChildren(frustum, _actors[i], ref world, overrideActor);
             }
+
+            Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].End();
 
             models.DoneRender();
 
             GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered);
         }
 
-        private void RenderChildren(BoundingFrustum frustum, Actor actor, BasicEffect effect)
+        private void RenderChildren(BoundingFrustum frustum, Actor actor, ref Matrix world, bool overrideMatrix)
         {
+            if (actor.IsWheel) return;
+
             bool intersects;
             
             intersects = actor.BoundingBox.Max.X == 0;
@@ -257,23 +273,33 @@ namespace Carmageddon.Parsers
             
             if (intersects)
             {
-                //Vector3 center = (_topLevelActors[i].BoundingBox.Max + _topLevelActors[i].BoundingBox.Min) / 2;
-                //Vector3 size = _topLevelActors[i].BoundingBox.Max - _topLevelActors[i].BoundingBox.Min;
-                //Engine.Instance.GraphicsUtils.AddWireframeCube(Matrix.CreateScale(size) * Matrix.CreateTranslation(center), Color.Yellow);
-                
                 if (actor.Model != null)
                 {
                     //Render
-                    effect.World = actor.Matrix;
-                    effect.CurrentTechnique.Passes[0].Begin();
+                    Matrix m = actor.Matrix;
+                    if (actor.Level == 0 && overrideMatrix)
+                        m.Translation = Vector3.Zero;
+
+                    Engine.Instance.CurrentEffect.World = m * world;
+                    Engine.Instance.CurrentEffect.CommitChanges();
+                    
                     actor.Model.Render(actor.Texture);
-                    effect.CurrentTechnique.Passes[0].End();
 
                     GameVariables.NbrSectionsRendered++;
                 }
                 foreach (Actor child in actor.Children)
-                    RenderChildren(frustum, child, effect);
+                    RenderChildren(frustum, child, ref world, overrideMatrix);
             }            
+        }
+
+        public void RenderSingle(Actor actor)
+        {
+            Matrix m = actor.Matrix;
+            m.Translation = Vector3.Zero;
+            Engine.Instance.CurrentEffect.World = m * Engine.Instance.CurrentEffect.World;
+            Engine.Instance.CurrentEffect.CommitChanges();
+            
+            actor.Model.Render(actor.Texture);            
         }
     }
 }

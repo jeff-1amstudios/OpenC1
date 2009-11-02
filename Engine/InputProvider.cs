@@ -73,7 +73,7 @@ namespace PlatformEngine
 
         public override void Update(GameTime gameTime)
         {
-            float frameTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float frameTime = Engine.Instance.ElapsedSeconds;
             _perFrameMultiplier = frameTime * SENSITIVITY;
             
             _previousKeyboardState = _keyboardState;

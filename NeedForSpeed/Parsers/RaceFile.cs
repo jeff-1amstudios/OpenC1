@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using System.IO;
 using Microsoft.Xna.Framework;
@@ -25,13 +25,12 @@ namespace Carmageddon.Parsers
 
         public RaceFile(string filename) : base(filename)
         {
-
             MaterialFiles = new List<string>();
             PixFiles = new List<string>();
                         
             string version = ReadLine();
             
-            GridPosition = ReadLineAsVector3();
+            GridPosition = ReadLineAsVector3() + new Vector3(0, GameVariables.Scale.Y, 0);
 
             GridDirection = ReadLineAsInt();
             string initialTimerPerSkill = ReadLine();

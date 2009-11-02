@@ -15,7 +15,7 @@
     <Thumbnail>GameThumbnail.png</Thumbnail>
     <XnaUpgrade>
     </XnaUpgrade>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -36,6 +36,8 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -72,30 +74,26 @@
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigEndianBitConverter.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Gfx\ModelShadow.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="IPalette.cs" />
+    <Compile Include="Model.cs" />
     <Compile Include="Parsers\FliFile.cs" />
     <Compile Include="Parsers\Funk.cs" />
     <Compile Include="Physics\ContactReport.cs" />
-    <Compile Include="Physics\Hasher.cs" />
-    <Compile Include="Physics\IOHelper.cs" />
     <Compile Include="Physics\PhysicsVehicle.cs" />
     <Compile Include="Physics\PhysX.cs" />
     <Compile Include="Physics\TrackMesh.cs" />
     <Compile Include="Physics\TriangleMeshObject.cs" />
     <Compile Include="Physics\VehicleDimensions.cs" />
-    <Compile Include="Vehicle.cs" />
+    <Compile Include="Physics\WheelUserData.cs" />
+    <Compile Include="VehicleModel.cs" />
     <Compile Include="Driver.cs" />
     <Compile Include="EndianBinaryReader.cs" />
     <Compile Include="EndianBitConverter.cs" />
@@ -119,6 +117,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Race.cs" />
+    <Compile Include="WheelActor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
@@ -164,6 +163,9 @@
       <ProductName>Microsoft XNA Framework Redistributable 3.0</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" Condition="" />

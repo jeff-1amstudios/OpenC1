@@ -9,7 +9,7 @@ namespace NFSEngine
     public class FrameRateCounter : DrawableGameComponent
     {
         
-        int frameRate = 0;
+        public int FrameRate {private set; get; }
         int frameCounter = 0;
         TimeSpan elapsedTime = TimeSpan.Zero;
         
@@ -25,7 +25,7 @@ namespace NFSEngine
             if (elapsedTime > TimeSpan.FromSeconds(1))
             {
                 elapsedTime -= TimeSpan.FromSeconds(1);
-                frameRate = frameCounter;
+                FrameRate = frameCounter;
                 frameCounter = 0;
             }
         }
@@ -33,9 +33,6 @@ namespace NFSEngine
         public override void Draw(GameTime gameTime)
         {
             frameCounter++;
-
-            string fps = string.Format("fps: {0}", frameRate);
-            GameConsole.WriteLine(fps);
         }
     }
 }

@@ -22,41 +22,7 @@ namespace Carmageddon.Parsers
         Faces = 53
     }
 
-    class Model
-    {
-        public string Name { get; set; }
-        public List<string> MaterialNames { get; set; }
-        public List<Polygon> Polygons { get; set; }
-        public int VertexCount { get; set; }
-        public int VertexBaseIndex { get; set; }
-        public int IndexBufferStart { get; set; }
-
-        public void Render(Texture2D texture)
-        {
-            GraphicsDevice device = Engine.Instance.Device;
-            int baseVert = VertexBaseIndex;
-            int indexBufferStart = IndexBufferStart;
-
-            for (int i = 0; i < Polygons.Count; i++)
-            {
-                Polygon poly = Polygons[i];
-
-                if (GameVariables.CullingDisabled != poly.DoubleSided)
-                {
-                    device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
-                    GameVariables.CullingDisabled = poly.DoubleSided;
-                }
-
-                if (poly.Texture != null)
-                    device.Textures[0] = poly.Texture;
-                else
-                    device.Textures[0] = texture;
-
-                Engine.Instance.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3, indexBufferStart + i * 3, 1);
-            }
-        }
-    }
-
+    
     class DatFile : BaseDataFile
     {
         private VertexBuffer _vertexBuffer;
@@ -194,10 +160,6 @@ namespace Carmageddon.Parsers
                 byte unk2 = reader.ReadByte();
                 byte unk3 = reader.ReadByte();
 
-                if (v1 == 99)
-                {
-                }
-
                 Polygon polygon = new Polygon(v1, v2, v3);
                 polygon.CalculateNormal(_vertexPositions);
 
@@ -216,9 +178,14 @@ namespace Carmageddon.Parsers
             foreach (Model model in _models)
             {
                 model.IndexBufferStart = vertIndexes.Count;
+                model.Polygons.Sort(delegate(Polygon p1, Polygon p2) { return p1.MaterialIndex.CompareTo(p2.MaterialIndex); });
+
+
+                Polygon currentPoly = null;
 
                 foreach (Polygon poly in model.Polygons)
                 {
+                    poly.NbrPrims = 1;
                     vertIndexes.Add(poly.Vertex1);
                     vertIndexes.Add(poly.Vertex2);
                     vertIndexes.Add(poly.Vertex3);
@@ -240,6 +207,16 @@ namespace Carmageddon.Parsers
                                 if (pixmap != null)
                                     poly.Texture = pixmap.Texture;
                             }
+                        }
+
+                        if (currentPoly != null && poly.MaterialIndex == currentPoly.MaterialIndex)
+                        {
+                            poly.Skip = true;
+                            currentPoly.NbrPrims = currentPoly.NbrPrims + 1;
+                        }
+                        else
+                        {
+                            currentPoly = poly;
                         }
                     }
                 }
@@ -272,14 +249,14 @@ namespace Carmageddon.Parsers
             GraphicsDevice device = Engine.Instance.Device;
             device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionNormalTexture.SizeInBytes);
             device.Indices = _indexBuffer;
-            device.RenderState.CullMode = CullMode.CullClockwiseFace;
+            
             device.RenderState.FillMode = FillMode.Solid;
             device.VertexDeclaration = _vertexDeclaration;
 
             if (_effect == null)
             {
                 _effect = new BasicEffect(Engine.Instance.Device, null);
-                _effect.FogEnabled = true;
+                _effect.FogEnabled = false;
                 if (GameVariables.DepthCueMode == "dark")
                     _effect.FogColor = new Vector3(0, 0, 0);
                 else if (GameVariables.DepthCueMode == "fog" || GameVariables.DepthCueMode == "none")

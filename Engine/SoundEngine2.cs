@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework;
+using PlatformEngine;
 
 namespace NFSEngine
 {
@@ -44,7 +45,7 @@ namespace NFSEngine
         {
             for (int i = _effects.Count - 1; i >= 0; i--)
             {
-                _effects[i].RemainingDuration -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _effects[i].RemainingDuration -= Engine.Instance.ElapsedSeconds;
                 if (_effects[i].RemainingDuration <= 0)
                 {
                     _effects[i].Effect.Stop();

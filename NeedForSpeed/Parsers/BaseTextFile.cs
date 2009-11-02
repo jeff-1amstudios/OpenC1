@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using System.IO;
 using Microsoft.Xna.Framework;
@@ -67,6 +67,16 @@ namespace Carmageddon.Parsers
         {
             string line = ReadLine();
             return int.Parse(line);
+        }
+
+        public float ReadLineAsFloat()
+        {
+            return ReadLineAsFloat(true);
+        }
+        public float ReadLineAsFloat(bool scale)
+        {
+            string line = ReadLine();
+            return float.Parse(line) * (scale ? GameVariables.Scale.X : 1); 
         }
 
         public Vector3 ReadLineAsVector3()

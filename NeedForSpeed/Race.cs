@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using Microsoft.Xna.Framework;
 using PlatformEngine;
@@ -40,7 +40,7 @@ namespace Carmageddon
 
             _models = new DatFile(@"C:\Games\carma1\data\models\" + RaceFile.ModelFile);
 
-            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + RaceFile.ActorFile, _models);
+            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + RaceFile.ActorFile, _models, true);
             _actors.ResolveMaterials(_resourceCache);
             _models.Resolve(_resourceCache);
             
@@ -61,7 +61,7 @@ namespace Carmageddon
 
         public void Render()
         {
-            _actors.Render(_models);
+            _actors.Render(_models, Matrix.Identity);
         }
 
         public ActFile GetTrackActors()

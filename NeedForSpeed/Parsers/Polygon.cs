@@ -17,6 +17,8 @@ namespace Carmageddon.Parsers
         public int MaterialIndex { get; set; }
         public bool DoubleSided { get; set; }
         public Texture2D Texture {get; set; }
+        public bool Skip { get; set; }
+        public int NbrPrims { get; set; }
 
         public Polygon(UInt16 v1, UInt16 v2, UInt16 v3)
         {

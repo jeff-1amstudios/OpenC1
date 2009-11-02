@@ -238,7 +238,7 @@ namespace Particle3DSample
         /// </summary>
         public void Update(GameTime gameTime)
         {
-            currentTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            currentTime += Engine.Instance.ElapsedSeconds;
 
             RetireActiveParticles();
             FreeRetiredParticles();

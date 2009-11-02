@@ -74,7 +74,7 @@ namespace Carmageddon
         public override void Update(GameTime gameTime)
         {
             InputProvider input = Engine.Instance.Input;
-            float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float elapsedTime = Engine.Instance.ElapsedSeconds;
 
             _forwardDelta = input.MoveForward * elapsedTime * Acceleration;
 
@@ -115,7 +115,7 @@ namespace Carmageddon
 
         private void UpdateVelocity(GameTime gameTime)
         {
-            float elapsedTimeSec = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float elapsedTimeSec = Engine.Instance.ElapsedSeconds;
 
             // Accelerate or decelerate as camera is moved forward or backward.
             float acceleration = Acceleration;
@@ -169,7 +169,7 @@ namespace Carmageddon
 
         private void Jump(GameTime gameTime)
         {
-            float elapsedTimeSec = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float elapsedTimeSec = Engine.Instance.ElapsedSeconds;
 
 
             // Transition between jumping states.

@@ -11,36 +11,30 @@ namespace PlatformEngine
 {
     public class Engine : DrawableGameComponent
     {
-                
-        private static Engine _instance;
         private ContentManager _contentManager;
         private ICamera _camera;
         private GameObject _player;
         private InputProvider _inputProvider;
         private GraphicsUtilities _graphicsUtils;
         private IWorld _world;
-        private IGameScreen _mode;
+        public IGameScreen Screen { get; set; }
         private HeightmapTerrain _terrain;
-        private GraphicsDeviceManager _graphics;
-        private BasicEffect _currentEffect;
+        public GraphicsDevice Device { get; private set; }
+        public BasicEffect CurrentEffect;
         private SpriteBatch _spriteBatch;
+        private FrameRateCounter _fpsCounter;
 
         public float DrawDistance { get; set; }
+        public float ElapsedSeconds { get; private set; }
                 
-        public static Engine Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
+        public static Engine Instance;
 
         public static void Initialize(Game game, GraphicsDeviceManager graphics)
         {
-            Debug.Assert(_instance == null);
-            _instance = new Engine(game);
+            Debug.Assert(Instance == null);
+            Instance = new Engine(game);
             
-            _instance.EngineStartup(graphics);
+            Instance.EngineStartup(graphics);
                        
         }
 
@@ -53,7 +47,7 @@ namespace PlatformEngine
 
         private void EngineStartup(GraphicsDeviceManager graphics)
         {
-            _graphics = graphics;
+            Device = graphics.GraphicsDevice;
 
             DrawDistance = 3000;
 
@@ -63,6 +57,8 @@ namespace PlatformEngine
             _inputProvider = new InputProvider(base.Game);
             _graphicsUtils = new GraphicsUtilities();
             _spriteBatch = new SpriteBatch(Device);
+            _fpsCounter = new FrameRateCounter();
+
             base.Game.Components.Add(this);
         }
         
@@ -71,13 +67,16 @@ namespace PlatformEngine
         {
             GameConsole.Clear();
 
+            ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _fpsCounter.Update(gameTime);
+
             base.Update(gameTime);
             
             _inputProvider.Update(gameTime);
             SoundEngine2.Instance.Update(gameTime);
             //SoundEngine.Instance.Update();
 
-            _mode.Update(gameTime);
+            Screen.Update(gameTime);
 
             ScreenEffects.Instance.Update(gameTime);
 
@@ -86,26 +85,16 @@ namespace PlatformEngine
 
         public override void Draw(GameTime gameTime)
         {            
-            _mode.Draw();
+            Screen.Draw();
             _graphicsUtils.Draw();
             ScreenEffects.Instance.Draw();
             _graphicsUtils.DrawText();
+            _fpsCounter.Draw(gameTime);
         }
 
         public ContentManager ContentManager
         {
             get { return _contentManager; }
-        }
-
-        public GraphicsDevice Device
-        {
-            get { return _graphics.GraphicsDevice; }
-        }
-        
-        public BasicEffect CurrentEffect
-        {
-            get { return _currentEffect; }
-            set { _currentEffect = value; }
         }
 
         public GraphicsUtilities GraphicsUtils
@@ -141,12 +130,6 @@ namespace PlatformEngine
             set { _player = value; }
         }
 
-        public IGameScreen Mode
-        {
-            get { return _mode; }
-            set { _mode = value; }
-        }
-
         public SpriteBatch SpriteBatch
         {
             get { return _spriteBatch; }
@@ -156,6 +139,11 @@ namespace PlatformEngine
         {
             get { return _terrain; }
             set { _terrain = value; }
+        }
+
+        public int Fps
+        {
+            get { return _fpsCounter.FrameRate; }
         }
 
         //public bool EnableBloom
