@@ -14,18 +14,18 @@ namespace PlatformEngine
         private ContentManager _contentManager;
         private ICamera _camera;
         private GameObject _player;
-        private InputProvider _inputProvider;
-        private GraphicsUtilities _graphicsUtils;
-        private IWorld _world;
-        public IGameScreen Screen { get; set; }
-        private HeightmapTerrain _terrain;
-        public GraphicsDevice Device { get; private set; }
-        public BasicEffect CurrentEffect;
         private SpriteBatch _spriteBatch;
         private FrameRateCounter _fpsCounter;
 
+        public DebugRenderer DebugRenderer;
+        public IGameScreen Screen { get; set; }
+        public GraphicsDevice Device { get; private set; }
+        public BasicEffect CurrentEffect;
+        public IWorld World { get; set; }
+        public InputProvider Input { get; set; }
         public float DrawDistance { get; set; }
         public float ElapsedSeconds { get; private set; }
+
                 
         public static Engine Instance;
 
@@ -54,8 +54,8 @@ namespace PlatformEngine
             _contentManager = new ContentManager(base.Game.Services);
 
             //Game bits
-            _inputProvider = new InputProvider(base.Game);
-            _graphicsUtils = new GraphicsUtilities();
+            Input = new InputProvider(base.Game);
+            DebugRenderer = new DebugRenderer();
             _spriteBatch = new SpriteBatch(Device);
             _fpsCounter = new FrameRateCounter();
 
@@ -72,7 +72,7 @@ namespace PlatformEngine
 
             base.Update(gameTime);
             
-            _inputProvider.Update(gameTime);
+            Input.Update(gameTime);
             SoundEngine2.Instance.Update(gameTime);
             //SoundEngine.Instance.Update();
 
@@ -80,15 +80,15 @@ namespace PlatformEngine
 
             ScreenEffects.Instance.Update(gameTime);
 
-            _graphicsUtils.Update(gameTime);
+            DebugRenderer.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {            
             Screen.Draw();
-            _graphicsUtils.Draw();
+            DebugRenderer.Draw();
             ScreenEffects.Instance.Draw();
-            _graphicsUtils.DrawText();
+            DebugRenderer.DrawText();
             _fpsCounter.Draw(gameTime);
         }
 
@@ -97,17 +97,7 @@ namespace PlatformEngine
             get { return _contentManager; }
         }
 
-        public GraphicsUtilities GraphicsUtils
-        {
-            get { return _graphicsUtils; }
-        }
-
-        public IWorld World
-        {
-            get { return _world; }
-            set { _world = value; }
-        }
-
+        
         public ICamera Camera
         {
             get { return _camera; }
@@ -118,11 +108,8 @@ namespace PlatformEngine
             }
         }
 
-        public InputProvider Input
-        {
-            get { return _inputProvider; }
-            set { _inputProvider = value; }
-        }
+
+        
 
         public GameObject Player
         {
@@ -133,12 +120,6 @@ namespace PlatformEngine
         public SpriteBatch SpriteBatch
         {
             get { return _spriteBatch; }
-        }
-
-        public HeightmapTerrain Terrain
-        {
-            get { return _terrain; }
-            set { _terrain = value; }
         }
 
         public int Fps

@@ -21,8 +21,6 @@ namespace Carmageddon.Physics
             List<ushort> indices = new List<ushort>();
             List<Carmageddon.Parsers.Actor> actorsList = actors.GetAllActors();
 
-            int maxactor = 1200;
-
             for (int i = 0; i < actorsList.Count; i++)
             {
                 Carmageddon.Parsers.Actor actor = actorsList[i];

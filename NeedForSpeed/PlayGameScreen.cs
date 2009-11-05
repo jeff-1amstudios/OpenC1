@@ -19,7 +19,7 @@ namespace Carmageddon
         SkyBox _skybox;
         List<ICamera> _cameras = new List<ICamera>();
 
-        private Carmageddon.Physics.PhysicsVehicle _physxVehicle;
+        private Carmageddon.Physics.VehicleChassis _physxVehicle;
 
         FixedChaseCamera _camera;
 
@@ -32,7 +32,7 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
 
-            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\dump.txt");
+            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\blkeagle.txt");
 
             _race = new Race(@"C:\Games\carma1\data\races\cityb1.TXT");
             
@@ -55,8 +55,8 @@ namespace Carmageddon
         private void SetupPhysics()
         {
             Matrix pose = Matrix.CreateRotationY(MathHelper.ToRadians(_race.RaceFile.GridDirection)) * Matrix.CreateTranslation(_race.RaceFile.GridPosition);
-            _physxVehicle = new Carmageddon.Physics.PhysicsVehicle(Carmageddon.Physics.PhysX.Instance.Scene, pose, 1, _carModel.Properties);
-            _carModel.PhysicalVehicle = _physxVehicle;
+            _physxVehicle = new Carmageddon.Physics.VehicleChassis(Carmageddon.Physics.PhysX.Instance.Scene, pose, 1, _carModel.Properties);
+            _carModel.Chassis = _physxVehicle;
         }
 
 
@@ -134,7 +134,7 @@ namespace Carmageddon
 
             GameConsole.WriteLine("Draw Calls", GameVariables.NbrDrawCalls);
 
-            Carmageddon.Physics.PhysX.Instance.Draw();
+            //Carmageddon.Physics.PhysX.Instance.Draw();
             
         }
 

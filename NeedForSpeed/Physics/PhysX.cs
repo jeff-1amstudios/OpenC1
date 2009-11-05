@@ -29,7 +29,6 @@ namespace Carmageddon.Physics
 
         private PhysX()
         {
-            PhysXGroupIDs ds = new PhysXGroupIDs();
             try
             {
                 Core = new StillDesign.PhysX.Core();
@@ -56,15 +55,16 @@ namespace Carmageddon.Physics
             //sceneDescription.InternalThreadCount = 1; // HexaChromeGame.ProcessorCount - 1;
             sceneDescription.ThreadMask = 0xfffffffe;
             Scene = Core.CreateScene(sceneDescription);
-            Scene.SetGroupCollisionFlag(ds.HeightfieldGroupID, ds.VehicleGroupID, true);
-            Scene.SetActorGroupPairFlags(ds.HeightfieldGroupID, ds.VehicleGroupID, ContactPairFlag.OnStartTouch);
-            Scene.SetGroupCollisionFlag(ds.HeightfieldGroupID, ds.RocketGroupID, true);
-            Scene.SetActorGroupPairFlags(ds.HeightfieldGroupID, ds.RocketGroupID, ContactPairFlag.OnImpact | ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
-            Scene.SetGroupCollisionFlag(ds.VehicleGroupID, ds.RocketGroupID, true);
-            Scene.SetActorGroupPairFlags(ds.VehicleGroupID, ds.RocketGroupID, ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
-            Scene.SetGroupCollisionFlag(ds.VehicleGroupID, ds.ItemGroupID, true);
-            Scene.SetActorGroupPairFlags(ds.VehicleGroupID, ds.ItemGroupID, ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
-            Scene.UserContactReport = new ContactReport(Scene);
+            //Scene.SetGroupCollisionFlag(ds.HeightfieldGroupID, ds.VehicleGroupID, true);
+            //Scene.SetActorGroupPairFlags(ds.HeightfieldGroupID, ds.VehicleGroupID, ContactPairFlag.OnStartTouch);
+            //Scene.SetGroupCollisionFlag(ds.HeightfieldGroupID, ds.RocketGroupID, true);
+            //Scene.SetActorGroupPairFlags(ds.HeightfieldGroupID, ds.RocketGroupID, ContactPairFlag.OnImpact | ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
+            //Scene.SetGroupCollisionFlag(ds.VehicleGroupID, ds.RocketGroupID, true);
+            //Scene.SetActorGroupPairFlags(ds.VehicleGroupID, ds.RocketGroupID, ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
+            //Scene.SetGroupCollisionFlag(ds.VehicleGroupID, ds.ItemGroupID, true);
+            //Scene.SetActorGroupPairFlags(ds.VehicleGroupID, ds.ItemGroupID, ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
+            //Scene.UserContactReport = new ContactReport(Scene);
+            
             MaterialDescription description = new MaterialDescription();
             description.Restitution = 0.4f;
             description.StaticFriction = 0.2f;

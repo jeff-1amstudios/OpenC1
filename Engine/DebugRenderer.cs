@@ -33,23 +33,10 @@ namespace PlatformEngine
         Cube
     }
 
-    /// <summary>
-    /// GraphicsUtilities
-    ///   DrawableGameComponent for debug-graphics functionality.
-    ///   Currently supports 3D lines, text, and basic solid shapes.
-    ///   Registers self as service provider - IGraphicsUtilitiesService.
-    ///   
-    /// To use:
-    ///   Create an instance of GraphicsUtilities
-    ///   Add it to the list of components
-    ///   Set its view/projection matrices every frame
-    ///   Add lines/text/shapes every frame
-    /// 
-    /// </summary>
-    public class GraphicsUtilities : IDrawableObject
+    public class DebugRenderer : IDrawableObject
     {
         #region Creation / Initialization
-        public GraphicsUtilities()
+        public DebugRenderer()
         {
             CreateLineEffect();
             CreateShapeEffect();

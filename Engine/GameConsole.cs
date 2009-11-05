@@ -18,12 +18,12 @@ namespace NFSEngine
 
         public static void WriteLine(object o)
         {
-            Engine.Instance.GraphicsUtils.AddText(new Vector2(20, (_lines++) * 18 + 500), o.ToString(), Justify.MIDDLE_LEFT, Color.White);
+            Engine.Instance.DebugRenderer.AddText(new Vector2(20, (_lines++) * 18 + 500), o.ToString(), Justify.MIDDLE_LEFT, Color.White);
         }
 
         public static void WriteLine(string s, float o)
         {
-            WriteLine(s + ": " + o.ToString("0.00"));
+            WriteLine(s + ": " + Math.Round(o, 2));
         }
 
         public static void WriteLine(string s, Vector3 vec)

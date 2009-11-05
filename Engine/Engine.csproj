@@ -80,7 +80,7 @@
     <Compile Include="FPSCounter.cs" />
     <Compile Include="GameConsole.cs" />
     <Compile Include="GameObject.cs" />
-    <Compile Include="GraphicsUtilities.cs" />
+    <Compile Include="DebugRenderer.cs" />
     <Compile Include="Cameras\ICamera.cs" />
     <Compile Include="IDrawableObject.cs" />
     <Compile Include="IGameScreen.cs" />
