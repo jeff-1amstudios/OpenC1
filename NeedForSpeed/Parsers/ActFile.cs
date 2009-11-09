@@ -246,6 +246,10 @@ namespace Carmageddon.Parsers
 
             Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
+
+
+            //Engine.Instance.Device.SamplerStates[0].MipMapLevelOfDetailBias = -1.9f;
+
             for (int i = 0; i < _actors.Count; i++)
             {
                 RenderChildren(frustum, _actors[i], ref world, overrideActor);

@@ -274,10 +274,13 @@ namespace Carmageddon.Parsers
                 _effect.TextureEnabled = true;
             }
 
+            
+
             _effect.View = Engine.Instance.Camera.View;
             _effect.Projection = Engine.Instance.Camera.Projection;
 
             _effect.Begin(SaveStateMode.None);
+
             return _effect;
         }
 

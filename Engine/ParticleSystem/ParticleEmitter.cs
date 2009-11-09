@@ -68,20 +68,19 @@ namespace Particle3DSample
         /// Updates the emitter, creating the appropriate number of particles
         /// in the appropriate positions.
         /// </summary>
-        public void Update(GameTime gameTime, Vector3 newPosition)
+        public void Update(float elapsedSeconds, Vector3 newPosition)
         {
             
             // Work out how much time has passed since the previous update.
-            float elapsedTime = Engine.Instance.ElapsedSeconds;
 
-            if (Enabled && elapsedTime > 0)
+            if (Enabled && elapsedSeconds > 0)
             {
                 // Work out how fast we are moving.
-                Vector3 velocity = (newPosition - previousPosition) / elapsedTime;
+                Vector3 velocity = (newPosition - previousPosition) / elapsedSeconds;
 
                 // If we had any time left over that we didn't use during the
                 // previous update, add that to the current elapsed time.
-                float timeToSpend = timeLeftOver + elapsedTime;
+                float timeToSpend = timeLeftOver + elapsedSeconds;
                 
                 // Counter for looping over the time interval.
                 float currentTime = -timeLeftOver;
@@ -95,7 +94,7 @@ namespace Particle3DSample
                     // Work out the optimal position for this particle. This will produce
                     // evenly spaced particles regardless of the object speed, particle
                     // creation frequency, or game update rate.
-                    float mu = currentTime / elapsedTime;
+                    float mu = currentTime / elapsedSeconds;
 
                     Vector3 position = Vector3.Lerp(previousPosition, newPosition, mu);
 

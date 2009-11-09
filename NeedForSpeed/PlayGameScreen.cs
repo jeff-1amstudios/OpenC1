@@ -26,10 +26,6 @@ namespace Carmageddon
         public PlayGameScreen()
         {
 
-            Engine.Instance.Device.SamplerStates[0].MinFilter = TextureFilter.None;
-            Engine.Instance.Device.SamplerStates[0].MagFilter = TextureFilter.None;
-            Engine.Instance.Device.SamplerStates[0].MipFilter = TextureFilter.None;
-
             GameVariables.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
 
             _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\blkeagle.txt");
@@ -45,7 +41,7 @@ namespace Carmageddon
             _camera = new FixedChaseCamera(12.0f,3.0f);
             _camera.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Camera = _camera;
-            Engine.Instance.Camera = new FPSCamera();
+            //Engine.Instance.Camera = new FPSCamera();
 
             Engine.Instance.Player = new Driver();
             Engine.Instance.Camera.Position = _race.RaceFile.GridPosition;
@@ -104,6 +100,7 @@ namespace Carmageddon
                 _physxVehicle.Handbrake = false;
             }
 
+            _carModel.Update(gameTime);
 
             _physxVehicle.Update(gameTime);
             Carmageddon.Physics.PhysX.Instance.Update(gameTime);
@@ -111,7 +108,6 @@ namespace Carmageddon
             _camera.Position = _physxVehicle.Body.GlobalPosition;
             _camera.Orientation = _physxVehicle.Body.GlobalOrientation.Forward;
 
-            //GameConsole.WriteLine(Engine.Instance.Camera.Position);
             GameConsole.WriteLine("Speed " + _physxVehicle.Speed);
             GameConsole.WriteLine("FPS: " + Engine.Instance.Fps);
             
@@ -122,19 +118,14 @@ namespace Carmageddon
             GameVariables.NbrDrawCalls = 0;
             if (_skybox != null) _skybox.Draw();
 
-            //Engine.Instance.GraphicsUtils.AddSquareGrid(Matrix.CreateTranslation(new Vector3(_race.RaceFile.GridPosition.X, 5, _race.RaceFile.GridPosition.Z)), 20, Color.Yellow);
-            
-            //_carModel.RenderBody(Matrix.CreateTranslation(new Vector3(_race.RaceFile.GridPosition.X, 5, _race.RaceFile.GridPosition.Z)));
-
             GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
             _race.Render();
-
 
             _carModel.Render();
 
             GameConsole.WriteLine("Draw Calls", GameVariables.NbrDrawCalls);
 
-            //Carmageddon.Physics.PhysX.Instance.Draw();
+            Carmageddon.Physics.PhysX.Instance.Draw();
             
         }
 

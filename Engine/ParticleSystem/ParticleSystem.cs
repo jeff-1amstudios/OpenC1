@@ -317,7 +317,7 @@ namespace Particle3DSample
         /// <summary>
         /// Draws the particle system.
         /// </summary>
-        public void Draw()
+        public void Render()
         {
             GraphicsDevice device = Engine.Instance.Device;
 

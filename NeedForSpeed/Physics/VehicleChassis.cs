@@ -237,18 +237,18 @@ namespace Carmageddon.Physics
             wheelDesc.LocalPosition = properties.WheelPositions[2];
             RLWheel = (WheelShape)VehicleBody.CreateShape(wheelDesc);
             RLWheel.SteeringAngle = 0.0f;
-            RLWheel.Name = "BL-Wheel";
+            RLWheel.Name = "RL-Wheel";
 
             // back right
             wheelDesc.LocalPosition = properties.WheelPositions[3];
             RRWheel = (WheelShape)VehicleBody.CreateShape(wheelDesc);
             RRWheel.SteeringAngle = 0.0f;
-            RRWheel.Name = "BR-Wheel";
+            RRWheel.Name = "RR-Wheel";
 
-            Wheels.Add(new VehicleWheel(this, FLWheel,9));
-            Wheels.Add(new VehicleWheel(this, FRWheel,9));
-            Wheels.Add(new VehicleWheel(this, RLWheel,9));
-            Wheels.Add(new VehicleWheel(this, RRWheel,9));
+            Wheels.Add(new VehicleWheel(this, FLWheel, 0.17f));
+            Wheels.Add(new VehicleWheel(this, FRWheel, -0.17f));
+            Wheels.Add(new VehicleWheel(this, RLWheel, 0.17f));
+            Wheels.Add(new VehicleWheel(this, RRWheel, -0.17f));
 
             Vector3 massPos = VehicleBody.CenterOfMassLocalPosition;
             massPos = properties.CenterOfMass;// new Vector3(0, 0, -0.6f); // VehicleBody.CenterOfMassLocalPosition;
@@ -455,12 +455,20 @@ namespace Carmageddon.Physics
                 _frontSlip = val;
             }
 
-            float angVel = Math.Max(0, 10 - ( Math.Abs(VehicleBody.AngularVelocity.Y*2.4f) * (_speed * 0.08f)));
-            //angVel = 12;
+            float angVel = 12;
 
+            if (Handbrake)
+            {
+                angVel = 0.5f;
+            }
+            else
+            {
+                angVel = Math.Max(0, 11 - ( Math.Abs(VehicleBody.AngularVelocity.Y*2.4f) * (_speed * 0.08f)));
+            }
+            
             foreach (VehicleWheel wheel in Wheels)
             {
-                wheel.Update(_speed, lateralSpeed);
+                wheel.Update(Handbrake);
             }
             
             LS_latTFD.StiffnessFactor = Wheels[0].GetStiffness(angVel);
@@ -472,29 +480,11 @@ namespace Carmageddon.Physics
             LS_latTFD.StiffnessFactor = Wheels[3].GetStiffness(12);
             RRWheel.LateralTireForceFunction = LS_latTFD;
             
-
             GameConsole.WriteLine("Tire", LS_latTFD.StiffnessFactor);
-
-            if (Handbrake)
-            {
-                TireFunctionDescription desc = RLWheel.LateralTireForceFunction;
-                desc.StiffnessFactor = 0.2f;
-                RLWheel.LateralTireForceFunction = desc;
-                RRWheel.LateralTireForceFunction = desc;
-            }
-            else
-            {
-                //TireFunctionDescription desc = BLWheel.LateralTireForceFunction;
-                //desc.StiffnessFactor = 1.0f;
-                //BLWheel.LateralTireForceFunction = desc;
-                //BRWheel.LateralTireForceFunction = desc;
-            }
-            GameConsole.WriteLine("Front latSlip", FLWheel.GetContactData().LateralSlip);
-            GameConsole.WriteLine("Rear latSlip", RLWheel.GetContactData().LateralSlip);
         }
 
         #endregion
-
+    
         #region HandleInput
 
         public void Accelerate(float torque)
@@ -567,8 +557,8 @@ namespace Carmageddon.Physics
             if (Handbrake)
             {
                 RLWheel.MotorTorque = RRWheel.MotorTorque = 0;
-                RLWheel.BrakeTorque = -1000;
-                RRWheel.BrakeTorque = -1000;
+                RLWheel.BrakeTorque = 1000;
+                RRWheel.BrakeTorque = 1000;
                 return;
             }
             else

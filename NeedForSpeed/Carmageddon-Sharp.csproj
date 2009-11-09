@@ -81,6 +81,7 @@
     <Compile Include="BigEndianBitConverter.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Gfx\ModelShadow.cs" />
+    <Compile Include="Gfx\TireSmokeParticleEmitter.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="IPalette.cs" />
     <Compile Include="Model.cs" />
