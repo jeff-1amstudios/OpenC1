@@ -9,9 +9,21 @@ namespace Carmageddon.Track
 {
     class SkyboxGenerator
     {
-        public static SkyBox Generate(Texture2D horizon, float repetionsX)
+        public static SkyBox Generate(Texture2D horizon, float repetionsX, string depthCueMode)
         {
-            
+            if (horizon == null)
+            {
+                Color c;
+                if (depthCueMode == "dark")
+                    c = new Color(0, 0, 0);
+                else if (depthCueMode == "fog" || depthCueMode == "none")
+                    c = Color.WhiteSmoke;
+                else
+                    throw new NotImplementedException();
+                horizon = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+                horizon.SetData<Color>(new Color[] { c });  //top left pixel
+            }
+
             Color[] pixels = new Color[horizon.Width * horizon.Height];
             horizon.GetData<Color>(pixels);
 

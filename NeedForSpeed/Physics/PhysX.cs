@@ -14,7 +14,6 @@ namespace Carmageddon.Physics
         public StillDesign.PhysX.Core Core { get; private set; }
         public StillDesign.PhysX.Scene Scene { get; private set; }
 
-        private const float time = 0.01666667f;
         private BasicEffect _debugEffect;
 
         public static PhysX Instance
@@ -55,15 +54,16 @@ namespace Carmageddon.Physics
             //sceneDescription.InternalThreadCount = 1; // HexaChromeGame.ProcessorCount - 1;
             sceneDescription.ThreadMask = 0xfffffffe;
             Scene = Core.CreateScene(sceneDescription);
-            //Scene.SetGroupCollisionFlag(ds.HeightfieldGroupID, ds.VehicleGroupID, true);
-            //Scene.SetActorGroupPairFlags(ds.HeightfieldGroupID, ds.VehicleGroupID, ContactPairFlag.OnStartTouch);
+            //Scene.SetGroupCollisionFlag(10, 1, true);
+            //Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.OnSlide);
+
             //Scene.SetGroupCollisionFlag(ds.HeightfieldGroupID, ds.RocketGroupID, true);
             //Scene.SetActorGroupPairFlags(ds.HeightfieldGroupID, ds.RocketGroupID, ContactPairFlag.OnImpact | ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
             //Scene.SetGroupCollisionFlag(ds.VehicleGroupID, ds.RocketGroupID, true);
             //Scene.SetActorGroupPairFlags(ds.VehicleGroupID, ds.RocketGroupID, ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
             //Scene.SetGroupCollisionFlag(ds.VehicleGroupID, ds.ItemGroupID, true);
             //Scene.SetActorGroupPairFlags(ds.VehicleGroupID, ds.ItemGroupID, ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
-            //Scene.UserContactReport = new ContactReport(Scene);
+            Scene.UserContactReport = new ContactReport(Scene);
             
             MaterialDescription description = new MaterialDescription();
             description.Restitution = 0.4f;

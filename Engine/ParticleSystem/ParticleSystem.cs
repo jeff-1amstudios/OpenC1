@@ -362,7 +362,6 @@ namespace Particle3DSample
 
                     if (firstActiveParticle < firstFreeParticle)
                     {
-                        Debug.WriteLine("Particles: " + (firstFreeParticle - firstActiveParticle));
                         // If the active particles are all in one consecutive range,
                         // we can draw them all in a single call.
                         device.DrawPrimitives(PrimitiveType.PointList,

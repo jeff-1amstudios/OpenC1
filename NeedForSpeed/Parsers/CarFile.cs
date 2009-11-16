@@ -42,6 +42,7 @@ namespace Carmageddon.Parsers
     {
         public List<Vector3> WheelPositions = new List<Vector3>();
         public BoundingBox BoundingBox;
+        public List<Vector3> ExtraBoundingBoxPoints = new List<Vector3>();
 
         public float NonDrivenWheelRadius, DrivenWheelRadius;
         public float RideHeight;
@@ -199,13 +200,14 @@ namespace Carmageddon.Parsers
                 Debug.Assert(nbrBoxes == 1);
             }
             PhysicalProperties.BoundingBox = new BoundingBox(ReadLineAsVector3(), ReadLineAsVector3());
-            //PhysicalProperties.BoundingBox.Max -= v;
-            //PhysicalProperties.BoundingBox.Min -= v;
+
             if (!startOfMechanics.EndsWith("2"))
             {
                 int nbrPoints = ReadLineAsInt();
-                SkipLines(nbrPoints);
+                for (int i = 0; i < nbrPoints; i++)
+                    PhysicalProperties.ExtraBoundingBoxPoints.Add(ReadLineAsVector3());
             }
+
             SkipLines(2);
             PhysicalProperties.RideHeight = ReadLineAsFloat();
             PhysicalProperties.SuspensionDamping = ReadLineAsFloat(false);

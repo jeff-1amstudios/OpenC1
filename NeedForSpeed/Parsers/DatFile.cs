@@ -180,6 +180,9 @@ namespace Carmageddon.Parsers
                 model.IndexBufferStart = vertIndexes.Count;
                 model.Polygons.Sort(delegate(Polygon p1, Polygon p2) { return p1.MaterialIndex.CompareTo(p2.MaterialIndex); });
 
+                if (model.Name.Contains("LITE.DAT"))
+                {
+                }
 
                 Polygon currentPoly = null;
 
@@ -244,50 +247,12 @@ namespace Carmageddon.Parsers
 
         }
 
-        public BasicEffect SetupRender()
+        public void SetupRender()
         {
             GraphicsDevice device = Engine.Instance.Device;
             device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionNormalTexture.SizeInBytes);
             device.Indices = _indexBuffer;
-            
-            device.RenderState.FillMode = FillMode.Solid;
             device.VertexDeclaration = _vertexDeclaration;
-
-            if (_effect == null)
-            {
-                _effect = new BasicEffect(Engine.Instance.Device, null);
-                _effect.FogEnabled = false;
-                if (GameVariables.DepthCueMode == "dark")
-                    _effect.FogColor = new Vector3(0, 0, 0);
-                else if (GameVariables.DepthCueMode == "fog" || GameVariables.DepthCueMode == "none")
-                    _effect.FogColor = new Vector3(245, 245, 245);
-                else
-                {
-                    Debug.Assert(false);
-                }
-                _effect.FogStart = Engine.Instance.DrawDistance - 20 * GameVariables.Scale.Z;
-                _effect.FogEnd = Engine.Instance.DrawDistance;
-                //effect.LightingEnabled = true;
-                //effect.EnableDefaultLighting();
-                //effect.AmbientLightColor = new Vector3(0.09f, 0.09f, 0.1f);
-                //effect.DirectionalLight0.Direction = new Vector3(1.0f, -1.0f, -1.0f); 
-                _effect.TextureEnabled = true;
-            }
-
-            
-
-            _effect.View = Engine.Instance.Camera.View;
-            _effect.Projection = Engine.Instance.Camera.Projection;
-
-            _effect.Begin(SaveStateMode.None);
-
-            return _effect;
-        }
-
-
-        public void DoneRender()
-        {
-            _effect.End();
         }
 
         public Model GetModel(string name)

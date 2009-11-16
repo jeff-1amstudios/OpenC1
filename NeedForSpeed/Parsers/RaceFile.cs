@@ -21,7 +21,8 @@ namespace Carmageddon.Parsers
         public string DepthCueMode { get; private set; }
         public Vector3 GridPosition;
         public int GridDirection;
-        public Matrix WorldToMapTransform;
+        public List<NoncarFile> NonCars { get; set; }
+        public List<Vector3> CopStartPoints { get; set; }
 
         public RaceFile(string filename) : base(filename)
         {
@@ -91,6 +92,18 @@ namespace Carmageddon.Parsers
             SkipLines(5); // map name, map matrix
 
             ReadFunkSection();
+
+            ReadGrooveSection();
+
+            ReadPedestrianSection();
+
+            ReadOpponentPathSection();
+
+            ReadCopStartPointsSection();
+
+            ReadMaterialModifierSection();
+
+            ReadNonCarSection();
             
             CloseFile();
         }
@@ -129,7 +142,87 @@ namespace Carmageddon.Parsers
 
         private void ReadGrooveSection()
         {
+            string start = ReadLine();
+            Debug.Assert(start == "START OF GROOVE");
+            while (true)
+            {
+                string line = ReadLine();
+                if (line == "END OF GROOVE")
+                    break;
+            }
+        }
 
+        private void ReadPedestrianSection()
+        {
+            ReadLine(); //# of pedsubs
+            int nbrPeds = ReadLineAsInt();
+
+            for (int i = 0; i < nbrPeds; i++)
+            {
+                int pedNbr = ReadLineAsInt();
+                int nbrInstructions = ReadLineAsInt();
+                int initialInstruction = ReadLineAsInt();
+                for (int j = 0; j < nbrInstructions; j++)
+                {
+                    string instruction = ReadLine();
+                    if (instruction == "point") ReadLine(); //point data
+                    else if (instruction == "reverse") { }
+                    else
+                    {
+                    }
+                }
+            }
+        }
+
+        private void ReadOpponentPathSection()
+        {
+            Debug.Assert(ReadLine() == "START OF OPPONENT PATHS");
+            int nbrNodes = ReadLineAsInt();
+            SkipLines(nbrNodes);
+            int nbrSections = ReadLineAsInt();
+            SkipLines(nbrSections);
+        }
+
+        private void ReadCopStartPointsSection()
+        {
+            int nbrPoints = ReadLineAsInt();
+            for (int i = 0; i < nbrPoints; i++)
+            {
+                ReadLine();
+                //CopStartPoints.Add(ReadLineAsVector3());
+            }
+            Debug.Assert(ReadLine() == "END OF OPPONENT PATHS");
+        }
+
+        private void ReadMaterialModifierSection()
+        {
+            int nbrMaterialModifiers = ReadLineAsInt();
+            for (int i = 0; i < nbrMaterialModifiers; i++)
+            {
+                float carWallFriction = ReadLineAsFloat(false);
+                float tyreRoadFriction = ReadLineAsFloat(false);
+                float downforce = ReadLineAsFloat(false);
+                float bumpiness = ReadLineAsFloat(false);
+                int tyreSoundIndex = ReadLineAsInt();
+                int crashSoundIndex = ReadLineAsInt();
+                int scrapeSoundIndex = ReadLineAsInt();
+                float sparkiness = ReadLineAsFloat(false);
+                int expansion = ReadLineAsInt();
+                string skidMaterial = ReadLine();
+            }
+        }
+
+        private void ReadNonCarSection()
+        {
+            NonCars = new List<NoncarFile>();
+
+            int nbrNonCars = ReadLineAsInt();
+            for (int i = 0; i < nbrNonCars; i++)
+            {
+                string filename = ReadLine();
+                NoncarFile file = new NoncarFile(GameVariables.BasePath + "\\Noncars\\" + filename);
+                NonCars.Add(file);
+            }
         }
     }
 }

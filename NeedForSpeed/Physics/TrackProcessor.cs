@@ -6,20 +6,23 @@ using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
 using StillDesign.PhysX;
 using System.IO;
+using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
+using PlatformEngine;
 
 namespace Carmageddon.Physics
 {
-    class TrackMesh
+    class TrackProcessor
     {
-        public static void Generate(ActFile actors, DatFile models)
+        public static void GenerateMesh(ActFile actors, DatFile models)
         {
             List<Vector3> verts = new List<Vector3>();
             List<ushort> indices = new List<ushort>();
-            List<Carmageddon.Parsers.Actor> actorsList = actors.GetAllActors();
+            List<Carmageddon.Parsers.CActor> actorsList = actors.GetAllActors();
 
             for (int i = 0; i < actorsList.Count; i++)
             {
-                Carmageddon.Parsers.Actor actor = actorsList[i];
+                Carmageddon.Parsers.CActor actor = actorsList[i];
                 if (actor.Model == null) continue;
                 if (actor.Name.StartsWith("&")) 
                     continue; //dont-merge with track (non-car, animation etc)
@@ -98,8 +101,68 @@ namespace Carmageddon.Physics
             };
 
             StillDesign.PhysX.Actor a = PhysX.Instance.Scene.CreateActor(actorDescription);
+            a.Group = 10;
             a.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
             
+        }
+
+        public static void GenerateNonCars(ActFile actors, List<NoncarFile> nonCars)
+        {
+            List<Carmageddon.Parsers.CActor> actorsList = actors.GetAllActors();
+            int count=0;
+
+            for (int i = 0; i < actorsList.Count; i++)
+            {
+                Carmageddon.Parsers.CActor actor = actorsList[i];
+                if (actor.Model == null) continue;
+                if (actor.Name.StartsWith("&"))
+                {
+                    if (Char.IsDigit(actor.Name[1]) && Char.IsDigit(actor.Name[2]))
+                    {
+                        int index = int.Parse(actor.Name.Substring(1, 2));
+                        NoncarFile nonCar = nonCars.Find(a => a.IndexNumber == index);
+
+                        if (nonCar == null)
+                        {
+                            Debug.WriteLine("No noncar matching " + actor.Name);
+                            continue;
+                        }
+
+                        ActorDescription actorDesc = new ActorDescription();
+                        BodyDescription bodyDesc = new BodyDescription(nonCar.Mass);
+                        actorDesc.BodyDescription = bodyDesc;
+
+                        BoxShapeDescription boxDesc = new BoxShapeDescription();
+                        float w = nonCar.BoundingBox.Max.X - nonCar.BoundingBox.Min.X;
+                        float h = nonCar.BoundingBox.Max.Y - nonCar.BoundingBox.Min.Y;
+                        float l = nonCar.BoundingBox.Max.Z - nonCar.BoundingBox.Min.Z;
+                        boxDesc.Size = new Vector3(w, h, l);
+                        boxDesc.LocalPosition = nonCar.BoundingBox.GetCenter();
+                        
+                        actorDesc.Shapes.Add(boxDesc);
+
+
+                        Vector3 scaleout, transout;
+                        Quaternion b;
+                        actor.Matrix.Decompose(out scaleout, out b, out transout);
+
+                        Matrix m =
+                            Matrix.CreateFromQuaternion(b) *
+                            Matrix.CreateTranslation(transout);
+
+                        StillDesign.PhysX.Actor instance = PhysX.Instance.Scene.CreateActor(actorDesc);
+                        instance.GlobalPose = m;
+                        
+                        instance.RaiseBodyFlag(BodyFlag.Visualization);
+                        instance.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
+                        instance.Sleep();
+                        actor.AttachPhysxActor(instance);
+                        count++;
+                    }
+                }
+            }
+
+            Debug.WriteLine("NonCars: " + count);
         }
     }
 }

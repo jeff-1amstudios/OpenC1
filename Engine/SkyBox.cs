@@ -20,16 +20,15 @@ namespace PlatformEngine
             set { _textures = value; }
         }
         
-
         VertexBuffer _vertices;
         IndexBuffer _indices;
-        VertexDeclaration _vertexDecl;
+        VertexDeclaration _vertexDeclaration;
 
-        Vector3 _vCameraPosition;
-
+        Vector3 _cameraPosition;
         Matrix _viewMatrix;
         Matrix _projectionMatrix;
         Matrix _worldMatrix;
+
         public float HeightOffset { get; set; }
 
         public SkyBox(float repetionsX)
@@ -40,11 +39,11 @@ namespace PlatformEngine
 
         public Vector3 CameraPosition
         {
-            get { return _vCameraPosition; }
+            get { return _cameraPosition; }
             set
             {
-                _vCameraPosition = value;
-                _worldMatrix = Matrix.CreateTranslation(_vCameraPosition);
+                _cameraPosition = value;
+                _worldMatrix = Matrix.CreateTranslation(_cameraPosition);
             }
         }
 
@@ -64,16 +63,11 @@ namespace PlatformEngine
         public void LoadResources(float repetionsX)
         {
             _effect = Engine.Instance.ContentManager.Load<Effect>("Content\\Skybox\\skybox");
-            
-            _vertexDecl = new VertexDeclaration(Engine.Instance.Device, VertexPositionTexture.VertexElements);
-
+            _vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionTexture.VertexElements);
             _vertices = new VertexBuffer(Engine.Instance.Device, typeof(VertexPositionTexture), 4 * 6, BufferUsage.WriteOnly);
-
             VertexPositionTexture[] data = new VertexPositionTexture[4 * 6];
 
-
-            #region Define Vertexes
-            Vector3 vExtents = new Vector3(500, 300, 500);
+            Vector3 vExtents = new Vector3(400, 250, 400);
             //back
             data[0].Position = new Vector3(vExtents.X, -vExtents.Y, -vExtents.Z);
             data[0].TextureCoordinate.X = repetionsX; data[0].TextureCoordinate.Y = 1.0f;
@@ -137,9 +131,7 @@ namespace PlatformEngine
             _vertices.SetData<VertexPositionTexture>(data);
 
 
-            _indices = new IndexBuffer(Engine.Instance.Device,
-                                typeof(short), 6 * 6,
-                                BufferUsage.WriteOnly);
+            _indices = new IndexBuffer(Engine.Instance.Device, typeof(short), 6 * 6, BufferUsage.WriteOnly);
 
             short[] ib = new short[6 * 6];
 
@@ -155,13 +147,11 @@ namespace PlatformEngine
             }
 
             _indices.SetData<short>(ib);
-            #endregion
-
         }
 
         public void Update(GameTime gameTime)
         {
-            CameraPosition = -Engine.Instance.Camera.Position + new Vector3(0, HeightOffset, 0);
+            CameraPosition = Engine.Instance.Camera.Position + new Vector3(0, HeightOffset, 0);
             ProjectionMatrix = Engine.Instance.Camera.Projection;
             ViewMatrix = Engine.Instance.Camera.View;
         }
@@ -173,23 +163,19 @@ namespace PlatformEngine
                 return;
 
             _effect.Begin(SaveStateMode.SaveState);
-            
-            _effect.Parameters["worldViewProjection"].SetValue(
-                             _worldMatrix * _viewMatrix * _projectionMatrix);
+            _effect.Parameters["worldViewProjection"].SetValue(_worldMatrix * _viewMatrix * _projectionMatrix);
 
             GraphicsDevice device = Engine.Instance.Device;
 
-            //device.RenderState.DepthBufferWriteEnable  = false;
-
-            device.VertexDeclaration = _vertexDecl;
-            device.Vertices[0].SetSource(_vertices, 0, _vertexDecl.GetVertexStrideSize(0));
-
+            device.RenderState.DepthBufferWriteEnable = false;
+            device.VertexDeclaration = _vertexDeclaration;
+            device.Vertices[0].SetSource(_vertices, 0, VertexPositionTexture.SizeInBytes);
             device.Indices = _indices;
 
             for (int x = 0; x < 6; x++)
             {
                 _effect.Parameters["baseTexture"].SetValue(_textures[x]);
-                
+
                 _effect.Techniques[0].Passes[0].Begin();
                 device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, x * 4, 4, x * 6, 2);
                 _effect.Techniques[0].Passes[0].End();
@@ -197,7 +183,7 @@ namespace PlatformEngine
 
             _effect.End();
 
-            //device.RenderState.DepthBufferWriteEnable = true;
+            device.RenderState.DepthBufferWriteEnable = true;
         }
     }
 }

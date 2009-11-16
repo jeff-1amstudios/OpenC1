@@ -52,7 +52,8 @@ namespace Carmageddon
             GameVariables.DepthCueMode = RaceFile.DepthCueMode;
 
 
-            Carmageddon.Physics.TrackMesh.Generate(_actors, _models);
+            Physics.TrackProcessor.GenerateMesh(_actors, _models);
+            Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars);
         }
 
         public void Update(GameTime gameTime)
@@ -61,8 +62,21 @@ namespace Carmageddon
 
         public void Render()
         {
+            _models.SetupRender();
             _actors.Render(_models, Matrix.Identity);
+
+            //RenderLight();
+            
         }
+
+       // public void RenderLight()
+        //{
+            //Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].Begin();
+            //CActor a = _actors.GetByName("&05L0044.ACT");
+            //_actors.RenderSingleModel(a, Matrix.CreateTranslation(RaceFile.GridPosition + new Vector3(0, 4, 0)));
+            //Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].End();
+            //Engine.Instance.DebugRenderer.AddAxis(Matrix.CreateTranslation(RaceFile.GridPosition + new Vector3(0, 0, 0) + a.bb.GetCenter()), 1);
+        //}
 
         public ActFile GetTrackActors()
         {

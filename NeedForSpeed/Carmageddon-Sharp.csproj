@@ -87,10 +87,11 @@
     <Compile Include="Model.cs" />
     <Compile Include="Parsers\FliFile.cs" />
     <Compile Include="Parsers\Funk.cs" />
+    <Compile Include="Parsers\NoncarFile.cs" />
     <Compile Include="Physics\ContactReport.cs" />
     <Compile Include="Physics\VehicleChassis.cs" />
     <Compile Include="Physics\PhysX.cs" />
-    <Compile Include="Physics\TrackMesh.cs" />
+    <Compile Include="Physics\TrackProcessor.cs" />
     <Compile Include="Physics\VehicleWheel.cs" />
     <Compile Include="VehicleModel.cs" />
     <Compile Include="Driver.cs" />

@@ -17,7 +17,7 @@ namespace Carmageddon
             _vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionColor.VertexElements);
         }
 
-        public static void Render(Vector3[] points, Matrix world)
+        public static void Render(Vector3[] points)
         {
             Color shadowColor = new Color(10, 10, 10, 100);
             VertexPositionColor[] verts = new VertexPositionColor[points.Length];
@@ -30,9 +30,10 @@ namespace Carmageddon
             GraphicsDevice device = Engine.Instance.Device;
             Engine.Instance.Device.RenderState.CullMode = CullMode.None;
             GameVariables.CullingDisabled = true;
-            Engine.Instance.CurrentEffect.World = world;
+            Engine.Instance.CurrentEffect.World = Matrix.Identity;
             Engine.Instance.CurrentEffect.TextureEnabled = false;
             Engine.Instance.CurrentEffect.VertexColorEnabled = true;
+            VertexDeclaration oldVertDecl = device.VertexDeclaration;
             device.VertexDeclaration = _vertexDeclaration;
 
             device.RenderState.AlphaBlendEnable = true;
@@ -40,23 +41,18 @@ namespace Carmageddon
             device.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
             device.RenderState.SourceBlend = Blend.SourceAlpha;
             device.RenderState.DepthBufferWriteEnable = false;
-            device.RenderState.DepthBufferEnable = false;
+            //device.RenderState.DepthBufferEnable = false;
 
             Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].Begin();
-
             device.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleStrip, verts, 0, 2);
             Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].End();
 
             Engine.Instance.CurrentEffect.TextureEnabled = true;
             Engine.Instance.CurrentEffect.VertexColorEnabled = false;
             device.RenderState.AlphaBlendEnable = false;
-            device.RenderState.DepthBufferEnable = true;
+            //device.RenderState.DepthBufferEnable = true;
             device.RenderState.DepthBufferWriteEnable = true;
-        }
-
-        public static void Render(Vector3[] points)
-        {
-            Render(points, Matrix.Identity);
+            device.VertexDeclaration = oldVertDecl;
         }
     }
 }

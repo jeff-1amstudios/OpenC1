@@ -24,6 +24,7 @@ namespace Carmageddon.Physics
         private float _axleOffset;
         float _lerper;
         ParticleEmitter _smokeEmitter;
+        public float LateralStiffness { get; private set; }
 
         public VehicleWheel(VehicleChassis chassis, WheelShape wheel, float axleOffset)
         {
@@ -41,25 +42,26 @@ namespace Carmageddon.Physics
             get { return _wheel.GlobalPosition; }
         }
 
-        public void Update(bool handbrake)
+        public void Update(float stiffness)
         {
-
             WheelContactData wcd = _wheel.GetContactData();
 
             UpdateMatrices(wcd);
 
-            float latImpulse = Math.Abs(wcd.LateralImpulse) * 0.0001f;// *latSpeed;
+            float latImpulse = Math.Abs(wcd.LateralImpulse) * 0.0001f;
             GameConsole.WriteLine("latImpulse", latImpulse);
 
+            if (latImpulse > 0) _airTime = 0;
+            else { _airTime += Engine.Instance.ElapsedSeconds * 2; if (_airTime > 1) _airTime = 1; }
 
-            if (handbrake && _isRear)
+            if (latImpulse == 0)
             {
-                _tireOverride = 0.09f;
+                _tireOverride = MathHelper.Lerp(0.15f, 0.05f, _airTime);
                 _lerper = 0;
             }
-            else if (latImpulse > 6 || latImpulse == 0 || (handbrake && _isRear))
+            else if (latImpulse > 6)
             {
-                _tireOverride = 0.08f;
+                _tireOverride = 0.12f;
                 _lerper = 0;
             }
             else if (latImpulse < 3 && _lerper == 0 && _tireOverride > 0)
@@ -77,27 +79,24 @@ namespace Carmageddon.Physics
                 }
             }
 
-            _airTime = latImpulse;
-
             _smokeEmitter.Enabled = false;
-            if (wcd.ContactForce > 0 && (_tireOverride > 0 || _lerper < 1))
+            if (_chassis.Speed > 5 && wcd.ContactForce > 0 && (_tireOverride > 0 && _lerper == 0))
             {
                 _smokeEmitter.Enabled = true;
                 _smokeEmitter.Update(Engine.Instance.ElapsedSeconds, wcd.ContactPoint);
             }
-        }
 
-        public float GetStiffness(float stiffness)
-        {
-            if (_tireOverride == 0) return stiffness;
-
-            if (_lerper == 0)
-                return _tireOverride;
+            // Actually set the computed stiffness
+            if (_tireOverride == 0) 
+                LateralStiffness = stiffness;
+            else  if (_lerper == 0)
+                LateralStiffness = _tireOverride;
             else
             {
-                return MathHelper.Lerp(_tireOverride, stiffness / 2, _lerper);
+                LateralStiffness = MathHelper.Lerp(_tireOverride, stiffness / 2, _lerper);
             }
         }
+
 
         private void UpdateMatrices(WheelContactData wcd)
         {
@@ -118,11 +117,7 @@ namespace Carmageddon.Physics
         {
             Matrix pose = _wheel.GlobalPose;
             Vector3 trans = pose.Translation;
-            //trans.X -= 0.034f;
-            //pose.Translation = trans;
             return _renderMatrix * pose;
         }
-
-        
     }
 }

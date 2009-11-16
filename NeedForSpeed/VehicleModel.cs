@@ -18,7 +18,7 @@ namespace Carmageddon
         ResourceCache _resourceCache;
         CrushSection _crushSection;
         public PhysicalProperties Properties { get; private set; }
-        private List<Actor> _wheelActors = new List<Actor>();
+        private List<CActor> _wheelActors = new List<CActor>();
         public VehicleChassis Chassis { get; set; }
 
         public VehicleModel(string filename)
@@ -74,8 +74,6 @@ namespace Carmageddon
             Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Clamp;
             Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Clamp;
 
-            Engine.Instance.CurrentEffect = _models.SetupRender();
-
             Vector3[] points = new Vector3[4];
 
             BoundingBox bb = Properties.BoundingBox;
@@ -91,21 +89,24 @@ namespace Carmageddon
             points[3] = Vector3.Transform(pos, pose);
 
             StillDesign.PhysX.Scene scene = Chassis.Body.Scene;
+            Vector3 offset = new Vector3(0, 0.1f, 0);
             for (int i = 0; i < 4; i++)
             {
                 StillDesign.PhysX.RaycastHit hit = scene.RaycastClosestShape(
                     new StillDesign.PhysX.Ray(points[i], Vector3.Down), StillDesign.PhysX.ShapesType.Static);
-                points[i] = hit.WorldImpact;
+                points[i] = hit.WorldImpact+offset;
             }
 
             ModelShadow.Render(points);
-            _models.DoneRender();
 
+            _models.SetupRender();
+            
             _actors.Render(_models, Chassis.Body.GlobalPose);
 
-            //Engine.Instance.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 10);
+            
+            Engine.Instance.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 10);
 
-            Engine.Instance.CurrentEffect = _models.SetupRender();
+            //Engine.Instance.CurrentEffect = _models.SetupRender();
 
             Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
@@ -117,9 +118,7 @@ namespace Carmageddon
 
             Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].End();
 
-            _models.DoneRender();
-
-            //TyreSmokeParticleSystem.Instance.Render();
+            TyreSmokeParticleSystem.Instance.Render();
 
             Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
             Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
