@@ -7,6 +7,7 @@ using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using Carmageddon.Physics;
+using StillDesign.PhysX;
 
 namespace Carmageddon
 {
@@ -52,8 +53,8 @@ namespace Carmageddon
             GameVariables.DepthCueMode = RaceFile.DepthCueMode;
 
 
-            Physics.TrackProcessor.GenerateMesh(_actors, _models);
-            Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars);
+            Actor trackActor = Physics.TrackProcessor.GenerateTrackActor(_actors, _models);
+            Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars, trackActor);
         }
 
         public void Update(GameTime gameTime)

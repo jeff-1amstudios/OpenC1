@@ -106,10 +106,10 @@ namespace Carmageddon.Physics
 
             foreach (Vector3 extraPoint in properties.ExtraBoundingBoxPoints)
             {
-                boxDesc = new BoxShapeDescription(0.1f, 0.1f, 0.1f);
+                boxDesc = new BoxShapeDescription(0.2f, 0.2f, 0.2f);
                 boxDesc.LocalPosition = extraPoint;
                 boxDesc.Mass = 0;
-                //actorDesc.Shapes.Add(boxDesc);
+                actorDesc.Shapes.Add(boxDesc);
             }
 
             actorDesc.GlobalPose = pose;

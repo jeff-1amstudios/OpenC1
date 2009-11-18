@@ -14,7 +14,7 @@ namespace Carmageddon.Physics
 {
     class TrackProcessor
     {
-        public static void GenerateMesh(ActFile actors, DatFile models)
+        public static Actor GenerateTrackActor(ActFile actors, DatFile models)
         {
             List<Vector3> verts = new List<Vector3>();
             List<ushort> indices = new List<ushort>();
@@ -24,7 +24,7 @@ namespace Carmageddon.Physics
             {
                 Carmageddon.Parsers.CActor actor = actorsList[i];
                 if (actor.Model == null) continue;
-                if (actor.Name.StartsWith("&")) 
+                if (actor.Name.StartsWith("&"))
                     continue; //dont-merge with track (non-car, animation etc)
 
                 int baseIndex = verts.Count;
@@ -38,11 +38,11 @@ namespace Carmageddon.Physics
                         continue;
 
                     int index = baseIndex + poly.Vertex1;
-                    
+
                     indices.Add((ushort)index);
                     if (verts[index] == Vector3.Zero)
                     {
-                        Vector3 transformedVec = Vector3.Transform(models._vertices[actor.Model.VertexBaseIndex+poly.Vertex1].Position, actor.Matrix);
+                        Vector3 transformedVec = Vector3.Transform(models._vertices[actor.Model.VertexBaseIndex + poly.Vertex1].Position, actor.Matrix);
                         verts[index] = transformedVec;
                     }
                     index = baseIndex + poly.Vertex2;
@@ -66,19 +66,19 @@ namespace Carmageddon.Physics
             for (int j = verts.Count - 1; j >= 0; j--)
             {
                 //if (verts[j] == Vector3.Zero)
-                  //  verts.RemoveAt(j);
+                //  verts.RemoveAt(j);
             }
 
             TriangleMeshDescription triangleMeshDesc = new TriangleMeshDescription();
             triangleMeshDesc.TriangleCount = indices.Count / 3;
             triangleMeshDesc.VertexCount = verts.Count;
-            
+
             triangleMeshDesc.AllocateVertices<Vector3>(triangleMeshDesc.VertexCount);
             triangleMeshDesc.AllocateTriangles<ushort>(triangleMeshDesc.TriangleCount);
-            
+
             triangleMeshDesc.TriangleStream.SetData(indices.ToArray());
             triangleMeshDesc.VerticesStream.SetData(verts.ToArray());
-            triangleMeshDesc.Flags = MeshFlag.Indices16Bit;            
+            triangleMeshDesc.Flags = MeshFlag.Indices16Bit;
 
             MemoryStream s = new MemoryStream();
 
@@ -91,25 +91,26 @@ namespace Carmageddon.Physics
 
             TriangleMeshShapeDescription shape = new TriangleMeshShapeDescription()
             {
-                TriangleMesh = triangleMesh,
+                TriangleMesh = triangleMesh
             };
-            
+
             ActorDescription actorDescription = new ActorDescription()
             {
                 GlobalPose = Matrix.CreateTranslation(0, 0, 0),
-                Shapes = { shape },
+                Shapes = { shape }
             };
+
 
             StillDesign.PhysX.Actor a = PhysX.Instance.Scene.CreateActor(actorDescription);
             a.Group = 10;
             a.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
-            
+            return a;
         }
 
-        public static void GenerateNonCars(ActFile actors, List<NoncarFile> nonCars)
+        public static void GenerateNonCars(ActFile actors, List<NoncarFile> nonCars, Actor trackActor)
         {
             List<Carmageddon.Parsers.CActor> actorsList = actors.GetAllActors();
-            int count=0;
+            int count = 0;
 
             for (int i = 0; i < actorsList.Count; i++)
             {
@@ -138,8 +139,15 @@ namespace Carmageddon.Physics
                         float l = nonCar.BoundingBox.Max.Z - nonCar.BoundingBox.Min.Z;
                         boxDesc.Size = new Vector3(w, h, l);
                         boxDesc.LocalPosition = nonCar.BoundingBox.GetCenter();
-                        
                         actorDesc.Shapes.Add(boxDesc);
+
+                        foreach (Vector3 extraPoint in nonCar.ExtraBoundingBoxPoints)
+                        {
+                            boxDesc = new BoxShapeDescription(0.2f, 0.2f, 0.2f);
+                            boxDesc.LocalPosition = extraPoint;
+                            boxDesc.Mass = 0;
+                            actorDesc.Shapes.Add(boxDesc);
+                        }
 
 
                         Vector3 scaleout, transout;
@@ -152,10 +160,27 @@ namespace Carmageddon.Physics
 
                         StillDesign.PhysX.Actor instance = PhysX.Instance.Scene.CreateActor(actorDesc);
                         instance.GlobalPose = m;
+                        instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMassWhenAttached);
+
+                        SphericalJointDescription jointDesc = new SphericalJointDescription()
+                        {
+                            Actor2 = null,
+                            Actor1 = instance
+                        };
+
+                        jointDesc.SetGlobalAnchor(instance.GlobalPosition);
+                        jointDesc.SetGlobalAxis(new Vector3(1, 0, 0));
+                        //JointLimitPairDescription limit = new JointLimitPairDescription();
+                        //limit.High = new JointLimitDescription(0.1f, 1,0);
+                        //limit.Low = new JointLimitDescription(-0.1f, 1,0);
+                        //SpringDescription spring = new SpringDescription(9999,2,0);
+                        //jointDesc.TwistSpring = spring;
+                        
+                        SphericalJoint j = (SphericalJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
                         
                         instance.RaiseBodyFlag(BodyFlag.Visualization);
-                        instance.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
-                        instance.Sleep();
+                        //instance.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
+                        //instance.Sleep();
                         actor.AttachPhysxActor(instance);
                         count++;
                     }

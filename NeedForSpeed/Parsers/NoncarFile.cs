@@ -18,8 +18,8 @@ namespace Carmageddon.Parsers
             : base(filename)
         {
             IndexNumber = ReadLineAsInt();
-            CenterOfMass = ReadLineAsVector3(false);
-            CenterOfMassWhenAttached = ReadLineAsVector3(false);
+            CenterOfMass = ReadLineAsVector3();
+            CenterOfMassWhenAttached = ReadLineAsVector3();
             BoundingBox = new BoundingBox(ReadLineAsVector3(), ReadLineAsVector3());
 
             int nbrExtraPoints = ReadLineAsInt();

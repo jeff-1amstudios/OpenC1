@@ -180,10 +180,6 @@ namespace Carmageddon.Parsers
                 model.IndexBufferStart = vertIndexes.Count;
                 model.Polygons.Sort(delegate(Polygon p1, Polygon p2) { return p1.MaterialIndex.CompareTo(p2.MaterialIndex); });
 
-                if (model.Name.Contains("LITE.DAT"))
-                {
-                }
-
                 Polygon currentPoly = null;
 
                 foreach (Polygon poly in model.Polygons)

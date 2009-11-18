@@ -27,7 +27,7 @@ namespace Carmageddon.Parsers
         public BoundingBox BoundingBox;
         public byte[] Flags;
         public bool IsWheel;
-        private StillDesign.PhysX.Actor _physXActor;
+        internal StillDesign.PhysX.Actor _physXActor;
         public CActor()
         {
             Children = new List<CActor>();
@@ -189,21 +189,7 @@ namespace Carmageddon.Parsers
         private void ResolveTransformations(Matrix world, CActor actor)
         {                
             Debug.WriteLine(actor.Name + ", " + actor.ModelName + ", " + actor.Flags[0] + ":" + actor.Flags[1]);
-            if (actor.Matrix.Translation != Vector3.Zero)
-            {
-            }
             actor.Matrix = world * actor.Matrix;
-
-            //Vector3 scale2, trans;
-            //Quaternion rot;
-            //actor.Matrix.Decompose(out scale2, out rot, out trans);
-
-            //scale2 *= scale;
-            //trans *= scale;
-            //actor.Matrix = world * Matrix.CreateScale(scale2) *
-            //    Matrix.CreateFromQuaternion(rot) *
-            //    Matrix.CreateTranslation(trans);
-
 
             foreach (CActor child in actor.Children)
                 ResolveTransformations(actor.Matrix, child);
@@ -215,11 +201,6 @@ namespace Carmageddon.Parsers
             Quaternion rot;
             actor.Matrix.Decompose(out scale2, out rot, out trans);
             actor.Matrix = actor.Matrix * Matrix.CreateScale(scale);
-            //scale2 *= scale;
-            //trans *= scale;
-            //actor.Matrix = Matrix.CreateScale(scale2) *
-            //    Matrix.CreateFromQuaternion(rot) *
-            //    Matrix.CreateTranslation(trans);
 
             foreach (CActor child in actor.Children)
                 ScaleTransformations(scale, child);
@@ -318,29 +299,13 @@ namespace Carmageddon.Parsers
 
                     Engine.Instance.CurrentEffect.World = m * world;
                     Engine.Instance.CurrentEffect.CommitChanges();
-                    
+
                     actor.Model.Render(actor.Texture);
 
-                    //    Vector3 a, c;
-                    //    Quaternion b;
-                    //    actor.Matrix.Decompose(out a, out b, out c);
-
-                    //    //Engine.Instance.DebugRenderer.AddAxis(actor.Matrix, 4);
-                    //    //if (b.Y == 0)
-                    //    //{
-                    //    //float w = actor.bb.Max.X - actor.bb.Min.X;
-                    //    //float h = actor.bb.Max.Y - actor.bb.Min.Y;
-                    //    //float l = actor.bb.Max.Z - actor.bb.Min.Z;
-                    //    //Engine.Instance.DebugRenderer.AddWireframeCube(
-                    //    //    Matrix.CreateScale(w, h, l) *
-                    //    //    Matrix.CreateTranslation(actor.bb.GetCenter()) *
-                            
-                    //    //    Matrix.CreateFromQuaternion(b) *
-                    //    //    Matrix.CreateTranslation(c)
-                    //    //    , Color.Yellow);
-                    //    //}
-                        
-                    //}
+                    if (actor._physXActor != null)
+                    {
+                        //Engine.Instance.DebugRenderer.AddAxis(actor._physXActor.CenterOfMassGlobalPose, 4);
+                    }
 
                     GameVariables.NbrSectionsRendered++;
                 }
