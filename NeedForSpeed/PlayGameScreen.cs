@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using NFSEngine;
 using Carmageddon.Track;
 using System.Diagnostics;
+using Carmageddon.CameraViews;
 
 
 namespace Carmageddon
@@ -21,6 +22,7 @@ namespace Carmageddon
         SkyBox _skybox;
         List<ICamera> _cameras = new List<ICamera>();
         BasicEffect _effect;
+        ChaseView _chaseView;
         
         FixedChaseCamera _camera;
 
@@ -35,7 +37,7 @@ namespace Carmageddon
             _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX - 2, _race.RaceFile.DepthCueMode);
             _skybox.HeightOffset = _race.RaceFile.SkyboxPositionY * 0.1f;
 
-            _camera = new FixedChaseCamera(12.0f, 3.0f);
+            _camera = new FixedChaseCamera(12.0f, 2.2f);
             _camera.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Camera = _camera;
             //Engine.Instance.Camera = new FPSCamera();
@@ -43,6 +45,8 @@ namespace Carmageddon
             Engine.Instance.Player = new Driver();
             Engine.Instance.Camera.Position = _race.RaceFile.GridPosition;
             SetupPhysics();
+
+            _chaseView = new ChaseView(_carModel);
         }
 
         private void SetupPhysics()
@@ -64,38 +68,19 @@ namespace Carmageddon
             Engine.Instance.Camera.Update(gameTime);
             Engine.Instance.Player.Update(gameTime);
 
-            if (input.IsKeyDown(Keys.Up) || input.IsKeyDown(Keys.Down))
-            {
-                if (input.IsKeyDown(Keys.Up))
-                    _chassis.Accelerate(1.0f);
-                else
-                    _chassis.Accelerate(-1.0f);
-            }
-            else
-                _chassis.Accelerate(0.0f);
+            
+            _chassis.Accelerate(PlayerVehicleController.Acceleration);
+            if (PlayerVehicleController.Brake != 0)
+                _chassis.Accelerate(-PlayerVehicleController.Brake);
+            
+            _chassis.Steer(PlayerVehicleController.Turn);
 
-            if (input.IsKeyDown(Keys.Left) || input.IsKeyDown(Keys.Right))
-            {
-                if (input.IsKeyDown(Keys.Left))
-                    _chassis.SteerLeft();
-                else
-                    _chassis.SteerRight();
-            }
-            else
-                _chassis.StopSteering();
-
-            if (input.IsKeyDown(Keys.Space))
-            {
+            if (PlayerVehicleController.Handbrake)
                 _chassis.PullHandbrake();
-            }
             else
-            {
                 _chassis.ReleaseHandbrake();
-            }
-
+            
             _carModel.Update(gameTime);
-
-            _chassis.Update(gameTime);
             Carmageddon.Physics.PhysX.Instance.Update(gameTime);
 
             _camera.Position = _chassis.Body.GlobalPosition;
@@ -111,6 +96,11 @@ namespace Carmageddon
         public void Draw()
         {
             GameVariables.NbrDrawCalls = 0;
+            if (GameVariables.CullingDisabled)
+                Engine.Instance.Device.RenderState.CullMode = CullMode.None;
+            else
+                Engine.Instance.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
+
 
             Engine.Instance.CurrentEffect = SetupRenderEffect();
 
@@ -119,14 +109,13 @@ namespace Carmageddon
             GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
             _race.Render();
 
-            _carModel.Render();
-
+            _chaseView.Render();
 
             Engine.Instance.CurrentEffect.End();
 
             GameConsole.WriteLine("Draw Calls", GameVariables.NbrDrawCalls);
 
-            Carmageddon.Physics.PhysX.Instance.Draw();
+            //Carmageddon.Physics.PhysX.Instance.Draw();
         }
 
         #endregion

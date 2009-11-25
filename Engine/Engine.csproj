@@ -97,6 +97,7 @@
     <Compile Include="SkyBox.cs" />
     <Compile Include="HeightmapTerrain.cs" />
     <Compile Include="SoundEngine2.cs" />
+    <Compile Include="TextureGenerator.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>

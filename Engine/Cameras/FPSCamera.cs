@@ -152,7 +152,7 @@ namespace PlatformEngine
             view *= Matrix.CreateRotationZ(_orientation.Z);
 
             View = view;
-            SetPerspective(DEFAULT_FOVX, 4f/3f, DEFAULT_ZNEAR, DrawDistance);
+            SetPerspective(DEFAULT_FOVX, Engine.Instance.AspectRatio, DEFAULT_ZNEAR, DrawDistance);
         }
 
         private void UpdateVelocity(GameTime gameTime)

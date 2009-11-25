@@ -35,7 +35,6 @@ namespace PlatformEngine
             Instance = new Engine(game);
             
             Instance.EngineStartup(graphics);
-                       
         }
 
         
@@ -108,9 +107,20 @@ namespace PlatformEngine
             }
         }
 
+        public Rectangle Window
+        {
+            get { return Game.Window.ClientBounds; }
+        }
 
+        public float AspectRatio
+        {
+            get
+            {
+                Rectangle r = Window;
+                return (float)r.Width / (float)r.Height;
+            }
+        }
         
-
         public GameObject Player
         {
             get { return _player; }

@@ -35,22 +35,9 @@ namespace Carmageddon.Physics
         float _motorTorque = 0.0f;
         float _brakeTorque = 0.0f;
 
-        // Stossdämpfer
-        Matrix mBLSpring = (Matrix.CreateRotationZ(MathHelper.ToRadians(-20)) * Matrix.CreateTranslation(new Vector3(-0.55f, 0.05f, 1.197f)));
-        Matrix mBRSpring = (Matrix.CreateRotationZ(MathHelper.ToRadians(20)) * Matrix.CreateTranslation(new Vector3(0.55f, 0.05f, 1.197f)));
-        Matrix mFLSpring = (Matrix.CreateRotationZ(MathHelper.ToRadians(-20)) * Matrix.CreateTranslation(new Vector3(-0.5f, 0.05f, -1.473f)));
-        Matrix mFRSpring = (Matrix.CreateRotationZ(MathHelper.ToRadians(20)) * Matrix.CreateTranslation(new Vector3(0.5f, 0.05f, -1.473f)));
+        public Motor Motor { get; private set; }
 
-        Matrix BLSpring;
-        Matrix BRSpring;
-        Matrix FLSpring;
-        Matrix FRSpring;
-
-        
-        // -------------------------------------------------------------
-
-        Matrix rotY180 = Matrix.CreateRotationY(MathHelper.Pi);
-
+       
         Vector3 vSpeed = Vector3.Zero;
 
         // sonstige
@@ -63,8 +50,6 @@ namespace Carmageddon.Physics
 
         #endregion
 
-        #region Properties
-
 
         public Actor Body
         {
@@ -73,14 +58,8 @@ namespace Carmageddon.Physics
 
 
         public float Speed { get { return _speed; } }
-        public float CurrentMotortorque { get { return _motorTorque; } }
+        
 
-        public Vector3 Velocity
-        {
-            get { return vSpeed; }
-        }
-
-        #endregion
 
         #region Constructor
 
@@ -132,7 +111,7 @@ namespace Carmageddon.Physics
             latTfd.AsymptoteValue = 1249f; // 625f;
             latTfd.StiffnessFactor = 10.0f; // war 60000.0f
 
-            LS_latTFD = latTfd; // low speed
+            LS_latTFD = latTfd;
 
             
             WheelShapeDescription wheelDesc = new WheelShapeDescription();
@@ -202,17 +181,16 @@ namespace Carmageddon.Physics
             //massPos.Y = -15;// 0.5f;
             //VehicleBody.SetCenterOfMassOffsetGlobalPosition(massPos);
             
-            Matrix matrix = VehicleBody.GlobalInertiaTensor;
-
+            
             VehicleBody.WakeUp(60.0f);
 
-            //BLSpring = Matrix.CreateRotationZ(MathHelper.ToRadians(30));
-            BLSpring = mBLSpring;
-            BRSpring = mBRSpring;
-            FLSpring = mFLSpring;
-            FRSpring = mFRSpring;
-
             VehicleBody.RaiseBodyFlag(BodyFlag.Visualization);
+
+            List<float> power = new List<float>(new float[] { 0.2f, 0.3f, 0.4f, 0.7f, 0.8f, 1.0f, 1.0f, 1.0f, 0 });
+            List<float> ratios = new List<float>(new float[] { 3.227f, 2.360f, 1.885f, 1.512f, 1.200f });
+
+            BaseGearbox gearbox = BaseGearbox.Create(false, ratios, 0.4f);
+            Motor = new Motor(power, 480, 7f, gearbox);
         }
 
         public void Delete()
@@ -257,11 +235,6 @@ namespace Carmageddon.Physics
                 FRWheel.SteeringAngle = _steerAngle;
             }
             
-            BLSpring = mBLSpring * VehicleBody.GlobalPose;
-            BRSpring = mBRSpring * VehicleBody.GlobalPose;
-            FLSpring = mFLSpring * VehicleBody.GlobalPose;
-            FRSpring = mFRSpring * VehicleBody.GlobalPose;
-            
             Vector3 orientation = VehicleBody.GlobalOrientation.Up;
 
             if (orientation.Y < 0 && _speed < 1f)
@@ -272,12 +245,12 @@ namespace Carmageddon.Physics
                 if (_backwards && _currentTorque > 0.01f)
                 {
                     _backwards = false;
-                    Accelerate(_currentTorque);
+                    //Accelerate(_currentTorque);
                 }
                 else if (!_backwards && _currentTorque < 0.01f)
                 {
                     _backwards = true;
-                    Accelerate(_currentTorque);
+                    //Accelerate(_currentTorque);
                 }
             }
 
@@ -319,6 +292,9 @@ namespace Carmageddon.Physics
             //LS_latTFD.StiffnessFactor = speed * 150000.0f;
             //GameConsole.WriteLine(LS_latTFD.StiffnessFactor);
             UpdateTireStiffness();
+
+            GameConsole.WriteLine("MotorRpm", Motor.Rpm);
+            GameConsole.WriteLine("MotorGear", Motor.Gearbox.CurrentGear);
 
             //PlatformEngine.Engine.Instance.GraphicsUtils.AddSolidShape(PlatformEngine.ShapeType.Cube, VehicleBody.CenterOfMassGlobalPose, Color.Yellow, null);
             
@@ -371,19 +347,30 @@ namespace Carmageddon.Physics
     
         #region HandleInput
 
-        public void Accelerate(float torque)
+        public void Accelerate(float value)
         {
+            Motor.Throttle = value;
+
+            Motor.Update(_speed);
+
+            float torque = Motor.CurrentPowerOutput;
+            
+            if (Motor.AtRedline && !Motor.WheelsSpinning)
+            {
+                torque *= 0.2f;
+            }
+
             _currentTorque = torque;
             if (torque > 0.0001f)
             {
                 if (_backwards)
                 {
                     _motorTorque = 0f;
-                    _brakeTorque = torque * 700f;
+                    _brakeTorque = torque;
                 }
                 else
                 {
-                    _motorTorque = -torque * 800f;
+                    _motorTorque = -torque;
                     _brakeTorque = 0.0f;
                 }
             }
@@ -392,55 +379,44 @@ namespace Carmageddon.Physics
             {
                 if (_backwards)
                 {
-                    _motorTorque = -torque * 500f;
+                    _motorTorque = -torque;
                     _brakeTorque = 0f;
                 }
                 else
                 {
                     _motorTorque = 0.0f;
-                    _brakeTorque = -torque * 1000f;
+                    _brakeTorque = -torque;
                 }
             }
 
             else
             {
                 _motorTorque = 0.0f;
-                _brakeTorque = 20f;
+                _brakeTorque = Motor.CurrentFriction * 0.6f;
             }
 
             UpdateTorque();
             VehicleBody.WakeUp();
         }
 
-        public void SteerLeft()
+        public void Steer(float angle)
         {
-            _desiredSteerAngle = 0.50f;
-        }
-
-        public void SteerRight()
-        {
-            _desiredSteerAngle = -0.50f;
+            _desiredSteerAngle = -angle*0.5f;
         }
 
         public void PullHandbrake()
         {
             if (_handbrake == 1) return;
             if (_handbrake == 0) _handbrake = 0.85f;
-            _handbrake = 1;// += Engine.Instance.ElapsedSeconds * 0.4f;
+            _handbrake = 1;
             if (_handbrake > 1) _handbrake = 1;
         }
 
         public void ReleaseHandbrake()
         {
             if (_handbrake == 0) return;
-            _handbrake -= Engine.Instance.ElapsedSeconds*0.4f;
+            _handbrake -= Engine.Instance.ElapsedSeconds*0.2f;
             if (_handbrake < 0) _handbrake = 0;
-        }
-
-
-        public void StopSteering()
-        {
-            _desiredSteerAngle = 0;
         }
 
         #endregion

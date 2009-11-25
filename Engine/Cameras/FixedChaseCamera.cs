@@ -15,7 +15,7 @@ namespace NFSEngine
         public FixedChaseCamera(float chaseDistance, float height)
 		{
             _chaseDistance = new Vector3(chaseDistance, height, chaseDistance);
-            AspectRatio = 4f/3f;
+            AspectRatio = Engine.Instance.AspectRatio;
             FieldOfView = MathHelper.ToRadians(45.0f);
             NearPlaneDistance = 1.0f;
 		}

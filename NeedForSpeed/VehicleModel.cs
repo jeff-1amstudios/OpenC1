@@ -66,6 +66,8 @@ namespace Carmageddon
         {
             TyreSmokeParticleSystem.Instance.Update(gameTime);
             TyreSmokeParticleSystem.Instance.SetCamera(Engine.Instance.Camera);
+
+            Chassis.Update(gameTime);
         }
 
 

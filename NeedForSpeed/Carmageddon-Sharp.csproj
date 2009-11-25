@@ -79,20 +79,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigEndianBitConverter.cs" />
+    <Compile Include="CameraViews\ChaseView.cs" />
+    <Compile Include="CameraViews\ICameraView.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Gfx\ModelShadow.cs" />
     <Compile Include="Gfx\TireSmokeParticleEmitter.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="HUD\RevCounter.cs" />
     <Compile Include="IPalette.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Parsers\FliFile.cs" />
     <Compile Include="Parsers\Funk.cs" />
     <Compile Include="Parsers\NoncarFile.cs" />
+    <Compile Include="Physics\AutoGearbox.cs" />
+    <Compile Include="Physics\BaseGearbox.cs" />
     <Compile Include="Physics\ContactReport.cs" />
+    <Compile Include="Physics\Motor.cs" />
     <Compile Include="Physics\VehicleChassis.cs" />
     <Compile Include="Physics\PhysX.cs" />
     <Compile Include="Physics\TrackProcessor.cs" />
     <Compile Include="Physics\VehicleWheel.cs" />
+    <Compile Include="PlayerVehicleController.cs" />
     <Compile Include="VehicleModel.cs" />
     <Compile Include="Driver.cs" />
     <Compile Include="EndianBinaryReader.cs" />
@@ -120,6 +127,18 @@
   <ItemGroup>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
+    <Content Include="Lib\NxCharacter.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lib\NxCooking.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lib\NxExtensions.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lib\PhysXLoader.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Lib\StillDesign.CommonLibrary.dll" />
     <Content Include="Lib\StillDesign.PhysX.Net.dll" />
   </ItemGroup>

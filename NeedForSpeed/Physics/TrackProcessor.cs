@@ -162,25 +162,35 @@ namespace Carmageddon.Physics
                         instance.GlobalPose = m;
                         instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMassWhenAttached);
 
-                        SphericalJointDescription jointDesc = new SphericalJointDescription()
-                        {
-                            Actor2 = null,
-                            Actor1 = instance
-                        };
+                        //SphericalJointDescription jointDesc = new SphericalJointDescription()
+                        //{
+                        //    Actor1 = instance,
+                        //    Actor2 = null
+                        //};
 
-                        jointDesc.SetGlobalAnchor(instance.GlobalPosition);
-                        jointDesc.SetGlobalAxis(new Vector3(1, 0, 0));
+                        //jointDesc.SetGlobalAnchor(instance.GlobalPosition);
+                        //jointDesc.SetGlobalAxis(new Vector3(1, 0, 0));
+                        //jointDesc.LocalNormal1 = Vector3.Up;
+                        ////jointDesc.LocalNormal2 = Vector3.Up;
                         //JointLimitPairDescription limit = new JointLimitPairDescription();
-                        //limit.High = new JointLimitDescription(0.1f, 1,0);
-                        //limit.Low = new JointLimitDescription(-0.1f, 1,0);
-                        //SpringDescription spring = new SpringDescription(9999,2,0);
-                        //jointDesc.TwistSpring = spring;
+                        //limit.High = new JointLimitDescription(0.02f, 0f,1);
+                        //limit.Low = new JointLimitDescription(-0.5f, 1,1);
+                        //jointDesc.SwingLimit = limit.High;
+                        //SpringDescription jointSpring = new SpringDescription(90000, 200, 0);
+                        //jointDesc.SwingSpring = jointSpring;
+                        //SpringDescription twistSpring = new SpringDescription(2000, 30, 0);
+                        //jointDesc.TwistSpring = twistSpring;
+                        //jointDesc.Flags = SphericalJointFlag.TwistSpringEnabled | SphericalJointFlag.SwingLimitEnabled;
                         
-                        SphericalJoint j = (SphericalJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
+                        ////SpringDescription spring = new SpringDescription(9999,2,0);
+                        ////jointDesc.TwistSpring = spring;
                         
-                        instance.RaiseBodyFlag(BodyFlag.Visualization);
+                        //SphericalJoint j = (SphericalJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
+                        
+                        //instance.RaiseBodyFlag(BodyFlag.Visualization);
                         //instance.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
-                        //instance.Sleep();
+                        
+                        instance.Sleep();
                         actor.AttachPhysxActor(instance);
                         count++;
                     }

@@ -18,7 +18,7 @@ namespace NFSEngine
 
         public static void WriteLine(object o)
         {
-            Engine.Instance.DebugRenderer.AddText(new Vector2(20, (_lines++) * 18 + 500), o.ToString(), Justify.MIDDLE_LEFT, Color.White);
+            Engine.Instance.DebugRenderer.AddText(new Vector2(20, (_lines++) * 18), o.ToString(), Justify.TOP_LEFT, Color.Green);
         }
 
         public static void WriteLine(string s, float o)
