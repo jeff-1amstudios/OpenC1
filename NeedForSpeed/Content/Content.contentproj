@@ -78,6 +78,14 @@
       <ProcessorParameters_ColorKeyColor>0, 0, 0, 255</ProcessorParameters_ColorKeyColor>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="speedo-font.png">
+      <Name>speedo-font</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+      <ProcessorParameters_FirstCharacter>0</ProcessorParameters_FirstCharacter>
+    </Compile>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\v3.0\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

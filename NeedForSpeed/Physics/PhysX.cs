@@ -47,7 +47,7 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
             
             SceneDescription sceneDescription = new SceneDescription();
-            sceneDescription.Gravity = new Vector3(0f, -9.81f*1.5f, 0f);  //double gravity
+            sceneDescription.Gravity = new Vector3(0f, -9.81f, 0f);  //double gravity
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
             
             sceneDescription.Flags = SceneFlag.EnableMultithread | SceneFlag.SimulateSeperateThread;
@@ -56,7 +56,7 @@ namespace Carmageddon.Physics
             Scene = Core.CreateScene(sceneDescription);
             //Scene.SetGroupCollisionFlag(10, 1, true);
             //Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.OnSlide);
-
+            
             //Scene.SetGroupCollisionFlag(ds.HeightfieldGroupID, ds.RocketGroupID, true);
             //Scene.SetActorGroupPairFlags(ds.HeightfieldGroupID, ds.RocketGroupID, ContactPairFlag.OnImpact | ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
             //Scene.SetGroupCollisionFlag(ds.VehicleGroupID, ds.RocketGroupID, true);
@@ -140,7 +140,7 @@ namespace Carmageddon.Physics
 
         public void Update(GameTime gameTime)
         {
-            Scene.Simulate((float)(gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0));
+            Scene.Simulate(Engine.Instance.ElapsedSeconds);
             Scene.FlushStream();
             Scene.FetchResults(SimulationStatus.RigidBodyFinished, true);
         }

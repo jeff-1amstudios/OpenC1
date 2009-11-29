@@ -61,10 +61,10 @@ namespace NFSEngine
 		
         public void Update(GameTime gameTime)
 		{
-            _lookAt.AddValue(new Vector3(0, _chaseDistance.Y, 0) + (-Orientation * _chaseDistance));
+            _lookAt.AddValue(new Vector3(0, 2f, 0) + (-Orientation * _chaseDistance));
             Vector3 avgLookAt = _lookAt.GetAveragedValue();
             Vector3 cameraPosition = Position + avgLookAt;
-            View = Matrix.CreateLookAt(cameraPosition, cameraPosition - avgLookAt + new Vector3(0,3,0), Vector3.Up);
+            View = Matrix.CreateLookAt(cameraPosition, cameraPosition - avgLookAt, Vector3.Up);
             Projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlaneDistance, DrawDistance);
 		}        
     }

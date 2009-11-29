@@ -8,16 +8,17 @@ namespace Carmageddon.CameraViews
     class ChaseView : ICameraView
     {
 
+        RevCounter _revCounter;
         VehicleModel _vehicle;
 
         public ChaseView(VehicleModel vehicle)
         {
             _vehicle = vehicle;
+            _revCounter = new RevCounter(_vehicle.Chassis);
         }
 
         #region ICameraView Members
 
-        RevCounter _revCounter = new RevCounter();
 
         public bool Selectable
         {
@@ -32,8 +33,7 @@ namespace Carmageddon.CameraViews
         public void Render()
         {
             _vehicle.Render();
-
-            _revCounter.Render(_vehicle.Chassis.Motor.Rpm / _vehicle.Chassis.Motor.RedlineRpm);
+            _revCounter.Render();
         }
 
         public void Activate()

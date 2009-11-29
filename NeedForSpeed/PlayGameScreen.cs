@@ -10,6 +10,7 @@ using NFSEngine;
 using Carmageddon.Track;
 using System.Diagnostics;
 using Carmageddon.CameraViews;
+using Carmageddon.Physics;
 
 
 namespace Carmageddon
@@ -28,16 +29,17 @@ namespace Carmageddon
 
         public PlayGameScreen()
         {
+
             GameVariables.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
 
             _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\blkeagle.txt");
 
-            _race = new Race(@"C:\Games\carma1\data\races\citya1.TXT");
+            _race = new Race(@"C:\Games\carma1\data\races\cityb3.TXT");
 
             _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX - 2, _race.RaceFile.DepthCueMode);
             _skybox.HeightOffset = _race.RaceFile.SkyboxPositionY * 0.1f;
 
-            _camera = new FixedChaseCamera(12.0f, 2.2f);
+            _camera = new FixedChaseCamera(1.5f * GameVariables.Scale.X, 1.5f * GameVariables.Scale.Y);
             _camera.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Camera = _camera;
             //Engine.Instance.Camera = new FPSCamera();
@@ -46,7 +48,10 @@ namespace Carmageddon
             Engine.Instance.Camera.Position = _race.RaceFile.GridPosition;
             SetupPhysics();
 
+            _race.SetupPhysx(_carModel.Chassis);
+
             _chaseView = new ChaseView(_carModel);
+            
         }
 
         private void SetupPhysics()
@@ -81,10 +86,15 @@ namespace Carmageddon
                 _chassis.ReleaseHandbrake();
             
             _carModel.Update(gameTime);
-            Carmageddon.Physics.PhysX.Instance.Update(gameTime);
+            
+            PhysX.Instance.Update(gameTime);
 
             _camera.Position = _chassis.Body.GlobalPosition;
-            _camera.Orientation = _chassis.Body.GlobalOrientation.Forward;
+            
+            if (!_carModel.Chassis.InAir)
+            {
+                _camera.Orientation = _chassis.Body.GlobalOrientation.Forward;
+            }
 
             if (_skybox != null) _skybox.Update(gameTime);
 

@@ -11,9 +11,10 @@ namespace Carmageddon.Physics
         {
             
         }
-
+        
         public override void OnContactNotify(ContactPair contactInfo, ContactPairFlag events)
         {
+            
             Actor actorA = contactInfo.ActorA;
             Actor actorB = contactInfo.ActorB;
             if (actorA.Name == "Rocket")

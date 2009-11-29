@@ -160,7 +160,7 @@ namespace Carmageddon.Physics
 
                         StillDesign.PhysX.Actor instance = PhysX.Instance.Scene.CreateActor(actorDesc);
                         instance.GlobalPose = m;
-                        instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMassWhenAttached);
+                        instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMass);
 
                         //SphericalJointDescription jointDesc = new SphericalJointDescription()
                         //{

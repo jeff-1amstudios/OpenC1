@@ -29,20 +29,20 @@ namespace Carmageddon.Gfx
             settings.Duration = TimeSpan.FromSeconds(1);
 
             settings.MinHorizontalVelocity = 0;
-            settings.MaxHorizontalVelocity = 2;
+            settings.MaxHorizontalVelocity = 1;
 
             settings.MinVerticalVelocity = 2;
-            settings.MaxVerticalVelocity = 5;
+            settings.MaxVerticalVelocity = 4;
 
             settings.Gravity = new Vector3(0, -5, 0);
 
             settings.EndVelocity = 0.75f;
 
-            settings.MinStartSize = 5;
-            settings.MaxStartSize = 7;
+            settings.MinStartSize = 1;
+            settings.MaxStartSize = 2;
 
-            settings.MinEndSize = 10;
-            settings.MaxEndSize = 30;
+            settings.MinEndSize = 3;
+            settings.MaxEndSize = 7;
         }
     }
 }

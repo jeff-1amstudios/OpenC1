@@ -13,6 +13,7 @@ namespace Carmageddon
 {
     class Race
     {
+        Actor _trackActor;
         DatFile _models;
         ActFile _actors;
         ResourceCache _resourceCache;
@@ -53,8 +54,18 @@ namespace Carmageddon
             GameVariables.DepthCueMode = RaceFile.DepthCueMode;
 
 
-            Actor trackActor = Physics.TrackProcessor.GenerateTrackActor(_actors, _models);
-            Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars, trackActor);
+            _trackActor = Physics.TrackProcessor.GenerateTrackActor(_actors, _models);
+            Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars, _trackActor);
+        }
+
+        public void SetupPhysx(VehicleChassis player)
+        {
+            //PhysX.Instance.Scene.SetGroupCollisionFlag(10, 1, true);
+            //PhysX.Instance.Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.OnTouch);
+            //PhysX.Instance.Scene.SetShapePairFlags(player.Wheels[0].WheelShape, _trackActor.Shapes[0], ContactPairFlag.IgnorePair);
+            //PhysX.Instance.Scene.SetShapePairFlags(player.Wheels[1].WheelShape, _trackActor.Shapes[0], ContactPairFlag.IgnorePair);
+            //PhysX.Instance.Scene.SetShapePairFlags(player.Wheels[2].WheelShape, _trackActor.Shapes[0], ContactPairFlag.IgnorePair);
+            //PhysX.Instance.Scene.SetShapePairFlags(player.Wheels[3].WheelShape, _trackActor.Shapes[0], ContactPairFlag.IgnorePair);
         }
 
         public void Update(GameTime gameTime)
