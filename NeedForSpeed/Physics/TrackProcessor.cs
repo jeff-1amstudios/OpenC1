@@ -18,11 +18,11 @@ namespace Carmageddon.Physics
         {
             List<Vector3> verts = new List<Vector3>();
             List<ushort> indices = new List<ushort>();
-            List<Carmageddon.Parsers.CActor> actorsList = actors.GetAllActors();
+            List<Carmageddon.CActor> actorsList = actors.GetAllActors();
 
             for (int i = 0; i < actorsList.Count; i++)
             {
-                Carmageddon.Parsers.CActor actor = actorsList[i];
+                Carmageddon.CActor actor = actorsList[i];
                 if (actor.Model == null) continue;
                 if (actor.Name.StartsWith("&"))
                     continue; //dont-merge with track (non-car, animation etc)
@@ -109,12 +109,12 @@ namespace Carmageddon.Physics
 
         public static void GenerateNonCars(ActFile actors, List<NoncarFile> nonCars, Actor trackActor)
         {
-            List<Carmageddon.Parsers.CActor> actorsList = actors.GetAllActors();
+            List<Carmageddon.CActor> actorsList = actors.GetAllActors();
             int count = 0;
 
             for (int i = 0; i < actorsList.Count; i++)
             {
-                Carmageddon.Parsers.CActor actor = actorsList[i];
+                Carmageddon.CActor actor = actorsList[i];
                 if (actor.Model == null) continue;
                 if (actor.Name.StartsWith("&"))
                 {
@@ -130,7 +130,12 @@ namespace Carmageddon.Physics
                         }
 
                         ActorDescription actorDesc = new ActorDescription();
-                        BodyDescription bodyDesc = new BodyDescription(nonCar.Mass);
+                        BodyDescription bodyDesc = new BodyDescription();
+                        if (nonCar.BendAngleBeforeSnapping > 0)
+                            bodyDesc.Mass = 20000;
+                        else
+                            bodyDesc.Mass = nonCar.Mass;
+
                         actorDesc.BodyDescription = bodyDesc;
 
                         BoxShapeDescription boxDesc = new BoxShapeDescription();

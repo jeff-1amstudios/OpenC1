@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using Carmageddon.Physics;
 using StillDesign.PhysX;
+using Carmageddon.Parsers.Grooves;
 
 namespace Carmageddon
 {
@@ -18,6 +19,7 @@ namespace Carmageddon
         ActFile _actors;
         ResourceCache _resourceCache;
         public Texture2D HorizonTexture;
+        List<BaseGroove> _grooves;
 
         public RaceFile RaceFile { get; private set; }
 
@@ -42,9 +44,17 @@ namespace Carmageddon
 
             _models = new DatFile(@"C:\Games\carma1\data\models\" + RaceFile.ModelFile);
 
-            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + RaceFile.ActorFile, _models, true);
+            _grooves = new List<BaseGroove>(RaceFile.Grooves);
+
+            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + RaceFile.ActorFile, _models);
+            _actors.ResolveHierarchy(false, _grooves);
             _actors.ResolveMaterials(_resourceCache);
             _models.Resolve(_resourceCache);
+
+            foreach (BaseGroove g in _grooves)
+            {
+                g.SetActor(_actors.GetByName(g.ActorName));
+            }
             
             if (RaceFile.SkyboxTexture != "none")
             {
@@ -68,8 +78,12 @@ namespace Carmageddon
             //PhysX.Instance.Scene.SetShapePairFlags(player.Wheels[3].WheelShape, _trackActor.Shapes[0], ContactPairFlag.IgnorePair);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
+            foreach (BaseGroove groove in _grooves)
+            {
+                groove.Update();
+            }
         }
 
         public void Render()

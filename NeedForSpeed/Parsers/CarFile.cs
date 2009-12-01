@@ -7,6 +7,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
+using Carmageddon.Parsers.Grooves;
 
 namespace Carmageddon.Parsers
 {
@@ -61,6 +62,7 @@ namespace Carmageddon.Parsers
         public string BonnetActorFile { get; private set; }
         public List<CrushSection> CrushSections = new List<CrushSection>();
         public PhysicalProperties PhysicalProperties=new PhysicalProperties();
+        public List<BaseGroove> Grooves;
 
         public CarFile(string filename)
             : base(filename)
@@ -142,7 +144,14 @@ namespace Carmageddon.Parsers
         private void ReadGrooveSection()
         {
             Debug.Assert(ReadLine() == "START OF GROOVE");
-            while (ReadLine() != "END OF GROOVE") { }
+            Grooves = new List<BaseGroove>();
+            GrooveReader reader = new GrooveReader();
+
+            while (!reader.AtEnd)
+            {
+                BaseGroove g = reader.ReadFromFile(this);
+                if (g != null) Grooves.Add(g);
+            }
         }
 
         private void ReadCrushDataSection()

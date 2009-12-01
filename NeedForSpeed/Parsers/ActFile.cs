@@ -10,53 +10,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PlatformEngine;
 using NFSEngine;
+using Carmageddon.Parsers.Grooves;
 
 namespace Carmageddon.Parsers
 {
-
-    class CActor
-    {
-        public string Name { get; private set; }
-        public string ModelName { get; set; }
-        public Model Model { get; set; }
-        public string MaterialName { get; set; }
-        public Texture2D Texture { get; set; }
-        public Matrix Matrix;
-        internal List<CActor> Children { get; set; }
-        public int Level { get; set; }
-        public BoundingBox BoundingBox;
-        public byte[] Flags;
-        public bool IsWheel;
-        internal StillDesign.PhysX.Actor _physXActor;
-        public CActor()
-        {
-            Children = new List<CActor>();
-        }
-
-        public void SetName(string name)
-        {
-            Name = name;
-            IsWheel = (name.StartsWith("FLPIVOT") || name.StartsWith("FRPIVOT") || name.StartsWith("RLWHEEL") || name.StartsWith("RRWHEEL"));
-        }
-
-        internal void AttachPhysxActor(StillDesign.PhysX.Actor instance)
-        {
-            // if this CActor is attached to a PhysX object, reduce the Matrix to a scale, 
-            // as the position/orienation will come from PhysX
-            _physXActor = instance;
-            Vector3 scaleout, transout;
-            Quaternion b;
-            Matrix.Decompose(out scaleout, out b, out transout);
-            Matrix = Matrix.CreateScale(scaleout);
-        }
-
-        public Matrix GetDynamicMatrix()
-        {
-            if (_physXActor == null) return Matrix;
-            return Matrix * _physXActor.GlobalPose;
-        }
-    }
-
+   
     class ActFile : BaseDataFile
     {
         enum ActorBlockType
@@ -72,10 +30,9 @@ namespace Carmageddon.Parsers
             BoundingBox = 50
         }
 
-
         List<CActor> _actors = new List<CActor>();
-        
-        public ActFile(string filename, DatFile modelFile, bool resolveTransforms)
+
+        public ActFile(string filename, DatFile modelFile)
         {
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
 
@@ -171,41 +128,45 @@ namespace Carmageddon.Parsers
                     break;
             }
             reader.Close();
+        }
 
-
-
-            if (resolveTransforms)
+        public void ResolveHierarchy(bool removeRootTransform, List<BaseGroove> grooves)
+        {
+            if (removeRootTransform)
             {
-                ResolveTransformations(Matrix.Identity, _actors[0]);
+                _actors[0].Matrix.Translation = Vector3.Zero;
             }
 
-
-            ScaleTransformations(GameVariables.Scale, _actors[0]);  
+            ResolveTransformations(Matrix.Identity, _actors[0], grooves);
+            ScaleTransformations(GameVariables.Scale, _actors[0]);
         }
 
         /// <summary>
         /// Pre-calculate recursive transformations and apply scaling
         /// </summary>
-        private void ResolveTransformations(Matrix world, CActor actor)
-        {                
-            Debug.WriteLine(actor.Name + ", " + actor.ModelName + ", " + actor.Flags[0] + ":" + actor.Flags[1]);
+        private void ResolveTransformations(Matrix world, CActor actor, List<BaseGroove> grooves)
+        {
+            if (grooves.Exists(g => g.ActorName == actor.Name))
+            {
+                actor.ParentMatrix = world;
+                actor.IsAnimated = true;
+                return;
+            }
+            //Debug.WriteLine(actor.Name + ", " + actor.ModelName + ", " + actor.Flags[0] + ":" + actor.Flags[1] + "Animated: " + actor.IsAnimated);
             actor.Matrix = world * actor.Matrix;
 
             foreach (CActor child in actor.Children)
-                ResolveTransformations(actor.Matrix, child);
+                ResolveTransformations(actor.Matrix, child, grooves);
         }
 
         private void ScaleTransformations(Vector3 scale, CActor actor)
         {
-            Vector3 scale2, trans;
-            Quaternion rot;
-            actor.Matrix.Decompose(out scale2, out rot, out trans);
+            if (actor.IsAnimated) return;
             actor.Matrix = actor.Matrix * Matrix.CreateScale(scale);
 
             foreach (CActor child in actor.Children)
                 ScaleTransformations(scale, child);
         }
-
 
         public void ResolveMaterials(ResourceCache resources)
         {
@@ -267,7 +228,7 @@ namespace Carmageddon.Parsers
 
             for (int i = 0; i < _actors.Count; i++)
             {
-                RenderChildren(frustum, _actors[i], ref world, overrideActor);
+                RenderChildren(frustum, _actors[i], world, false);
             }
 
             Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].End();
@@ -275,7 +236,7 @@ namespace Carmageddon.Parsers
             GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered);
         }
 
-        private void RenderChildren(BoundingFrustum frustum, CActor actor, ref Matrix world, bool overrideMatrix)
+        private void RenderChildren(BoundingFrustum frustum, CActor actor, Matrix world, bool parentAnimated)
         {
             if (actor.IsWheel) return;
 
@@ -292,25 +253,36 @@ namespace Carmageddon.Parsers
             {
                 if (actor.Model != null)
                 {
-                    //Render
                     Matrix m = actor.GetDynamicMatrix();
-                    if (actor.Level == 0 && overrideMatrix)
-                        m.Translation = Vector3.Zero;
 
-                    Engine.Instance.CurrentEffect.World = m * world;
+                    if (actor.IsAnimated || parentAnimated)
+                    {
+                        
+                        if (actor.IsAnimated && !parentAnimated)
+                        {
+                            world = m * actor.ParentMatrix * GameVariables.ScaleMatrix * world;
+                        }
+                        else
+                        {
+                            world = m * world;
+                        }
+
+                        Engine.Instance.CurrentEffect.World = world;
+                        parentAnimated = true;
+                    }
+                    else
+                    {
+                        Engine.Instance.CurrentEffect.World = m * world;
+                    }
+                    
                     Engine.Instance.CurrentEffect.CommitChanges();
 
                     actor.Model.Render(actor.Texture);
 
-                    if (actor._physXActor != null)
-                    {
-                        //Engine.Instance.DebugRenderer.AddAxis(actor._physXActor.CenterOfMassGlobalPose, 4);
-                    }
-
                     GameVariables.NbrSectionsRendered++;
                 }
                 foreach (CActor child in actor.Children)
-                    RenderChildren(frustum, child, ref world, overrideMatrix);
+                    RenderChildren(frustum, child, world, parentAnimated);
             }            
         }
 
@@ -324,11 +296,30 @@ namespace Carmageddon.Parsers
             actor.Model.Render(actor.Texture);            
         }
 
-        public void RenderSingleModel(CActor actor, Matrix m)
+        public Matrix CalculateDynamicActorMatrix(CActor actorToFind)
         {
-            Engine.Instance.CurrentEffect.World = m;
-            Engine.Instance.CurrentEffect.CommitChanges();
-            actor.Model.Render(actor.Texture);
+            bool done = false;
+            Matrix m = CalculateDynamicActorMatrixInternal(_actors[0], Matrix.Identity, actorToFind, ref done);
+            return m * GameVariables.ScaleMatrix;
+        }
+
+        private Matrix CalculateDynamicActorMatrixInternal(CActor actor, Matrix matrix, CActor actorToFind, ref bool done)
+        {
+            if (done) return matrix;
+
+            matrix = matrix * actor.Matrix;
+
+            if (actorToFind == actor)
+            {
+                done = true;
+                return matrix;
+            }
+            foreach (CActor child in actor.Children)
+            {
+                Matrix m = CalculateDynamicActorMatrixInternal(child, matrix, actorToFind, ref done);
+                if (done) return m;
+            }
+            return matrix;
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
 
-            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\blkeagle.txt");
+            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\pitbull.txt");
 
             _race = new Race(@"C:\Games\carma1\data\races\cityb3.TXT");
 
@@ -42,7 +42,7 @@ namespace Carmageddon
             _camera = new FixedChaseCamera(1.5f * GameVariables.Scale.X, 1.5f * GameVariables.Scale.Y);
             _camera.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Camera = _camera;
-            //Engine.Instance.Camera = new FPSCamera();
+            Engine.Instance.Camera = new FPSCamera();
 
             Engine.Instance.Player = new Driver();
             Engine.Instance.Camera.Position = _race.RaceFile.GridPosition;
@@ -73,7 +73,8 @@ namespace Carmageddon
             Engine.Instance.Camera.Update(gameTime);
             Engine.Instance.Player.Update(gameTime);
 
-            
+            _race.Update();
+
             _chassis.Accelerate(PlayerVehicleController.Acceleration);
             if (PlayerVehicleController.Brake != 0)
                 _chassis.Accelerate(-PlayerVehicleController.Brake);
@@ -117,6 +118,7 @@ namespace Carmageddon
             if (_skybox != null) _skybox.Draw();
 
             GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
+            
             _race.Render();
 
             _chaseView.Render();

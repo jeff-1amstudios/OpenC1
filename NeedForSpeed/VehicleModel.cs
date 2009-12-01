@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using Carmageddon.Physics;
 using Carmageddon.Gfx;
+using Carmageddon.Parsers.Grooves;
 
 namespace Carmageddon
 {
@@ -20,6 +21,7 @@ namespace Carmageddon
         public PhysicalProperties Properties { get; private set; }
         private List<CActor> _wheelActors = new List<CActor>();
         public VehicleChassis Chassis { get; set; }
+        private List<BaseGroove> _grooves;
 
         public VehicleModel(string filename)
         {
@@ -38,21 +40,34 @@ namespace Carmageddon
                 _resourceCache.Add(matFile);
             }
 
+            _grooves = new List<BaseGroove>(carFile.Grooves);
+            
             _models = new DatFile(@"C:\Games\carma1\data\models\" + carFile.ModelFile);
 
-            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + carFile.ActorFile, _models, false);
+            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + carFile.ActorFile, _models);
+            _actors.ResolveHierarchy(true, _grooves);
             _actors.ResolveMaterials(_resourceCache);
             _models.Resolve(_resourceCache);
+
+            foreach (BaseGroove g in _grooves)
+            {
+                g.SetActor(_actors.GetByName(g.ActorName));
+            }
 
             _crushSection = carFile.CrushSections[1];
 
             Properties = carFile.PhysicalProperties;
 
             Vector3 tireWidth = new Vector3(0.034f, 0, 0) * GameVariables.Scale;
+
+            //Properties.WheelPositions.Add(_actors.CalculateDynamicActorMatrix(_actors.GetByName("FLPIVOT")).Translation - tireWidth);
+            //Properties.WheelPositions.Add(_actors.CalculateDynamicActorMatrix(_actors.GetByName("FRPIVOT")).Translation + tireWidth);
+            //Properties.WheelPositions.Add(_actors.CalculateDynamicActorMatrix(_actors.GetByName("RLWHEEL")).Translation - tireWidth);
+            //Properties.WheelPositions.Add(_actors.CalculateDynamicActorMatrix(_actors.GetByName("RRWHEEL")).Translation + tireWidth);
             Properties.WheelPositions.Add(_actors.GetByName("FLPIVOT").Matrix.Translation - tireWidth);
             Properties.WheelPositions.Add(_actors.GetByName("FRPIVOT").Matrix.Translation + tireWidth);
-            Properties.WheelPositions.Add(_actors.GetByName("RLWHEEL").Matrix.Translation-tireWidth);
-            Properties.WheelPositions.Add(_actors.GetByName("RRWHEEL").Matrix.Translation+tireWidth);
+            Properties.WheelPositions.Add(_actors.GetByName("RLWHEEL").Matrix.Translation - tireWidth);
+            Properties.WheelPositions.Add(_actors.GetByName("RRWHEEL").Matrix.Translation + tireWidth);
             
 
             _wheelActors.Add(_actors.GetByName("FLWHEEL"));
@@ -66,6 +81,11 @@ namespace Carmageddon
         {
             TyreSmokeParticleSystem.Instance.Update(gameTime);
             TyreSmokeParticleSystem.Instance.SetCamera(Engine.Instance.Camera);
+
+            foreach (BaseGroove groove in _grooves)
+            {
+                groove.Update();
+            }
 
             Chassis.Update(gameTime);
         }

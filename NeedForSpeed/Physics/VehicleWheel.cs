@@ -56,7 +56,7 @@ namespace Carmageddon.Physics
 
             UpdateMatrices(wcd);
 
-            GameConsole.WriteLine("latImpulse", wcd.LateralSlip);
+            GameConsole.WriteLine("latImpulse", wcd.LongitudalSlip);
             
             _smokeEmitter.Enabled = false;
             if (_chassis.Speed > 5 && Math.Abs(wcd.LateralSlip) > 0.2f)
@@ -77,7 +77,7 @@ namespace Carmageddon.Physics
                 suspensionLength = wcd.ContactPosition - WheelShape.Radius;
 
             _rotationMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(WheelShape.AxleSpeed));
-            _renderMatrix = Matrix.Identity;
+            
             Matrix translation = Matrix.CreateTranslation(_axleOffset, -suspensionLength, 0.0f);
             _renderMatrix = _rotationMatrix * Matrix.CreateRotationY(WheelShape.SteeringAngle) * translation;
         }

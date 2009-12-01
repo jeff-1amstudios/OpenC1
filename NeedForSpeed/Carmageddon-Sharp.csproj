@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigEndianBitConverter.cs" />
+    <Compile Include="CActor.cs" />
     <Compile Include="CameraViews\ChaseView.cs" />
     <Compile Include="CameraViews\ICameraView.cs" />
     <Compile Include="Extensions\Extensions.cs" />
@@ -90,6 +91,10 @@
     <Compile Include="Model.cs" />
     <Compile Include="Parsers\FliFile.cs" />
     <Compile Include="Parsers\Funk.cs" />
+    <Compile Include="Parsers\Grooves\BaseGroove.cs" />
+    <Compile Include="Parsers\Grooves\GrooveReader.cs" />
+    <Compile Include="Parsers\Grooves\RockGroove.cs" />
+    <Compile Include="Parsers\Grooves\SpinGroove.cs" />
     <Compile Include="Parsers\NoncarFile.cs" />
     <Compile Include="Physics\AutoGearbox.cs" />
     <Compile Include="Physics\BaseGearbox.cs" />

@@ -90,10 +90,10 @@ namespace Carmageddon.Physics
 
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 0.1f;
-            lngTFD.ExtremumValue = 8f;
+            lngTFD.ExtremumValue = 5f;
             lngTFD.AsymptoteSlip = 2.0f;
-            lngTFD.AsymptoteValue = 2.6f;
-            lngTFD.StiffnessFactor = 0.6f;
+            lngTFD.AsymptoteValue = 5.0f;
+            
 
             TireFunctionDescription _frontLateralTireFn = new TireFunctionDescription();
 

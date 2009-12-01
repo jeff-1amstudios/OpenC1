@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using Carmageddon.Parsers.Grooves;
 
 namespace Carmageddon.Parsers
 {
@@ -23,6 +24,7 @@ namespace Carmageddon.Parsers
         public int GridDirection;
         public List<NoncarFile> NonCars { get; set; }
         public List<Vector3> CopStartPoints { get; set; }
+        public List<BaseGroove> Grooves;
 
         public RaceFile(string filename) : base(filename)
         {
@@ -144,12 +146,14 @@ namespace Carmageddon.Parsers
         {
             string start = ReadLine();
             Debug.Assert(start == "START OF GROOVE");
-            while (true)
+            Grooves = new List<BaseGroove>();
+            GrooveReader reader = new GrooveReader();
+            while (!reader.AtEnd)
             {
-                string line = ReadLine();
-                if (line == "END OF GROOVE")
-                    break;
+                BaseGroove g = reader.ReadFromFile(this);
+                if (g != null) Grooves.Add(g);
             }
+            
         }
 
         private void ReadPedestrianSection()
