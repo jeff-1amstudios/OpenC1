@@ -32,9 +32,9 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
 
-            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\pitbull.txt");
+            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\ivan.txt");
 
-            _race = new Race(@"C:\Games\carma1\data\races\cityb3.TXT");
+            _race = new Race(@"C:\Games\carma1\data\races\coasta1.TXT");
 
             _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX - 2, _race.RaceFile.DepthCueMode);
             _skybox.HeightOffset = _race.RaceFile.SkyboxPositionY * 0.1f;

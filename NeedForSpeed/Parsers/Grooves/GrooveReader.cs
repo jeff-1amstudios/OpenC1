@@ -14,6 +14,11 @@ namespace Carmageddon.Parsers.Grooves
         public BaseGroove ReadFromFile(BaseTextFile file)
         {
             string actorName = file.ReadLine();
+            if (actorName == "END OF GROOVE")
+            {
+                AtEnd = true;
+                return null;
+            }
 
             if (actorName == "FLWHEEL.ACT" || actorName == "FRWHEEL.ACT" ||
                 actorName == "RLWHEEL.ACT" || actorName == "RRWHEEL.ACT" ||
@@ -26,7 +31,16 @@ namespace Carmageddon.Parsers.Grooves
             string lollipop = file.ReadLine().ToUpper();
             Debug.Assert(lollipop.StartsWith("NOT A"));
             string movement = file.ReadLine(); //constant / distance
-            string path = file.ReadLine().ToUpper(); //no path
+            string pathType = file.ReadLine().ToUpper(); //no path
+            PathGroove path = null;
+            if (pathType == "STRAIGHT")
+            {
+                path = new PathGroove();
+                path.Motion = (Motion)Enum.Parse(typeof(Motion), file.ReadLine(), true);
+                path.CenterOfMovement = file.ReadLineAsVector3(false);
+                path.Speed = file.ReadLineAsFloat(false);
+                path.Movement = file.ReadLineAsVector3(false);
+            }
             //Debug.Assert(path.StartsWith("NO "));
             string action = file.ReadLine().ToUpper();
 
@@ -39,7 +53,7 @@ namespace Carmageddon.Parsers.Grooves
                 spin.Speed = file.ReadLineAsFloat(false);
                 spin.CenterOfMovement = file.ReadLineAsVector3(false);
                 spin.Axis = (Axis)Enum.Parse(typeof(Axis), file.ReadLine(), true);
-
+                spin.Path = path;
                 ReadToEndOfGroove(file);
                 return spin;
             }
@@ -52,12 +66,18 @@ namespace Carmageddon.Parsers.Grooves
                 rock.CenterOfMovement = file.ReadLineAsVector3(false);
                 rock.Axis = (Axis)Enum.Parse(typeof(Axis), file.ReadLine(), true);
                 rock.MaxAngle = MathHelper.ToRadians(file.ReadLineAsFloat(false));  //in degrees in file
+                rock.Path = path;
                 ReadToEndOfGroove(file);
                 return rock;
             }
             else
             {
                 ReadToEndOfGroove(file);
+                if (path != null)
+                {
+                    path.ActorName = actorName;
+                    return path;
+                }
                 return null;
             }
         }

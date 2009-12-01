@@ -60,10 +60,6 @@ namespace Carmageddon
 
             Vector3 tireWidth = new Vector3(0.034f, 0, 0) * GameVariables.Scale;
 
-            //Properties.WheelPositions.Add(_actors.CalculateDynamicActorMatrix(_actors.GetByName("FLPIVOT")).Translation - tireWidth);
-            //Properties.WheelPositions.Add(_actors.CalculateDynamicActorMatrix(_actors.GetByName("FRPIVOT")).Translation + tireWidth);
-            //Properties.WheelPositions.Add(_actors.CalculateDynamicActorMatrix(_actors.GetByName("RLWHEEL")).Translation - tireWidth);
-            //Properties.WheelPositions.Add(_actors.CalculateDynamicActorMatrix(_actors.GetByName("RRWHEEL")).Translation + tireWidth);
             Properties.WheelPositions.Add(_actors.GetByName("FLPIVOT").Matrix.Translation - tireWidth);
             Properties.WheelPositions.Add(_actors.GetByName("FRPIVOT").Matrix.Translation + tireWidth);
             Properties.WheelPositions.Add(_actors.GetByName("RLWHEEL").Matrix.Translation - tireWidth);

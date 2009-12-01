@@ -7,9 +7,12 @@ using PlatformEngine;
 namespace Carmageddon.Parsers.Grooves
 {
     class SpinGroove : BaseGroove
-    {        
-        private Matrix _currentRotation = Matrix.Identity;
+    {
+        public Axis Axis;
+        public PathGroove Path;
 
+        Matrix _currentRotation = Matrix.Identity;
+        
         public override void Update()
         {
             Matrix rot;
@@ -34,6 +37,11 @@ namespace Carmageddon.Parsers.Grooves
                 _scale * _actorRotation
                 * Matrix.CreateTranslation(-CenterOfMovement) * _currentRotation * Matrix.CreateTranslation(CenterOfMovement)
                 * _translation;
+
+            if (Path != null)
+            {
+                _actor.Matrix *= Matrix.CreateTranslation(Path.UpdateMovement());
+            }
         }
     }
 }

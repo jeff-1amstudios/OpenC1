@@ -93,6 +93,7 @@
     <Compile Include="Parsers\Funk.cs" />
     <Compile Include="Parsers\Grooves\BaseGroove.cs" />
     <Compile Include="Parsers\Grooves\GrooveReader.cs" />
+    <Compile Include="Parsers\Grooves\PathGroove.cs" />
     <Compile Include="Parsers\Grooves\RockGroove.cs" />
     <Compile Include="Parsers\Grooves\SpinGroove.cs" />
     <Compile Include="Parsers\NoncarFile.cs" />

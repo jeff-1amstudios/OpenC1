@@ -153,7 +153,6 @@ namespace Carmageddon.Parsers
                 BaseGroove g = reader.ReadFromFile(this);
                 if (g != null) Grooves.Add(g);
             }
-            
         }
 
         private void ReadPedestrianSection()

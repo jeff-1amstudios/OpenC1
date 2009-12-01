@@ -24,7 +24,7 @@ namespace Carmageddon.Parsers.Grooves
         public string ActorName;
         public float Speed;
         public Vector3 CenterOfMovement;
-        public Axis Axis;
+        
         
         public Matrix _scale, _translation;
         public Matrix _actorRotation;

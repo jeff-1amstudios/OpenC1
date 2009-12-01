@@ -130,6 +130,9 @@ namespace Carmageddon.Parsers
             reader.Close();
         }
 
+        /// <summary>
+        /// Pre-calculate recursive transformations and apply scaling, ignoring groove animations
+        /// </summary>
         public void ResolveHierarchy(bool removeRootTransform, List<BaseGroove> grooves)
         {
             if (removeRootTransform)
@@ -141,9 +144,6 @@ namespace Carmageddon.Parsers
             ScaleTransformations(GameVariables.Scale, _actors[0]);
         }
 
-        /// <summary>
-        /// Pre-calculate recursive transformations and apply scaling
-        /// </summary>
         private void ResolveTransformations(Matrix world, CActor actor, List<BaseGroove> grooves)
         {
             if (grooves.Exists(g => g.ActorName == actor.Name))

@@ -55,7 +55,7 @@ namespace PlatformEngine
         private const float Acceleration = 5.0f;
         private const float Deceleration = -5.0f;
         private const float JumpVelocity = 0.23f;
-        private const float MaxSpeed = 0.5f;
+        private const float MaxSpeed = 1.5f;
         
                
         private float fovx;
