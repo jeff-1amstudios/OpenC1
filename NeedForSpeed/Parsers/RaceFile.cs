@@ -6,6 +6,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using Carmageddon.Parsers.Grooves;
+using Carmageddon.Parsers.Funks;
 
 namespace Carmageddon.Parsers
 {
@@ -25,6 +26,7 @@ namespace Carmageddon.Parsers
         public List<NoncarFile> NonCars { get; set; }
         public List<Vector3> CopStartPoints { get; set; }
         public List<BaseGroove> Grooves;
+        public List<BaseFunk> Funks;
 
         public RaceFile(string filename) : base(filename)
         {
@@ -80,7 +82,7 @@ namespace Carmageddon.Parsers
             SkyboxTexture = ReadLine().ToLower();
             SkyboxRepetitionsX = ReadLineAsInt();
             ReadLine();
-            SkyboxPositionY = ReadLineAsInt() * GameVariables.Scale.Y;
+            SkyboxPositionY = ReadLineAsInt();
             DepthCueMode = ReadLine().ToLower();
             ReadLine(); //degree of dark
 
@@ -126,19 +128,14 @@ namespace Carmageddon.Parsers
 
         private void ReadFunkSection()
         {
-            List<BaseFunk> funks = new List<BaseFunk>();
-            string start = ReadLine();
-            Debug.Assert(start == "START OF FUNK");
-            while (true)
+            Debug.Assert(ReadLine() == "START OF FUNK");
+            Funks = new List<BaseFunk>();
+            FunkReader reader = new FunkReader();
+
+            while (!reader.AtEnd)
             {
-                string line = ReadLine();
-                if (line == "NEXT FUNK")
-                    continue;
-                else if (line == "END OF FUNK")
-                    break;
-                
-                BaseFunk funk = new BaseFunk(this, line);
-                funks.Add(funk);
+                BaseFunk f = reader.Read(this);
+                if (f != null) Funks.Add(f);
             }
         }
 
@@ -150,7 +147,7 @@ namespace Carmageddon.Parsers
             GrooveReader reader = new GrooveReader();
             while (!reader.AtEnd)
             {
-                BaseGroove g = reader.ReadFromFile(this);
+                BaseGroove g = reader.Read(this);
                 if (g != null) Grooves.Add(g);
             }
         }

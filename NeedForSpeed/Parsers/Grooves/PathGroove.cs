@@ -28,7 +28,7 @@ namespace Carmageddon.Parsers.Grooves
                 //    _speed2 = 1;
                 //break;
                 case Motion.Linear:
-                    _currentPos += _direction * Engine.Instance.ElapsedSeconds * Speed;
+                    _currentPos += _direction * Engine.Instance.ElapsedSeconds * Speed * 2;
                     break;
                 default:
                     throw new NotImplementedException();

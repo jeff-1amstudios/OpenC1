@@ -11,7 +11,7 @@ namespace Carmageddon.Parsers.Grooves
     {
         public bool AtEnd;
 
-        public BaseGroove ReadFromFile(BaseTextFile file)
+        public BaseGroove Read(BaseTextFile file)
         {
             string actorName = file.ReadLine();
             if (actorName == "END OF GROOVE")

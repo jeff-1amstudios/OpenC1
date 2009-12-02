@@ -30,9 +30,10 @@ namespace Carmageddon
             GraphicsDevice device = Engine.Instance.Device;
             Engine.Instance.Device.RenderState.CullMode = CullMode.None;
             GameVariables.CullingDisabled = true;
-            Engine.Instance.CurrentEffect.World = Matrix.Identity;
-            Engine.Instance.CurrentEffect.TextureEnabled = false;
-            Engine.Instance.CurrentEffect.VertexColorEnabled = true;
+            
+            GameVariables.CurrentEffect.World = Matrix.Identity;
+            GameVariables.CurrentEffect.TextureEnabled = false;
+            GameVariables.CurrentEffect.VertexColorEnabled = true;
             VertexDeclaration oldVertDecl = device.VertexDeclaration;
             device.VertexDeclaration = _vertexDeclaration;
 
@@ -43,12 +44,12 @@ namespace Carmageddon
             device.RenderState.DepthBufferWriteEnable = false;
             //device.RenderState.DepthBufferEnable = false;
 
-            Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].Begin();
+            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
             device.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleStrip, verts, 0, 2);
-            Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].End();
+            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
 
-            Engine.Instance.CurrentEffect.TextureEnabled = true;
-            Engine.Instance.CurrentEffect.VertexColorEnabled = false;
+            GameVariables.CurrentEffect.TextureEnabled = true;
+            GameVariables.CurrentEffect.VertexColorEnabled = false;
             device.RenderState.AlphaBlendEnable = false;
             //device.RenderState.DepthBufferEnable = true;
             device.RenderState.DepthBufferWriteEnable = true;

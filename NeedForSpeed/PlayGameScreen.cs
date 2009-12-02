@@ -22,7 +22,7 @@ namespace Carmageddon
         Race _race;
         SkyBox _skybox;
         List<ICamera> _cameras = new List<ICamera>();
-        BasicEffect _effect;
+        BasicEffect2 _effect;
         ChaseView _chaseView;
         
         FixedChaseCamera _camera;
@@ -34,12 +34,12 @@ namespace Carmageddon
 
             _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\ivan.txt");
 
-            _race = new Race(@"C:\Games\carma1\data\races\coasta1.TXT");
+            _race = new Race(@"C:\Games\carma1\data\races\cityb1.TXT");
 
-            _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX - 2, _race.RaceFile.DepthCueMode);
-            _skybox.HeightOffset = _race.RaceFile.SkyboxPositionY * 0.1f;
+            _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX-2, _race.RaceFile.DepthCueMode);
+            _skybox.HeightOffset = -190 + _race.RaceFile.SkyboxPositionY * 1.5f;
 
-            _camera = new FixedChaseCamera(1.5f * GameVariables.Scale.X, 1.5f * GameVariables.Scale.Y);
+            _camera = new FixedChaseCamera(9, 9);
             _camera.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Camera = _camera;
             Engine.Instance.Camera = new FPSCamera();
@@ -113,7 +113,7 @@ namespace Carmageddon
                 Engine.Instance.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
 
 
-            Engine.Instance.CurrentEffect = SetupRenderEffect();
+            GameVariables.CurrentEffect = SetupRenderEffect();
 
             if (_skybox != null) _skybox.Draw();
 
@@ -123,7 +123,7 @@ namespace Carmageddon
 
             _chaseView.Render();
 
-            Engine.Instance.CurrentEffect.End();
+            GameVariables.CurrentEffect.End();
 
             GameConsole.WriteLine("Draw Calls", GameVariables.NbrDrawCalls);
 
@@ -134,13 +134,13 @@ namespace Carmageddon
 
 
 
-        private BasicEffect SetupRenderEffect()
+        private BasicEffect2 SetupRenderEffect()
         {
             GraphicsDevice device = Engine.Instance.Device;
             
             if (_effect == null)
             {
-                _effect = new BasicEffect(Engine.Instance.Device, null);
+                _effect = new BasicEffect2();//(Engine.Instance.Device, null);
                 _effect.FogEnabled = false;
                 if (GameVariables.DepthCueMode == "dark")
                     _effect.FogColor = new Vector3(0, 0, 0);

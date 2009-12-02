@@ -11,33 +11,7 @@ using PlatformEngine;
 
 namespace Carmageddon.Parsers
 {
-    class Material
-    {
-        public string Name { get; set; }
-        public string PixName { get; set; }
-        public bool DoubleSided { get; set; }
-        public int BaseColor { get; set; }
-        Texture2D _baseTexture;
-
-        public Texture2D BaseTexture
-        {
-            get
-            {
-                if (_baseTexture == null)
-                {
-                    _baseTexture = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
-                    _baseTexture.SetData<Color>(new Color[] { GameVariables.Palette.GetRGBColorForPixel(BaseColor) });
-                }
-                return _baseTexture;
-            }
-        }
-
-        public bool IsSimpMat
-        {
-            get { return PixName == null; }
-        }
-    }
-
+    
     class MatFile : BaseDataFile
     {
         enum MaterialBlockType
@@ -49,9 +23,9 @@ namespace Carmageddon.Parsers
         }
 
 
-        List<Material> _materials = new List<Material>();
+        List<CMaterial> _materials = new List<CMaterial>();
 
-        internal List<Material> Materials
+        internal List<CMaterial> Materials
         {
             get { return _materials; }
         }
@@ -60,7 +34,7 @@ namespace Carmageddon.Parsers
         {
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
 
-            Material currentMaterial = null;
+            CMaterial currentMaterial = null;
 
             while (true)
             {
@@ -71,7 +45,7 @@ namespace Carmageddon.Parsers
                 switch (blockType)
                 {
                     case MaterialBlockType.Attributes:
-                        currentMaterial = new Material();
+                        currentMaterial = new CMaterial();
                         _materials.Add(currentMaterial);
 
                         byte[] color = reader.ReadBytes(4);
@@ -107,7 +81,7 @@ namespace Carmageddon.Parsers
             reader.Close();
         }
 
-        public Material GetMaterial(string name)
+        public CMaterial GetMaterial(string name)
         {
             return _materials.Find(m => m.Name == name); 
         }

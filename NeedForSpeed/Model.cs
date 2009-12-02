@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using PlatformEngine;
+using Microsoft.Xna.Framework;
 
 namespace Carmageddon
 {
@@ -17,10 +18,12 @@ namespace Carmageddon
         public int VertexBaseIndex { get; set; }
         public int IndexBufferStart { get; set; }
 
-        public void Render(Texture2D texture)
+        private static float offs = 0;
+
+        public void Render(CMaterial actorMaterial)
         {
             GraphicsDevice device = Engine.Instance.Device;
-            Texture2D currentTexture = null;
+            CMaterial currentMaterial = null;
             int baseVert = VertexBaseIndex;
             int indexBufferStart = IndexBufferStart;
 
@@ -35,25 +38,40 @@ namespace Carmageddon
                     GameVariables.CullingDisabled = poly.DoubleSided;
                 }
 
-                if (poly.Texture != null)
+                if (poly.Material != null)
                 {
-                    if (currentTexture != poly.Texture)
+                    if (currentMaterial != poly.Material)
                     {
-                        device.Textures[0] = poly.Texture;
-                        currentTexture = poly.Texture;
+                        device.Textures[0] = poly.Material.Texture;
+                        currentMaterial = poly.Material;
+                    }
+                }
+                else if (actorMaterial != null)
+                {
+                    if (currentMaterial != actorMaterial)
+                    {
+                        device.Textures[0] = actorMaterial.Texture;
+                        currentMaterial = actorMaterial;
                     }
                 }
                 else
                 {
-                    if (currentTexture != texture)
-                    {
-                        device.Textures[0] = texture;
-                        currentTexture = texture;
-                    }
+                    device.Textures[0] = null; currentMaterial = null;
                 }
+
+                if (currentMaterial.Name == "SCIDIDDY.MAT" || currentMaterial.Funk != null)
+                {
+                    currentMaterial.Funk.BeforeRender();
+                }
+
                 GameVariables.NbrDrawCalls++;
                 Engine.Instance.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3*poly.NbrPrims, indexBufferStart, poly.NbrPrims);
                 indexBufferStart += poly.NbrPrims * 3;
+
+                if (currentMaterial.Funk != null)
+                {
+                    currentMaterial.Funk.AfterRender();
+                }
             }
         }
     }

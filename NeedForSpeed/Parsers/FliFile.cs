@@ -39,6 +39,12 @@ namespace Carmageddon.Parsers
         ushort _height, _width;
         List<Texture2D> _frames = new List<Texture2D>();
         byte[] _lastFramePixels;
+        public uint FrameRate { get; private set; }
+
+        public List<Texture2D> Frames
+        {
+            get { return _frames; }
+        }
 
         public FliFile(string filename)
         {
@@ -51,7 +57,7 @@ namespace Carmageddon.Parsers
             _height = reader.ReadUInt16();
             ushort colorDepth = reader.ReadUInt16();
             ushort flags = reader.ReadUInt16();
-            uint animSpeed = reader.ReadUInt32();
+            FrameRate = reader.ReadUInt32();
             reader.ReadUInt16(); //reserved
             reader.ReadUInt32(); //date
             uint creator = reader.ReadUInt32();

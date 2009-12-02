@@ -40,6 +40,8 @@ namespace Carmageddon
                 _resourceCache.Add(matFile);
             }
 
+            _resourceCache.ResolveMaterials();
+
             _grooves = new List<BaseGroove>(carFile.Grooves);
             
             _models = new DatFile(@"C:\Games\carma1\data\models\" + carFile.ModelFile);
@@ -126,15 +128,15 @@ namespace Carmageddon
 
             //Engine.Instance.CurrentEffect = _models.SetupRender();
 
-            Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].Begin();
+            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
             for (int i = 0; i < 4; i++)
             {
-                Engine.Instance.CurrentEffect.World = Chassis.Wheels[i].GetRenderMatrix();
+                GameVariables.CurrentEffect.World = Chassis.Wheels[i].GetRenderMatrix();
                 _actors.RenderSingle(_wheelActors[i]);
             }
 
-            Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].End();
+            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
 
             TyreSmokeParticleSystem.Instance.Render();
 

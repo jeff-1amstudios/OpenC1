@@ -14,11 +14,11 @@ namespace Carmageddon.Parsers
         public UInt16 Vertex3 { get; private set; }
         public Vector3 Normal { get; private set; }
 
-        public int MaterialIndex { get; set; }
-        public bool DoubleSided { get; set; }
-        public Texture2D Texture {get; set; }
-        public bool Skip { get; set; }
-        public int NbrPrims { get; set; }
+        public int MaterialIndex;
+        public bool DoubleSided;
+        public CMaterial Material {get; set; }
+        public bool Skip;
+        public int NbrPrims;
 
         public Polygon(UInt16 v1, UInt16 v2, UInt16 v3)
         {

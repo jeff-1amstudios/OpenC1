@@ -9,6 +9,7 @@ using Carmageddon.Parsers;
 using Carmageddon.Physics;
 using StillDesign.PhysX;
 using Carmageddon.Parsers.Grooves;
+using Carmageddon.Parsers.Funks;
 
 namespace Carmageddon
 {
@@ -19,7 +20,6 @@ namespace Carmageddon
         ActFile _actors;
         ResourceCache _resourceCache;
         public Texture2D HorizonTexture;
-        List<BaseGroove> _grooves;
 
         public RaceFile RaceFile { get; private set; }
 
@@ -29,31 +29,39 @@ namespace Carmageddon
 
             _resourceCache = new ResourceCache();
 
+            foreach (string matFileName in RaceFile.MaterialFiles)
+            {
+                MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
+                _resourceCache.Add(matFile);
+            }
+
             foreach (string pixFileName in RaceFile.PixFiles)
             {
                 PixFile pixFile = new PixFile(@"C:\Games\carma1\data\pixelmap\" + pixFileName);
                 _resourceCache.Add(pixFile);
             }
 
-            foreach (string matFileName in RaceFile.MaterialFiles)
-            {
-                MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
-                _resourceCache.Add(matFile);
-            }
             _resourceCache.Add(new MatFile(@"C:\Games\carma1\data\material\" + "drkcurb.mat"));
+
+            _resourceCache.ResolveMaterials();
 
             _models = new DatFile(@"C:\Games\carma1\data\models\" + RaceFile.ModelFile);
 
-            _grooves = new List<BaseGroove>(RaceFile.Grooves);
-
             _actors = new ActFile(@"C:\Games\carma1\data\actors\" + RaceFile.ActorFile, _models);
-            _actors.ResolveHierarchy(false, _grooves);
+            _actors.ResolveHierarchy(false, RaceFile.Grooves);
             _actors.ResolveMaterials(_resourceCache);
             _models.Resolve(_resourceCache);
 
-            foreach (BaseGroove g in _grooves)
-            {
+            // link the actors and grooves
+            foreach (BaseGroove g in RaceFile.Grooves)
                 g.SetActor(_actors.GetByName(g.ActorName));
+
+            // link the funks and materials
+            foreach (BaseFunk f in RaceFile.Funks)
+            {
+                CMaterial cm = _resourceCache.GetMaterial(f.MaterialName);
+                cm.Funk = f;
+                f.Material = cm;
             }
             
             if (RaceFile.SkyboxTexture != "none")
@@ -62,7 +70,6 @@ namespace Carmageddon
                 HorizonTexture = horizonPix.PixMaps[0].Texture;
             }
             GameVariables.DepthCueMode = RaceFile.DepthCueMode;
-
 
             _trackActor = Physics.TrackProcessor.GenerateTrackActor(_actors, _models);
             Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars, _trackActor);
@@ -80,9 +87,13 @@ namespace Carmageddon
 
         public void Update()
         {
-            foreach (BaseGroove groove in _grooves)
+            foreach (BaseGroove groove in RaceFile.Grooves)
             {
                 groove.Update();
+            }
+            foreach (BaseFunk funk in RaceFile.Funks)
+            {
+                funk.Update();
             }
         }
 
@@ -90,19 +101,8 @@ namespace Carmageddon
         {
             _models.SetupRender();
             _actors.Render(_models, Matrix.Identity);
-
-            //RenderLight();
-            
+   
         }
-
-       // public void RenderLight()
-        //{
-            //Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].Begin();
-            //CActor a = _actors.GetByName("&05L0044.ACT");
-            //_actors.RenderSingleModel(a, Matrix.CreateTranslation(RaceFile.GridPosition + new Vector3(0, 4, 0)));
-            //Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].End();
-            //Engine.Instance.DebugRenderer.AddAxis(Matrix.CreateTranslation(RaceFile.GridPosition + new Vector3(0, 0, 0) + a.bb.GetCenter()), 1);
-        //}
 
         public ActFile GetTrackActors()
         {

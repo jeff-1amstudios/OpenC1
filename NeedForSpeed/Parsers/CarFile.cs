@@ -149,7 +149,7 @@ namespace Carmageddon.Parsers
 
             while (!reader.AtEnd)
             {
-                BaseGroove g = reader.ReadFromFile(this);
+                BaseGroove g = reader.Read(this);
                 if (g != null) Grooves.Add(g);
             }
         }

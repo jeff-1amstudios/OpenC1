@@ -78,10 +78,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicEffect2.cs" />
     <Compile Include="BigEndianBitConverter.cs" />
     <Compile Include="CActor.cs" />
     <Compile Include="CameraViews\ChaseView.cs" />
     <Compile Include="CameraViews\ICameraView.cs" />
+    <Compile Include="CMaterial.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Gfx\ModelShadow.cs" />
     <Compile Include="Gfx\TireSmokeParticleEmitter.cs" />
@@ -91,6 +93,11 @@
     <Compile Include="Model.cs" />
     <Compile Include="Parsers\FliFile.cs" />
     <Compile Include="Parsers\Funk.cs" />
+    <Compile Include="Parsers\Funks\BaseFunk.cs" />
+    <Compile Include="Parsers\Funks\FlicFunk.cs" />
+    <Compile Include="Parsers\Funks\FramesFunk.cs" />
+    <Compile Include="Parsers\Funks\FunkReader.cs" />
+    <Compile Include="Parsers\Funks\RollFunk.cs" />
     <Compile Include="Parsers\Grooves\BaseGroove.cs" />
     <Compile Include="Parsers\Grooves\GrooveReader.cs" />
     <Compile Include="Parsers\Grooves\PathGroove.cs" />

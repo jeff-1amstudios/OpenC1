@@ -28,13 +28,12 @@ namespace Carmageddon.Parsers
         private VertexBuffer _vertexBuffer;
         private IndexBuffer _indexBuffer;
         private VertexDeclaration _vertexDeclaration;
-        private BasicEffect _effect;
         
         List<Model> _models = new List<Model>();
         List<Vector3> _vertexPositions = new List<Vector3>();
         List<Vector2> _vertexTextureMap = new List<Vector2>();
         public VertexPositionNormalTexture[] _vertices;
-        public List<ushort> _indicies;
+        public List<ushort> _indices;
         
         public DatFile(string filename)
         {
@@ -191,21 +190,11 @@ namespace Carmageddon.Parsers
 
                     if (poly.MaterialIndex >= 0 && model.MaterialNames != null)
                     {
-                        Material m = resources.GetMaterial(model.MaterialNames[poly.MaterialIndex]);
-                        if (m != null)
+                        CMaterial material = resources.GetMaterial(model.MaterialNames[poly.MaterialIndex]);
+                        if (material != null)
                         {
-                            poly.DoubleSided = m.DoubleSided;
-
-                            if (m.IsSimpMat)
-                            {
-                                poly.Texture = m.BaseTexture;
-                            }
-                            else
-                            {
-                                PixMap pixmap = resources.GetPixelMap(m.PixName);
-                                if (pixmap != null)
-                                    poly.Texture = pixmap.Texture;
-                            }
+                            poly.DoubleSided = material.DoubleSided;
+                            poly.Material = material;
                         }
 
                         if (currentPoly != null && poly.MaterialIndex == currentPoly.MaterialIndex)
@@ -231,17 +220,13 @@ namespace Carmageddon.Parsers
 
             _indexBuffer = new IndexBuffer(Engine.Instance.Device, typeof(UInt16), vertIndexes.Count, BufferUsage.WriteOnly);
             _indexBuffer.SetData<UInt16>(vertIndexes.ToArray());
-            _indicies = vertIndexes;
+            _indices = vertIndexes;
 
             _vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionNormalTexture.VertexElements);
             _vertexTextureMap=null; //dont need this data anymore
             _vertexPositions = null;
         }
 
-        private void Rebuffer()
-        {
-
-        }
 
         public void SetupRender()
         {

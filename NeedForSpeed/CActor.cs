@@ -12,7 +12,7 @@ namespace Carmageddon
         public string ModelName { get; set; }
         public Model Model { get; set; }
         public string MaterialName { get; set; }
-        public Texture2D Texture { get; set; }
+        public CMaterial Material { get; set; }
         public Matrix Matrix, ParentMatrix;
         internal List<CActor> Children { get; set; }
         public int Level { get; set; }

@@ -175,13 +175,7 @@ namespace Carmageddon.Parsers
             {
                 if (actor.MaterialName != null)
                 {
-                    Material material = resources.GetMaterial(actor.MaterialName);
-                    if (material != null)
-                    {
-                        PixMap pixMap = resources.GetPixelMap(material.PixName);
-                        if (pixMap != null)
-                            actor.Texture = pixMap.Texture;
-                    }
+                    actor.Material = resources.GetMaterial(actor.MaterialName);
                 }
                 foreach (CActor child in actor.Children)
                     resolver(child);
@@ -224,14 +218,14 @@ namespace Carmageddon.Parsers
 
             bool overrideActor = world != Matrix.Identity;
 
-            Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].Begin();
+            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
             for (int i = 0; i < _actors.Count; i++)
             {
                 RenderChildren(frustum, _actors[i], world, false);
             }
 
-            Engine.Instance.CurrentEffect.CurrentTechnique.Passes[0].End();
+            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
 
             GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered);
         }
@@ -267,17 +261,17 @@ namespace Carmageddon.Parsers
                             world = m * world;
                         }
 
-                        Engine.Instance.CurrentEffect.World = world;
+                        GameVariables.CurrentEffect.World = world;
                         parentAnimated = true;
                     }
                     else
                     {
-                        Engine.Instance.CurrentEffect.World = m * world;
+                        GameVariables.CurrentEffect.World = m * world;
                     }
-                    
-                    Engine.Instance.CurrentEffect.CommitChanges();
 
-                    actor.Model.Render(actor.Texture);
+                    GameVariables.CurrentEffect.CommitChanges();
+
+                    actor.Model.Render(actor.Material);
 
                     GameVariables.NbrSectionsRendered++;
                 }
@@ -290,10 +284,10 @@ namespace Carmageddon.Parsers
         {
             Matrix m = actor.Matrix;
             m.Translation = Vector3.Zero;
-            Engine.Instance.CurrentEffect.World = m * Engine.Instance.CurrentEffect.World;
-            Engine.Instance.CurrentEffect.CommitChanges();
+            GameVariables.CurrentEffect.World = m * GameVariables.CurrentEffect.World;
+            GameVariables.CurrentEffect.CommitChanges();
             
-            actor.Model.Render(actor.Texture);            
+            actor.Model.Render(actor.Material);            
         }
 
         public Matrix CalculateDynamicActorMatrix(CActor actorToFind)
