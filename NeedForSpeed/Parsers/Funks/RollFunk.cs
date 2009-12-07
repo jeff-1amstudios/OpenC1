@@ -8,7 +8,7 @@ namespace Carmageddon.Parsers.Funks
 {
     class RollFunk : BaseFunk
     {
-        public Vector2 LoopSpeed;
+        public Vector2 Speed;
         Vector2 _uvOffset;
 
         public RollFunk()
@@ -30,7 +30,7 @@ namespace Carmageddon.Parsers.Funks
 
         public override void Update()
         {
-            _uvOffset += LoopSpeed * Engine.Instance.ElapsedSeconds;
+            _uvOffset += Speed * Engine.Instance.ElapsedSeconds;
             if (_uvOffset.X > 1) _uvOffset.X = 1 - _uvOffset.X;
             if (_uvOffset.Y > 1) _uvOffset.Y = 1 - _uvOffset.Y;
         }

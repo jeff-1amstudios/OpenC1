@@ -24,7 +24,7 @@ namespace Carmageddon.Parsers.Funks
         public CMaterial Material { get; set; }
         public FunkActivationType Activation { get; set; }
 
-        public virtual void BeforeRender() {}
+        public virtual void BeforeRender() { }
         public virtual void AfterRender() { }
         public abstract void Update();
     }

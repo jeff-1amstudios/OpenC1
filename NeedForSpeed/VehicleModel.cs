@@ -123,8 +123,7 @@ namespace Carmageddon
             
             _actors.Render(_models, Chassis.Body.GlobalPose);
 
-            
-            Engine.Instance.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 10);
+            //Engine.Instance.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 10);
 
             //Engine.Instance.CurrentEffect = _models.SetupRender();
 

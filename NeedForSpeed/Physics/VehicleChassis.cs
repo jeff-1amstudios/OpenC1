@@ -247,9 +247,6 @@ namespace Carmageddon.Physics
             
             UpdateTireStiffness();
 
-            GameConsole.WriteLine("MotorRpm", Motor.Rpm);
-            GameConsole.WriteLine("MotorGear", Motor.Gearbox.CurrentGear);
-
         }
 
         private void UpdateTireStiffness()
@@ -270,8 +267,6 @@ namespace Carmageddon.Physics
             _rearLateralTireFn.ExtremumValue = angVel;
             Wheels[2].WheelShape.LateralTireForceFunction = _rearLateralTireFn;
             Wheels[3].WheelShape.LateralTireForceFunction = _rearLateralTireFn;
-            
-            GameConsole.WriteLine("Tire", _frontLateralTireFn.StiffnessFactor);
         }
 
         #endregion

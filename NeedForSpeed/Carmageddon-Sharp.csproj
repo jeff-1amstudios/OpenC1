@@ -98,6 +98,8 @@
     <Compile Include="Parsers\Funks\FramesFunk.cs" />
     <Compile Include="Parsers\Funks\FunkReader.cs" />
     <Compile Include="Parsers\Funks\RollFunk.cs" />
+    <Compile Include="Parsers\Funks\SlitherFunk.cs" />
+    <Compile Include="Parsers\Funks\ThrobFunk.cs" />
     <Compile Include="Parsers\Grooves\BaseGroove.cs" />
     <Compile Include="Parsers\Grooves\GrooveReader.cs" />
     <Compile Include="Parsers\Grooves\PathGroove.cs" />

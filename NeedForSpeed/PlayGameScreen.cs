@@ -32,9 +32,9 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
 
-            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\ivan.txt");
+            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\blkeagle.txt");
 
-            _race = new Race(@"C:\Games\carma1\data\races\cityb1.TXT");
+            _race = new Race(@"C:\Games\carma1\data\races\citya1.TXT");
 
             _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX-2, _race.RaceFile.DepthCueMode);
             _skybox.HeightOffset = -190 + _race.RaceFile.SkyboxPositionY * 1.5f;
@@ -42,7 +42,7 @@ namespace Carmageddon
             _camera = new FixedChaseCamera(9, 9);
             _camera.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Camera = _camera;
-            Engine.Instance.Camera = new FPSCamera();
+            //Engine.Instance.Camera = new FPSCamera();
 
             Engine.Instance.Player = new Driver();
             Engine.Instance.Camera.Position = _race.RaceFile.GridPosition;

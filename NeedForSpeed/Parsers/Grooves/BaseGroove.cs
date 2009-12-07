@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 
+enum Axis
+{
+    X,
+    Y,
+    Z
+}
+
+public enum Motion
+{
+    Linear,
+    Harmonic
+}
+
 namespace Carmageddon.Parsers.Grooves
 {
-    enum Axis
-    {
-        X,
-        Y,
-        Z
-    }
-
-    public enum Motion
-    {
-        Linear,
-        Harmonic
-    }
-
+    
     abstract class BaseGroove
     {
         protected CActor _actor;

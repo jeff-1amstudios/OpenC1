@@ -92,27 +92,6 @@
 //        }
 //    }
 
-//    class RollFunk : IFunk
-//    {
-//        public FunkLoopType Loop { get; set; }
-//        public Vector2 LoopSpeed { get; private set; }
-
-//        public RollFunk(BaseTextFile reader)
-//        {
-//            string flag = reader.ReadLine();
-//            Loop = Helpers.TryParse<FunkLoopType>(flag, true);
-//            LoopSpeed = reader.ReadLineAsVector2(false);
-
-//            reader.ReadLine();
-//            reader.ReadLine();
-//        }
-
-//        public void Update(GameTime gameTime)
-//        {
-
-//        }
-//    }
-
 //    class SlitherFunk : IFunk
 //    {
 //        string type;
@@ -159,51 +138,4 @@
 
 //        }
 //    }
-
-//    class AnimatedFramesFunk : IFunk
-//    {
-//        FunkLoopType Loop { get; set; }
-//        public List<string> FrameNames {get; private set; }
-
-//        public AnimatedFramesFunk(BaseTextFile reader)
-//        {
-//            FrameNames = new List<string>();
-
-//            reader.ReadLine(); //approximate/accurate
-
-//            string flag = reader.ReadLine();
-//            Loop = Helpers.TryParse<FunkLoopType>(flag, true);
-            
-//            int unk = reader.ReadLineAsInt();
-//            int frames = reader.ReadLineAsInt();
-//            for (int i = 0; i < frames; i++)
-//            {
-//                FrameNames.Add(reader.ReadLine());
-//            }
-//        }
-
-//        public void Update(GameTime gameTime)
-//        {
-            
-//        }
-//    }
-
-//    class FlicFunk : IFunk
-//    {
-//        public FunkLoopType Loop { get; private set; }
-//        public string FliName { get; private set; }
-
-//        public FlicFunk(BaseTextFile reader)
-//        {
-//            reader.ReadLine(); //approximate/accurate
-//            FliName = reader.ReadLine();
-//        }
-
-//        public void Update(GameTime gameTime)
-//        {
-
-//        }
-//    }
-//}
-
 

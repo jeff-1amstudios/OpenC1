@@ -59,7 +59,7 @@ namespace Carmageddon
                     device.Textures[0] = null; currentMaterial = null;
                 }
 
-                if (currentMaterial.Name == "SCIDIDDY.MAT" || currentMaterial.Funk != null)
+                if (currentMaterial != null && currentMaterial.Funk != null)
                 {
                     currentMaterial.Funk.BeforeRender();
                 }
@@ -68,7 +68,7 @@ namespace Carmageddon
                 Engine.Instance.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3*poly.NbrPrims, indexBufferStart, poly.NbrPrims);
                 indexBufferStart += poly.NbrPrims * 3;
 
-                if (currentMaterial.Funk != null)
+                if (currentMaterial != null && currentMaterial.Funk != null)
                 {
                     currentMaterial.Funk.AfterRender();
                 }

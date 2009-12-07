@@ -25,7 +25,7 @@ namespace PlatformEngine
         public InputProvider Input { get; set; }
         public float DrawDistance { get; set; }
         public float ElapsedSeconds { get; private set; }
-
+        public Random RandomNumber { get; private set; }
                 
         public static Engine Instance;
 
@@ -57,6 +57,7 @@ namespace PlatformEngine
             DebugRenderer = new DebugRenderer();
             _spriteBatch = new SpriteBatch(Device);
             _fpsCounter = new FrameRateCounter();
+            RandomNumber = new Random();
 
             base.Game.Components.Add(this);
         }

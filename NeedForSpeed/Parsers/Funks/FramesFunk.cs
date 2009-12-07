@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PlatformEngine;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.Parsers.Funks
 {
@@ -9,15 +11,36 @@ namespace Carmageddon.Parsers.Funks
     {
         FunkLoopType Loop { get; set; }
         public List<string> FrameNames = new List<string>();
+        List<Texture2D> _frames = new List<Texture2D>();
+        public float Speed;
+
+        float _currentFrameTime;
+        int _currentFrame;
 
         public FramesFunk()
         {
             
         }
 
+        public void Resolve(ResourceCache resources)
+        {
+            foreach (string frameName in FrameNames)
+            {
+                _frames.Add(resources.GetPixelMap(frameName).Texture);
+            }
+        }
+
         public override void Update()
         {
+            _currentFrameTime += Engine.Instance.ElapsedSeconds;
+            if (_currentFrameTime > Speed)
+            {
+                _currentFrame++;
+                if (_currentFrame == _frames.Count) _currentFrame = 0;
+                _currentFrameTime = 0;
 
+                Material.Texture = _frames[_currentFrame];
+            }
         }
     }
 }

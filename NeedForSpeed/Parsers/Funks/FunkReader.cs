@@ -44,7 +44,7 @@ namespace Carmageddon.Parsers.Funks
                 FramesFunk frames = new FramesFunk();
                 frames.MaterialName = materialName;
 
-                int speed = file.ReadLineAsInt();
+                frames.Speed = 1 / file.ReadLineAsFloat();
                 int nbrFrames = file.ReadLineAsInt();
                 for (int i = 0; i < nbrFrames; i++)
                 {
@@ -58,12 +58,35 @@ namespace Carmageddon.Parsers.Funks
                 string loop = file.ReadLine();
                 RollFunk roll = new RollFunk();
                 roll.MaterialName = materialName;
-                roll.LoopSpeed = file.ReadLineAsVector2(false);
+                roll.Speed = file.ReadLineAsVector2(false);
                 ReadToEndOfFunk(file);
                 return roll;
             }
+            else if (animation == "SLITHER")
+            {
+                SlitherFunk slither = new SlitherFunk();
+                slither.MaterialName = materialName;
+                slither.Motion = (Motion)Enum.Parse(typeof(Motion), file.ReadLine(), true);
+                slither.CyclesPerSecond = file.ReadLineAsVector2(false);
+                slither.MoveDistance = file.ReadLineAsVector2(false)/12;
+                slither.Initialize();
+                ReadToEndOfFunk(file);
+                return slither;
+            }
+            else if (animation == "THROB")
+            {
+                ThrobFunk throb = new ThrobFunk();
+                throb.MaterialName = materialName;
+                throb.Motion = (Motion)Enum.Parse(typeof(Motion), file.ReadLine(), true);
+                throb.CyclesPerSecond = file.ReadLineAsVector2(false);
+                throb.MoveDistance = file.ReadLineAsVector2(false) / 12;
+                throb.Initialize();
+                ReadToEndOfFunk(file);
+                return throb;
+            }
             else
             {
+                ReadToEndOfFunk(file);
                 return null;
             }
         }

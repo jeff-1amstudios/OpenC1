@@ -26,10 +26,10 @@
                 _graphics = new GraphicsDeviceManager(this);
                 Content.RootDirectory = "Content";
                 
-                _graphics.PreferredBackBufferWidth = 1024;
-                _graphics.PreferredBackBufferHeight = 768;
+                _graphics.PreferredBackBufferWidth = 640;
+                _graphics.PreferredBackBufferHeight = 480;
                 _graphics.PreferMultiSampling = true;
-                //_graphics.IsFullScreen = true;
+                _graphics.IsFullScreen = true;
                 //_graphics.SynchronizeWithVerticalRetrace = false;
 
                 _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;

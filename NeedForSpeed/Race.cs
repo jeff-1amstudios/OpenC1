@@ -59,6 +59,7 @@ namespace Carmageddon
             // link the funks and materials
             foreach (BaseFunk f in RaceFile.Funks)
             {
+                if (f is FramesFunk) ((FramesFunk)f).Resolve(_resourceCache);
                 CMaterial cm = _resourceCache.GetMaterial(f.MaterialName);
                 cm.Funk = f;
                 f.Material = cm;

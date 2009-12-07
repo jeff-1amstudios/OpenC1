@@ -21,5 +21,10 @@ namespace Carmageddon
         {
             return 0.5f * (bb.Min + bb.Max);
         }
+
+        public static Vector2 Abs(this Vector2 vec)
+        {
+            return new Vector2(Math.Abs(vec.X), Math.Abs(vec.Y));
+        }
     }
 }

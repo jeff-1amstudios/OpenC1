@@ -56,7 +56,7 @@ namespace Carmageddon.Physics
 
             UpdateMatrices(wcd);
 
-            GameConsole.WriteLine("latImpulse", wcd.LongitudalSlip);
+            //GameConsole.WriteLine("latImpulse", wcd.LongitudalSlip);
             
             _smokeEmitter.Enabled = false;
             if (_chassis.Speed > 5 && Math.Abs(wcd.LateralSlip) > 0.2f)
