@@ -48,7 +48,7 @@ namespace PlatformEngine
         {
             Device = graphics.GraphicsDevice;
 
-            DrawDistance = 3000;
+            DrawDistance = 1000;
 
             _contentManager = new ContentManager(base.Game.Services);
 
@@ -73,7 +73,7 @@ namespace PlatformEngine
             base.Update(gameTime);
             
             Input.Update(gameTime);
-            SoundEngine2.Instance.Update(gameTime);
+            SoundEngine.Instance.Update(gameTime);
             //SoundEngine.Instance.Update();
 
             Screen.Update(gameTime);

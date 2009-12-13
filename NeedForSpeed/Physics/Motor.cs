@@ -8,7 +8,7 @@ namespace Carmageddon.Physics
 {
     class Motor
     {
-        private const float DRIVETRAIN_MULTIPLIER = 30;
+        private const float DRIVETRAIN_MULTIPLIER = 31;
 
         private List<float> _powerCurve;
         private float _maxPower;

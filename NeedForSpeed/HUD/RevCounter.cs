@@ -21,12 +21,12 @@ namespace Carmageddon.HUD
             _chassis = vehicle;
             _font = Engine.Instance.ContentManager.Load<SpriteFont>("content/speedo-font");
             
-            x = 20;
-            y = Engine.Instance.Window.Height - 150;
+            x = 15;
+            y = Engine.Instance.Window.Height - 105;
 
             _speedoTexture = Engine.Instance.ContentManager.Load<Texture2D>("Content\\tacho");
             _speedoLineTexture = TextureGenerator.Generate(new Color(255, 0, 0));
-            _shadow = TextureGenerator.Generate(new Color(0f, 0f, 0f, 0.3f));
+            _shadow = TextureGenerator.Generate(new Color(0f, 0f, 0f, 0.4f));
         }
 
         public void Render()

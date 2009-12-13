@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using PlatformEngine;
 
 
-namespace Carmageddon.Track
+namespace Carmageddon.Gfx
 {
     class SkyboxGenerator
     {

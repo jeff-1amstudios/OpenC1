@@ -7,10 +7,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework.Input;
 using NFSEngine;
-using Carmageddon.Track;
+using Carmageddon.Gfx;
 using System.Diagnostics;
 using Carmageddon.CameraViews;
 using Carmageddon.Physics;
+using Carmageddon.Audio;
+using System.IO;
 
 
 namespace Carmageddon
@@ -32,19 +34,23 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
 
+            //SoundEngine.Initialize(Engine.Instance.Game.Window.Handle, Path.Combine(GameVariables.BasePath, "Sound\\sound.txt"));
+
             _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\blkeagle.txt");
 
             _race = new Race(@"C:\Games\carma1\data\races\citya1.TXT");
 
-            _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX-2, _race.RaceFile.DepthCueMode);
-            _skybox.HeightOffset = -190 + _race.RaceFile.SkyboxPositionY * 1.5f;
+            _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX-3f, _race.RaceFile.DepthCueMode);
+            _skybox.HeightOffset = -220 + _race.RaceFile.SkyboxPositionY * 1.5f;
 
-            _camera = new FixedChaseCamera(9, 9);
+            _camera = new FixedChaseCamera(6.8f, 7);
+            _camera.FieldOfView = MathHelper.ToRadians(55.55f);
             _camera.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Camera = _camera;
             //Engine.Instance.Camera = new FPSCamera();
 
             Engine.Instance.Player = new Driver();
+
             Engine.Instance.Camera.Position = _race.RaceFile.GridPosition;
             SetupPhysics();
 
@@ -150,7 +156,7 @@ namespace Carmageddon
                 {
                     Debug.Assert(false);
                 }
-                _effect.FogStart = Engine.Instance.DrawDistance - 50 * GameVariables.Scale.Z;
+                _effect.FogStart = Engine.Instance.DrawDistance - 45 * GameVariables.Scale.Z;
                 _effect.FogEnd = Engine.Instance.DrawDistance;
                 _effect.FogEnabled = true;
                 //_effect.LightingEnabled = true;

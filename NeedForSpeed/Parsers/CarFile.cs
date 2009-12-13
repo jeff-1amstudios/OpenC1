@@ -63,6 +63,7 @@ namespace Carmageddon.Parsers
         public List<CrushSection> CrushSections = new List<CrushSection>();
         public PhysicalProperties PhysicalProperties=new PhysicalProperties();
         public List<BaseGroove> Grooves;
+        public int EngineNoiseId;
 
         public CarFile(string filename)
             : base(filename)
@@ -72,7 +73,8 @@ namespace Carmageddon.Parsers
 
             SkipLines(7);  //car name, pratcam shit
 
-            string engineNoise = ReadLine();
+            string[] engineNoises = ReadLine().Split(',');
+            EngineNoiseId = int.Parse(engineNoises[0]);
             SkipLines(1); //stealworthy
 
             //jump over the damage info for now

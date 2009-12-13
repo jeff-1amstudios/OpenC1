@@ -16,7 +16,7 @@ namespace NFSEngine
 		{
             _chaseDistance = new Vector3(chaseDistance, height, chaseDistance);
             AspectRatio = Engine.Instance.AspectRatio;
-            FieldOfView = MathHelper.ToRadians(45.0f);
+            FieldOfView = MathHelper.ToRadians(45f);
             NearPlaneDistance = 1.0f;
 		}
 
@@ -64,7 +64,7 @@ namespace NFSEngine
             _lookAt.AddValue(new Vector3(0, 2f, 0) + (-Orientation * _chaseDistance));
             Vector3 avgLookAt = _lookAt.GetAveragedValue();
             Vector3 cameraPosition = Position + avgLookAt;
-            View = Matrix.CreateLookAt(cameraPosition, cameraPosition - avgLookAt, Vector3.Up);
+            View = Matrix.CreateLookAt(Position + avgLookAt, Position + new Vector3(0,1.0f,0), Vector3.Up);
             Projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlaneDistance, DrawDistance);
 		}        
     }

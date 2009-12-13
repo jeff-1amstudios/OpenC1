@@ -98,7 +98,7 @@ namespace Carmageddon
 
             BoundingBox bb = Properties.BoundingBox;
             Matrix pose = Chassis.Body.GlobalPose;
-            float shadowWidth = 0.2f;
+            float shadowWidth = 0.0f;
             Vector3 pos = new Vector3(bb.Min.X - shadowWidth, 0, bb.Min.Z);
             points[0] = Vector3.Transform(pos, pose);
             pos = new Vector3(bb.Max.X + shadowWidth, 0, bb.Min.Z);

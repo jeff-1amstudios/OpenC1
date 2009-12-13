@@ -172,11 +172,18 @@ namespace Carmageddon.Physics
 
             VehicleBody.RaiseBodyFlag(BodyFlag.Visualization);
 
-            List<float> power = new List<float>(new float[] { 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 1.0f, 1.0f, 1.0f, 0 });
-            List<float> ratios = new List<float>(new float[] { 3.1f, 2.360f, 1.885f, 1.512f, 1.200f });
+            //a real power curve doesnt work too well in carmageddon :)
+            List<float> power = new List<float>(new float[] { 0.5f, 0.5f, 1f, 1f, 1f, 1.0f, 1.0f, 0 });
+            List<float> ratios = new List<float>(new float[] { 2.8f, 2.160f, 1.685f, 1.212f, 0.900f });
 
             BaseGearbox gearbox = BaseGearbox.Create(false, ratios, 0.4f);
-            Motor = new Motor(power, 80, 7f, gearbox);
+            Motor = new Motor(power, 180, 6f, gearbox);
+
+            //List<float> power = new List<float>(new float[] { 0.2f, 0.3f, 0.4f, 0.7f, 0.8f, 1.0f, 1.0f, 1.0f, 0 });
+            //List<float> ratios = new List<float>(new float[] { 2.5f, 2.0f, 1.685f, 1.712f, 1.000f });
+
+            //BaseGearbox gearbox = BaseGearbox.Create(false, ratios, 0.4f);
+            //Motor = new Motor(power, 480, 7f, gearbox);
         }
 
         public void Delete()

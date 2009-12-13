@@ -10,7 +10,7 @@ namespace Carmageddon.Parsers
 {
     abstract class BaseTextFile
     {
-        StreamReader _file;
+        protected StreamReader _file;
 
         public BaseTextFile(string filename)
         {

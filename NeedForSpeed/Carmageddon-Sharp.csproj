@@ -64,6 +64,8 @@
     <XnaCompressContent>True</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
     <Reference Include="mscorlib">
@@ -75,15 +77,20 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audio\Sound.cs" />
+    <Compile Include="Audio\SoundEngine.cs" />
+    <Compile Include="Audio\SoundListener.cs" />
     <Compile Include="BasicEffect2.cs" />
     <Compile Include="BigEndianBitConverter.cs" />
     <Compile Include="CActor.cs" />
     <Compile Include="CameraViews\ChaseView.cs" />
     <Compile Include="CameraViews\ICameraView.cs" />
     <Compile Include="CMaterial.cs" />
+    <Compile Include="CSound.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Gfx\ModelShadow.cs" />
     <Compile Include="Gfx\TireSmokeParticleEmitter.cs" />
@@ -106,6 +113,7 @@
     <Compile Include="Parsers\Grooves\RockGroove.cs" />
     <Compile Include="Parsers\Grooves\SpinGroove.cs" />
     <Compile Include="Parsers\NoncarFile.cs" />
+    <Compile Include="Parsers\SoundsFile.cs" />
     <Compile Include="Physics\AutoGearbox.cs" />
     <Compile Include="Physics\BaseGearbox.cs" />
     <Compile Include="Physics\ContactReport.cs" />
@@ -131,7 +139,7 @@
     <Compile Include="Parsers\PixFile.cs" />
     <Compile Include="Parsers\Polygon.cs" />
     <Compile Include="Parsers\RaceFile.cs" />
-    <Compile Include="Parsers\Track\SkyboxGenerator.cs" />
+    <Compile Include="Gfx\SkyboxGenerator.cs" />
     <Compile Include="ResourceCache.cs" />
     <Compile Include="PlayGameScreen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -142,6 +150,8 @@
   <ItemGroup>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
+    <Content Include="Lib\Microsoft.DirectX.DirectSound.dll" />
+    <Content Include="Lib\Microsoft.DirectX.dll" />
     <Content Include="Lib\NxCharacter.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

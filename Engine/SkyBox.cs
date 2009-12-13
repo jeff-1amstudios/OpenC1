@@ -67,7 +67,7 @@ namespace PlatformEngine
             _vertices = new VertexBuffer(Engine.Instance.Device, typeof(VertexPositionTexture), 4 * 6, BufferUsage.WriteOnly);
             VertexPositionTexture[] data = new VertexPositionTexture[4 * 6];
 
-            Vector3 vExtents = new Vector3(400, 250, 400);
+            Vector3 vExtents = new Vector3(200, 125, 200);
             //back
             data[0].Position = new Vector3(vExtents.X, -vExtents.Y, -vExtents.Z);
             data[0].TextureCoordinate.X = repetionsX; data[0].TextureCoordinate.Y = 1.0f;

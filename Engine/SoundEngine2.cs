@@ -13,23 +13,23 @@ namespace NFSEngine
         public float RemainingDuration;
     }
 
-    public class SoundEngine2
+    public class SoundEngine
     {
-        private static SoundEngine2 _instance;
+        private static SoundEngine _instance;
 
-        public static SoundEngine2 Instance
+        public static SoundEngine Instance
         {
             get
             {
                 if (_instance == null)
-                    _instance = new SoundEngine2();
+                    _instance = new SoundEngine();
                 return _instance;
             }
         }
 
         private List<SoundEffectDescriptor> _effects = new List<SoundEffectDescriptor>(); 
 
-        private SoundEngine2()
+        private SoundEngine()
         {
         }
 

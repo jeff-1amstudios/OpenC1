@@ -26,10 +26,10 @@
                 _graphics = new GraphicsDeviceManager(this);
                 Content.RootDirectory = "Content";
                 
-                _graphics.PreferredBackBufferWidth = 640;
-                _graphics.PreferredBackBufferHeight = 480;
+                _graphics.PreferredBackBufferWidth = 800;
+                _graphics.PreferredBackBufferHeight = 600;
                 _graphics.PreferMultiSampling = true;
-                _graphics.IsFullScreen = true;
+                //_graphics.IsFullScreen = true;
                 //_graphics.SynchronizeWithVerticalRetrace = false;
 
                 _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;
@@ -48,7 +48,7 @@
                 base.Initialize();
 
                 Engine.Initialize(this, _graphics);
-                Engine.Instance.DrawDistance = GameVariables.Scale.Z * 100;
+                Engine.Instance.DrawDistance = GameVariables.Scale.Z * 60;
 
                 //enable per-pixel transparency
                 Engine.Instance.Device.RenderState.AlphaTestEnable = true;
