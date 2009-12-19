@@ -132,7 +132,7 @@ namespace Carmageddon.Physics
                         ActorDescription actorDesc = new ActorDescription();
                         BodyDescription bodyDesc = new BodyDescription();
                         if (nonCar.BendAngleBeforeSnapping > 0)
-                            bodyDesc.Mass = 20000;
+                            bodyDesc.Mass = nonCar.MassWhenAttached;
                         else
                             bodyDesc.Mass = nonCar.Mass;
 
@@ -154,7 +154,6 @@ namespace Carmageddon.Physics
                             actorDesc.Shapes.Add(boxDesc);
                         }
 
-
                         Vector3 scaleout, transout;
                         Quaternion b;
                         actor.Matrix.Decompose(out scaleout, out b, out transout);
@@ -167,33 +166,33 @@ namespace Carmageddon.Physics
                         instance.GlobalPose = m;
                         instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMass);
 
-                        //SphericalJointDescription jointDesc = new SphericalJointDescription()
-                        //{
-                        //    Actor1 = instance,
-                        //    Actor2 = null
-                        //};
+                        if (nonCar.BendAngleBeforeSnapping > 0)
+                        {
+                            instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMassWhenAttached);
 
-                        //jointDesc.SetGlobalAnchor(instance.GlobalPosition);
-                        //jointDesc.SetGlobalAxis(new Vector3(1, 0, 0));
-                        //jointDesc.LocalNormal1 = Vector3.Up;
-                        ////jointDesc.LocalNormal2 = Vector3.Up;
-                        //JointLimitPairDescription limit = new JointLimitPairDescription();
-                        //limit.High = new JointLimitDescription(0.02f, 0f,1);
-                        //limit.Low = new JointLimitDescription(-0.5f, 1,1);
-                        //jointDesc.SwingLimit = limit.High;
-                        //SpringDescription jointSpring = new SpringDescription(90000, 200, 0);
-                        //jointDesc.SwingSpring = jointSpring;
-                        //SpringDescription twistSpring = new SpringDescription(2000, 30, 0);
-                        //jointDesc.TwistSpring = twistSpring;
-                        //jointDesc.Flags = SphericalJointFlag.TwistSpringEnabled | SphericalJointFlag.SwingLimitEnabled;
-                        
-                        ////SpringDescription spring = new SpringDescription(9999,2,0);
-                        ////jointDesc.TwistSpring = spring;
-                        
-                        //SphericalJoint j = (SphericalJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
-                        
-                        //instance.RaiseBodyFlag(BodyFlag.Visualization);
-                        //instance.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
+                            SphericalJointDescription jointDesc = new SphericalJointDescription()
+                            {
+                                Actor1 = instance,
+                                Actor2 = null
+                            };
+                            Vector3 anchorPos = instance.Shapes[0].GlobalPosition;
+                            anchorPos.Y = instance.GlobalPosition.Y;
+                            jointDesc.SetGlobalAnchor(anchorPos);
+                            jointDesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
+                            
+                            JointLimitDescription swingLimit = new JointLimitDescription(0.3f * MathHelper.Pi, 0, 0);
+                            jointDesc.SwingLimit = swingLimit;
+                            SpringDescription swingSpring = new SpringDescription(90000, 200, 0);
+                            jointDesc.SwingSpring = swingSpring;
+                            
+                            JointLimitDescription twist = new JointLimitDescription(0.0f, 0, 0);
+                            JointLimitPairDescription twistLimit = new JointLimitPairDescription(twist, twist);
+                            jointDesc.TwistLimit = twistLimit;
+                            
+                            jointDesc.Flags = SphericalJointFlag.SwingLimitEnabled | SphericalJointFlag.SwingSpringEnabled | SphericalJointFlag.TwistLimitEnabled;
+
+                            SphericalJoint j = (SphericalJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
+                        }
                         
                         instance.Sleep();
                         actor.AttachPhysxActor(instance);

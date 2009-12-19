@@ -220,7 +220,7 @@ namespace Carmageddon.Parsers
             for (int i = 0; i < nbrNonCars; i++)
             {
                 string filename = ReadLine();
-                NoncarFile file = new NoncarFile(GameVariables.BasePath + "\\Noncars\\" + filename);
+                NoncarFile file = new NoncarFile(GameVariables.BasePath + "Noncars\\" + filename);
                 NonCars.Add(file);
             }
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.DirectX;
 
 namespace Carmageddon
 {
@@ -14,7 +13,7 @@ namespace Carmageddon
         public string MinMaxVolume;
         public string MinMaxPitch;
         public string MinMaxSpeed;
-        public int SpecialFxIndex;
+        public string SpecialFxIndex;
 
     }
 }

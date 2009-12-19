@@ -20,9 +20,9 @@ namespace Carmageddon.Parsers.Grooves
                 return null;
             }
 
-            if (actorName == "FLWHEEL.ACT" || actorName == "FRWHEEL.ACT" ||
-                actorName == "RLWHEEL.ACT" || actorName == "RRWHEEL.ACT" ||
-                actorName == "FRPIVOT.ACT" || actorName == "FLPIVOT.ACT")
+            if (actorName.StartsWith("FLWHEEL") || actorName.StartsWith("FRWHEEL") ||
+                actorName.StartsWith("RLWHEEL") || actorName.StartsWith("RRWHEEL") ||
+                actorName.StartsWith("FRPIVOT") || actorName.StartsWith("FLPIVOT"))
             {
                 ReadToEndOfGroove(file);
                 return null;

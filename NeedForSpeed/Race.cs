@@ -76,14 +76,11 @@ namespace Carmageddon
             Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars, _trackActor);
         }
 
-        public void SetupPhysx(VehicleChassis player)
+        public void SetupPhysx(VehicleChassis vehicle)
         {
             //PhysX.Instance.Scene.SetGroupCollisionFlag(10, 1, true);
-            //PhysX.Instance.Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.OnTouch);
-            //PhysX.Instance.Scene.SetShapePairFlags(player.Wheels[0].WheelShape, _trackActor.Shapes[0], ContactPairFlag.IgnorePair);
-            //PhysX.Instance.Scene.SetShapePairFlags(player.Wheels[1].WheelShape, _trackActor.Shapes[0], ContactPairFlag.IgnorePair);
-            //PhysX.Instance.Scene.SetShapePairFlags(player.Wheels[2].WheelShape, _trackActor.Shapes[0], ContactPairFlag.IgnorePair);
-            //PhysX.Instance.Scene.SetShapePairFlags(player.Wheels[3].WheelShape, _trackActor.Shapes[0], ContactPairFlag.IgnorePair);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.OnTouch);
+            
         }
 
         public void Update()

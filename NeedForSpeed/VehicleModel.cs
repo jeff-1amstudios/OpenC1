@@ -9,6 +9,7 @@ using Carmageddon.Parsers;
 using Carmageddon.Physics;
 using Carmageddon.Gfx;
 using Carmageddon.Parsers.Grooves;
+using NFSEngine.Audio;
 
 namespace Carmageddon
 {
@@ -22,6 +23,7 @@ namespace Carmageddon
         private List<CActor> _wheelActors = new List<CActor>();
         public VehicleChassis Chassis { get; set; }
         private List<BaseGroove> _grooves;
+        ISound _engineSound;
 
         public VehicleModel(string filename)
         {
@@ -61,17 +63,18 @@ namespace Carmageddon
             Properties = carFile.PhysicalProperties;
 
             Vector3 tireWidth = new Vector3(0.034f, 0, 0) * GameVariables.Scale;
-
             Properties.WheelPositions.Add(_actors.GetByName("FLPIVOT").Matrix.Translation - tireWidth);
             Properties.WheelPositions.Add(_actors.GetByName("FRPIVOT").Matrix.Translation + tireWidth);
             Properties.WheelPositions.Add(_actors.GetByName("RLWHEEL").Matrix.Translation - tireWidth);
             Properties.WheelPositions.Add(_actors.GetByName("RRWHEEL").Matrix.Translation + tireWidth);
             
-
             _wheelActors.Add(_actors.GetByName("FLWHEEL"));
             _wheelActors.Add(_actors.GetByName("FRWHEEL"));
             _wheelActors.Add(_actors.GetByName("RLWHEEL"));
             _wheelActors.Add(_actors.GetByName("RRWHEEL"));
+
+            //_engineSound = SoundCache.CreateInstance(carFile.EngineNoiseId);
+            //_engineSound.Play(true);
 
         }
 
@@ -83,6 +86,12 @@ namespace Carmageddon
             foreach (BaseGroove groove in _grooves)
             {
                 groove.Update();
+            }
+            if (_engineSound != null)
+            {
+                _engineSound.Frequency = 8000 + (int)(Chassis.Motor.Rpm * 2500);
+                //_engineSound.Position = Chassis.Body.GlobalPosition;
+                //_engineSound.Velocity = Chassis.Body.LinearVelocity;
             }
 
             Chassis.Update(gameTime);
@@ -123,10 +132,9 @@ namespace Carmageddon
             
             _actors.Render(_models, Chassis.Body.GlobalPose);
 
-            //Engine.Instance.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 10);
+            Engine.Instance.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 10);
 
-            //Engine.Instance.CurrentEffect = _models.SetupRender();
-
+            
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
             for (int i = 0; i < 4; i++)

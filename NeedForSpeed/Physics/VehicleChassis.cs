@@ -137,6 +137,7 @@ namespace Carmageddon.Physics
             wheelDesc.LocalPosition = properties.WheelPositions[0];
             FLWheel = (WheelShape)VehicleBody.CreateShape(wheelDesc);
             FLWheel.Name = "FL-Wheel";
+  
             FLWheel.LateralTireForceFunction = _frontLateralTireFn;
             
             wheelDesc.LocalPosition = properties.WheelPositions[1];
@@ -318,13 +319,13 @@ namespace Carmageddon.Physics
                 else
                 {
                     _motorTorque = 0.0f;
-                    _brakeTorque = -torque * 2;
+                    _brakeTorque = -torque * 1.2f;
                 }
             }
             else
             {
                 _motorTorque = 0.0f;
-                _brakeTorque = Motor.CurrentFriction * 0.55f;
+                _brakeTorque = Motor.CurrentFriction * 0.45f;
             }
 
             UpdateTorque();

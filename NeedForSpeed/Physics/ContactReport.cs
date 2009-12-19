@@ -7,16 +7,16 @@ namespace Carmageddon.Physics
     {
         
         public ContactReport(Scene scene)
-            : base(scene)
+            : base()
         {
             
         }
         
         public override void OnContactNotify(ContactPair contactInfo, ContactPairFlag events)
         {
-            
             Actor actorA = contactInfo.ActorA;
             Actor actorB = contactInfo.ActorB;
+
             if (actorA.Name == "Rocket")
             {
                 this.OnRocketCollision(actorA, actorB);

@@ -64,26 +64,22 @@
     <XnaCompressContent>True</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-    <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
-    <Reference Include="StillDesign.CommonLibrary, Version=1.0.3129.38324, Culture=neutral, PublicKeyToken=221f46dbfd06dc01, processorArchitecture=MSIL" />
-    <Reference Include="StillDesign.PhysX.Net, Version=0.9.1.1, Culture=neutral, PublicKeyToken=221f46dbfd06dc01, processorArchitecture=x86" />
+    <Reference Include="StillDesign.PhysX.Net, Version=0.11.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\PhysX.Net 0.11.0.0\References\Debug\XNA 3.0\StillDesign.PhysX.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Audio\Sound.cs" />
-    <Compile Include="Audio\SoundEngine.cs" />
-    <Compile Include="Audio\SoundListener.cs" />
     <Compile Include="BasicEffect2.cs" />
     <Compile Include="BigEndianBitConverter.cs" />
     <Compile Include="CActor.cs" />
@@ -97,7 +93,7 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="HUD\RevCounter.cs" />
     <Compile Include="IPalette.cs" />
-    <Compile Include="Model.cs" />
+    <Compile Include="CModel.cs" />
     <Compile Include="Parsers\FliFile.cs" />
     <Compile Include="Parsers\Funk.cs" />
     <Compile Include="Parsers\Funks\BaseFunk.cs" />
@@ -123,6 +119,7 @@
     <Compile Include="Physics\TrackProcessor.cs" />
     <Compile Include="Physics\VehicleWheel.cs" />
     <Compile Include="PlayerVehicleController.cs" />
+    <Compile Include="SoundCache.cs" />
     <Compile Include="VehicleModel.cs" />
     <Compile Include="Driver.cs" />
     <Compile Include="EndianBinaryReader.cs" />
@@ -150,8 +147,6 @@
   <ItemGroup>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
-    <Content Include="Lib\Microsoft.DirectX.DirectSound.dll" />
-    <Content Include="Lib\Microsoft.DirectX.dll" />
     <Content Include="Lib\NxCharacter.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

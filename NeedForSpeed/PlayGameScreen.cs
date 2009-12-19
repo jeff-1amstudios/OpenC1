@@ -11,7 +11,6 @@ using Carmageddon.Gfx;
 using System.Diagnostics;
 using Carmageddon.CameraViews;
 using Carmageddon.Physics;
-using Carmageddon.Audio;
 using System.IO;
 
 
@@ -31,14 +30,14 @@ namespace Carmageddon
 
         public PlayGameScreen()
         {
+            if (!SoundCache.IsInitialized)
+                SoundCache.Initialize();
 
-            GameVariables.Palette = new PaletteFile("c:\\games\\carma1\\data\\reg\\palettes\\drrender.pal");
-
-            //SoundEngine.Initialize(Engine.Instance.Game.Window.Handle, Path.Combine(GameVariables.BasePath, "Sound\\sound.txt"));
+            GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "reg\\palettes\\drrender.pal");
 
             _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\blkeagle.txt");
 
-            _race = new Race(@"C:\Games\carma1\data\races\citya1.TXT");
+            _race = new Race(@"C:\Games\carma1\data\races\cityb3.TXT");
 
             _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX-3f, _race.RaceFile.DepthCueMode);
             _skybox.HeightOffset = -220 + _race.RaceFile.SkyboxPositionY * 1.5f;
@@ -57,7 +56,7 @@ namespace Carmageddon
             _race.SetupPhysx(_carModel.Chassis);
 
             _chaseView = new ChaseView(_carModel);
-            
+
         }
 
         private void SetupPhysics()
@@ -77,8 +76,7 @@ namespace Carmageddon
                 _carModel.Crush();
    
             Engine.Instance.Camera.Update(gameTime);
-            Engine.Instance.Player.Update(gameTime);
-
+            
             _race.Update();
 
             _chassis.Accelerate(PlayerVehicleController.Acceleration);
@@ -107,6 +105,11 @@ namespace Carmageddon
 
             GameConsole.WriteLine("Speed " + _chassis.Speed);
             GameConsole.WriteLine("FPS: " + Engine.Instance.Fps);
+
+            Engine.Instance.Player.Orientation = _chassis.Body.GlobalOrientation;
+            Engine.Instance.Player.Velocity = _chassis.Body.LinearVelocity;
+            Engine.Instance.Player.Position = _camera.Position;
+            Engine.Instance.Player.Update();
             
         }
 
@@ -133,7 +136,7 @@ namespace Carmageddon
 
             GameConsole.WriteLine("Draw Calls", GameVariables.NbrDrawCalls);
 
-            //Carmageddon.Physics.PhysX.Instance.Draw();
+            Carmageddon.Physics.PhysX.Instance.Draw();
         }
 
         #endregion

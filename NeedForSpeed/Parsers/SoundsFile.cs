@@ -12,7 +12,7 @@ namespace Carmageddon.Parsers
             : base(filename)
         {
 
-            while (!_file.EndOfStream)
+            while (_file.BaseStream.Position < _file.BaseStream.Length)
             {
                 CSound sound = new CSound();
                 sound.Id = ReadLineAsInt();
@@ -23,22 +23,17 @@ namespace Carmageddon.Parsers
                 sound.MinMaxVolume = ReadLine();
                 sound.MinMaxPitch = ReadLine();
                 sound.MinMaxSpeed = ReadLine();
-                sound.SpecialFxIndex = ReadLineAsInt();
+                ReadLine(); //unused
 
                 int lowMemAlts = ReadLineAsInt();
                 for (int i = 0; i < lowMemAlts; i++)
-                    ReadLine();
+                    ReadLine(); //unused
 
                 if (flags[0] == "0x00")
                 {
                     Sounds.Add(sound);
                 }
-
-                if (sound.SpecialFxIndex != 0)
-                {
-                }
             }
-
             CloseFile();
         }
     }

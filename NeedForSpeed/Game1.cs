@@ -10,6 +10,7 @@
     using Microsoft.Xna.Framework.Storage;
     using PlatformEngine;
     using NFSEngine;
+using NFSEngine.Audio;
 
     namespace Carmageddon
     {
@@ -49,6 +50,8 @@
 
                 Engine.Initialize(this, _graphics);
                 Engine.Instance.DrawDistance = GameVariables.Scale.Z * 60;
+                Engine.Instance.Audio = new NFSEngine.Audio.MdxSoundEngine();
+
 
                 //enable per-pixel transparency
                 Engine.Instance.Device.RenderState.AlphaTestEnable = true;
@@ -68,7 +71,6 @@
             {
                 // Create a new SpriteBatch, which can be used to draw textures.
                 spriteBatch = new SpriteBatch(GraphicsDevice);
-
             }
 
             /// <summary>

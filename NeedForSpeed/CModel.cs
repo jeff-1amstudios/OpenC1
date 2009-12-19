@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 
 namespace Carmageddon
 {
-    class Model
+    class CModel
     {
         public string Name { get; set; }
         public List<string> MaterialNames { get; set; }

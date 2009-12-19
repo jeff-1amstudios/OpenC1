@@ -8,27 +8,31 @@ using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 using NFSEngine;
 using Microsoft.Xna.Framework.Graphics;
+using NFSEngine.Audio;
 
 namespace Carmageddon
 {
-    class Driver : GameObject
+    class Driver : IPlayer
     {
-        
+        public Vector3 Position {get; set; }
+        public Vector3 Velocity { get; set; }
+        public Matrix Orientation { get; set; }
+
+        IListener _audioListener;
                 
         public Driver()
         {
-            
+            _audioListener = Engine.Instance.Audio.CreateListener();
             
         }
 
-        public override void Update(GameTime gameTime)
-        {           
-
-        }
-
-        public override void Render()
+        public void Update()
         {
-            
+            _audioListener.BeginUpdate();
+            _audioListener.Position = Position;
+            _audioListener.Orientation = Orientation;
+            _audioListener.Velocity = Velocity;
+            _audioListener.CommitChanges();
         }
     }
 }

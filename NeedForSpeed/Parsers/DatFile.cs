@@ -29,7 +29,7 @@ namespace Carmageddon.Parsers
         private IndexBuffer _indexBuffer;
         private VertexDeclaration _vertexDeclaration;
         
-        List<Model> _models = new List<Model>();
+        List<CModel> _models = new List<CModel>();
         List<Vector3> _vertexPositions = new List<Vector3>();
         List<Vector2> _vertexTextureMap = new List<Vector2>();
         public VertexPositionNormalTexture[] _vertices;
@@ -38,7 +38,7 @@ namespace Carmageddon.Parsers
         public DatFile(string filename)
         {
 
-            Model currentModel = null;
+            CModel currentModel = null;
 
             EndianBinaryReader reader = new EndianBinaryReader(new BigEndianBitConverter(), File.Open(filename, FileMode.Open));
 
@@ -55,7 +55,7 @@ namespace Carmageddon.Parsers
                         break;
 
                     case (int)BlockType.ModelName:
-                        currentModel = new Model();
+                        currentModel = new CModel();
                         _models.Add(currentModel);
                         reader.Seek(2, SeekOrigin.Current);
                         currentModel.Name = ReadNullTerminatedString(reader);
@@ -96,7 +96,7 @@ namespace Carmageddon.Parsers
             
         }
 
-        private void ReadVertexBlock(EndianBinaryReader reader, Model currentModel)
+        private void ReadVertexBlock(EndianBinaryReader reader, CModel currentModel)
         {
             currentModel.VertexBaseIndex = _vertexPositions.Count;
             currentModel.VertexCount = reader.ReadInt32();
@@ -119,7 +119,7 @@ namespace Carmageddon.Parsers
             }
         }
 
-        private void ReadMaterialsBlock(EndianBinaryReader reader, Model currentModel)
+        private void ReadMaterialsBlock(EndianBinaryReader reader, CModel currentModel)
         {
             currentModel.MaterialNames = new List<string>();
             int nbrMaterials = reader.ReadInt32();
@@ -130,7 +130,7 @@ namespace Carmageddon.Parsers
             }
         }
 
-        private void ReadFaceMaterialsBlock(EndianBinaryReader reader, Model currentModel)
+        private void ReadFaceMaterialsBlock(EndianBinaryReader reader, CModel currentModel)
         {
             int nbrFaceMaterials = reader.ReadInt32();
             int bytesPerEntry = reader.ReadInt32();
@@ -143,7 +143,7 @@ namespace Carmageddon.Parsers
             }
         }
 
-        private void ReadPolygonBlock(EndianBinaryReader reader, Model model)
+        private void ReadPolygonBlock(EndianBinaryReader reader, CModel model)
         {
             model.Polygons = new List<Polygon>();
             
@@ -174,7 +174,7 @@ namespace Carmageddon.Parsers
             
             List<UInt16> vertIndexes = new List<UInt16>(_vertexPositions.Count);
             
-            foreach (Model model in _models)
+            foreach (CModel model in _models)
             {
                 model.IndexBufferStart = vertIndexes.Count;
                 model.Polygons.Sort(delegate(Polygon p1, Polygon p2) { return p1.MaterialIndex.CompareTo(p2.MaterialIndex); });
@@ -236,12 +236,12 @@ namespace Carmageddon.Parsers
             device.VertexDeclaration = _vertexDeclaration;
         }
 
-        public Model GetModel(string name)
+        public CModel GetModel(string name)
         {
             return _models.Find(m => m.Name == name); 
         }
 
-        public List<Model> GetModels()
+        public List<CModel> GetModels()
         {
             return _models;
         }

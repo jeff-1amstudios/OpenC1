@@ -10,7 +10,7 @@ namespace Carmageddon
     {
         public string Name { get; private set; }
         public string ModelName { get; set; }
-        public Model Model { get; set; }
+        public CModel Model { get; set; }
         public string MaterialName { get; set; }
         public CMaterial Material { get; set; }
         public Matrix Matrix, ParentMatrix;

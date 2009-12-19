@@ -44,10 +44,13 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.SkinWidth, (float)0.01f);
             Core.SetParameter(PhysicsParameter.VisualizationScale, (float)1f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
-            Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
+            
+            Core.SetParameter(PhysicsParameter.VisualizeJointLimits, false);
+            
+            
             
             SceneDescription sceneDescription = new SceneDescription();
-            sceneDescription.Gravity = new Vector3(0f, -9.81f*1.2f, 0f);  //double gravity
+            sceneDescription.Gravity = new Vector3(0f, -9.81f*1.5f, 0f);  //double gravity
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
             
             sceneDescription.Flags = SceneFlag.EnableMultithread | SceneFlag.SimulateSeperateThread;
@@ -67,7 +70,7 @@ namespace Carmageddon.Physics
             
             MaterialDescription description = new MaterialDescription();
             description.Restitution = 0.4f;
-            description.StaticFriction = 0.2f;
+            description.StaticFriction = 0.9f;
             description.DynamicFriction = 0.2f;
             Scene.DefaultMaterial.LoadFromDescription(description);
             InitScene();
