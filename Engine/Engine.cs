@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using NFSEngine;
+using NFSEngine.Audio;
 
 namespace PlatformEngine
 {
@@ -13,7 +14,7 @@ namespace PlatformEngine
     {
         private ContentManager _contentManager;
         private ICamera _camera;
-        private GameObject _player;
+        public IPlayer Player { get; set; }
         private SpriteBatch _spriteBatch;
         private FrameRateCounter _fpsCounter;
 
@@ -26,6 +27,7 @@ namespace PlatformEngine
         public float DrawDistance { get; set; }
         public float ElapsedSeconds { get; private set; }
         public Random RandomNumber { get; private set; }
+        public ISoundEngine Audio { get; set; }
                 
         public static Engine Instance;
 
@@ -73,9 +75,9 @@ namespace PlatformEngine
             base.Update(gameTime);
             
             Input.Update(gameTime);
-            SoundEngine.Instance.Update(gameTime);
-            //SoundEngine.Instance.Update();
 
+            if (Audio != null) Audio.Update();
+            
             Screen.Update(gameTime);
 
             ScreenEffects.Instance.Update(gameTime);
@@ -122,11 +124,6 @@ namespace PlatformEngine
             }
         }
         
-        public GameObject Player
-        {
-            get { return _player; }
-            set { _player = value; }
-        }
 
         public SpriteBatch SpriteBatch
         {

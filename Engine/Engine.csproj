@@ -60,6 +60,8 @@
     <XnaCompressContent>True</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
     <Reference Include="mscorlib">
@@ -69,9 +71,18 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audio\Mdx\MdxSound.cs" />
+    <Compile Include="Audio\Mdx\MdxSoundEngine.cs" />
+    <Compile Include="Audio\Mdx\MdxListener.cs" />
+    <Compile Include="Audio\IListener.cs" />
+    <Compile Include="Audio\ISound.cs" />
+    <Compile Include="Audio\ISoundEngine.cs" />
+    <Compile Include="Audio\SoundInstance.cs" />
+    <Compile Include="Audio\Xact\XactSound.cs" />
     <Compile Include="AverageValueVector3.cs" />
     <Compile Include="Cameras\ChaseCamera.cs" />
     <Compile Include="Engine.cs" />
@@ -85,6 +96,7 @@
     <Compile Include="IDrawableObject.cs" />
     <Compile Include="IGameScreen.cs" />
     <Compile Include="InputProvider.cs" />
+    <Compile Include="IPlayer.cs" />
     <Compile Include="IWorld.cs" />
     <Compile Include="ParticleSystem\ParticleEmitter.cs" />
     <Compile Include="ParticleSystem\ParticleSettings.cs" />
@@ -96,7 +108,7 @@
     <Compile Include="Cameras\SimpleCamera.cs" />
     <Compile Include="SkyBox.cs" />
     <Compile Include="HeightmapTerrain.cs" />
-    <Compile Include="SoundEngine2.cs" />
+    <Compile Include="Audio\Xact\XactSoundEngine.cs" />
     <Compile Include="TextureGenerator.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
@@ -132,6 +144,10 @@
       <ProductName>Microsoft XNA Framework Redistributable 3.0</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Lib\Microsoft.DirectX.DirectSound.dll" />
+    <Content Include="Lib\Microsoft.DirectX.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" Condition="" />
