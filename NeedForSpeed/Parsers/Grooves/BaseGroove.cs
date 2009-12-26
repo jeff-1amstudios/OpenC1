@@ -13,7 +13,8 @@ enum Axis
 public enum Motion
 {
     Linear,
-    Harmonic
+    Harmonic,
+    Absolute
 }
 
 namespace Carmageddon.Parsers.Grooves
@@ -25,7 +26,7 @@ namespace Carmageddon.Parsers.Grooves
         public string ActorName;
         public float Speed;
         public Vector3 CenterOfMovement;
-        
+        public int Id { get { return (int)Speed; } }
         
         public Matrix _scale, _translation;
         public Matrix _actorRotation;
@@ -43,5 +44,17 @@ namespace Carmageddon.Parsers.Grooves
         }
 
         public abstract void Update();
+
+        public bool IsWheelActor
+        {
+            get
+            {
+                return (ActorName.StartsWith("FLWHEEL") || ActorName.StartsWith("FRWHEEL") ||
+                    ActorName.StartsWith("RLWHEEL") || ActorName.StartsWith("RRWHEEL") ||
+                    ActorName.StartsWith("FRPIVOT") || ActorName.StartsWith("FLPIVOT") ||
+                    ActorName.StartsWith("MRPIVOT") || ActorName.StartsWith("MLPIVOT") ||
+                    ActorName.StartsWith("MLWHEEL") || ActorName.StartsWith("MRWHEEL"));
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers.Grooves;
+using Carmageddon.Parsers.Funks;
 
 namespace Carmageddon.Parsers
 {
@@ -39,19 +40,6 @@ namespace Carmageddon.Parsers
         }
     }
 
-    class PhysicalProperties
-    {
-        public List<Vector3> WheelPositions = new List<Vector3>();
-        public BoundingBox BoundingBox;
-        public List<Vector3> ExtraBoundingBoxPoints = new List<Vector3>();
-
-        public float NonDrivenWheelRadius, DrivenWheelRadius;
-        public float RideHeight;
-        public float SuspensionDamping;
-        public Vector3 CenterOfMass;
-        public float Mass;
-    }
-
     class CarFile : BaseTextFile
     {
         public List<string> MaterialFiles { get; private set; }
@@ -61,9 +49,20 @@ namespace Carmageddon.Parsers
         public string ActorFile { get; private set; }
         public string BonnetActorFile { get; private set; }
         public List<CrushSection> CrushSections = new List<CrushSection>();
-        public PhysicalProperties PhysicalProperties=new PhysicalProperties();
         public List<BaseGroove> Grooves;
+        public List<BaseFunk> Funks;
+        public List<CWheelActor> WheelActors = new List<CWheelActor>();
+        public BoundingBox BoundingBox;
+        public List<Vector3> ExtraBoundingBoxPoints = new List<Vector3>();
+
+        public float NonDrivenWheelRadius, DrivenWheelRadius;
+        public float RideHeight;
+        public float SuspensionDamping;
+        public Vector3 CenterOfMass;
+        public float Mass;
+
         public int EngineNoiseId;
+        public List<int> DrivenWheelRefs, NonDrivenWheelRefs;
 
         public CarFile(string filename)
             : base(filename)
@@ -119,13 +118,29 @@ namespace Carmageddon.Parsers
 
             string windscreenReflection = ReadLine();
             int nbrSteerableWheels = ReadLineAsInt();
-            Debug.Assert(nbrSteerableWheels == 2);
-            int wheel1Ref = ReadLineAsInt();
-            int wheel2Ref = ReadLineAsInt();
-            SkipLines(6); //suspension refs
+            //Debug.Assert(nbrSteerableWheels == 2);
+            for (int i = 0; i < nbrSteerableWheels; i++)
+            {
+                int wref = ReadLineAsInt();
+            }
 
-            PhysicalProperties.NonDrivenWheelRadius = ReadLineAsFloat() / 2f;
-            PhysicalProperties.DrivenWheelRadius = ReadLineAsFloat() / 2f;
+            
+            SkipLines(4); //suspension refs
+
+            DrivenWheelRefs = new List<int>();
+            NonDrivenWheelRefs = new List<int>();
+            string refsLine = ReadLine();
+            string[] refs = refsLine.Split(',');
+            foreach (string wref in refs)
+                if (wref != "-1") DrivenWheelRefs.Add(int.Parse(wref));
+
+            refsLine = ReadLine();
+            refs = refsLine.Split(',');
+            foreach (string wref in refs)
+                if (wref != "-1") NonDrivenWheelRefs.Add(int.Parse(wref));
+
+            NonDrivenWheelRadius = ReadLineAsFloat() / 2f;
+            DrivenWheelRadius = ReadLineAsFloat() / 2f;
 
             ReadFunkSection();
             ReadGrooveSection();
@@ -140,7 +155,14 @@ namespace Carmageddon.Parsers
         private void ReadFunkSection()
         {
             Debug.Assert(ReadLine() == "START OF FUNK");
-            while (ReadLine() != "END OF FUNK") { }
+            Funks = new List<BaseFunk>();
+            FunkReader reader = new FunkReader();
+
+            while (!reader.AtEnd)
+            {
+                BaseFunk f = reader.Read(this);
+                if (f != null) Funks.Add(f);
+            }
         }
 
         private void ReadGrooveSection()
@@ -204,25 +226,25 @@ namespace Carmageddon.Parsers
                 Vector3 wheelpos = ReadLineAsVector3();
             }
 
-            PhysicalProperties.CenterOfMass = ReadLineAsVector3(true);
+            CenterOfMass = ReadLineAsVector3(true);
             if (startOfMechanics.EndsWith("2"))
             {
                 int nbrBoxes = ReadLineAsInt();
                 Debug.Assert(nbrBoxes == 1);
             }
-            PhysicalProperties.BoundingBox = new BoundingBox(ReadLineAsVector3(), ReadLineAsVector3());
+            BoundingBox = new BoundingBox(ReadLineAsVector3(), ReadLineAsVector3());
 
             if (!startOfMechanics.EndsWith("2"))
             {
                 int nbrPoints = ReadLineAsInt();
                 for (int i = 0; i < nbrPoints; i++)
-                    PhysicalProperties.ExtraBoundingBoxPoints.Add(ReadLineAsVector3());
+                    ExtraBoundingBoxPoints.Add(ReadLineAsVector3());
             }
 
             SkipLines(2);
-            PhysicalProperties.RideHeight = ReadLineAsFloat();
-            PhysicalProperties.SuspensionDamping = ReadLineAsFloat(false);
-            PhysicalProperties.Mass = ReadLineAsFloat(false) * 1000;
+            RideHeight = ReadLineAsFloat();
+            SuspensionDamping = ReadLineAsFloat(false);
+            Mass = ReadLineAsFloat(false) * 1000;
         }
     }
 }

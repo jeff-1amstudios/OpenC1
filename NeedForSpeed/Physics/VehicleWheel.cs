@@ -13,56 +13,61 @@ namespace Carmageddon.Physics
 {
     class VehicleWheel
     {
-        public WheelShape WheelShape { get; private set; }
-        private const float MaxAirTime = 2;
-        private float _airTime;
-        private float _tireOverride;
+        public WheelShape Shape { get; private set; }
+        public CWheelActor CActor { get; private set; }
         private Matrix _renderMatrix=Matrix.Identity;
         private Matrix _rotationMatrix=Matrix.Identity;
         private VehicleChassis _chassis;
-        private bool _isRear;
+        public bool IsRear;
         private float _axleOffset;
-        float _lerper;
+        private bool _handbrakeOn;
         ParticleEmitter _smokeEmitter;
         public float LateralStiffness { get; private set; }
 
         public bool InAir
         {
-            get
-            {
-                return WheelShape.GetContactData().ContactForce == 0; 
-            }
+            get { return Shape.GetContactData().ContactForce == 0; }
         }
 
-        public VehicleWheel(VehicleChassis chassis, WheelShape wheel, float axleOffset)
+        public VehicleWheel(VehicleChassis chassis, CWheelActor cactor, WheelShape wheel, float axleOffset)
         {
-            WheelShape = wheel;
+            Shape = wheel;
             _chassis = chassis;
             _axleOffset = axleOffset;
-            if (WheelShape.Name.StartsWith("R")) _isRear = true;
+            CActor = cactor;
 
             if (_smokeEmitter == null)
                 _smokeEmitter = new ParticleEmitter(TyreSmokeParticleSystem.Instance, 15, Vector3.Zero);
+
+            IsRear = !CActor.IsFront;
         }
 
         public Vector3 GlobalPosition
         {
-            get { return WheelShape.GlobalPosition; }
+            get { return Shape.GlobalPosition; }
         }
 
         public void Update()
         {
-            WheelContactData wcd = WheelShape.GetContactData();
+            WheelContactData wcd = Shape.GetContactData();
 
             UpdateMatrices(wcd);
 
-            //GameConsole.WriteLine("latImpulse", wcd.LongitudalSlip);
-            
             _smokeEmitter.Enabled = false;
-            if (_chassis.Speed > 5 && Math.Abs(wcd.LateralSlip) > 0.2f)
+            if (_chassis.Speed > 5 && (_handbrakeOn || Math.Abs(wcd.LateralSlip) > 0.3f))
             {
                 _smokeEmitter.Enabled = true;
                 _smokeEmitter.Update(Engine.Instance.ElapsedSeconds, wcd.ContactPoint);
+            }
+        }
+
+        public void ApplyHandbrake(bool apply)
+        {
+            _handbrakeOn = apply;
+            if (apply)
+            {
+                Shape.MotorTorque = 0;
+                Shape.BrakeTorque = 800;
             }
         }
 
@@ -72,19 +77,19 @@ namespace Carmageddon.Physics
             float suspensionLength = 0;
 
             if (wcd.ContactShape == null)
-                suspensionLength = WheelShape.SuspensionTravel;
+                suspensionLength = Shape.SuspensionTravel;
             else
-                suspensionLength = wcd.ContactPosition - WheelShape.Radius;
+                suspensionLength = wcd.ContactPosition - Shape.Radius;
 
-            _rotationMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(WheelShape.AxleSpeed));
+            if (!_handbrakeOn) _rotationMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(Shape.AxleSpeed));
             
             Matrix translation = Matrix.CreateTranslation(_axleOffset, -suspensionLength, 0.0f);
-            _renderMatrix = _rotationMatrix * Matrix.CreateRotationY(WheelShape.SteeringAngle) * translation;
+            _renderMatrix = _rotationMatrix * Matrix.CreateRotationY(Shape.SteeringAngle) * translation;
         }
 
         public Matrix GetRenderMatrix()
         {
-            Matrix pose = WheelShape.GlobalPose;
+            Matrix pose = Shape.GlobalPose;
             Vector3 trans = pose.Translation;
             return _renderMatrix * pose;
         }

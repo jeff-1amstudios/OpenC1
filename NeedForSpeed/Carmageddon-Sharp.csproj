@@ -87,6 +87,7 @@
     <Compile Include="CameraViews\ICameraView.cs" />
     <Compile Include="CMaterial.cs" />
     <Compile Include="CSound.cs" />
+    <Compile Include="CWheelActor.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Gfx\ModelShadow.cs" />
     <Compile Include="Gfx\TireSmokeParticleEmitter.cs" />

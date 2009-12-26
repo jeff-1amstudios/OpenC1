@@ -21,7 +21,7 @@ namespace Carmageddon.Parsers.Funks
             string activation = file.ReadLine();
             string animation = file.ReadLine().ToUpper();
             while (animation != "FLIC" && animation != "FRAMES" && animation != "ROLL"
-                && animation != "THROB" && animation != "SLITHER")
+                && animation != "THROB" && animation != "SLITHER" && animation != "SPIN")
             {
                 animation = file.ReadLine().ToUpper();
             }

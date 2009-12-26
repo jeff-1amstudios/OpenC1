@@ -35,7 +35,7 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "reg\\palettes\\drrender.pal");
 
-            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\blkeagle.txt");
+            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\bigapc.txt");
 
             _race = new Race(@"C:\Games\carma1\data\races\cityb3.TXT");
 
@@ -46,7 +46,7 @@ namespace Carmageddon
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
             _camera.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Camera = _camera;
-            //Engine.Instance.Camera = new FPSCamera();
+            Engine.Instance.Camera = new FPSCamera();
 
             Engine.Instance.Player = new Driver();
 
@@ -62,7 +62,7 @@ namespace Carmageddon
         private void SetupPhysics()
         {
             Matrix pose = Matrix.CreateRotationY(MathHelper.ToRadians(_race.RaceFile.GridDirection)) * Matrix.CreateTranslation(_race.RaceFile.GridPosition);
-            _chassis = new Carmageddon.Physics.VehicleChassis(Carmageddon.Physics.PhysX.Instance.Scene, pose, 1, _carModel.Properties);
+            _chassis = new Carmageddon.Physics.VehicleChassis(Carmageddon.Physics.PhysX.Instance.Scene, pose, 1, _carModel.CarFile);
             _carModel.Chassis = _chassis;
         }
 
@@ -96,10 +96,10 @@ namespace Carmageddon
 
             _camera.Position = _chassis.Body.GlobalPosition;
             
-            if (!_carModel.Chassis.InAir)
-            {
+            //if (!_carModel.Chassis.InAir)
+            //{
                 _camera.Orientation = _chassis.Body.GlobalOrientation.Forward;
-            }
+            //}
 
             if (_skybox != null) _skybox.Update(gameTime);
 
@@ -136,7 +136,7 @@ namespace Carmageddon
 
             GameConsole.WriteLine("Draw Calls", GameVariables.NbrDrawCalls);
 
-            Carmageddon.Physics.PhysX.Instance.Draw();
+            //Carmageddon.Physics.PhysX.Instance.Draw();
         }
 
         #endregion

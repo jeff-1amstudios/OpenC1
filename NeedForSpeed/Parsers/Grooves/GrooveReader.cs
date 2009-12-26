@@ -20,13 +20,13 @@ namespace Carmageddon.Parsers.Grooves
                 return null;
             }
 
-            if (actorName.StartsWith("FLWHEEL") || actorName.StartsWith("FRWHEEL") ||
-                actorName.StartsWith("RLWHEEL") || actorName.StartsWith("RRWHEEL") ||
-                actorName.StartsWith("FRPIVOT") || actorName.StartsWith("FLPIVOT"))
-            {
-                ReadToEndOfGroove(file);
-                return null;
-            }
+            //if (actorName.StartsWith("FLWHEEL") || actorName.StartsWith("FRWHEEL") ||
+            //    actorName.StartsWith("RLWHEEL") || actorName.StartsWith("RRWHEEL") ||
+            //    actorName.StartsWith("FRPIVOT") || actorName.StartsWith("FLPIVOT"))
+            //{
+            //    ReadToEndOfGroove(file);
+            //    return null;
+            //}
 
             string lollipop = file.ReadLine().ToUpper();
             Debug.Assert(lollipop.StartsWith("NOT A"));
@@ -72,6 +72,9 @@ namespace Carmageddon.Parsers.Grooves
             }
             else
             {
+                if (!action.StartsWith("NO OB"))
+                {
+                }
                 ReadToEndOfGroove(file);
                 if (path != null)
                 {

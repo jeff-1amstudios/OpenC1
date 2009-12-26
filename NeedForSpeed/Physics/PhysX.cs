@@ -50,7 +50,7 @@ namespace Carmageddon.Physics
             
             
             SceneDescription sceneDescription = new SceneDescription();
-            sceneDescription.Gravity = new Vector3(0f, -9.81f*1.5f, 0f);  //double gravity
+            sceneDescription.Gravity = new Vector3(0f, -9.81f*1.2f, 0f);  //double gravity
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
             
             sceneDescription.Flags = SceneFlag.EnableMultithread | SceneFlag.SimulateSeperateThread;

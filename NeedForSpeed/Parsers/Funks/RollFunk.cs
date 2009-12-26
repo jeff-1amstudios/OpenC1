@@ -30,7 +30,7 @@ namespace Carmageddon.Parsers.Funks
 
         public override void Update()
         {
-            _uvOffset += Speed * Engine.Instance.ElapsedSeconds;
+            _uvOffset += Speed * 0.8f * Engine.Instance.ElapsedSeconds;
             if (_uvOffset.X > 1) _uvOffset.X = 1 - _uvOffset.X;
             if (_uvOffset.Y > 1) _uvOffset.Y = 1 - _uvOffset.Y;
         }
