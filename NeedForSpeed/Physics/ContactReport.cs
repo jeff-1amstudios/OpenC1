@@ -17,40 +17,26 @@ namespace Carmageddon.Physics
             Actor actorA = contactInfo.ActorA;
             Actor actorB = contactInfo.ActorB;
 
-            if (actorA.Name == "Rocket")
+            using (ContactStreamIterator iter = new ContactStreamIterator(contactInfo.ContactStream))
             {
-                this.OnRocketCollision(actorA, actorB);
-                Console.WriteLine("Rocket Collision detected");
+                //if we are looking at the player car
+                if (actorB.Group == 1)
+                {
+                    //int pairs = iter.GetNumberOfPairs();
+                    //if (pairs < 5)
+                    //    return;
+
+                    //while (iter.GoToNextPair())
+                    //{
+                    //    Shape shapeA = iter.GetShapeA();
+                    //    Shape shapeB = iter.GetShapeB();
+                    //    if (!(shapeB is WheelShape))
+                    //    {
+                    //    }
+                    //}
+                }
             }
-            else if (actorB.Name == "Rocket")
-            {
-                this.OnRocketCollision(actorB, actorA);
-                Console.WriteLine("Rocket Collision detected");
-            }
-            else if (actorA.Name == "ItemBox")
-            {
-                this.OnItemPickup(actorB, actorA);
-            }
-            else if (actorB.Name == "ItemBox")
-            {
-                this.OnItemPickup(actorA, actorB);
-            }
-            else if (actorA.Name == "Mine")
-            {
-                this.OnMineHit(actorB, actorA);
-            }
-            else if (actorB.Name == "Mine")
-            {
-                this.OnMineHit(actorA, actorB);
-            }
-            else if (actorA.Name == "ColorMine")
-            {
-                this.OnMineHit(actorB, actorA);
-            }
-            else if (actorB.Name == "ColorMine")
-            {
-                this.OnMineHit(actorA, actorB);
-            }
+
         }
 
         private void OnItemPickup(Actor vehicle, Actor box)

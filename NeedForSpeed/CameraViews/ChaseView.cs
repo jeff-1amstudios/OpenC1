@@ -2,19 +2,22 @@
 using System.Collections.Generic;
 using System.Text;
 using Carmageddon.HUD;
+using PlatformEngine;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.CameraViews
 {
     class ChaseView : ICameraView
     {
-
-        RevCounter _revCounter;
+        List<BaseHUDItem> _hudItems = new List<BaseHUDItem>();
         VehicleModel _vehicle;
 
         public ChaseView(VehicleModel vehicle)
         {
             _vehicle = vehicle;
-            _revCounter = new RevCounter(_vehicle.Chassis);
+
+            _hudItems.Add(new RevCounter(_vehicle.Chassis));
+            _hudItems.Add(new Timer());
         }
 
         #region ICameraView Members
@@ -27,13 +30,24 @@ namespace Carmageddon.CameraViews
 
         public void Update()
         {
-            
+            foreach (BaseHUDItem item in _hudItems)
+                item.Update();
         }
 
         public void Render()
         {
             _vehicle.Render();
-            _revCounter.Render();
+
+            Engine.Instance.SpriteBatch.Begin();
+
+            foreach (BaseHUDItem item in _hudItems)
+                item.Render();
+
+            Engine.Instance.SpriteBatch.End();
+            Engine.Instance.Device.RenderState.DepthBufferEnable = true;
+            Engine.Instance.Device.RenderState.AlphaBlendEnable = false;
+            Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
+            Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
         }
 
         public void Activate()

@@ -26,7 +26,7 @@ namespace Carmageddon.Physics
         public List<VehicleWheel> Wheels {get; private set; }
 
         float _desiredSteerAngle = 0f; // Desired steering angle
-        bool _backwards = false;
+        public bool Backwards {get; private set; }
         float _currentTorque = 0f;
         Vector3 _centerOfMass;
 
@@ -91,35 +91,35 @@ namespace Carmageddon.Physics
 
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 0.1f;
-            lngTFD.ExtremumValue = 9f;
+            lngTFD.ExtremumValue = 5f;
             lngTFD.AsymptoteSlip = 2.0f;
-            lngTFD.AsymptoteValue = 9.0f;
+            lngTFD.AsymptoteValue = 5.0f;
             
 
             TireFunctionDescription _frontLateralTireFn = new TireFunctionDescription();
 
             float mul = 70f;
             _frontLateralTireFn.ExtremumSlip = 0.35f;
-            _frontLateralTireFn.ExtremumValue = 4.2f;
+            _frontLateralTireFn.ExtremumValue = 1.7f;
             _frontLateralTireFn.AsymptoteSlip = 1.4f * mul;
-            _frontLateralTireFn.AsymptoteValue = 0.8f;
+            _frontLateralTireFn.AsymptoteValue = 0.7f;
 
-            _rearLateralTireFn = _frontLateralTireFn;// = new TireFunctionDescription();
+            _rearLateralTireFn = new TireFunctionDescription();
 
-            //mul = 170f;
-            //_rearLateralTireFn.ExtremumSlip = 0.35f;
-            //_rearLateralTireFn.ExtremumValue = 2.0f;
-            //_rearLateralTireFn.AsymptoteSlip = 1.4f * mul;
-            //_rearLateralTireFn.AsymptoteValue = 0.7f;
+            mul = 100f;
+            _rearLateralTireFn.ExtremumSlip = 0.35f;
+            _rearLateralTireFn.ExtremumValue = 2.0f;
+            _rearLateralTireFn.AsymptoteSlip = 1.4f * mul;
+            _rearLateralTireFn.AsymptoteValue = 0.7f;
 
             
             WheelShapeDescription wheelDesc = new WheelShapeDescription();
             wheelDesc.Radius = carFile.NonDrivenWheelRadius;
-            wheelDesc.SuspensionTravel = 0.12f;
-            wheelDesc.InverseWheelMass = 0.05f;
+            wheelDesc.SuspensionTravel = 0.13f;
+            wheelDesc.InverseWheelMass = 0.08f;
             wheelDesc.LongitudalTireForceFunction = lngTFD;
             wheelDesc.LateralTireForceFunction = _frontLateralTireFn;
-            wheelDesc.Flags = (WheelShapeFlag)64;  // clamp force mode
+            wheelDesc.Flags = WheelShapeFlag.ClampedFriction; // (WheelShapeFlag)64;  // clamp force mode
 
             
             MaterialDescription md = new MaterialDescription();
@@ -128,7 +128,7 @@ namespace Carmageddon.Physics
             Material m = scene.CreateMaterial(md);
             wheelDesc.Material = m;
 
-            SpringDescription spring = new SpringDescription(9500, carFile.SuspensionDamping, 0);
+            SpringDescription spring = new SpringDescription(12000, carFile.SuspensionDamping, 0);
             //float heightModifier = (suspensionSettings.WheelSuspension + wheelDesc.Radius) / suspensionSettings.WheelSuspension;
             //spring.SpringCoefficient = suspensionSettings.SpringRestitution * heightModifier;
             //spring.DamperCoefficient = suspensionSettings.SpringDamping * heightModifier;
@@ -224,22 +224,20 @@ namespace Carmageddon.Physics
                 return;
             }
 
-            if (_speed < 1f) // Change between breaking and accelerating;
+            if (_speed < 1f) // Change between braking and accelerating;
             {
-                if (_backwards && _currentTorque > 0.01f)
+                if (Backwards && _currentTorque > -0.01f)
                 {
-                    _backwards = false;
-                    //Accelerate(_currentTorque);
+                    Backwards = false;
                 }
-                else if (!_backwards && _currentTorque < 0.01f)
+                else if (!Backwards && _currentTorque < -0.01f)
                 {
-                    _backwards = true;
-                    //Accelerate(_currentTorque);
+                    Backwards = true;
                 }
             }
             Vector3 down = VehicleBody.GlobalOrientation.Down;
             down = Vector3.Normalize(down);
-            VehicleBody.AddLocalForceAtLocalPosition(down * new Vector3(5, 5, 5), Vector3.Zero, ForceMode.SmoothImpulse);
+            VehicleBody.AddLocalForceAtLocalPosition(down * new Vector3(5), Vector3.Zero, ForceMode.SmoothImpulse);
             
             UpdateTireStiffness();
 
@@ -255,16 +253,16 @@ namespace Carmageddon.Physics
             foreach (VehicleWheel wheel in Wheels)
                 wheel.Update();
 
-            //Wheels[0].Update();
-            //Wheels[1].Update();
+            Wheels[0].Update();
+            Wheels[1].Update();
 
-            //float angVel = MathHelper.Lerp(2, 1.5f, _handbrake);
-            //Wheels[2].Update();
-            //Wheels[3].Update();
+            float angVel = MathHelper.Lerp(2, 1.5f, _handbrake);
+            Wheels[2].Update();
+            Wheels[3].Update();
 
-            //rearLateralTireFn.ExtremumValue = angVel;
-            //Wheels[2].WheelShape.LateralTireForceFunction = _rearLateralTireFn;
-            //Wheels[3].WheelShape.LateralTireForceFunction = _rearLateralTireFn;
+            _rearLateralTireFn.ExtremumValue = angVel;
+            Wheels[2].Shape.LateralTireForceFunction = _rearLateralTireFn;
+            Wheels[3].Shape.LateralTireForceFunction = _rearLateralTireFn;
         }
 
         #endregion
@@ -287,7 +285,7 @@ namespace Carmageddon.Physics
             _currentTorque = torque;
             if (torque > 0.0001f)
             {
-                if (_backwards)
+                if (Backwards)
                 {
                     _motorTorque = 0f;
                     _brakeTorque = torque;
@@ -301,7 +299,7 @@ namespace Carmageddon.Physics
 
             else if (torque < -0.0001f)
             {
-                if (_backwards)
+                if (Backwards)
                 {
                     _motorTorque = -torque;
                     _brakeTorque = 0f;

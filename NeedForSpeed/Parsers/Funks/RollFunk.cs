@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using PlatformEngine;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.Parsers.Funks
 {
@@ -10,6 +11,7 @@ namespace Carmageddon.Parsers.Funks
     {
         public Vector2 Speed;
         Vector2 _uvOffset;
+        TextureAddressMode _lastMode;
 
         public RollFunk()
         {
@@ -18,12 +20,19 @@ namespace Carmageddon.Parsers.Funks
 
         public override void BeforeRender()
         {
+            _lastMode = Engine.Instance.Device.SamplerStates[0].AddressU;
+            if (_lastMode != TextureAddressMode.Wrap)
+                Engine.Instance.Device.SamplerStates[0].AddressU = Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
+
             GameVariables.CurrentEffect.TexCoordsOffset = _uvOffset;
             GameVariables.CurrentEffect.CommitChanges();
         }
 
         public override void AfterRender()
         {
+            if (_lastMode != TextureAddressMode.Wrap)
+                Engine.Instance.Device.SamplerStates[0].AddressU = Engine.Instance.Device.SamplerStates[0].AddressV = _lastMode;
+
             GameVariables.CurrentEffect.TexCoordsOffset = Vector2.Zero;
             GameVariables.CurrentEffect.CommitChanges();
         }

@@ -9,11 +9,11 @@ using Carmageddon.Physics;
 
 namespace Carmageddon.HUD
 {
-    class RevCounter
+    class RevCounter: BaseHUDItem
     {
         VehicleChassis _chassis;
         int x, y;
-        Texture2D _speedoTexture, _speedoLineTexture, _shadow;
+        Texture2D _speedoTexture, _speedoLineTexture;
         SpriteFont _font;
 
         public RevCounter(VehicleChassis vehicle)
@@ -25,33 +25,26 @@ namespace Carmageddon.HUD
             y = Engine.Instance.Window.Height - 105;
 
             _speedoTexture = Engine.Instance.ContentManager.Load<Texture2D>("Content\\tacho");
-            _speedoLineTexture = TextureGenerator.Generate(new Color(255, 0, 0));
-            _shadow = TextureGenerator.Generate(new Color(0f, 0f, 0f, 0.4f));
+            _speedoLineTexture = TextureGenerator.Generate(new Color(255, 0, 0));            
         }
 
-        public void Render()
+        public override void Update()
         {
-            Engine.Instance.SpriteBatch.Begin();
-            
-            Color color = new Color(255,255,255,255);
-            Engine.Instance.SpriteBatch.Draw(_speedoTexture, new Rectangle(x, y, 112, 88), color);
+        }
 
-            Engine.Instance.SpriteBatch.Draw(_shadow, new Rectangle(x + 40, y + 63, 24, 32), Color.White);
-            Engine.Instance.SpriteBatch.DrawString(_font, _chassis.Motor.Gearbox.CurrentGear.ToString(), new Vector2(x + 43, y + 65), Color.Yellow);
-            Engine.Instance.SpriteBatch.Draw(_shadow, new Rectangle(x + 70, y + 63, 55, 32), Color.White);
-            Engine.Instance.SpriteBatch.DrawString(_font, ((int)_chassis.Speed).ToString("000"), new Vector2(x+73, y+65), Color.GreenYellow);
+        public override void Render()
+        {
+            Engine.Instance.SpriteBatch.Draw(_speedoTexture, new Rectangle(x, y, 116, 96), Color.White);
+
+            Engine.Instance.SpriteBatch.Draw(_shadow, new Rectangle(x + 44, y + 71, 24, 32), Color.White);
+            Engine.Instance.SpriteBatch.DrawString(_font, _chassis.Motor.Gearbox.CurrentGear.ToString(), new Vector2(x + 47, y + 73), Color.Yellow);
+            Engine.Instance.SpriteBatch.Draw(_shadow, new Rectangle(x + 74, y + 71, 55, 32), Color.White);
+            Engine.Instance.SpriteBatch.DrawString(_font, ((int)_chassis.Speed).ToString("000"), new Vector2(x+77, y+73), Color.GreenYellow);
 
             float rpmFactor = _chassis.Motor.Rpm / _chassis.Motor.RedlineRpm;
             float rotation = (float)(rpmFactor * 4f) + 0.5f;
-            Engine.Instance.SpriteBatch.Draw(_speedoLineTexture, new Vector2(x + 55, y + 50),
-                null, color, rotation, new Vector2(0, 0), new Vector2(3, 45), SpriteEffects.None, 0);
-
-            Engine.Instance.SpriteBatch.End();
-
-            Engine.Instance.Device.RenderState.DepthBufferEnable = true;
-            Engine.Instance.Device.RenderState.AlphaBlendEnable = false;
-            Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
-            Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
+            Engine.Instance.SpriteBatch.Draw(_speedoLineTexture, new Vector2(x + 59, y + 58),
+                null, Color.White, rotation, new Vector2(0, 0), new Vector2(3, 45), SpriteEffects.None, 0);
 
         }
     }

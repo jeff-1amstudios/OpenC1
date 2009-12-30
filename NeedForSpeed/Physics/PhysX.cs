@@ -53,19 +53,11 @@ namespace Carmageddon.Physics
             sceneDescription.Gravity = new Vector3(0f, -9.81f*1.2f, 0f);  //double gravity
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
             
-            sceneDescription.Flags = SceneFlag.EnableMultithread | SceneFlag.SimulateSeperateThread;
+            sceneDescription.Flags = SceneFlag.EnableMultithread | SceneFlag.SimulateSeparateThread;
             //sceneDescription.InternalThreadCount = 1; // HexaChromeGame.ProcessorCount - 1;
             sceneDescription.ThreadMask = 0xfffffffe;
             Scene = Core.CreateScene(sceneDescription);
-            //Scene.SetGroupCollisionFlag(10, 1, true);
-            //Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.OnSlide);
             
-            //Scene.SetGroupCollisionFlag(ds.HeightfieldGroupID, ds.RocketGroupID, true);
-            //Scene.SetActorGroupPairFlags(ds.HeightfieldGroupID, ds.RocketGroupID, ContactPairFlag.OnImpact | ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
-            //Scene.SetGroupCollisionFlag(ds.VehicleGroupID, ds.RocketGroupID, true);
-            //Scene.SetActorGroupPairFlags(ds.VehicleGroupID, ds.RocketGroupID, ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
-            //Scene.SetGroupCollisionFlag(ds.VehicleGroupID, ds.ItemGroupID, true);
-            //Scene.SetActorGroupPairFlags(ds.VehicleGroupID, ds.ItemGroupID, ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
             Scene.UserContactReport = new ContactReport(Scene);
             
             MaterialDescription description = new MaterialDescription();

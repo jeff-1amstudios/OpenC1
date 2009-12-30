@@ -14,7 +14,7 @@ namespace Carmageddon
 
         public static void Initialize()
         {
-            SoundsFile soundFile = new SoundsFile(GameVariables.BasePath + "sound\\sound.txt");
+            SoundsFile soundFile = new SoundsFile(GameVariables.BasePath + "data\\sound\\sound.txt");
             _sounds = soundFile.Sounds;
             IsInitialized = true;
         }
@@ -22,7 +22,7 @@ namespace Carmageddon
         public static ISound CreateInstance(int id)
         {
             CSound csound = _sounds.Find(a => a.Id == id);
-            ISound sound = Engine.Instance.Audio.Load(GameVariables.BasePath + "sound\\" + csound.FileName, false);
+            ISound sound = Engine.Instance.Audio.Load(GameVariables.BasePath + "data\\sound\\" + csound.FileName, false);
             return sound;
         }
     }

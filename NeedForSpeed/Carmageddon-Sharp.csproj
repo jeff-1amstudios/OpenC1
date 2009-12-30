@@ -69,10 +69,7 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
-    <Reference Include="StillDesign.PhysX.Net, Version=0.11.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\PhysX.Net 0.11.0.0\References\Debug\XNA 3.0\StillDesign.PhysX.Net.dll</HintPath>
-    </Reference>
+    <Reference Include="StillDesign.PhysX.Net, Version=0.12.0.0, Culture=neutral, processorArchitecture=x86" />
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -92,7 +89,9 @@
     <Compile Include="Gfx\ModelShadow.cs" />
     <Compile Include="Gfx\TireSmokeParticleEmitter.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="HUD\BaseHUDItem.cs" />
     <Compile Include="HUD\RevCounter.cs" />
+    <Compile Include="HUD\Timer.cs" />
     <Compile Include="IPalette.cs" />
     <Compile Include="CModel.cs" />
     <Compile Include="Parsers\FliFile.cs" />
@@ -160,8 +159,8 @@
     <Content Include="Lib\PhysXLoader.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Lib\StillDesign.CommonLibrary.dll" />
     <Content Include="Lib\StillDesign.PhysX.Net.dll" />
+    <Content Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
     <NestedContentProject Include="Content\Content.contentproj">

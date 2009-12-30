@@ -12,6 +12,8 @@ namespace NFSEngine
     public class FixedChaseCamera : ICamera
     {
         private Vector3 _chaseDistance;
+        float _currentRotation;
+
         public FixedChaseCamera(float chaseDistance, float height)
 		{
             _chaseDistance = new Vector3(chaseDistance, height, chaseDistance);
@@ -58,14 +60,31 @@ namespace NFSEngine
 		/// Projecton transform matrix.
 		/// </summary>
 		public Matrix Projection {get; private set; }
+
+        /// <summary>
+        /// Rotation around the target
+        /// </summary>
+        public float Rotation { get; set; }
 		
         public void Update(GameTime gameTime)
 		{
-            _lookAt.AddValue(new Vector3(0, 2f, 0) + (-Orientation * _chaseDistance));
+            if (_currentRotation != Rotation)
+            {
+                if (_currentRotation < Rotation)
+                    _currentRotation += Engine.Instance.ElapsedSeconds*3;
+                else
+                    _currentRotation -= Engine.Instance.ElapsedSeconds*3;
+                if (Math.Abs(_currentRotation - Rotation) < 0.05f)
+                    _currentRotation = Rotation;
+            }
+
+            Vector3 pos = new Vector3(0, 2f, 0) + (-Vector3.Normalize(Orientation) * _chaseDistance);
+            _lookAt.AddValue(pos);
             Vector3 avgLookAt = _lookAt.GetAveragedValue();
-            Vector3 cameraPosition = Position + avgLookAt;
-            View = Matrix.CreateLookAt(Position + avgLookAt, Position + new Vector3(0,1.0f,0), Vector3.Up);
+            Vector3 cameraPosition = Position + Vector3.Transform(avgLookAt, Matrix.CreateRotationY(_currentRotation));
+            
+            View = Matrix.CreateLookAt(cameraPosition, Position + new Vector3(0,1.0f,0), Vector3.Up);
             Projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlaneDistance, DrawDistance);
-		}        
+		}
     }
 }

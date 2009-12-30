@@ -33,9 +33,9 @@ namespace Carmageddon
             if (!SoundCache.IsInitialized)
                 SoundCache.Initialize();
 
-            GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "reg\\palettes\\drrender.pal");
+            GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\bigapc.txt");
+            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\blkeagle.txt");
 
             _race = new Race(@"C:\Games\carma1\data\races\cityb3.TXT");
 
@@ -46,7 +46,7 @@ namespace Carmageddon
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
             _camera.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Camera = _camera;
-            Engine.Instance.Camera = new FPSCamera();
+            //Engine.Instance.Camera = new FPSCamera();
 
             Engine.Instance.Player = new Driver();
 
@@ -79,9 +79,15 @@ namespace Carmageddon
             
             _race.Update();
 
+            
             _chassis.Accelerate(PlayerVehicleController.Acceleration);
             if (PlayerVehicleController.Brake != 0)
+            {
                 _chassis.Accelerate(-PlayerVehicleController.Brake);
+            }
+
+            _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : 0);
+            
             
             _chassis.Steer(PlayerVehicleController.Turn);
 
@@ -95,7 +101,7 @@ namespace Carmageddon
             PhysX.Instance.Update(gameTime);
 
             _camera.Position = _chassis.Body.GlobalPosition;
-            
+
             //if (!_carModel.Chassis.InAir)
             //{
                 _camera.Orientation = _chassis.Body.GlobalOrientation.Forward;

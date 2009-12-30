@@ -20,6 +20,9 @@ namespace Carmageddon
         ActFile _actors;
         ResourceCache _resourceCache;
         public Texture2D HorizonTexture;
+        public float TimeRemaining = 90; //1:30
+
+        public static Race Current;
 
         public RaceFile RaceFile { get; private set; }
 
@@ -74,13 +77,23 @@ namespace Carmageddon
 
             _trackActor = Physics.TrackProcessor.GenerateTrackActor(_actors, _models);
             Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars, _trackActor);
+
+            Current = this;
         }
 
         public void SetupPhysx(VehicleChassis vehicle)
         {
-            //PhysX.Instance.Scene.SetGroupCollisionFlag(10, 1, true);
+            PhysX.Instance.Scene.SetGroupCollisionFlag(10, 1, true);
             PhysX.Instance.Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.OnTouch);
-            
+        }
+
+        public void StartCountdown()
+        {
+        }
+
+        public void Start()
+        {
+
         }
 
         public void Update()
@@ -93,6 +106,9 @@ namespace Carmageddon
             {
                 funk.Update();
             }
+
+            TimeRemaining -= Engine.Instance.ElapsedSeconds;
+            if (TimeRemaining < 0) TimeRemaining = 0;
         }
 
         public void Render()
