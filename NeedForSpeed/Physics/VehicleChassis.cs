@@ -123,7 +123,7 @@ namespace Carmageddon.Physics
 
             
             MaterialDescription md = new MaterialDescription();
-            md.Restitution = 1.0f;
+            md.Restitution = 1f;
             md.Flags = MaterialFlag.DisableFriction;
             Material m = scene.CreateMaterial(md);
             wheelDesc.Material = m;
@@ -182,7 +182,7 @@ namespace Carmageddon.Physics
 
         #region Update
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             Vector3 vDirection = VehicleBody.GlobalOrientation.Forward;
             Vector3 vNormal = VehicleBody.LinearVelocity * vDirection;
@@ -200,7 +200,7 @@ namespace Carmageddon.Physics
                 else
                     diff *= 0.05f;
 
-                diff *= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                diff *= Engine.Instance.ElapsedSeconds * 1000; //TotalMilliseconds;
                 if (endLocal > _steerAngle)
                 {
                     _steerAngle += diff;
@@ -359,7 +359,8 @@ namespace Carmageddon.Physics
                 {
                     if (wheel.IsRear)
                         wheel.ApplyHandbrake(false);
-                    wheel.Shape.MotorTorque = _motorTorque;
+                    if (wheel.CActor.Driven)
+                        wheel.Shape.MotorTorque = _motorTorque;
                 }
             }
             foreach (VehicleWheel wheel in Wheels)

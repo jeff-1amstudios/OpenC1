@@ -93,15 +93,18 @@ namespace Carmageddon
                 CarFile.WheelActors.Add(ca);
             }
 
-            //_engineSound = SoundCache.CreateInstance(carFile.EngineNoiseId);
-            //_engineSound.Play(true);
+            _engineSound = SoundCache.CreateInstance(CarFile.EngineNoiseId);
+            _engineSound.Play(true);
 
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
-            TyreSmokeParticleSystem.Instance.Update(gameTime);
+            TyreSmokeParticleSystem.Instance.Update();
             TyreSmokeParticleSystem.Instance.SetCamera(Engine.Instance.Camera);
+
+            SparksParticleSystem.Instance.SetCamera(Engine.Instance.Camera);
+            SparksParticleSystem.Instance.Update();
 
             foreach (BaseGroove groove in _grooves)
             {
@@ -120,7 +123,7 @@ namespace Carmageddon
                 //_engineSound.Velocity = Chassis.Body.LinearVelocity;
             }
 
-            Chassis.Update(gameTime);
+            Chassis.Update();
         }
 
 
@@ -172,6 +175,7 @@ namespace Carmageddon
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
 
             TyreSmokeParticleSystem.Instance.Render();
+            SparksParticleSystem.Instance.Render();
 
             Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
             Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;

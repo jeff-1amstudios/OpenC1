@@ -87,7 +87,9 @@
     <Compile Include="CWheelActor.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Gfx\ModelShadow.cs" />
-    <Compile Include="Gfx\TireSmokeParticleEmitter.cs" />
+    <Compile Include="Gfx\SparksParticleSystem.cs" />
+    <Compile Include="Gfx\TireSmokeParticleSystem.cs" />
+    <Compile Include="Gfx\VehicleBitsParticleSystem.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="HUD\BaseHUDItem.cs" />
     <Compile Include="HUD\RevCounter.cs" />

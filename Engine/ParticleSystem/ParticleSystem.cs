@@ -236,7 +236,7 @@ namespace Particle3DSample
         /// <summary>
         /// Updates the particle system.
         /// </summary>
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             currentTime += Engine.Instance.ElapsedSeconds;
 

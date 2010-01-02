@@ -54,10 +54,10 @@ namespace Carmageddon.Physics
             UpdateMatrices(wcd);
 
             _smokeEmitter.Enabled = false;
-            if (_chassis.Speed > 5 && (_handbrakeOn || Math.Abs(wcd.LateralSlip) > 0.3f))
+            if (_chassis.Speed > 5 && (_handbrakeOn || Math.Abs(wcd.LateralSlip) > 0.25f))
             {
                 _smokeEmitter.Enabled = true;
-                _smokeEmitter.Update(Engine.Instance.ElapsedSeconds, wcd.ContactPoint);
+                _smokeEmitter.Update(wcd.ContactPoint);
             }
         }
 

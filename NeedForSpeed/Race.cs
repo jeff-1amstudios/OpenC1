@@ -84,7 +84,7 @@ namespace Carmageddon
         public void SetupPhysx(VehicleChassis vehicle)
         {
             PhysX.Instance.Scene.SetGroupCollisionFlag(10, 1, true);
-            PhysX.Instance.Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.OnTouch);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.Forces | ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
         }
 
         public void StartCountdown()

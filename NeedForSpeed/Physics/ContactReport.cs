@@ -1,17 +1,23 @@
 ﻿using StillDesign.PhysX;
 using System;
+using Particle3DSample;
+using Carmageddon.Gfx;
+using Microsoft.Xna.Framework;
+using PlatformEngine;
 
 namespace Carmageddon.Physics
 {
     internal class ContactReport : UserContactReport
     {
-        
+
+        ParticleEmitter _sparkEmitter;
+
         public ContactReport(Scene scene)
             : base()
         {
-            
+            _sparkEmitter = new ParticleEmitter(SparksParticleSystem.Instance, 10, Vector3.Zero);
         }
-        
+
         public override void OnContactNotify(ContactPair contactInfo, ContactPairFlag events)
         {
             Actor actorA = contactInfo.ActorA;
@@ -19,24 +25,34 @@ namespace Carmageddon.Physics
 
             using (ContactStreamIterator iter = new ContactStreamIterator(contactInfo.ContactStream))
             {
+
                 //if we are looking at the player car
                 if (actorB.Group == 1)
                 {
-                    //int pairs = iter.GetNumberOfPairs();
-                    //if (pairs < 5)
-                    //    return;
+                    int pairs = iter.GetNumberOfPairs();
+                    if (pairs < 5)
+                        return;
 
-                    //while (iter.GoToNextPair())
-                    //{
-                    //    Shape shapeA = iter.GetShapeA();
-                    //    Shape shapeB = iter.GetShapeB();
-                    //    if (!(shapeB is WheelShape))
-                    //    {
-                    //    }
-                    //}
+                    while (iter.GoToNextPair())
+                    {
+                        while (iter.GoToNextPatch())
+                        {
+                            while (iter.GoToNextPoint())
+                            {
+                                Shape shapeA = iter.GetShapeA();
+                                Shape shapeB = iter.GetShapeB();
+                                if (!(shapeB is WheelShape))
+                                {
+                                    if (contactInfo.NormalForce.Length() > 838305)
+                                    {
+                                        _sparkEmitter.DumpParticles(iter.GetPoint());
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
-
         }
 
         private void OnItemPickup(Actor vehicle, Actor box)

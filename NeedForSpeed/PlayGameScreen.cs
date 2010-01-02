@@ -22,7 +22,7 @@ namespace Carmageddon
         private Carmageddon.Physics.VehicleChassis _chassis;
         Race _race;
         SkyBox _skybox;
-        List<ICamera> _cameras = new List<ICamera>();
+        
         BasicEffect2 _effect;
         ChaseView _chaseView;
         
@@ -35,9 +35,9 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            _carModel = new VehicleModel(@"C:\Games\carma1\data\cars\blkeagle.txt");
+            _carModel = new VehicleModel(GameVariables.BasePath + @"data\cars\blkeagle.txt");
 
-            _race = new Race(@"C:\Games\carma1\data\races\cityb3.TXT");
+            _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT");
 
             _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX-3f, _race.RaceFile.DepthCueMode);
             _skybox.HeightOffset = -220 + _race.RaceFile.SkyboxPositionY * 1.5f;
@@ -96,9 +96,9 @@ namespace Carmageddon
             else
                 _chassis.ReleaseHandbrake();
             
-            _carModel.Update(gameTime);
+            _carModel.Update();
             
-            PhysX.Instance.Update(gameTime);
+            PhysX.Instance.Update();
 
             _camera.Position = _chassis.Body.GlobalPosition;
 
@@ -116,6 +116,7 @@ namespace Carmageddon
             Engine.Instance.Player.Velocity = _chassis.Body.LinearVelocity;
             Engine.Instance.Player.Position = _camera.Position;
             Engine.Instance.Player.Update();
+
             
         }
 

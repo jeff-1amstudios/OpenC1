@@ -61,8 +61,8 @@ namespace Carmageddon.Physics
             Scene.UserContactReport = new ContactReport(Scene);
             
             MaterialDescription description = new MaterialDescription();
-            description.Restitution = 0.4f;
-            description.StaticFriction = 0.9f;
+            description.Restitution = 0.25f;
+            //description.StaticFriction = 0.9f;
             description.DynamicFriction = 0.2f;
             Scene.DefaultMaterial.LoadFromDescription(description);
             InitScene();
@@ -133,7 +133,7 @@ namespace Carmageddon.Physics
         {
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             Scene.Simulate(Engine.Instance.ElapsedSeconds);
             Scene.FlushStream();
