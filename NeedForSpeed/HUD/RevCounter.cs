@@ -24,7 +24,7 @@ namespace Carmageddon.HUD
             x = 15;
             y = Engine.Instance.Window.Height - 105;
 
-            _speedoTexture = Engine.Instance.ContentManager.Load<Texture2D>("Content\\tacho");
+            _speedoTexture = Engine.Instance.ContentManager.Load<Texture2D>("content/tacho");
             _speedoLineTexture = TextureGenerator.Generate(new Color(255, 0, 0));            
         }
 

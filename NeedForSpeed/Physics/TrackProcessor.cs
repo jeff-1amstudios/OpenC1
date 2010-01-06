@@ -165,7 +165,7 @@ namespace Carmageddon.Physics
                         StillDesign.PhysX.Actor instance = PhysX.Instance.Scene.CreateActor(actorDesc);
                         instance.GlobalPose = m;
                         instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMass);
-
+                        instance.Group = 10;
                         if (nonCar.BendAngleBeforeSnapping > 0)
                         {
                             instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMassWhenAttached);

@@ -3,50 +3,53 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Particle3DSample;
+using PlatformEngine;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.Gfx
 {
     class VehicleBitsParticleSystem : ParticleSystem
     {
+        CMaterial _material;
 
-        static VehicleBitsParticleSystem _instance;
-        public static VehicleBitsParticleSystem Instance
+        public VehicleBitsParticleSystem(List<CMaterial> materials)
         {
-            get
-            {
-                if (_instance == null) _instance = new VehicleBitsParticleSystem();
-                return _instance;
-            }
+            _material = materials[0];
+            InitializeSystem();
         }
 
 
         protected override void InitializeSettings(ParticleSettings settings)
         {
-            settings.TextureName = "Content/sparks";
+            settings.Texture = Engine.Instance.ContentManager.Load<Texture2D>("Content/blank-particle");
 
             settings.MaxParticles = 100;
+            Color color = GameVariables.Palette.GetRGBColorForPixel(_material.BasePixel);
+            settings.MinColor = color;
+            settings.MaxColor = color;
 
-            settings.Duration = TimeSpan.FromSeconds(1f);
+            settings.Duration = TimeSpan.FromSeconds(1.5f);
 
-            settings.MinHorizontalVelocity = 0f;
-            settings.MaxHorizontalVelocity = 3;
+            settings.MinHorizontalVelocity = 2f;
+            settings.MaxHorizontalVelocity = 3f;
 
-            settings.MinVerticalVelocity = 0;
-            settings.MaxVerticalVelocity = 0;
+            settings.MinVerticalVelocity = 1.5f;
+            settings.MaxVerticalVelocity = 3f;
+            settings.DurationRandomness = 0.2f;
             settings.EmitterVelocitySensitivity = 0f;
 
-            settings.Gravity = new Vector3(0, 1.5f, 0);
+            settings.Gravity = new Vector3(0, -6f, 0);
 
-            settings.EndVelocity = 0f;
+            settings.EndVelocity = 1f;
 
             settings.MinStartSize = 0.2f;
-            settings.MaxStartSize = 0.2f;
+            settings.MaxStartSize = 0.8f;
 
             settings.MinEndSize = 0.2f;
-            settings.MaxEndSize = 0.5f;
+            settings.MaxEndSize = 0.8f;
 
-            settings.MinRotateSpeed = 0f;
-            settings.MaxRotateSpeed = 10f;
+            settings.MinRotateSpeed = 6f;
+            settings.MaxRotateSpeed = 8f;
         }
     }
 }

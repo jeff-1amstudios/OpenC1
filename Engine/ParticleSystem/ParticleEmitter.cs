@@ -114,7 +114,12 @@ namespace Particle3DSample
 
         public void DumpParticles(Vector3 newPosition)
         {
-            for (int i = 0; i < _particlesPerSecond; i++)
+            DumpParticles(newPosition, _particlesPerSecond);
+        }
+
+        public void DumpParticles(Vector3 newPosition, float nbr)
+        {
+            for (int i = 0; i < nbr; i++)
             {
                 ParticleSystem.AddParticle(newPosition, Vector3.Zero);
             }

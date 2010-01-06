@@ -79,16 +79,12 @@ namespace Carmageddon
             
             _race.Update();
 
-            
             _chassis.Accelerate(PlayerVehicleController.Acceleration);
             if (PlayerVehicleController.Brake != 0)
             {
                 _chassis.Accelerate(-PlayerVehicleController.Brake);
             }
-
-            _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : 0);
-            
-            
+          
             _chassis.Steer(PlayerVehicleController.Turn);
 
             if (PlayerVehicleController.Handbrake)
@@ -97,9 +93,16 @@ namespace Carmageddon
                 _chassis.ReleaseHandbrake();
             
             _carModel.Update();
+
+            SparksParticleSystem.Instance.SetCamera(Engine.Instance.Camera);
+            SparksParticleSystem.Instance.Update();
             
             PhysX.Instance.Update();
 
+            if (_chassis.Speed > 20)
+            {
+                _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : 0);
+            }
             _camera.Position = _chassis.Body.GlobalPosition;
 
             //if (!_carModel.Chassis.InAir)
@@ -136,6 +139,9 @@ namespace Carmageddon
             GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
             
             _race.Render();
+
+            TyreSmokeParticleSystem.Instance.Render();
+            SparksParticleSystem.Instance.Render();
 
             _chaseView.Render();
 

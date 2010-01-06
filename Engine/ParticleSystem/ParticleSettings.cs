@@ -22,7 +22,7 @@ namespace Particle3DSample
     public class ParticleSettings
     {
         // Name of the texture used by this particle system.
-        public string TextureName = null;
+        public Texture2D Texture = null;
 
 
         // Maximum number of particles that can be displayed at one time.

@@ -9,30 +9,35 @@ namespace Carmageddon.Physics
 {
     internal class ContactReport : UserContactReport
     {
+        private static ContactReport _instance;
+        public static ContactReport Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = new ContactReport();
+                return _instance;
+            }
+        }
+        public delegate void CollisionHandler(float force, Vector3 position, Vector3 normal);
+        public event CollisionHandler PlayerWorldCollision;
 
         ParticleEmitter _sparkEmitter;
 
-        public ContactReport(Scene scene)
+        private ContactReport()
             : base()
         {
             _sparkEmitter = new ParticleEmitter(SparksParticleSystem.Instance, 10, Vector3.Zero);
+            _sparkEmitter.Enabled = true;
         }
 
         public override void OnContactNotify(ContactPair contactInfo, ContactPairFlag events)
         {
-            Actor actorA = contactInfo.ActorA;
-            Actor actorB = contactInfo.ActorB;
-
+            
             using (ContactStreamIterator iter = new ContactStreamIterator(contactInfo.ContactStream))
             {
-
                 //if we are looking at the player car
-                if (actorB.Group == 1)
+                if (contactInfo.ActorB.Group == 1)
                 {
-                    int pairs = iter.GetNumberOfPairs();
-                    if (pairs < 5)
-                        return;
-
                     while (iter.GoToNextPair())
                     {
                         while (iter.GoToNextPatch())
@@ -43,9 +48,14 @@ namespace Carmageddon.Physics
                                 Shape shapeB = iter.GetShapeB();
                                 if (!(shapeB is WheelShape))
                                 {
-                                    if (contactInfo.NormalForce.Length() > 838305)
+                                    Vector3 pos = iter.GetPoint();
+                                    float force = contactInfo.NormalForce.Length();
+                                    if (force > 0)
                                     {
-                                        _sparkEmitter.DumpParticles(iter.GetPoint());
+                                        //iter.GetPatchNormal();
+                                        _sparkEmitter.Update(pos);
+                                        if (force > 850000) _sparkEmitter.DumpParticles(pos, 6);
+                                        PlayerWorldCollision(force, pos, iter.GetPatchNormal());
                                     }
                                 }
                             }

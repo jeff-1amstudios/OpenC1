@@ -79,6 +79,7 @@ namespace NFSEngine
             }
 
             Vector3 pos = new Vector3(0, 2f, 0) + (-Vector3.Normalize(Orientation) * _chaseDistance);
+            pos.Y = 2f;
             _lookAt.AddValue(pos);
             Vector3 avgLookAt = _lookAt.GetAveragedValue();
             Vector3 cameraPosition = Position + Vector3.Transform(avgLookAt, Matrix.CreateRotationY(_currentRotation));

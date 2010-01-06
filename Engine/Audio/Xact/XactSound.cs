@@ -10,6 +10,8 @@ namespace NFSEngine.Audio
     
     class XactSound : ISound
     {
+        public int Id { get; set; }
+
         public float  Duration { get; set; }
 
         SoundEffectInstance _effect;
@@ -44,6 +46,14 @@ namespace NFSEngine.Audio
         }
 
         public int Frequency { set { } }
+
+        public bool IsPlaying
+        {
+            get
+            {
+                return _effect.State == SoundState.Playing;
+            }
+        }
 
         #endregion
     }

@@ -10,6 +10,18 @@ namespace NFSEngine
     public static class GameConsole
     {
         static int _lines = 0;
+        static Texture2D _shadow;
+        static List<string> _scrollingLines = new List<string>();
+        static int _currentLine;
+
+        static GameConsole()
+        {
+            _shadow = TextureGenerator.Generate(new Color(0, 0, 0, 200));
+            for (int i = 0; i < 10; i++)
+            {
+                _scrollingLines.Add("");
+            }
+        }
 
         public static void Clear()
         {
@@ -18,7 +30,7 @@ namespace NFSEngine
 
         public static void WriteLine(object o)
         {
-            Engine.Instance.DebugRenderer.AddText(new Vector2(20, (_lines++) * 18), o.ToString(), Justify.TOP_LEFT, Color.Green);
+            Engine.Instance.DebugRenderer.AddText(new Vector2(10, ((_lines++)+1) * 18), o.ToString(), Justify.TOP_LEFT, Color.YellowGreen);
         }
 
         public static void WriteLine(string s, float o)
@@ -29,6 +41,23 @@ namespace NFSEngine
         public static void WriteLine(string s, Vector3 vec)
         {
             WriteLine(s + ": " + vec.X.ToString("0.00, ") + vec.Y.ToString("0.00, ") + vec.Z.ToString("0.00"));
+        }
+
+        public static void WriteEvent(string evt){
+            _scrollingLines[_currentLine++] = evt;
+            if (_currentLine == _scrollingLines.Count) _currentLine = 0;
+        }
+
+        public static void Render()
+        {
+            WriteLine(" ");
+            for (int i = 0; i < _scrollingLines.Count; i++)
+            {
+                WriteLine(_scrollingLines[(i + _currentLine) % _scrollingLines.Count]);
+            }
+            Engine.Instance.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
+            Engine.Instance.SpriteBatch.Draw(_shadow, new Rectangle(5, 5, 250, (_lines+1) * 18), Color.White);
+            Engine.Instance.SpriteBatch.End();
         }
     }
 }

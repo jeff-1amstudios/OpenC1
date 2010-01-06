@@ -98,17 +98,17 @@ namespace Carmageddon.Physics
 
             TireFunctionDescription _frontLateralTireFn = new TireFunctionDescription();
 
-            float mul = 70f;
+            float mul = 40f;
             _frontLateralTireFn.ExtremumSlip = 0.35f;
-            _frontLateralTireFn.ExtremumValue = 1.7f;
+            _frontLateralTireFn.ExtremumValue = 2.0f;
             _frontLateralTireFn.AsymptoteSlip = 1.4f * mul;
             _frontLateralTireFn.AsymptoteValue = 0.7f;
 
             _rearLateralTireFn = new TireFunctionDescription();
 
-            mul = 100f;
+            mul = 120f;
             _rearLateralTireFn.ExtremumSlip = 0.35f;
-            _rearLateralTireFn.ExtremumValue = 2.0f;
+            _rearLateralTireFn.ExtremumValue = 2.1f;
             _rearLateralTireFn.AsymptoteSlip = 1.4f * mul;
             _rearLateralTireFn.AsymptoteValue = 0.7f;
 
@@ -119,7 +119,7 @@ namespace Carmageddon.Physics
             wheelDesc.InverseWheelMass = 0.08f;
             wheelDesc.LongitudalTireForceFunction = lngTFD;
             wheelDesc.LateralTireForceFunction = _frontLateralTireFn;
-            wheelDesc.Flags = WheelShapeFlag.ClampedFriction; // (WheelShapeFlag)64;  // clamp force mode
+            wheelDesc.Flags = WheelShapeFlag.ClampedFriction;
 
             
             MaterialDescription md = new MaterialDescription();
@@ -128,7 +128,7 @@ namespace Carmageddon.Physics
             Material m = scene.CreateMaterial(md);
             wheelDesc.Material = m;
 
-            SpringDescription spring = new SpringDescription(12000, carFile.SuspensionDamping, 0);
+            SpringDescription spring = new SpringDescription(14000, carFile.SuspensionDamping, 0);
             //float heightModifier = (suspensionSettings.WheelSuspension + wheelDesc.Radius) / suspensionSettings.WheelSuspension;
             //spring.SpringCoefficient = suspensionSettings.SpringRestitution * heightModifier;
             //spring.DamperCoefficient = suspensionSettings.SpringDamping * heightModifier;
@@ -159,17 +159,11 @@ namespace Carmageddon.Physics
             VehicleBody.RaiseBodyFlag(BodyFlag.Visualization);
 
             //a real power curve doesnt work too well in carmageddon :)
-            List<float> power = new List<float>(new float[] { 0.5f, 0.5f, 1f, 1f, 1f, 1.0f, 1.0f, 0 });
-            List<float> ratios = new List<float>(new float[] { 2.8f, 2.160f, 1.685f, 1.212f, 0.900f });
+            List<float> power = new List<float>(new float[] { 0.5f, 0.5f, 0.5f, 1f, 1f, 1.0f, 1.0f, 0 });
+            List<float> ratios = new List<float>(new float[] { 3.227f, 2.360f, 1.685f, 1.312f, 1.000f, 0.793f });
 
             BaseGearbox gearbox = BaseGearbox.Create(false, ratios, 0.4f);
-            Motor = new Motor(power, 180, 6f, gearbox);
-
-            //List<float> power = new List<float>(new float[] { 0.2f, 0.3f, 0.4f, 0.7f, 0.8f, 1.0f, 1.0f, 1.0f, 0 });
-            //List<float> ratios = new List<float>(new float[] { 2.5f, 2.0f, 1.685f, 1.712f, 1.000f });
-
-            //BaseGearbox gearbox = BaseGearbox.Create(false, ratios, 0.4f);
-            //Motor = new Motor(power, 480, 7f, gearbox);
+            Motor = new Motor(power, carFile.EnginePower * 132.5f, 6f, carFile.TopSpeed, gearbox);
         }
 
         public void Delete()
@@ -186,7 +180,7 @@ namespace Carmageddon.Physics
         {
             Vector3 vDirection = VehicleBody.GlobalOrientation.Forward;
             Vector3 vNormal = VehicleBody.LinearVelocity * vDirection;
-            _speed = vNormal.Length() * 3.5f;
+            _speed = vNormal.Length() * 2.9f;
 
             float endLocal = _desiredSteerAngle / (1 + _speed * 0.02f);
             float diff = Math.Abs(endLocal - _steerAngle);
@@ -226,7 +220,7 @@ namespace Carmageddon.Physics
 
             if (_speed < 1f) // Change between braking and accelerating;
             {
-                if (Backwards && _currentTorque > -0.01f)
+                if (Backwards && _currentTorque > 0.01f)
                 {
                     Backwards = false;
                 }
@@ -313,7 +307,7 @@ namespace Carmageddon.Physics
             else
             {
                 _motorTorque = 0.0f;
-                _brakeTorque = Motor.CurrentFriction * 0.45f;
+                _brakeTorque = Motor.CurrentFriction;
             }
 
             UpdateTorque();

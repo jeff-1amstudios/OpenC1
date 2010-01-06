@@ -12,7 +12,7 @@ namespace Carmageddon
         public string Name { get; set; }
         public string PixName { get; set; }
         public bool DoubleSided { get; set; }
-        public int BaseColor { get; set; }
+        public int BasePixel { get; set; }
         public Texture2D Texture;
         public BaseFunk Funk;
     }

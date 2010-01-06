@@ -144,10 +144,7 @@ namespace Particle3DSample
         #region Initialization
 
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        protected ParticleSystem()
+        protected void InitializeSystem()
         {
             InitializeSettings(settings);
             particles = new ParticleVertex[settings.MaxParticles];
@@ -210,10 +207,7 @@ namespace Particle3DSample
             parameters["EndSize"].SetValue(
                 new Vector2(settings.MinEndSize, settings.MaxEndSize));
 
-            // Load the particle texture, and set it onto the effect.
-            Texture2D texture = Engine.Instance.ContentManager.Load<Texture2D>(settings.TextureName);
-
-            parameters["Texture"].SetValue(texture);
+            parameters["Texture"].SetValue(settings.Texture);
 
             // Choose the appropriate effect technique. If these particles will never
             // rotate, we can use a simpler pixel shader that requires less GPU power.

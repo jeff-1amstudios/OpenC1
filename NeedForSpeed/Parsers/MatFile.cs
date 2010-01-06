@@ -52,7 +52,7 @@ namespace Carmageddon.Parsers
                         byte[] otherColors = reader.ReadBytes(16);
                         byte[] flags = reader.ReadBytes(2);
                         byte[] transform = reader.ReadBytes(24);
-                        currentMaterial.BaseColor = reader.ReadByte();
+                        currentMaterial.BasePixel = reader.ReadByte();
                         reader.ReadByte(); //unk
                         currentMaterial.DoubleSided = flags[0] == 0x10;
                         currentMaterial.Name = ReadNullTerminatedString(reader);

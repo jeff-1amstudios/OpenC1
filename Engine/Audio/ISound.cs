@@ -8,11 +8,13 @@ namespace NFSEngine.Audio
 
     public interface ISound
     {
+        int Id { get; set; }
         float Duration { get; }
         void Stop();
         void Play(bool loop);
         Vector3 Position { set; }
         Vector3 Velocity { set; }
         int Frequency { set; }
+        bool IsPlaying { get; }
     }
 }

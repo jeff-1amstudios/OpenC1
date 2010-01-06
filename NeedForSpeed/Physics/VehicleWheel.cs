@@ -15,14 +15,15 @@ namespace Carmageddon.Physics
     {
         public WheelShape Shape { get; private set; }
         public CWheelActor CActor { get; private set; }
-        private Matrix _renderMatrix=Matrix.Identity;
-        private Matrix _rotationMatrix=Matrix.Identity;
+        private Matrix _renderMatrix = Matrix.Identity;
+        private Matrix _rotationMatrix = Matrix.Identity;
         private VehicleChassis _chassis;
         public bool IsRear;
         private float _axleOffset;
         private bool _handbrakeOn;
         ParticleEmitter _smokeEmitter;
-        public float LateralStiffness { get; private set; }
+        public bool IsSkidding;
+        public Vector3 ContactPoint;
 
         public bool InAir
         {
@@ -53,11 +54,18 @@ namespace Carmageddon.Physics
 
             UpdateMatrices(wcd);
 
-            _smokeEmitter.Enabled = false;
-            if (_chassis.Speed > 5 && (_handbrakeOn || Math.Abs(wcd.LateralSlip) > 0.25f))
+            ContactPoint = wcd.ContactPoint;
+
+            if (_chassis.Speed > 10 && (_handbrakeOn || Math.Abs(wcd.LateralSlip) > 0.25f))
             {
                 _smokeEmitter.Enabled = true;
                 _smokeEmitter.Update(wcd.ContactPoint);
+                IsSkidding = true;
+            }
+            else
+            {
+                IsSkidding = false;
+                _smokeEmitter.Enabled = false;
             }
         }
 

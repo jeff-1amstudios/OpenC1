@@ -42,7 +42,7 @@ namespace Carmageddon
                 if (material.PixName == null)
                 {
                     //simp mat
-                    material.Texture = TextureGenerator.Generate(GameVariables.Palette.GetRGBColorForPixel(material.BaseColor));
+                    material.Texture = TextureGenerator.Generate(GameVariables.Palette.GetRGBColorForPixel(material.BasePixel));
                 }
                 else
                 {

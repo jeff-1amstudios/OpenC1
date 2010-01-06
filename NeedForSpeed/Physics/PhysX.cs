@@ -48,7 +48,6 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.VisualizeJointLimits, false);
             
             
-            
             SceneDescription sceneDescription = new SceneDescription();
             sceneDescription.Gravity = new Vector3(0f, -9.81f*1.2f, 0f);  //double gravity
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
@@ -57,8 +56,8 @@ namespace Carmageddon.Physics
             //sceneDescription.InternalThreadCount = 1; // HexaChromeGame.ProcessorCount - 1;
             sceneDescription.ThreadMask = 0xfffffffe;
             Scene = Core.CreateScene(sceneDescription);
-            
-            Scene.UserContactReport = new ContactReport(Scene);
+
+            Scene.UserContactReport = ContactReport.Instance;
             
             MaterialDescription description = new MaterialDescription();
             description.Restitution = 0.25f;

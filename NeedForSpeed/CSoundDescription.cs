@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using NFSEngine.Audio;
 
 namespace Carmageddon
 {
-    class CSound
+    class CSoundDescription
     {
         public int Id;
         public string FileName;

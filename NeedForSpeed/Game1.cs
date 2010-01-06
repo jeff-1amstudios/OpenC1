@@ -20,7 +20,6 @@ using NFSEngine.Audio;
         public class Game1 : Microsoft.Xna.Framework.Game
         {
             GraphicsDeviceManager _graphics;
-            SpriteBatch spriteBatch;
 
             public Game1()
             {
@@ -69,8 +68,6 @@ using NFSEngine.Audio;
             /// </summary>
             protected override void LoadContent()
             {
-                // Create a new SpriteBatch, which can be used to draw textures.
-                spriteBatch = new SpriteBatch(GraphicsDevice);
             }
 
             /// <summary>

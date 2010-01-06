@@ -11,19 +11,19 @@ with.
     <!--
     Modify this string to change the font that will be imported.
     -->
-	  <FontName>Arial</FontName>
+	  <FontName>Consolas</FontName>
 
 	 <!--
     Size is a float value, measured in points. Modify this value to change
     the size of the font.
     -->
-    <Size>14</Size>
+    <Size>11</Size>
 
     <!--
     Spacing is a float value, measured in pixels. Modify this value to change
     the amount of spacing in between characters.
     -->
-    <Spacing>2</Spacing>
+    <Spacing>1</Spacing>
 
     <!--
     Style controls the style of the font. Valid entries are "Regular", "Bold", "Italic",

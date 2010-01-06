@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Particle3DSample;
+using Microsoft.Xna.Framework.Graphics;
+using PlatformEngine;
 
 namespace Carmageddon.Gfx
 {
@@ -19,35 +21,40 @@ namespace Carmageddon.Gfx
             }
         }
 
+        public SparksParticleSystem()
+        {
+            InitializeSystem();
+        }
+
 
         protected override void InitializeSettings(ParticleSettings settings)
         {
-            settings.TextureName = "Content/sparks";
+            settings.Texture = Engine.Instance.ContentManager.Load<Texture2D>("Content/sparks");
 
             settings.MaxParticles = 100;
 
-            settings.Duration = TimeSpan.FromSeconds(2f);
+            settings.Duration = TimeSpan.FromSeconds(1.6f);
 
-            settings.MinHorizontalVelocity = 0f;
-            settings.MaxHorizontalVelocity = 3;
+            settings.MinHorizontalVelocity = 1f;
+            settings.MaxHorizontalVelocity = 2.5f;
 
-            settings.MinVerticalVelocity = 1.5f;
+            settings.MinVerticalVelocity = 1f;
             settings.MaxVerticalVelocity = 2f;
             settings.DurationRandomness = 0.5f;
             settings.EmitterVelocitySensitivity = 0f;
 
-            settings.Gravity = new Vector3(0, -0.9f, 0);
+            settings.Gravity = new Vector3(0, -1.3f, 0);
 
-            settings.EndVelocity = 0f;
+            settings.EndVelocity = 1f;
 
             settings.MinStartSize = 0.2f;
-            settings.MaxStartSize = 0.3f;
+            settings.MaxStartSize = 0.2f;
 
-            settings.MinEndSize = 0.3f;
-            settings.MaxEndSize = 0.4f;
+            settings.MinEndSize = 0.2f;
+            settings.MaxEndSize = 0.2f;
 
             settings.MinRotateSpeed = 0f;
-            settings.MaxRotateSpeed = 3f;
+            settings.MaxRotateSpeed = 2f;
         }
     }
 }

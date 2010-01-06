@@ -1,4 +1,9 @@
 ﻿Rotating camera with auto-rotate on reverse
 Checkpoints
 Special Volumes (force fields)
+
 Sounds
+ - crash
+ - wall scrape
+ - skid (lat/lng?)
+ - 

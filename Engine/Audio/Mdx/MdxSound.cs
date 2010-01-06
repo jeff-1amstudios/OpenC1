@@ -11,6 +11,8 @@ namespace NFSEngine.Audio
 		SecondaryBuffer _buffer;
 		Buffer3D _buffer3d;
 
+        public int Id { get; set; }
+
         internal MdxSound(Device device, string filename, bool is3d)
 		{
 			BufferDescription desc = new BufferDescription();
@@ -68,6 +70,14 @@ namespace NFSEngine.Audio
 		public void Reset()
 		{
 			_buffer.SetCurrentPosition(0);
-		}		
+		}
+
+        public bool IsPlaying
+        {
+            get
+            {
+                return _buffer.Status.Playing;
+            }
+        }
 	}
 }

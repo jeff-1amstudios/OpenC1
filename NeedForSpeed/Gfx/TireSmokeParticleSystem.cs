@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Particle3DSample;
+using PlatformEngine;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.Gfx
 {
@@ -19,10 +21,16 @@ namespace Carmageddon.Gfx
             }
         }
 
+        public TyreSmokeParticleSystem()
+        {
+            InitializeSystem();
+        }
+
 
         protected override void InitializeSettings(ParticleSettings settings)
         {
-            settings.TextureName = "Content/smoke";
+            settings.Texture = Engine.Instance.ContentManager.Load<Texture2D>("Content/smoke");
+
 
             settings.MaxParticles = 100;
 

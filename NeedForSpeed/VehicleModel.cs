@@ -11,6 +11,8 @@ using Carmageddon.Gfx;
 using Carmageddon.Parsers.Grooves;
 using NFSEngine.Audio;
 using Carmageddon.Parsers.Funks;
+using Particle3DSample;
+using NFSEngine;
 
 namespace Carmageddon
 {
@@ -24,7 +26,8 @@ namespace Carmageddon
         public VehicleChassis Chassis { get; set; }
         private List<BaseGroove> _grooves;
         ISound _engineSound;
-
+        
+        ParticleEmitter _vehicleBitsEmitter;
 
         public VehicleModel(string filename)
         {
@@ -38,6 +41,12 @@ namespace Carmageddon
             }
 
             foreach (string matFileName in CarFile.MaterialFiles)
+            {
+                MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
+                _resourceCache.Add(matFile);
+            }
+
+            foreach (string matFileName in CarFile.CrashMaterialFiles)
             {
                 MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
                 _resourceCache.Add(matFile);
@@ -96,6 +105,28 @@ namespace Carmageddon
             _engineSound = SoundCache.CreateInstance(CarFile.EngineNoiseId);
             _engineSound.Play(true);
 
+            List<CMaterial> crashMaterials = new List<CMaterial>();
+            foreach (string matFileName in CarFile.CrashMaterialFiles)
+            {
+                crashMaterials.Add(_resourceCache.GetMaterial(matFileName));
+            }
+            _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMaterials), 4, Vector3.Zero);
+            ContactReport.Instance.PlayerWorldCollision += ContactReport_PlayerWorldCollision;
+        }
+
+        void ContactReport_PlayerWorldCollision(float force, Vector3 position, Vector3 normal)
+        {
+            if (force > 850000)
+            {
+                _vehicleBitsEmitter.DumpParticles(position);
+                SoundCache.PlayCrash();
+            }
+            
+            float product = Math.Abs(Vector3.Dot(Chassis.Body.GlobalPose.Forward, normal));
+            if (product < 0.3f)
+            {
+                SoundCache.PlayScrape();
+            }
         }
 
         public void Update()
@@ -103,8 +134,10 @@ namespace Carmageddon
             TyreSmokeParticleSystem.Instance.Update();
             TyreSmokeParticleSystem.Instance.SetCamera(Engine.Instance.Camera);
 
-            SparksParticleSystem.Instance.SetCamera(Engine.Instance.Camera);
-            SparksParticleSystem.Instance.Update();
+            _vehicleBitsEmitter.ParticleSystem.Update();
+            _vehicleBitsEmitter.ParticleSystem.SetCamera(Engine.Instance.Camera);
+            
+            
 
             foreach (BaseGroove groove in _grooves)
             {
@@ -124,14 +157,22 @@ namespace Carmageddon
             }
 
             Chassis.Update();
+
+            foreach (VehicleWheel wheel in Chassis.Wheels)
+            {
+                if (wheel.IsSkidding)
+                {
+                    SoundCache.PlaySkid();
+                    break;
+                }
+            }
         }
 
 
         public void Render()
         {
-            Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Clamp;
-            Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Clamp;
-
+            _vehicleBitsEmitter.ParticleSystem.Render();
+            
             Vector3[] points = new Vector3[4];
 
             BoundingBox bb = CarFile.BoundingBox;
@@ -160,9 +201,6 @@ namespace Carmageddon
             _models.SetupRender();
             
             _actors.Render(_models, Chassis.Body.GlobalPose);
-
-            //Engine.Instance.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 10);
-
             
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
@@ -173,12 +211,6 @@ namespace Carmageddon
             }
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
-
-            TyreSmokeParticleSystem.Instance.Render();
-            SparksParticleSystem.Instance.Render();
-
-            Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
-            Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
 
             return;
 

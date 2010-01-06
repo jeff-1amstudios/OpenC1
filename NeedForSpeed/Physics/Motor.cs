@@ -8,7 +8,7 @@ namespace Carmageddon.Physics
 {
     class Motor
     {
-        private const float DRIVETRAIN_MULTIPLIER = 31;
+        private float DriveTrainMultiplier = 31;
 
         private List<float> _powerCurve;
         private float _maxPower;
@@ -25,7 +25,7 @@ namespace Carmageddon.Physics
             get
             {
                 if (_gearbox.GearEngaged)
-                    return _currentPowerOutput * _throttle * _gearbox.CurrentRatio;
+                    return _currentPowerOutput * _throttle; // _gearbox.CurrentRatio;
                 else
                     return 0;
             }
@@ -36,7 +36,7 @@ namespace Carmageddon.Physics
             get
             {
                 if (_gearbox.GearEngaged)
-                    return _currentPowerOutput * Math.Abs(_gearbox.CurrentRatio);
+                    return 200;
                 else
                     return 0;
             }
@@ -79,7 +79,7 @@ namespace Carmageddon.Physics
             get { return _gearbox; }
         }
 
-        public Motor(List<float> powerCurve, float maxPower, float redline, BaseGearbox gearbox)
+        public Motor(List<float> powerCurve, float maxPower, float redline, float driveTrainMultipler, BaseGearbox gearbox)
         {
             _powerCurve = powerCurve;
             _maxPower = maxPower;
@@ -87,6 +87,7 @@ namespace Carmageddon.Physics
             _gearbox = gearbox;
             _gearbox.CurrentGear = 1;
             _gearbox.Motor = this;
+            DriveTrainMultiplier = 0.155f * driveTrainMultipler;
         }
 
 
@@ -117,7 +118,7 @@ namespace Carmageddon.Physics
                 }
                 else
                 {
-                    _rpm = carSpeed * _gearbox.CurrentRatio / DRIVETRAIN_MULTIPLIER;
+                    _rpm = carSpeed * _gearbox.CurrentRatio / DriveTrainMultiplier;
                     if (_rpm < 0.8f)
                         _rpm = 0.8f;  //idle speed
                 }
@@ -126,7 +127,7 @@ namespace Carmageddon.Physics
             else
             {
                 _rpm = MathHelper.Lerp(_prevEngagedRpm,
-                    carSpeed * _gearbox.NextRatio / DRIVETRAIN_MULTIPLIER, _gearbox.Clutch);
+                    carSpeed * _gearbox.NextRatio / DriveTrainMultiplier, _gearbox.Clutch);
             }
 
             if (_rpm < 0.8f)
@@ -155,7 +156,7 @@ namespace Carmageddon.Physics
 
         public float GetRpmForGear(int gear)
         {
-            return _lastCarSpeed * _gearbox.Ratios[gear] / DRIVETRAIN_MULTIPLIER;
+            return _lastCarSpeed * _gearbox.Ratios[gear] / DriveTrainMultiplier;
         }
 
         private void HandleRpmNoLoad()

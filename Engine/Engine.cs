@@ -90,6 +90,7 @@ namespace PlatformEngine
             Screen.Draw();
             DebugRenderer.Draw();
             ScreenEffects.Instance.Draw();
+            GameConsole.Render();
             DebugRenderer.DrawText();
             _fpsCounter.Draw(gameTime);
         }

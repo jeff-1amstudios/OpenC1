@@ -60,9 +60,10 @@ namespace Carmageddon.Parsers
         public float SuspensionDamping;
         public Vector3 CenterOfMass;
         public float Mass;
-
+        public float TopSpeed, EnginePower;
         public int EngineNoiseId;
         public List<int> DrivenWheelRefs, NonDrivenWheelRefs;
+        public List<string> CrashMaterialFiles = new List<string>();
 
         public CarFile(string filename)
             : base(filename)
@@ -148,6 +149,12 @@ namespace Carmageddon.Parsers
             ReadCrushDataSection();
 
             ReadMechanicsSection();
+
+            int nbrCrashMaterials = ReadLineAsInt();
+            for (int i = 0; i < nbrCrashMaterials; i++)
+            {
+                CrashMaterialFiles.Add(ReadLine());
+            }
 
             CloseFile();
         }
@@ -245,6 +252,11 @@ namespace Carmageddon.Parsers
             RideHeight = ReadLineAsFloat();
             SuspensionDamping = ReadLineAsFloat(false);
             Mass = ReadLineAsFloat(false) * 1000;
+            SkipLines(9);
+            TopSpeed = ReadLineAsFloat(false);
+            EnginePower = ReadLineAsFloat(false);
+
+            Debug.Assert(ReadLine().StartsWith("END OF MECHANICS"));
         }
     }
 }
