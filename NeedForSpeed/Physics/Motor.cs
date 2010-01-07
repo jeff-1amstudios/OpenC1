@@ -104,7 +104,6 @@ namespace Carmageddon.Physics
             if (_rpmLimiter > 0)
             {
                 if (!WheelsSpinning) _currentPowerOutput = 0;
-                //_throttle = 0;
                 _rpmLimiter -= Engine.Instance.ElapsedSeconds;
             }
             else
@@ -170,7 +169,7 @@ namespace Carmageddon.Physics
             }
             else
             {
-                _rpm += Engine.Instance.ElapsedSeconds * _throttle * 5f;
+                _rpm += Engine.Instance.ElapsedSeconds * _throttle * 8f;
             }
         }
 

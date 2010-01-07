@@ -11,16 +11,6 @@ namespace Carmageddon.Gfx
     class TyreSmokeParticleSystem : ParticleSystem
     {
         
-        static TyreSmokeParticleSystem _instance;
-        public static TyreSmokeParticleSystem Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new TyreSmokeParticleSystem();
-                return _instance;
-            }
-        }
-
         public TyreSmokeParticleSystem()
         {
             InitializeSystem();
@@ -32,7 +22,7 @@ namespace Carmageddon.Gfx
             settings.Texture = Engine.Instance.ContentManager.Load<Texture2D>("Content/smoke");
 
 
-            settings.MaxParticles = 100;
+            settings.MaxParticles = 150;
 
             settings.Duration = TimeSpan.FromSeconds(1);
 

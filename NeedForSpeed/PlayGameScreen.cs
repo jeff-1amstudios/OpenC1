@@ -37,7 +37,7 @@ namespace Carmageddon
 
             _carModel = new VehicleModel(GameVariables.BasePath + @"data\cars\blkeagle.txt");
 
-            _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT");
+            _race = new Race(GameVariables.BasePath + @"data\races\coastc1.TXT");
 
             _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX-3f, _race.RaceFile.DepthCueMode);
             _skybox.HeightOffset = -220 + _race.RaceFile.SkyboxPositionY * 1.5f;
@@ -94,21 +94,21 @@ namespace Carmageddon
             
             _carModel.Update();
 
-            SparksParticleSystem.Instance.SetCamera(Engine.Instance.Camera);
-            SparksParticleSystem.Instance.Update();
+            GameVariables.SparksEmitter.ParticleSystem.SetCamera(Engine.Instance.Camera);
+            GameVariables.SparksEmitter.ParticleSystem.Update();
             
             PhysX.Instance.Update();
 
-            if (_chassis.Speed > 20)
-            {
-                _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : 0);
-            }
             _camera.Position = _chassis.Body.GlobalPosition;
 
-            //if (!_carModel.Chassis.InAir)
-            //{
+            if (!_chassis.InAir)
+            {
                 _camera.Orientation = _chassis.Body.GlobalOrientation.Forward;
-            //}
+                if (_chassis.Speed > 15)
+                {
+                    _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : 0);
+                }
+            }
 
             if (_skybox != null) _skybox.Update(gameTime);
 
@@ -140,8 +140,8 @@ namespace Carmageddon
             
             _race.Render();
 
-            TyreSmokeParticleSystem.Instance.Render();
-            SparksParticleSystem.Instance.Render();
+            GameVariables.TyreSmokeSystem.Render();
+            GameVariables.SparksEmitter.ParticleSystem.Render();
 
             _chaseView.Render();
 

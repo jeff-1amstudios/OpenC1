@@ -131,8 +131,8 @@ namespace Carmageddon
 
         public void Update()
         {
-            TyreSmokeParticleSystem.Instance.Update();
-            TyreSmokeParticleSystem.Instance.SetCamera(Engine.Instance.Camera);
+            GameVariables.TyreSmokeSystem.Update();
+            GameVariables.TyreSmokeSystem.SetCamera(Engine.Instance.Camera);
 
             _vehicleBitsEmitter.ParticleSystem.Update();
             _vehicleBitsEmitter.ParticleSystem.SetCamera(Engine.Instance.Camera);
@@ -160,7 +160,7 @@ namespace Carmageddon
 
             foreach (VehicleWheel wheel in Chassis.Wheels)
             {
-                if (wheel.IsSkidding)
+                if (wheel.IsSkiddingLat)
                 {
                     SoundCache.PlaySkid();
                     break;

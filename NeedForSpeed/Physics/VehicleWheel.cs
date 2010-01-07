@@ -22,7 +22,7 @@ namespace Carmageddon.Physics
         private float _axleOffset;
         private bool _handbrakeOn;
         ParticleEmitter _smokeEmitter;
-        public bool IsSkidding;
+        public bool IsSkiddingLat, IsSkiddingLng;
         public Vector3 ContactPoint;
 
         public bool InAir
@@ -38,7 +38,10 @@ namespace Carmageddon.Physics
             CActor = cactor;
 
             if (_smokeEmitter == null)
-                _smokeEmitter = new ParticleEmitter(TyreSmokeParticleSystem.Instance, 15, Vector3.Zero);
+            {
+                if (GameVariables.TyreSmokeSystem == null) GameVariables.TyreSmokeSystem = new TyreSmokeParticleSystem();
+                _smokeEmitter = new ParticleEmitter(GameVariables.TyreSmokeSystem, 15, Vector3.Zero);
+            }
 
             IsRear = !CActor.IsFront;
         }
@@ -56,17 +59,23 @@ namespace Carmageddon.Physics
 
             ContactPoint = wcd.ContactPoint;
 
-            if (_chassis.Speed > 10 && (_handbrakeOn || Math.Abs(wcd.LateralSlip) > 0.25f))
+            if (_chassis.Speed > 10 && (_handbrakeOn || Math.Abs(wcd.LateralSlip) > 0.23f))
             {
                 _smokeEmitter.Enabled = true;
-                _smokeEmitter.Update(wcd.ContactPoint);
-                IsSkidding = true;
+                IsSkiddingLat = true;
+            }
+            else if (_chassis.Speed > 3 && CActor.Driven && wcd.LongitudalSlip > 0.04f)
+            {
+                _smokeEmitter.Enabled = true;
+                IsSkiddingLng = true;
             }
             else
             {
-                IsSkidding = false;
+                IsSkiddingLat = IsSkiddingLng = false;
                 _smokeEmitter.Enabled = false;
             }
+
+            _smokeEmitter.Update(wcd.ContactPoint);
         }
 
         public void ApplyHandbrake(bool apply)

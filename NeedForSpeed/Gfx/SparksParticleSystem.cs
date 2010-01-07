@@ -11,16 +11,6 @@ namespace Carmageddon.Gfx
     class SparksParticleSystem : ParticleSystem
     {
 
-        static SparksParticleSystem _instance;
-        public static SparksParticleSystem Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new SparksParticleSystem();
-                return _instance;
-            }
-        }
-
         public SparksParticleSystem()
         {
             InitializeSystem();

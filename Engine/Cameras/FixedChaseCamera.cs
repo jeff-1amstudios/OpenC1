@@ -78,7 +78,7 @@ namespace NFSEngine
                     _currentRotation = Rotation;
             }
 
-            Vector3 pos = new Vector3(0, 2f, 0) + (-Vector3.Normalize(Orientation) * _chaseDistance);
+            Vector3 pos = (-Vector3.Normalize(Orientation) * _chaseDistance);
             pos.Y = 2f;
             _lookAt.AddValue(pos);
             Vector3 avgLookAt = _lookAt.GetAveragedValue();

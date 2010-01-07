@@ -21,13 +21,11 @@ namespace Carmageddon.Physics
         public delegate void CollisionHandler(float force, Vector3 position, Vector3 normal);
         public event CollisionHandler PlayerWorldCollision;
 
-        ParticleEmitter _sparkEmitter;
-
         private ContactReport()
             : base()
         {
-            _sparkEmitter = new ParticleEmitter(SparksParticleSystem.Instance, 10, Vector3.Zero);
-            _sparkEmitter.Enabled = true;
+            GameVariables.SparksEmitter = new ParticleEmitter(new SparksParticleSystem(), 10, Vector3.Zero);
+            GameVariables.SparksEmitter.Enabled = true;
         }
 
         public override void OnContactNotify(ContactPair contactInfo, ContactPairFlag events)
@@ -53,8 +51,8 @@ namespace Carmageddon.Physics
                                     if (force > 0)
                                     {
                                         //iter.GetPatchNormal();
-                                        _sparkEmitter.Update(pos);
-                                        if (force > 850000) _sparkEmitter.DumpParticles(pos, 6);
+                                        GameVariables.SparksEmitter.Update(pos);
+                                        if (force > 850000) GameVariables.SparksEmitter.DumpParticles(pos, 6);
                                         PlayerWorldCollision(force, pos, iter.GetPatchNormal());
                                     }
                                 }

@@ -235,6 +235,16 @@ namespace Carmageddon.Physics
             
             UpdateTireStiffness();
 
+            Motor.WheelsSpinning = false;
+            foreach (VehicleWheel wheel in Wheels)
+            {
+                if (wheel.CActor.Driven && (wheel.IsSkiddingLng || wheel.InAir))
+                {
+                    Motor.WheelsSpinning = true;
+                    break;
+                }
+            }
+
         }
 
         private void UpdateTireStiffness()
@@ -393,7 +403,9 @@ namespace Carmageddon.Physics
         {
             get
             {
-                return Wheels[0].InAir && Wheels[1].InAir && Wheels[2].InAir && Wheels[3].InAir;
+                foreach (VehicleWheel wheel in Wheels)
+                    if (!wheel.InAir) return false;
+                return true;
             }
         }
     }
