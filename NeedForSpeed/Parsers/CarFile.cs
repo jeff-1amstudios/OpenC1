@@ -56,7 +56,7 @@ namespace Carmageddon.Parsers
         public List<Vector3> ExtraBoundingBoxPoints = new List<Vector3>();
 
         public float NonDrivenWheelRadius, DrivenWheelRadius;
-        public float RideHeight;
+        public float RideHeight, SuspensionGiveFront, SuspensionGiveRear;
         public float SuspensionDamping;
         public Vector3 CenterOfMass;
         public float Mass;
@@ -248,8 +248,11 @@ namespace Carmageddon.Parsers
                     ExtraBoundingBoxPoints.Add(ReadLineAsVector3());
             }
 
-            SkipLines(2);
-            RideHeight = ReadLineAsFloat();
+            SkipLines(1);
+            string[] suspGive = ReadLine().Split(',');
+            SuspensionGiveFront = float.Parse(suspGive[0]);
+            SuspensionGiveRear = float.Parse(suspGive[1]);
+            RideHeight = ReadLineAsFloat(false);
             SuspensionDamping = ReadLineAsFloat(false);
             Mass = ReadLineAsFloat(false) * 1000;
             SkipLines(9);

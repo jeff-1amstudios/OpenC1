@@ -13,6 +13,7 @@ namespace NFSEngine
     {
         private Vector3 _chaseDistance;
         float _currentRotation;
+        public float HeightOverride;
 
         public FixedChaseCamera(float chaseDistance, float height)
 		{
@@ -79,7 +80,10 @@ namespace NFSEngine
             }
 
             Vector3 pos = (-Vector3.Normalize(Orientation) * _chaseDistance);
-            pos.Y = 2f;
+            if (HeightOverride != 0)
+                pos.Y = HeightOverride;
+            else
+                pos.Y += 2;
             _lookAt.AddValue(pos);
             Vector3 avgLookAt = _lookAt.GetAveragedValue();
             Vector3 cameraPosition = Position + Vector3.Transform(avgLookAt, Matrix.CreateRotationY(_currentRotation));

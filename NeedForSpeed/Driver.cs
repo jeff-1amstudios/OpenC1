@@ -18,6 +18,8 @@ namespace Carmageddon
         public Vector3 Velocity { get; set; }
         public Matrix Orientation { get; set; }
 
+        public VehicleModel VehicleModel;
+
         IListener _audioListener;
                 
         public Driver()

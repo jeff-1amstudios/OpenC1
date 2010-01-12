@@ -35,7 +35,7 @@ namespace Carmageddon.Parsers
                         
             string version = ReadLine();
             
-            GridPosition = ReadLineAsVector3() + new Vector3(0, GameVariables.Scale.Y, 0);
+            GridPosition = ReadLineAsVector3() + new Vector3(0, GameVariables.Scale.Y*0.5f, 0);
 
             GridDirection = ReadLineAsInt();
             string initialTimerPerSkill = ReadLine();

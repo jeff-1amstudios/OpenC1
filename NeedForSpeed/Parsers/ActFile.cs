@@ -215,6 +215,7 @@ namespace Carmageddon.Parsers
             GameVariables.NbrSectionsRendered = GameVariables.NbrSectionsChecked = 0;
 
             BoundingFrustum frustum = new BoundingFrustum(Engine.Instance.Camera.View * Engine.Instance.Camera.Projection);
+            
 
             bool overrideActor = world != Matrix.Identity;
 

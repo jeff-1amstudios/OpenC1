@@ -35,20 +35,21 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            _carModel = new VehicleModel(GameVariables.BasePath + @"data\cars\blkeagle.txt");
+            _carModel = new VehicleModel(GameVariables.BasePath + @"data\cars\otis.txt");
 
-            _race = new Race(GameVariables.BasePath + @"data\races\coastc1.TXT");
+            _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT");
 
             _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX-3f, _race.RaceFile.DepthCueMode);
             _skybox.HeightOffset = -220 + _race.RaceFile.SkyboxPositionY * 1.5f;
 
             _camera = new FixedChaseCamera(6.8f, 7);
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
-            _camera.Position = _race.RaceFile.GridPosition;
             Engine.Instance.Camera = _camera;
             //Engine.Instance.Camera = new FPSCamera();
 
-            Engine.Instance.Player = new Driver();
+            Driver driver = new Driver();
+            driver.VehicleModel = _carModel;
+            Engine.Instance.Player = driver;
 
             Engine.Instance.Camera.Position = _race.RaceFile.GridPosition;
             SetupPhysics();
@@ -74,8 +75,6 @@ namespace Carmageddon
             InputProvider input = Engine.Instance.Input;
             if (input.WasPressed(Keys.C))
                 _carModel.Crush();
-   
-            Engine.Instance.Camera.Update(gameTime);
             
             _race.Update();
 
@@ -108,12 +107,18 @@ namespace Carmageddon
                 {
                     _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : 0);
                 }
+                _camera.HeightOverride = 0;
             }
+            else
+            {
+                _camera.HeightOverride = 2;
+            }
+
+            Engine.Instance.Camera.Update(gameTime);
 
             if (_skybox != null) _skybox.Update(gameTime);
 
-            GameConsole.WriteLine("Speed " + _chassis.Speed);
-            GameConsole.WriteLine("FPS: " + Engine.Instance.Fps);
+            GameConsole.WriteLine("FPS", Engine.Instance.Fps);
 
             Engine.Instance.Player.Orientation = _chassis.Body.GlobalOrientation;
             Engine.Instance.Player.Velocity = _chassis.Body.LinearVelocity;
@@ -131,13 +136,13 @@ namespace Carmageddon
             else
                 Engine.Instance.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
 
-
             GameVariables.CurrentEffect = SetupRenderEffect();
 
             if (_skybox != null) _skybox.Draw();
-
             GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
-            
+
+            Engine.Instance.SpriteBatch.Begin();
+
             _race.Render();
 
             GameVariables.TyreSmokeSystem.Render();

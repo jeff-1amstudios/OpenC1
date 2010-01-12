@@ -18,11 +18,11 @@ namespace Carmageddon
         public int VertexBaseIndex { get; set; }
         public int IndexBufferStart { get; set; }
 
-        private static float offs = 0;
-
         public void Render(CMaterial actorMaterial)
         {
+            
             GraphicsDevice device = Engine.Instance.Device;
+            
             CMaterial currentMaterial = null;
             int baseVert = VertexBaseIndex;
             int indexBufferStart = IndexBufferStart;
@@ -59,11 +59,11 @@ namespace Carmageddon
                     device.Textures[0] = null; currentMaterial = null;
                 }
 
+
                 if (currentMaterial != null && currentMaterial.Funk != null)
                 {
                     currentMaterial.Funk.BeforeRender();
                 }
-
                 GameVariables.NbrDrawCalls++;
                 Engine.Instance.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3*poly.NbrPrims, indexBufferStart, poly.NbrPrims);
                 indexBufferStart += poly.NbrPrims * 3;

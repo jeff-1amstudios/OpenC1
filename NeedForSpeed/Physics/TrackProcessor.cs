@@ -180,16 +180,16 @@ namespace Carmageddon.Physics
                             jointDesc.SetGlobalAnchor(anchorPos);
                             jointDesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
                             
-                            JointLimitDescription swingLimit = new JointLimitDescription(0.3f * MathHelper.Pi, 0, 0);
+                            JointLimitDescription swingLimit = new JointLimitDescription(0.4f * MathHelper.Pi, 0, 1);
                             jointDesc.SwingLimit = swingLimit;
-                            SpringDescription swingSpring = new SpringDescription(90000, 200, 0);
+                            SpringDescription swingSpring = new SpringDescription(90000, 1000, 0);
                             jointDesc.SwingSpring = swingSpring;
                             
                             JointLimitDescription twist = new JointLimitDescription(0.0f, 0, 0);
                             JointLimitPairDescription twistLimit = new JointLimitPairDescription(twist, twist);
                             jointDesc.TwistLimit = twistLimit;
                             
-                            jointDesc.Flags = SphericalJointFlag.SwingLimitEnabled | SphericalJointFlag.SwingSpringEnabled | SphericalJointFlag.TwistLimitEnabled;
+                            jointDesc.Flags = SphericalJointFlag.SwingLimitEnabled | SphericalJointFlag.TwistLimitEnabled;
 
                             SphericalJoint j = (SphericalJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
                         }

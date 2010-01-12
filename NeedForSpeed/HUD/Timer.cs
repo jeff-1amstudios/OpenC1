@@ -28,7 +28,7 @@ namespace Carmageddon.HUD
             
             Engine.Instance.SpriteBatch.Draw(_shadow, new Rectangle(x -3, y -5, 144, 45), Color.White);
             
-            TimeSpan ts = TimeSpan.FromSeconds(Race.Current.TimeRemaining);
+            TimeSpan ts = TimeSpan.FromSeconds(Race.Current.RaceTime.TimeRemaining);
             float nudge = ts.Minutes < 10 ? 13 : 0;
             Engine.Instance.SpriteBatch.DrawString(_font,
                 String.Format("{0}:{1}", (int)ts.Minutes, ts.Seconds.ToString("00")), new Vector2(x+nudge, y), Color.White);

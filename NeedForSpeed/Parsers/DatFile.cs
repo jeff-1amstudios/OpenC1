@@ -191,6 +191,7 @@ namespace Carmageddon.Parsers
                     if (poly.MaterialIndex >= 0 && model.MaterialNames != null)
                     {
                         CMaterial material = resources.GetMaterial(model.MaterialNames[poly.MaterialIndex]);
+                        
                         if (material != null)
                         {
                             poly.DoubleSided = material.DoubleSided;

@@ -38,8 +38,6 @@ namespace Carmageddon.CameraViews
         {
             _vehicle.Render();
 
-            Engine.Instance.SpriteBatch.Begin();
-
             foreach (BaseHUDItem item in _hudItems)
                 item.Render();
 

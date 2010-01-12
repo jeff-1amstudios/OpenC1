@@ -19,7 +19,6 @@ namespace Carmageddon
         public static bool CullingDisabled { get; set; }
         
         public static string DepthCueMode = "dark";
-        public static int MarkedVert = 158;
         public static string BasePath = "c:\\games\\carma1\\";
         public static BasicEffect2 CurrentEffect;
         public static ParticleEmitter SparksEmitter;

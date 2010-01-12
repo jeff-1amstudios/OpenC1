@@ -103,7 +103,7 @@ namespace Carmageddon
             }
 
             _engineSound = SoundCache.CreateInstance(CarFile.EngineNoiseId);
-            _engineSound.Play(true);
+            if (_engineSound != null) _engineSound.Play(true);
 
             List<CMaterial> crashMaterials = new List<CMaterial>();
             foreach (string matFileName in CarFile.CrashMaterialFiles)
@@ -172,7 +172,7 @@ namespace Carmageddon
         public void Render()
         {
             _vehicleBitsEmitter.ParticleSystem.Render();
-            
+
             Vector3[] points = new Vector3[4];
 
             BoundingBox bb = CarFile.BoundingBox;
@@ -209,6 +209,8 @@ namespace Carmageddon
                 GameVariables.CurrentEffect.World = Chassis.Wheels[i].GetRenderMatrix();
                 _actors.RenderSingle(CarFile.WheelActors[i].Actor);
             }
+
+            Engine.Instance.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 5);
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
 

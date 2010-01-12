@@ -20,7 +20,7 @@ namespace Carmageddon
         ActFile _actors;
         ResourceCache _resourceCache;
         public Texture2D HorizonTexture;
-        public float TimeRemaining = 90; //1:30
+        public RaceTimeController RaceTime = new RaceTimeController();
 
         public static Race Current;
 
@@ -89,6 +89,7 @@ namespace Carmageddon
 
         public void StartCountdown()
         {
+            RaceTime.StartCountdown();
         }
 
         public void Start()
@@ -98,6 +99,8 @@ namespace Carmageddon
 
         public void Update()
         {
+            RaceTime.Update();
+
             foreach (BaseGroove groove in RaceFile.Grooves)
             {
                 groove.Update();
@@ -105,17 +108,14 @@ namespace Carmageddon
             foreach (BaseFunk funk in RaceFile.Funks)
             {
                 funk.Update();
-            }
-
-            TimeRemaining -= Engine.Instance.ElapsedSeconds;
-            if (TimeRemaining < 0) TimeRemaining = 0;
+            }   
         }
 
         public void Render()
         {
             _models.SetupRender();
             _actors.Render(_models, Matrix.Identity);
-   
+            RaceTime.Render();
         }
 
         public ActFile GetTrackActors()

@@ -16,9 +16,14 @@ namespace Carmageddon
         public const int ScrapeEnd = 5012;
         public const int SkidStart = 9000;
         public const int SkidEnd = 9004;
+        public const int OutOfTime = 8010;
+        public const int RaceCompleted = 8011;
+        public const int Checkpoint = 8012;
+        public const int WrongCheckpoint = 8013;
     }
     static class SoundCache
     {
+        static bool _enabled = false;
         static List<CSoundDescription> _soundDescriptions;
         public static bool IsInitialized;
         static List<ISound> _instances = new List<ISound>();
@@ -33,6 +38,7 @@ namespace Carmageddon
 
         public static ISound CreateInstance(int id)
         {
+            if (!_enabled) return null;
             CSoundDescription csound = _soundDescriptions.Find(a => a.Id == id);
             ISound instance = Engine.Instance.Audio.Load(GameVariables.BasePath + "data\\sound\\" + csound.FileName, false);
             instance.Id = csound.Id;
@@ -47,7 +53,8 @@ namespace Carmageddon
             {
                 instance = CreateInstance(id);
             }
-            instance.Play(false);
+            if (instance != null)
+                instance.Play(false);
             return instance;
         }
 
