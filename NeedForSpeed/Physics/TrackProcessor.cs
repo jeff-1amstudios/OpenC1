@@ -130,13 +130,7 @@ namespace Carmageddon.Physics
                         }
 
                         ActorDescription actorDesc = new ActorDescription();
-                        BodyDescription bodyDesc = new BodyDescription();
-                        if (nonCar.BendAngleBeforeSnapping > 0)
-                            bodyDesc.Mass = nonCar.MassWhenAttached;
-                        else
-                            bodyDesc.Mass = nonCar.Mass;
-
-                        actorDesc.BodyDescription = bodyDesc;
+                        actorDesc.BodyDescription = new BodyDescription() { Mass = nonCar.Mass };
 
                         BoxShapeDescription boxDesc = new BoxShapeDescription();
                         float w = nonCar.BoundingBox.Max.X - nonCar.BoundingBox.Min.X;
@@ -165,12 +159,12 @@ namespace Carmageddon.Physics
                         StillDesign.PhysX.Actor instance = PhysX.Instance.Scene.CreateActor(actorDesc);
                         instance.GlobalPose = m;
                         instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMass);
-                        instance.Group = 10;
+                        instance.Group = 11;
+                        instance.UserData = nonCar;
+                        
                         if (nonCar.BendAngleBeforeSnapping > 0)
-                        {
-                            instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMassWhenAttached);
-
-                            SphericalJointDescription jointDesc = new SphericalJointDescription()
+                        {;
+                            FixedJointDescription jointDesc = new FixedJointDescription()
                             {
                                 Actor1 = instance,
                                 Actor2 = null
@@ -179,21 +173,10 @@ namespace Carmageddon.Physics
                             anchorPos.Y = instance.GlobalPosition.Y;
                             jointDesc.SetGlobalAnchor(anchorPos);
                             jointDesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
-                            
-                            JointLimitDescription swingLimit = new JointLimitDescription(0.4f * MathHelper.Pi, 0, 1);
-                            jointDesc.SwingLimit = swingLimit;
-                            SpringDescription swingSpring = new SpringDescription(90000, 1000, 0);
-                            jointDesc.SwingSpring = swingSpring;
-                            
-                            JointLimitDescription twist = new JointLimitDescription(0.0f, 0, 0);
-                            JointLimitPairDescription twistLimit = new JointLimitPairDescription(twist, twist);
-                            jointDesc.TwistLimit = twistLimit;
-                            
-                            jointDesc.Flags = SphericalJointFlag.SwingLimitEnabled | SphericalJointFlag.TwistLimitEnabled;
-
-                            SphericalJoint j = (SphericalJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
+                            jointDesc.MaxForce = nonCar.BendAngleBeforeSnapping * 125;
+                            FixedJoint joint = (FixedJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
+                            //instance.SolverIterationCount = 12;
                         }
-                        
                         instance.Sleep();
                         actor.AttachPhysxActor(instance);
                         count++;

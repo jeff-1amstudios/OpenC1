@@ -19,7 +19,7 @@ namespace Carmageddon
         public BoundingBox BoundingBox;
         public byte[] Flags;
         public bool IsWheel;
-        internal StillDesign.PhysX.Actor _physXActor;
+        StillDesign.PhysX.Actor _physXActor;
         public bool IsAnimated;
 
         public CActor()
@@ -30,9 +30,8 @@ namespace Carmageddon
         public void SetName(string name)
         {
             Name = name;
-            IsWheel = (name.StartsWith("FLPIVOT") || name.StartsWith("FRPIVOT") || name.StartsWith("RLWHEEL") || name.StartsWith("RRWHEEL"));
-            //if (name.StartsWith("&"))
-            //    IsDynamic = true;
+            IsWheel = (name.StartsWith("FLPIVOT") || name.StartsWith("FRPIVOT") || name.StartsWith("RLWHEEL") || name.StartsWith("RRWHEEL")
+                || name.StartsWith("MLWHEEL") || name.StartsWith("MRWHEEL"));
         }
 
         internal void AttachPhysxActor(StillDesign.PhysX.Actor instance)

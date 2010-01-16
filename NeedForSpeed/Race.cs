@@ -10,6 +10,7 @@ using Carmageddon.Physics;
 using StillDesign.PhysX;
 using Carmageddon.Parsers.Grooves;
 using Carmageddon.Parsers.Funks;
+using NFSEngine;
 
 namespace Carmageddon
 {
@@ -21,6 +22,7 @@ namespace Carmageddon
         ResourceCache _resourceCache;
         public Texture2D HorizonTexture;
         public RaceTimeController RaceTime = new RaceTimeController();
+        bool _started;
 
         public static Race Current;
 
@@ -83,23 +85,29 @@ namespace Carmageddon
 
         public void SetupPhysx(VehicleChassis vehicle)
         {
-            PhysX.Instance.Scene.SetGroupCollisionFlag(10, 1, true);
-            PhysX.Instance.Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.Forces | ContactPairFlag.OnTouch | ContactPairFlag.OnStartTouch);
+            //PhysX.Instance.Scene.SetGroupCollisionFlag(10, 1, true);
+            //PhysX.Instance.Scene.SetGroupCollisionFlag(10, 1, true);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(11, 1, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(10, 11, ContactPairFlag.OnTouch);
         }
 
-        public void StartCountdown()
-        {
-            RaceTime.StartCountdown();
-        }
 
         public void Start()
         {
-
+            _started = true;
         }
 
         public void Update()
         {
             RaceTime.Update();
+
+            if (!RaceTime.IsStarted)
+            {
+                float height = 50 - (RaceTime.CountdownTime * 20f);
+                if (height > 2)
+                    ((FixedChaseCamera)Engine.Instance.Camera).HeightOverride = height;
+            }
 
             foreach (BaseGroove groove in RaceFile.Grooves)
             {
@@ -108,7 +116,12 @@ namespace Carmageddon
             foreach (BaseFunk funk in RaceFile.Funks)
             {
                 funk.Update();
-            }   
+            }
+
+            MessageRenderer.Instance.Update();
+
+            if ((int)RaceTime.TotalTime == 2 && !RaceTime.CountingDown)
+                RaceTime.StartCountdown();
         }
 
         public void Render()
@@ -116,6 +129,7 @@ namespace Carmageddon
             _models.SetupRender();
             _actors.Render(_models, Matrix.Identity);
             RaceTime.Render();
+            MessageRenderer.Instance.Render();
         }
 
         public ActFile GetTrackActors()

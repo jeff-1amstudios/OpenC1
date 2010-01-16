@@ -111,13 +111,20 @@ namespace Carmageddon.Physics
 
             if (_gearbox.GearEngaged)
             {
+                if (_gearbox.CurrentGear == 0)
+                {
+                    _currentPowerOutput = 0;
+                }
+                //if (_gearbox.CurrentGear == -1)
+                  //  _currentPowerOutput *= -1;
+
                 if (_gearbox.CurrentGear == 0 || WheelsSpinning)
                 {
                     HandleRpmNoLoad();
                 }
                 else
                 {
-                    _rpm = carSpeed * _gearbox.CurrentRatio / DriveTrainMultiplier;
+                    _rpm = Math.Abs(carSpeed * _gearbox.CurrentRatio / DriveTrainMultiplier);
                     if (_rpm < 0.8f)
                         _rpm = 0.8f;  //idle speed
                 }

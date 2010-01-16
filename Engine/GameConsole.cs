@@ -30,7 +30,7 @@ namespace NFSEngine
 
         public static void WriteLine(object o)
         {
-            Engine.Instance.DebugRenderer.AddText(new Vector2(10, ((_lines++)+1) * 18), o.ToString(), Justify.TOP_LEFT, Color.YellowGreen);
+            Engine.Instance.DebugRenderer.AddText(new Vector2(5, ((_lines++)+1) * 18), o.ToString(), Justify.TOP_LEFT, Color.YellowGreen);
         }
 
         public static void WriteLine(string s, float o)
@@ -56,7 +56,7 @@ namespace NFSEngine
                 WriteLine(_scrollingLines[(i + _currentLine) % _scrollingLines.Count]);
             }
             Engine.Instance.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
-            Engine.Instance.SpriteBatch.Draw(_shadow, new Rectangle(5, 5, 250, (_lines+1) * 18), Color.White);
+            Engine.Instance.SpriteBatch.Draw(_shadow, new Rectangle(0, 0, 220, (_lines+1) * 18), Color.White);
             Engine.Instance.SpriteBatch.End();
         }
     }

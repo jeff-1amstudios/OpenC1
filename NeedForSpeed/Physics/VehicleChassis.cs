@@ -131,7 +131,7 @@ namespace Carmageddon.Physics
             SpringDescription spring = new SpringDescription();
             float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
             spring.SpringCoefficient = 3500 * heightModifier;
-            spring.DamperCoefficient = carFile.SuspensionDamping * 4 * heightModifier;
+            spring.DamperCoefficient = carFile.SuspensionDamping * 4;
             //spring.TargetValue = 0.5f; // 0.5f * heightModifier;
             wheelDesc.Suspension = spring;
 
@@ -164,6 +164,7 @@ namespace Carmageddon.Physics
 
             BaseGearbox gearbox = BaseGearbox.Create(false, ratios, 0.4f);
             Motor = new Motor(power, carFile.EnginePower * 132.5f, 6f, carFile.TopSpeed, gearbox);
+            Motor.Gearbox.CurrentGear = 0;
         }
 
         public void Delete()
@@ -223,10 +224,12 @@ namespace Carmageddon.Physics
                 if (Backwards && _currentTorque > 0.01f)
                 {
                     Backwards = false;
+                    Motor.Gearbox.CurrentGear = 1;
                 }
                 else if (!Backwards && _currentTorque < -0.01f)
                 {
                     Backwards = true;
+                    Motor.Gearbox.CurrentGear = -1;
                 }
             }
             //Vector3 down = VehicleBody.GlobalOrientation.Down;
@@ -274,7 +277,6 @@ namespace Carmageddon.Physics
         public void Accelerate(float value)
         {
             Motor.Throttle = value;
-
             Motor.Update(_speed);
 
             float torque = Motor.CurrentPowerOutput;

@@ -14,9 +14,6 @@ namespace Carmageddon.HUD
         public Timer()
         {
             _font = Engine.Instance.ContentManager.Load<SpriteFont>("content/timer-font");
-
-            x = Engine.Instance.Window.Width / 2 - 72;
-            y = 5;
         }
 
         public override void Update()
@@ -25,13 +22,13 @@ namespace Carmageddon.HUD
 
         public override void Render()
         {
-            
-            Engine.Instance.SpriteBatch.Draw(_shadow, new Rectangle(x -3, y -5, 144, 45), Color.White);
-            
+            Rectangle rect = CenterRectX(0, 0.182f, 0.075f);
+            Engine.Instance.SpriteBatch.Draw(_shadow, rect, Color.White);
+
             TimeSpan ts = TimeSpan.FromSeconds(Race.Current.RaceTime.TimeRemaining);
-            float nudge = ts.Minutes < 10 ? 13 : 0;
+            float nudge = ts.Minutes < 10 ? 13 * FontScale : 0;
             Engine.Instance.SpriteBatch.DrawString(_font,
-                String.Format("{0}:{1}", (int)ts.Minutes, ts.Seconds.ToString("00")), new Vector2(x+nudge, y), Color.White);
+                String.Format("{0}:{1}", (int)ts.Minutes, ts.Seconds.ToString("00")), new Vector2(rect.X + 5 + nudge, rect.Y + 3), Color.White, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
         }
     }
 }

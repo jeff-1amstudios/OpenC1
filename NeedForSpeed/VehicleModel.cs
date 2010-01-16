@@ -103,14 +103,15 @@ namespace Carmageddon
             }
 
             _engineSound = SoundCache.CreateInstance(CarFile.EngineNoiseId);
-            if (_engineSound != null) _engineSound.Play(true);
-
-            List<CMaterial> crashMaterials = new List<CMaterial>();
-            foreach (string matFileName in CarFile.CrashMaterialFiles)
+            if (_engineSound != null)
             {
-                crashMaterials.Add(_resourceCache.GetMaterial(matFileName));
+                _engineSound.Play(true);
+                _engineSound.Volume = -50;
             }
-            _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMaterials), 4, Vector3.Zero);
+            
+            CMaterial crashMat = _resourceCache.GetMaterial(CarFile.CrashMaterialFiles[0]);
+            _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMat), 4, Vector3.Zero);
+            
             ContactReport.Instance.PlayerWorldCollision += ContactReport_PlayerWorldCollision;
         }
 
@@ -136,8 +137,7 @@ namespace Carmageddon
 
             _vehicleBitsEmitter.ParticleSystem.Update();
             _vehicleBitsEmitter.ParticleSystem.SetCamera(Engine.Instance.Camera);
-            
-            
+                        
 
             foreach (BaseGroove groove in _grooves)
             {
@@ -172,34 +172,11 @@ namespace Carmageddon
         public void Render()
         {
             _vehicleBitsEmitter.ParticleSystem.Render();
+                       
 
-            Vector3[] points = new Vector3[4];
-
-            BoundingBox bb = CarFile.BoundingBox;
-            Matrix pose = Chassis.Body.GlobalPose;
-            float shadowWidth = 0.0f;
-            Vector3 pos = new Vector3(bb.Min.X - shadowWidth, 0, bb.Min.Z);
-            points[0] = Vector3.Transform(pos, pose);
-            pos = new Vector3(bb.Max.X + shadowWidth, 0, bb.Min.Z);
-            points[1] = Vector3.Transform(pos, pose);
-            pos = new Vector3(bb.Min.X - shadowWidth, 0, bb.Max.Z);
-            points[2] = Vector3.Transform(pos, pose);
-            pos = new Vector3(bb.Max.X + shadowWidth, 0, bb.Max.Z);
-            points[3] = Vector3.Transform(pos, pose);
-
-            StillDesign.PhysX.Scene scene = Chassis.Body.Scene;
-            Vector3 offset = new Vector3(0, 0.1f, 0);
-            for (int i = 0; i < 4; i++)
-            {
-                StillDesign.PhysX.RaycastHit hit = scene.RaycastClosestShape(
-                    new StillDesign.PhysX.Ray(points[i], Vector3.Down), StillDesign.PhysX.ShapesType.Static);
-                points[i] = hit.WorldImpact+offset;
-            }
-
-            ModelShadow.Render(points);
+            ModelShadow.Render(CarFile.BoundingBox, Chassis);
 
             _models.SetupRender();
-            
             _actors.Render(_models, Chassis.Body.GlobalPose);
             
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();

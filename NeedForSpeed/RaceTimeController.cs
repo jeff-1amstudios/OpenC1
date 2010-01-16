@@ -5,23 +5,21 @@ using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
+using Carmageddon.HUD;
 
 namespace Carmageddon
 {
     class RaceTimeController
     {
         public bool IsStarted, IsOver;
-        bool _countdownFinished;
-        float _countdownTime;
+        public bool CountingDown { get; private set; }
+        public float CountdownTime;
         int _lastSecond=-1;
         public float TimeRemaining = 20; // 90; //1:30
         List<Texture2D> _countdownTextures = new List<Texture2D>();
         List<int> _countdownSoundIds = new List<int>();
         Texture2D _outOfTime;
-
-
-        int x;
-        int y;
+        public float TotalTime;
 
         public RaceTimeController()
         {
@@ -47,20 +45,20 @@ namespace Carmageddon
 
             pix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\timeup.pix");
             _outOfTime = pix.PixMaps[0].Texture;
-
-            x = Engine.Instance.Window.Width / 2 - 16;
-            y = 60;
         }
 
         public void StartCountdown()
-        {   
+        {
+            CountingDown = true;
         }
 
         public void Update()
         {
+            TotalTime += Engine.Instance.ElapsedSeconds;
+
             if (IsOver) return;
 
-            if (_countdownFinished)
+            if (IsStarted)
             {
                 TimeRemaining -= Engine.Instance.ElapsedSeconds;
                 if (TimeRemaining < 0)
@@ -70,32 +68,36 @@ namespace Carmageddon
                     SoundCache.Play(SoundIds.OutOfTime);
                 }
             }
-            else
+            if (CountingDown)
             {
-                _countdownTime += Engine.Instance.ElapsedSeconds;
-                if (_countdownTime > 5)
+                CountdownTime += Engine.Instance.ElapsedSeconds;
+                if (CountdownTime > 5)
+                {
                     IsStarted = true;
-                if (_countdownTime > 6)
-                    _countdownFinished = true;
+                    ((Driver)Engine.Instance.Player).VehicleModel.Chassis.Motor.Gearbox.CurrentGear = 1;
+                }
+                if (CountdownTime > 6)
+                    CountingDown = false;
             }
         }
 
         public void Render()
         {
-            if (!_countdownFinished)
+            if (CountingDown)
             {
-                int second = (int)_countdownTime;
+                int second = (int)CountdownTime;
                 if (second > _lastSecond)
                 {
                     SoundCache.Play(_countdownSoundIds[second]);
+                    MessageRenderer.Instance.PostMessage(_countdownTextures[second], 0.7f, 0.24f, 0.003f);
                 }
-                Engine.Instance.SpriteBatch.Draw(_countdownTextures[second], new Vector2(x, y), Color.White);
+
                 _lastSecond = second;
-            }
+            }            
 
             if (TimeRemaining == 0)
             {
-                Engine.Instance.SpriteBatch.Draw(_outOfTime, new Vector2(x, y), Color.White);
+                MessageRenderer.Instance.PostMessage(_outOfTime, 10, 0.6f, 0.0033f);   
             }
         }
     }

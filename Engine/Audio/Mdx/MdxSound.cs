@@ -34,6 +34,11 @@ namespace NFSEngine.Audio
             }
 		}
 
+        public float Volume
+        {
+            set { _buffer.Volume = (int)value; }
+        }
+
         public float Duration
         {
             get

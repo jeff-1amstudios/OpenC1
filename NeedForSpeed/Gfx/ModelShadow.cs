@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using PlatformEngine;
 using Microsoft.Xna.Framework;
+using Carmageddon.Physics;
 
 namespace Carmageddon
 {
@@ -17,8 +18,30 @@ namespace Carmageddon
             _vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionColor.VertexElements);
         }
 
-        public static void Render(Vector3[] points)
+        public static void Render(BoundingBox bb, VehicleChassis chassis)
         {
+            Vector3[] points = new Vector3[4];
+
+            Matrix pose = chassis.Body.GlobalPose;
+            float shadowWidth = 0.0f;
+            Vector3 pos = new Vector3(bb.Min.X - shadowWidth, 0, bb.Min.Z);
+            points[0] = Vector3.Transform(pos, pose);
+            pos = new Vector3(bb.Max.X + shadowWidth, 0, bb.Min.Z);
+            points[1] = Vector3.Transform(pos, pose);
+            pos = new Vector3(bb.Min.X - shadowWidth, 0, bb.Max.Z);
+            points[2] = Vector3.Transform(pos, pose);
+            pos = new Vector3(bb.Max.X + shadowWidth, 0, bb.Max.Z);
+            points[3] = Vector3.Transform(pos, pose);
+
+            StillDesign.PhysX.Scene scene = chassis.Body.Scene;
+            Vector3 offset = new Vector3(0, 0.1f, 0);
+            for (int i = 0; i < 4; i++)
+            {
+                StillDesign.PhysX.RaycastHit hit = scene.RaycastClosestShape(
+                    new StillDesign.PhysX.Ray(points[i], Vector3.Down), StillDesign.PhysX.ShapesType.Static);
+                points[i] = hit.WorldImpact + offset;
+            }
+
             Color shadowColor = new Color(10, 10, 10, 100);
             VertexPositionColor[] verts = new VertexPositionColor[points.Length];
             int i2 = 0;

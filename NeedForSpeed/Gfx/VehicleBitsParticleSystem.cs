@@ -12,9 +12,9 @@ namespace Carmageddon.Gfx
     {
         CMaterial _material;
 
-        public VehicleBitsParticleSystem(List<CMaterial> materials)
+        public VehicleBitsParticleSystem(CMaterial material)
         {
-            _material = materials[0];
+            _material = material;
             InitializeSystem();
         }
 

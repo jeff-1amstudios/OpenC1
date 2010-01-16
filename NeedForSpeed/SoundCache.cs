@@ -21,9 +21,10 @@ namespace Carmageddon
         public const int Checkpoint = 8012;
         public const int WrongCheckpoint = 8013;
     }
+
     static class SoundCache
     {
-        static bool _enabled = false;
+        static bool _enabled = true;
         static List<CSoundDescription> _soundDescriptions;
         public static bool IsInitialized;
         static List<ISound> _instances = new List<ISound>();

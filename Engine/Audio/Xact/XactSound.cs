@@ -23,6 +23,11 @@ namespace NFSEngine.Audio
 
         #region ISoundDescription Members
 
+        public float Volume
+        {
+            set { _effect.Volume = value; }
+        }
+
         public void Stop()
         {
             _effect.Stop();

@@ -60,8 +60,7 @@ namespace Carmageddon.Physics
             Scene.UserContactReport = ContactReport.Instance;
             
             MaterialDescription description = new MaterialDescription();
-            description.Restitution = 0.25f;
-            //description.StaticFriction = 0.9f;
+            description.Restitution = 0.22f;
             description.DynamicFriction = 0.2f;
             Scene.DefaultMaterial.LoadFromDescription(description);
             InitScene();

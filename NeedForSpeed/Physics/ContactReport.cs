@@ -4,6 +4,7 @@ using Particle3DSample;
 using Carmageddon.Gfx;
 using Microsoft.Xna.Framework;
 using PlatformEngine;
+using NFSEngine;
 
 namespace Carmageddon.Physics
 {
@@ -50,7 +51,6 @@ namespace Carmageddon.Physics
                                     float force = contactInfo.NormalForce.Length();
                                     if (force > 0)
                                     {
-                                        //iter.GetPatchNormal();
                                         GameVariables.SparksEmitter.Update(pos);
                                         if (force > 850000) GameVariables.SparksEmitter.DumpParticles(pos, 6);
                                         PlayerWorldCollision(force, pos, iter.GetPatchNormal());
@@ -60,47 +60,25 @@ namespace Carmageddon.Physics
                         }
                     }
                 }
+                else if (contactInfo.ActorB.Group == 11 && contactInfo.ActorA.Group == 10)
+                {
+                    if (contactInfo.ActorB.LinearVelocity.Length() > 2)
+                    {
+                        while (iter.GoToNextPair())
+                        {
+                            while (iter.GoToNextPatch())
+                            {
+                                while (iter.GoToNextPoint())
+                                {
+                                    Vector3 pos = iter.GetPoint();
+                                    GameVariables.SparksEmitter.Update(pos);
+                                    GameConsole.WriteEvent("noncar collision");
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        }
-
-        private void OnItemPickup(Actor vehicle, Actor box)
-        {
-            //int playerId = ((VehicleUserData)vehicle.UserData).playerId;
-            //Player player = this.gpScreen.GetPlayer(playerId);
-            //if (player != null)
-            //{
-            //    this.gpScreen.ItemManager.ItemPickup(player, (ItemBox)box.UserData);
-            //}
-        }
-
-        private void OnMineHit(Actor vehicle, Actor box)
-        {
-            //int playerId = ((VehicleUserData)vehicle.UserData).playerId;
-            //Player player = this.gpScreen.GetPlayer(playerId);
-            //if (player != null)
-            //{
-            //    if (box.Name == "Mine")
-            //    {
-            //        this.gpScreen.ItemManager.MineHit(player, (Mine)box.UserData);
-            //    }
-            //    else
-            //    {
-            //        this.gpScreen.ItemManager.ColorMineHit(player, (ColorMine)box.UserData);
-            //    }
-            //}
-        }
-
-        private void OnRocketCollision(Actor rocket, Actor target)
-        {
-            //if (rocket.UserData != null)
-            //{
-            //    int playerId = 0;
-            //    if (target.Name == "Vehicle")
-            //    {
-            //        playerId = ((VehicleUserData)target.UserData).playerId;
-            //    }
-            //    this.gpScreen.ItemManager.RocketCollision((Rocket)rocket.UserData, playerId);
-            //}
         }
     }
 }
