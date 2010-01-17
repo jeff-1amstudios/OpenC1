@@ -16,9 +16,9 @@ namespace Carmageddon
 {
     class Race
     {
-        Actor _trackActor;
         DatFile _models;
         ActFile _actors;
+        List<CActor> _nonCars;
         ResourceCache _resourceCache;
         public Texture2D HorizonTexture;
         public RaceTimeController RaceTime = new RaceTimeController();
@@ -77,8 +77,8 @@ namespace Carmageddon
             }
             GameVariables.DepthCueMode = RaceFile.DepthCueMode;
 
-            _trackActor = Physics.TrackProcessor.GenerateTrackActor(_actors, _models);
-            Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars, _trackActor);
+            Physics.TrackProcessor.GenerateTrackActor(_actors, _models);
+            _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars);
 
             Current = this;
         }
@@ -104,7 +104,10 @@ namespace Carmageddon
 
             if (!RaceTime.IsStarted)
             {
-                float height = 50 - (RaceTime.CountdownTime * 20f);
+                if ((int)RaceTime.TotalTime == 2 && !RaceTime.CountingDown)
+                    RaceTime.StartCountdown();
+
+                float height = 55 -(RaceTime.CountdownTime * 35f);
                 if (height > 2)
                     ((FixedChaseCamera)Engine.Instance.Camera).HeightOverride = height;
             }
@@ -118,10 +121,15 @@ namespace Carmageddon
                 funk.Update();
             }
 
-            MessageRenderer.Instance.Update();
+            foreach (CActor nonCar in _nonCars)
+            {
+                if (!nonCar.PhysXActor.IsSleeping && nonCar.PhysXActor.LinearVelocity.Length() > 1)
+                {
+                    _actors.RecalculateActorParent(nonCar);
+                }
+            }
 
-            if ((int)RaceTime.TotalTime == 2 && !RaceTime.CountingDown)
-                RaceTime.StartCountdown();
+            MessageRenderer.Instance.Update();
         }
 
         public void Render()

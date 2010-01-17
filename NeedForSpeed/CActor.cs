@@ -14,13 +14,14 @@ namespace Carmageddon
         public string MaterialName { get; set; }
         public CMaterial Material { get; set; }
         public Matrix Matrix, ParentMatrix;
+        public CActor Parent;
         internal List<CActor> Children { get; set; }
-        public int Level { get; set; }
         public BoundingBox BoundingBox;
         public byte[] Flags;
         public bool IsWheel;
-        StillDesign.PhysX.Actor _physXActor;
+        public StillDesign.PhysX.Actor PhysXActor { get; private set; }
         public bool IsAnimated;
+        
 
         public CActor()
         {
@@ -38,7 +39,7 @@ namespace Carmageddon
         {
             // if this CActor is attached to a PhysX object, reduce the Matrix to a scale, 
             // as the position/orienation will come from PhysX
-            _physXActor = instance;
+            PhysXActor = instance;
             Vector3 scaleout, transout;
             Quaternion b;
             Matrix.Decompose(out scaleout, out b, out transout);
@@ -48,8 +49,8 @@ namespace Carmageddon
 
         public Matrix GetDynamicMatrix()
         {
-            if (_physXActor == null) return Matrix;
-            return Matrix * _physXActor.GlobalPose;
+            if (PhysXActor == null) return Matrix;
+            return Matrix * PhysXActor.GlobalPose;
         }
     }
 }

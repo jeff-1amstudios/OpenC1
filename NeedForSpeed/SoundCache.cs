@@ -24,7 +24,7 @@ namespace Carmageddon
 
     static class SoundCache
     {
-        static bool _enabled = true;
+        static bool _enabled = false;
         static List<CSoundDescription> _soundDescriptions;
         public static bool IsInitialized;
         static List<ISound> _instances = new List<ISound>();

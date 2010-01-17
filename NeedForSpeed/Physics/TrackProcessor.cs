@@ -107,10 +107,10 @@ namespace Carmageddon.Physics
             return a;
         }
 
-        public static void GenerateNonCars(ActFile actors, List<NoncarFile> nonCars, Actor trackActor)
+        public static List<CActor> GenerateNonCars(ActFile actors, List<NoncarFile> nonCars)
         {
-            List<Carmageddon.CActor> actorsList = actors.GetAllActors();
-            int count = 0;
+            List<CActor> nonCarActors = new List<CActor>();
+            List<CActor> actorsList = actors.GetAllActors();
 
             for (int i = 0; i < actorsList.Count; i++)
             {
@@ -179,12 +179,13 @@ namespace Carmageddon.Physics
                         }
                         instance.Sleep();
                         actor.AttachPhysxActor(instance);
-                        count++;
+                        nonCarActors.Add(actor);
                     }
                 }
             }
 
-            Debug.WriteLine("NonCars: " + count);
+            Debug.WriteLine("NonCars: " + nonCarActors.Count);
+            return nonCarActors;
         }
     }
 }

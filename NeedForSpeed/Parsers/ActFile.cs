@@ -14,7 +14,7 @@ using Carmageddon.Parsers.Grooves;
 
 namespace Carmageddon.Parsers
 {
-   
+
     class ActFile : BaseDataFile
     {
         enum ActorBlockType
@@ -58,8 +58,9 @@ namespace Carmageddon.Parsers
                         }
                         else
                         {
-                            actorStack.Peek().Children.Add(currentActor);
-                            currentActor.Level = actorStack.Peek().Level + 1;
+                            CActor parent = actorStack.Peek();
+                            currentActor.Parent = parent;
+                            parent.Children.Add(currentActor);
                         }
 
                         flatActorList.Add(currentActor);
@@ -200,7 +201,7 @@ namespace Carmageddon.Parsers
         public CActor First
         {
             get { return _actors[0]; }
-        }  
+        }
 
         public CActor GetByName(string name)
         {
@@ -215,7 +216,7 @@ namespace Carmageddon.Parsers
             GameVariables.NbrSectionsRendered = GameVariables.NbrSectionsChecked = 0;
 
             BoundingFrustum frustum = new BoundingFrustum(Engine.Instance.Camera.View * Engine.Instance.Camera.Projection);
-            
+
 
             bool overrideActor = world != Matrix.Identity;
 
@@ -236,14 +237,14 @@ namespace Carmageddon.Parsers
             if (actor.IsWheel) return;
 
             bool intersects;
-            
+
             intersects = actor.BoundingBox.Max.X == 0;
             if (!intersects)
             {
                 frustum.Intersects(ref actor.BoundingBox, out intersects);
                 GameVariables.NbrSectionsChecked++;
             }
-            
+
             if (intersects)
             {
                 if (actor.Model != null)
@@ -252,7 +253,7 @@ namespace Carmageddon.Parsers
 
                     if (actor.IsAnimated || parentAnimated)
                     {
-                        
+
                         if (actor.IsAnimated && !parentAnimated)
                         {
                             world = m * actor.ParentMatrix * GameVariables.ScaleMatrix * world;
@@ -278,7 +279,7 @@ namespace Carmageddon.Parsers
                 }
                 foreach (CActor child in actor.Children)
                     RenderChildren(frustum, child, world, parentAnimated);
-            }            
+            }
         }
 
         public void RenderSingle(CActor actor)
@@ -287,8 +288,8 @@ namespace Carmageddon.Parsers
             m.Translation = Vector3.Zero;
             GameVariables.CurrentEffect.World = m * GameVariables.CurrentEffect.World;
             GameVariables.CurrentEffect.CommitChanges();
-            
-            actor.Model.Render(actor.Material);            
+
+            actor.Model.Render(actor.Material);
         }
 
         public Matrix CalculateDynamicActorMatrix(CActor actorToFind)
@@ -315,6 +316,39 @@ namespace Carmageddon.Parsers
                 if (done) return m;
             }
             return matrix;
+        }
+
+        public void RecalculateActorParent(CActor actor)
+        {
+            actor.Parent.Children.Remove(actor); //remove it from current parent
+
+            bool found = false;
+            for (int i = 0; i < _actors.Count; i++)
+            {
+                MoveChildren(actor, _actors[i], null, ref found);
+            }
+        }
+
+        private void MoveChildren(CActor actorToMove, CActor parent, CActor parentParent, ref bool found)
+        {
+            if (found || parent.BoundingBox.Max.X == 0)
+            {
+                return;
+            }
+
+            if (parent.BoundingBox.Contains(actorToMove.PhysXActor.GlobalPosition) == ContainmentType.Contains)
+            {
+                foreach (CActor child in parent.Children)
+                    MoveChildren(actorToMove, child, parent, ref found);
+                if (!found)
+                {
+                    if (!parent.Children.Contains(actorToMove))
+                    {
+                        parent.Children.Add(actorToMove);
+                    }
+                    found = true;
+                }
+            }
         }
     }
 }

@@ -30,17 +30,17 @@ namespace Carmageddon.Gfx
 
             settings.MinVerticalVelocity = 1f;
             settings.MaxVerticalVelocity = 2f;
-            settings.DurationRandomness = 0.5f;
+            settings.DurationRandomness = 0.8f;
             settings.EmitterVelocitySensitivity = 0f;
 
             settings.Gravity = new Vector3(0, -1.3f, 0);
 
             settings.EndVelocity = 1f;
 
-            settings.MinStartSize = 0.2f;
+            settings.MinStartSize = 0.1f;
             settings.MaxStartSize = 0.2f;
 
-            settings.MinEndSize = 0.2f;
+            settings.MinEndSize = 0.1f;
             settings.MaxEndSize = 0.2f;
 
             settings.MinRotateSpeed = 0f;
