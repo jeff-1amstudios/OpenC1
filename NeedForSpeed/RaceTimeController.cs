@@ -65,7 +65,7 @@ namespace Carmageddon
                 {
                     TimeRemaining = 0;
                     IsOver = true;
-                    SoundCache.Play(SoundIds.OutOfTime);
+                    //SoundCache.Play(SoundIds.OutOfTime);
                 }
             }
             if (CountingDown)
@@ -97,7 +97,7 @@ namespace Carmageddon
 
             if (TimeRemaining == 0)
             {
-                MessageRenderer.Instance.PostMessage(_outOfTime, 10, 0.6f, 0.0033f);   
+                //MessageRenderer.Instance.PostMessage(_outOfTime, 10, 0.6f, 0.0033f);   
             }
         }
     }

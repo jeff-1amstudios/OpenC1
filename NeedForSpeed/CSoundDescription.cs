@@ -14,7 +14,5 @@ namespace Carmageddon
         public string MinMaxVolume;
         public string MinMaxPitch;
         public string MinMaxSpeed;
-        public string SpecialFxIndex;
-
     }
 }

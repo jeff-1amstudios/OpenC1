@@ -144,7 +144,7 @@ namespace Carmageddon.Physics
                 ws.Name = wheel.Actor.Name;
                 ws.LateralTireForceFunction = wheel.IsFront ? _frontLateralTireFn : _rearLateralTireFn;
 
-                Wheels.Add(new VehicleWheel(this, wheel, ws, wheel.IsLeft ? 0.17f : -0.17f));
+                Wheels.Add(new VehicleWheel(this, wheel, ws, wheel.IsLeft ? 0.17f : -0.17f) { Index = Wheels.Count });
             }
 
             Vector3 massPos = VehicleBody.CenterOfMassLocalPosition;

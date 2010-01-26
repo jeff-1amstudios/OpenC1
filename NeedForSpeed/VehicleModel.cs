@@ -106,21 +106,24 @@ namespace Carmageddon
             if (_engineSound != null)
             {
                 _engineSound.Play(true);
-                _engineSound.Volume = -50;
+                //_engineSound.Volume = -50;
             }
             
             CMaterial crashMat = _resourceCache.GetMaterial(CarFile.CrashMaterialFiles[0]);
-            _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMat), 4, Vector3.Zero);
+            _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMat), 6, Vector3.Zero);
             
             ContactReport.Instance.PlayerWorldCollision += ContactReport_PlayerWorldCollision;
         }
 
         void ContactReport_PlayerWorldCollision(float force, Vector3 position, Vector3 normal)
         {
-            if (force > 850000)
+            GameConsole.WriteEvent(force.ToString());
+
+            if (force > 750000)
             {
                 _vehicleBitsEmitter.DumpParticles(position);
                 SoundCache.PlayCrash();
+                return;
             }
             
             float product = Math.Abs(Vector3.Dot(Chassis.Body.GlobalPose.Forward, normal));
@@ -187,7 +190,7 @@ namespace Carmageddon
                 _actors.RenderSingle(CarFile.WheelActors[i].Actor);
             }
 
-            Engine.Instance.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 5);
+            //Engine.Instance.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 5);
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
 

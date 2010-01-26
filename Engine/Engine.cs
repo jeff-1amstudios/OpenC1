@@ -26,6 +26,7 @@ namespace PlatformEngine
         public InputProvider Input { get; set; }
         public float DrawDistance { get; set; }
         public float ElapsedSeconds { get; private set; }
+        public float TotalSeconds { get; private set; }
         public Random RandomNumber { get; private set; }
         public ISoundEngine Audio { get; set; }
                 
@@ -67,9 +68,12 @@ namespace PlatformEngine
 
         public override void Update(GameTime gameTime)
         {
+            
+            ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            TotalSeconds = (float)gameTime.TotalGameTime.TotalSeconds;
+
             GameConsole.Clear();
 
-            ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _fpsCounter.Update(gameTime);
 
             base.Update(gameTime);

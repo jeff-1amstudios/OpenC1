@@ -50,6 +50,7 @@ namespace Particle3DSample
 
         #endregion
 
+        public float LastDumpTime;
 
         /// <summary>
         /// Constructs a new particle emitter object.
@@ -119,10 +120,15 @@ namespace Particle3DSample
 
         public void DumpParticles(Vector3 newPosition, float nbr)
         {
+            //only allow dumpparticles every 0.2 of a second
+            if (LastDumpTime + 0.2f > Engine.Instance.TotalSeconds)
+                return;
+
             for (int i = 0; i < nbr; i++)
             {
                 ParticleSystem.AddParticle(newPosition, Vector3.Zero);
             }
+            LastDumpTime = Engine.Instance.TotalSeconds;
         }
     }
 }

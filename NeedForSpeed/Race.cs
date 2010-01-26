@@ -77,7 +77,7 @@ namespace Carmageddon
             }
             GameVariables.DepthCueMode = RaceFile.DepthCueMode;
 
-            Physics.TrackProcessor.GenerateTrackActor(_actors, _models);
+            Physics.TrackProcessor.GenerateTrackActor(RaceFile, _actors, _models);
             _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars);
 
             Current = this;

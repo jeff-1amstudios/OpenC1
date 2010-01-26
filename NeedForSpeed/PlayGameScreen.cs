@@ -55,9 +55,6 @@ namespace Carmageddon
             _race.SetupPhysx(_carModel.Chassis);
 
             _chaseView = new ChaseView(_carModel);
-
-            //_race.StartCountdown();
-
         }
 
         private void SetupPhysics()
@@ -103,9 +100,12 @@ namespace Carmageddon
             else
                 _chassis.ReleaseHandbrake();
 
-            //InputProvider input = Engine.Instance.Input;
-            //if (input.WasPressed(Keys.C))
-            //    _carModel.Crush();
+            InputProvider input = Engine.Instance.Input;
+            if (input.WasPressed(Keys.C))
+            {
+                Engine.Instance.Camera = new FPSCamera();
+                Engine.Instance.Camera.Position = _carModel.Chassis.Body.GlobalPosition;
+            }
             
             _race.Update();
                         

@@ -14,10 +14,11 @@ namespace Carmageddon.Physics
 {
     class TrackProcessor
     {
-        public static Actor GenerateTrackActor(ActFile actors, DatFile models)
+        public static Actor GenerateTrackActor(RaceFile file, ActFile actors, DatFile models)
         {
             List<Vector3> verts = new List<Vector3>();
             List<ushort> indices = new List<ushort>();
+            List<ushort> materialIndices = new List<ushort>();
             List<Carmageddon.CActor> actorsList = actors.GetAllActors();
 
             for (int i = 0; i < actorsList.Count; i++)
@@ -25,7 +26,7 @@ namespace Carmageddon.Physics
                 Carmageddon.CActor actor = actorsList[i];
                 if (actor.Model == null) continue;
                 if (actor.Name.StartsWith("&"))
-                    continue; //dont-merge with track (non-car, animation etc)
+                    continue; //dont-merge with track (non-car, animated etc)
 
                 int baseIndex = verts.Count;
                 for (int j = 0; j < actor.Model.VertexCount; j++)
@@ -33,8 +34,9 @@ namespace Carmageddon.Physics
 
                 foreach (Polygon poly in actor.Model.Polygons)
                 {
+                    string materialName = actor.Model.MaterialNames[poly.MaterialIndex];
                     //this is a non-solid material
-                    if (actor.Model.MaterialNames[poly.MaterialIndex].StartsWith("!"))
+                    if (materialName.StartsWith("!"))
                         continue;
 
                     int index = baseIndex + poly.Vertex1;
@@ -60,30 +62,30 @@ namespace Carmageddon.Physics
                         verts[index] = transformedVec;
                     }
 
+                    if (Char.IsDigit(materialName[0]))
+                        materialIndices.Add((ushort)(ushort.Parse(materialName.Substring(0, 1)) + 1));
+                    else
+                        materialIndices.Add(0);
                 }
             }
 
-            for (int j = verts.Count - 1; j >= 0; j--)
-            {
-                //if (verts[j] == Vector3.Zero)
-                //  verts.RemoveAt(j);
-            }
-
-            TriangleMeshDescription triangleMeshDesc = new TriangleMeshDescription();
-            triangleMeshDesc.TriangleCount = indices.Count / 3;
-            triangleMeshDesc.VertexCount = verts.Count;
-
-            triangleMeshDesc.AllocateVertices<Vector3>(triangleMeshDesc.VertexCount);
-            triangleMeshDesc.AllocateTriangles<ushort>(triangleMeshDesc.TriangleCount);
-
-            triangleMeshDesc.TriangleStream.SetData(indices.ToArray());
-            triangleMeshDesc.VerticesStream.SetData(verts.ToArray());
-            triangleMeshDesc.Flags = MeshFlag.Indices16Bit;
+            TriangleMeshDescription meshDesc = new TriangleMeshDescription();
+            meshDesc.TriangleCount = indices.Count / 3;
+            meshDesc.VertexCount = verts.Count;
+                        
+            meshDesc.AllocateVertices<Vector3>(meshDesc.VertexCount);
+            meshDesc.AllocateTriangles<ushort>(meshDesc.TriangleCount);
+            meshDesc.AllocateMaterialIndices<ushort>(materialIndices.Count);
+            
+            meshDesc.TriangleStream.SetData(indices.ToArray());
+            meshDesc.VerticesStream.SetData(verts.ToArray());
+            meshDesc.MaterialIndicesStream.SetData(materialIndices.ToArray());
+            meshDesc.Flags = MeshFlag.Indices16Bit;
 
             MemoryStream s = new MemoryStream();
 
             Cooking.InitializeCooking();
-            Cooking.CookTriangleMesh(triangleMeshDesc, s);
+            Cooking.CookTriangleMesh(meshDesc, s);
             Cooking.CloseCooking();
 
             s.Position = 0;
@@ -91,7 +93,7 @@ namespace Carmageddon.Physics
 
             TriangleMeshShapeDescription shape = new TriangleMeshShapeDescription()
             {
-                TriangleMesh = triangleMesh
+                TriangleMesh = triangleMesh,
             };
 
             ActorDescription actorDescription = new ActorDescription()
@@ -175,7 +177,8 @@ namespace Carmageddon.Physics
                             jointDesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
                             jointDesc.MaxForce = nonCar.BendAngleBeforeSnapping * 125;
                             FixedJoint joint = (FixedJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
-                            //instance.SolverIterationCount = 12;
+                            
+                            //instance.SolverIterationCount = 128;
                         }
                         instance.Sleep();
                         actor.AttachPhysxActor(instance);

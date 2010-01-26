@@ -13,6 +13,7 @@ namespace NFSEngine
         static Texture2D _shadow;
         static List<string> _scrollingLines = new List<string>();
         static int _currentLine;
+        private static bool _enabled = true;
 
         static GameConsole()
         {
@@ -30,6 +31,7 @@ namespace NFSEngine
 
         public static void WriteLine(object o)
         {
+            if (!_enabled) return;
             Engine.Instance.DebugRenderer.AddText(new Vector2(5, ((_lines++)+1) * 18), o.ToString(), Justify.TOP_LEFT, Color.YellowGreen);
         }
 
@@ -50,6 +52,8 @@ namespace NFSEngine
 
         public static void Render()
         {
+            if (!_enabled) return;
+
             WriteLine(" ");
             for (int i = 0; i < _scrollingLines.Count; i++)
             {

@@ -27,6 +27,7 @@ namespace Carmageddon.Parsers
         public List<Vector3> CopStartPoints { get; set; }
         public List<BaseGroove> Grooves;
         public List<BaseFunk> Funks;
+        public List<CMaterialModifier> MaterialModifiers;
 
         public RaceFile(string filename) : base(filename)
         {
@@ -196,19 +197,24 @@ namespace Carmageddon.Parsers
 
         private void ReadMaterialModifierSection()
         {
+            MaterialModifiers = new List<CMaterialModifier>();
+
             int nbrMaterialModifiers = ReadLineAsInt();
             for (int i = 0; i < nbrMaterialModifiers; i++)
             {
-                float carWallFriction = ReadLineAsFloat(false);
-                float tyreRoadFriction = ReadLineAsFloat(false);
-                float downforce = ReadLineAsFloat(false);
-                float bumpiness = ReadLineAsFloat(false);
-                int tyreSoundIndex = ReadLineAsInt();
-                int crashSoundIndex = ReadLineAsInt();
-                int scrapeSoundIndex = ReadLineAsInt();
-                float sparkiness = ReadLineAsFloat(false);
-                int expansion = ReadLineAsInt();
-                string skidMaterial = ReadLine();
+                MaterialModifiers.Add(new CMaterialModifier
+                    {
+                        CarWallFriction = ReadLineAsFloat(false),
+                        TyreRoadFriction = ReadLineAsFloat(false),
+                        Downforce = ReadLineAsFloat(false),
+                        Bumpiness = ReadLineAsFloat(false),
+                        TyreSoundIndex = ReadLineAsInt(),
+                        CrashSoundIndex = ReadLineAsInt(),
+                        ScrapeSoundIndex = ReadLineAsInt(),
+                        Sparkiness = ReadLineAsFloat(false),
+                        Expansion = ReadLineAsInt(),
+                        SkidMaterial = ReadLine()
+                    });
             }
         }
 

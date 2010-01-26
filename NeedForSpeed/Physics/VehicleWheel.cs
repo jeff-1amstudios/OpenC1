@@ -24,6 +24,8 @@ namespace Carmageddon.Physics
         ParticleEmitter _smokeEmitter;
         public bool IsSkiddingLat, IsSkiddingLng;
         public Vector3 ContactPoint;
+        public int MaterialIndex;
+        public int Index;
 
         public bool InAir
         {
@@ -58,6 +60,12 @@ namespace Carmageddon.Physics
             UpdateMatrices(wcd);
 
             ContactPoint = wcd.ContactPoint;
+            
+            if (wcd.ContactForce != 0)
+            {
+                CMaterialModifier materialModifier = Race.Current.RaceFile.MaterialModifiers[(int)wcd.OtherShapeMaterialIndex];
+                materialModifier.UpdateWheelShape(_chassis, this);
+            }
 
             if (_chassis.Speed > 10 && (_handbrakeOn || Math.Abs(wcd.LateralSlip) > 0.23f))
             {
