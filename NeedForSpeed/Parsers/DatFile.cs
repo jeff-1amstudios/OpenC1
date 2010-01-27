@@ -59,7 +59,7 @@ namespace Carmageddon.Parsers
                         _models.Add(currentModel);
                         reader.Seek(2, SeekOrigin.Current);
                         currentModel.Name = ReadNullTerminatedString(reader);
-                        Debug.WriteLine("Model: " + currentModel.Name );
+                        //Debug.WriteLine("Model: " + currentModel.Name );
                         break;
 
                     case (int)BlockType.Vertices:

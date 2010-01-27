@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.Parsers
 {
@@ -77,6 +78,12 @@ namespace Carmageddon.Parsers
         {
             string line = ReadLine();
             return float.Parse(line) * (scale ? GameVariables.Scale.X : 1); 
+        }
+
+        public Color ReadLineAsColor()
+        {
+            Vector3 v3 = ReadLineAsVector3(false);
+            return new Color((byte)v3.X, (byte)v3.Y, (byte)v3.Z, 255);
         }
 
         public Vector3 ReadLineAsVector3()

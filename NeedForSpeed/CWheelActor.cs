@@ -8,15 +8,15 @@ namespace Carmageddon
     class CWheelActor
     {
         public CActor Actor;
-        public bool Driven;
+        public bool IsDriven;
         public Vector3 Position;
-        public bool Steerable;
+        public bool IsSteerable;
 
         public CWheelActor(CActor actor, bool driven, bool steerable)
         {
             Actor = actor;
-            Driven = driven;
-            Steerable = steerable;
+            IsDriven = driven;
+            IsSteerable = steerable;
         }
 
         public bool IsFront { get { return Actor.Name.StartsWith("F"); } }

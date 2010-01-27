@@ -166,7 +166,7 @@ namespace Carmageddon
             
             if (_effect == null)
             {
-                _effect = new BasicEffect2();//(Engine.Instance.Device, null);
+                _effect = new BasicEffect2();
                 _effect.FogEnabled = false;
                 if (GameVariables.DepthCueMode == "dark")
                     _effect.FogColor = new Vector3(0, 0, 0);

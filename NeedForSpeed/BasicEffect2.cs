@@ -23,9 +23,9 @@ namespace Carmageddon
         private EffectParameter fogEndParam;
         private EffectParameter fogStartParam;
         private bool hasPS20;
-        private BasicDirectionalLight light0;
-        private BasicDirectionalLight light1;
-        private BasicDirectionalLight light2;
+        private BasicDirectionalLight2 light0;
+        private BasicDirectionalLight2 light1;
+        private BasicDirectionalLight2 light2;
         private bool lightingEnabled;
         private bool preferPerPixelLighting;
         private EffectParameter projectionParam;
@@ -71,9 +71,9 @@ namespace Carmageddon
             this.eyePositionParam = _effect.Parameters["EyePosition"];
             this.shaderIndexParam = _effect.Parameters["ShaderIndex"];
             texCoordsOffsetParam = _effect.Parameters["TexCoordsOffset"];
-            //this.light0 = new BasicDirectionalLight ((_effect.Parameters["DirLight0Direction"], _effect.Parameters["DirLight0DiffuseColor"], _effect.Parameters["DirLight0SpecularColor"]);
-            //this.light1 = new BasicDirectionalLight(_effect.Parameters["DirLight1Direction"], _effect.Parameters["DirLight1DiffuseColor"], _effect.Parameters["DirLight1SpecularColor"]);
-            //this.light2 = new BasicDirectionalLight(_effect.Parameters["DirLight2Direction"], _effect.Parameters["DirLight2DiffuseColor"], _effect.Parameters["DirLight2SpecularColor"]);
+            this.light0 = new BasicDirectionalLight2(_effect.Parameters["DirLight0Direction"], _effect.Parameters["DirLight0DiffuseColor"], _effect.Parameters["DirLight0SpecularColor"]);
+            this.light1 = new BasicDirectionalLight2(_effect.Parameters["DirLight1Direction"], _effect.Parameters["DirLight1DiffuseColor"], _effect.Parameters["DirLight1SpecularColor"]);
+            this.light2 = new BasicDirectionalLight2(_effect.Parameters["DirLight2Direction"], _effect.Parameters["DirLight2DiffuseColor"], _effect.Parameters["DirLight2SpecularColor"]);
         }
 
         public void Begin(SaveStateMode mode)
@@ -194,7 +194,7 @@ namespace Carmageddon
             }
         }
 
-        public BasicDirectionalLight DirectionalLight0
+        public BasicDirectionalLight2 DirectionalLight0
         {
             get
             {
@@ -202,7 +202,7 @@ namespace Carmageddon
             }
         }
 
-        public BasicDirectionalLight DirectionalLight1
+        public BasicDirectionalLight2 DirectionalLight1
         {
             get
             {
@@ -210,7 +210,7 @@ namespace Carmageddon
             }
         }
 
-        public BasicDirectionalLight DirectionalLight2
+        public BasicDirectionalLight2 DirectionalLight2
         {
             get
             {

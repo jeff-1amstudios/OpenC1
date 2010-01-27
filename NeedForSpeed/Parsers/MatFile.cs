@@ -53,10 +53,9 @@ namespace Carmageddon.Parsers
                         byte[] flags = reader.ReadBytes(2);
                         byte[] transform = reader.ReadBytes(24);
                         currentMaterial.BasePixel = reader.ReadByte();
-                        reader.ReadByte(); //unk
+                        byte unk = reader.ReadByte(); //unk
                         currentMaterial.DoubleSided = flags[0] == 0x10;
-                        currentMaterial.Name = ReadNullTerminatedString(reader);
-                        
+                        currentMaterial.Name = ReadNullTerminatedString(reader);                        
                         break;
 
                     case MaterialBlockType.TextureName:

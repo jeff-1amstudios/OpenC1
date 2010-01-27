@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using NFSEngine;
 using Carmageddon.Physics;
+using Carmageddon.Parsers;
 
 namespace Carmageddon.HUD
 {
@@ -24,7 +25,8 @@ namespace Carmageddon.HUD
             x = 0.01f;
             y = 0.8f;
 
-            _speedoTexture = Engine.Instance.ContentManager.Load<Texture2D>("content/tacho");
+            PixFile pix = new PixFile(GameVariables.BasePath + "Data\\64x48x8\\pixelmap\\hirestch.pix");
+            _speedoTexture = pix.PixMaps[0].Texture;
             _speedoLineTexture = TextureGenerator.Generate(new Color(255, 0, 0));            
         }
 

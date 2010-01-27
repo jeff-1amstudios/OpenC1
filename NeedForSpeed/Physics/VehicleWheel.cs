@@ -72,7 +72,7 @@ namespace Carmageddon.Physics
                 _smokeEmitter.Enabled = true;
                 IsSkiddingLat = true;
             }
-            else if (_chassis.Speed > 3 && CActor.Driven && wcd.LongitudalSlip > 0.04f)
+            else if (_chassis.Speed > 3 && CActor.IsDriven && wcd.LongitudalSlip > 0.04f)
             {
                 _smokeEmitter.Enabled = true;
                 IsSkiddingLng = true;

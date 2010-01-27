@@ -138,7 +138,7 @@ namespace Carmageddon.Physics
             foreach (CWheelActor wheel in carFile.WheelActors)
             {
                 wheelDesc.LocalPosition = wheel.Position + new Vector3(0, wheelDesc.SuspensionTravel/2, 0);
-                wheelDesc.Radius = wheel.Driven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
+                wheelDesc.Radius = wheel.IsDriven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
 
                 WheelShape ws = (WheelShape)VehicleBody.CreateShape(wheelDesc);
                 ws.Name = wheel.Actor.Name;
@@ -206,7 +206,7 @@ namespace Carmageddon.Physics
                 }
                 foreach (VehicleWheel wheel in Wheels)
                 {
-                    if (wheel.CActor.Steerable)
+                    if (wheel.CActor.IsSteerable)
                         wheel.Shape.SteeringAngle = _steerAngle;
                 }
             }
@@ -241,7 +241,7 @@ namespace Carmageddon.Physics
             Motor.WheelsSpinning = false;
             foreach (VehicleWheel wheel in Wheels)
             {
-                if (wheel.CActor.Driven && (wheel.IsSkiddingLng || wheel.InAir))
+                if (wheel.CActor.IsDriven && (wheel.IsSkiddingLng || wheel.InAir))
                 {
                     Motor.WheelsSpinning = true;
                     break;
@@ -363,7 +363,7 @@ namespace Carmageddon.Physics
                 {
                     if (wheel.IsRear)
                         wheel.ApplyHandbrake(false);
-                    if (wheel.CActor.Driven)
+                    if (wheel.CActor.IsDriven)
                         wheel.Shape.MotorTorque = _motorTorque;
                 }
             }

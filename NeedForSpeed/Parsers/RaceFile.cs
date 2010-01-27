@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using Carmageddon.Parsers.Grooves;
 using Carmageddon.Parsers.Funks;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.Parsers
 {
@@ -28,6 +29,7 @@ namespace Carmageddon.Parsers
         public List<BaseGroove> Grooves;
         public List<BaseFunk> Funks;
         public List<CMaterialModifier> MaterialModifiers;
+        public List<Color> SmokeTables;
 
         public RaceFile(string filename) : base(filename)
         {
@@ -109,6 +111,8 @@ namespace Carmageddon.Parsers
             ReadMaterialModifierSection();
 
             ReadNonCarSection();
+
+            ReadSmokeTablesSection();
             
             CloseFile();
         }
@@ -202,7 +206,7 @@ namespace Carmageddon.Parsers
             int nbrMaterialModifiers = ReadLineAsInt();
             for (int i = 0; i < nbrMaterialModifiers; i++)
             {
-                MaterialModifiers.Add(new CMaterialModifier
+                CMaterialModifier modifier = new CMaterialModifier
                     {
                         CarWallFriction = ReadLineAsFloat(false),
                         TyreRoadFriction = ReadLineAsFloat(false),
@@ -212,9 +216,10 @@ namespace Carmageddon.Parsers
                         CrashSoundIndex = ReadLineAsInt(),
                         ScrapeSoundIndex = ReadLineAsInt(),
                         Sparkiness = ReadLineAsFloat(false),
-                        Expansion = ReadLineAsInt(),
+                        SmokeTableIndex = ReadLineAsInt(),
                         SkidMaterial = ReadLine()
-                    });
+                    };
+                MaterialModifiers.Add(modifier);
             }
         }
 
@@ -229,6 +234,22 @@ namespace Carmageddon.Parsers
                 NoncarFile file = new NoncarFile(GameVariables.BasePath + "Data\\Noncars\\" + filename);
                 NonCars.Add(file);
             }
+        }
+
+        private void ReadSmokeTablesSection()
+        {
+            SmokeTables = new List<Color>();
+            int nbrSmokeTables = ReadLineAsInt();
+            for (int i = 0; i < nbrSmokeTables; i++)
+            {
+                SmokeTables.Add(ReadLineAsColor());
+                ReadLine();  //strengths
+            }
+
+            // now we have smoke tables, initialize material modifiers
+
+            foreach (CMaterialModifier modifier in MaterialModifiers)
+                modifier.Initialize(this);
         }
     }
 }
