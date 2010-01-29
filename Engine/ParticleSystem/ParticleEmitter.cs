@@ -11,6 +11,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using PlatformEngine;
+using System.Collections.Generic;
 #endregion
 
 namespace Particle3DSample
@@ -46,38 +47,44 @@ namespace Particle3DSample
         float _timeLeftOver;
         float _particlesPerSecond;
 
-        public bool Enabled { get; set; }
-
         #endregion
 
         public float LastDumpTime;
+        public bool Enabled = true;
+        public List<ParticleSystem> ParticleSystems = new List<ParticleSystem>();
+
+        public static List<ParticleEmitter> AllEmitters = new List<ParticleEmitter>();
 
         /// <summary>
         /// Constructs a new particle emitter object.
         /// </summary>
-        public ParticleEmitter(ParticleSystem particleSystem,
-                               float particlesPerSecond, Vector3 initialPosition)
+        public ParticleEmitter(ParticleSystem particleSystem, float particlesPerSecond, Vector3 initialPosition)
         {
             ParticleSystem = particleSystem;
 
             _timeBetweenParticles = 1.0f / particlesPerSecond;
             _particlesPerSecond = particlesPerSecond;
-            
             _previousPosition = initialPosition;
+            
+            AllEmitters.Add(this);
         }
 
+        public void Update(Vector3 newPosition)
+        {
+            Update(newPosition, ParticleSystem);
+        }
 
         /// <summary>
         /// Updates the emitter, creating the appropriate number of particles
         /// in the appropriate positions.
         /// </summary>
-        public void Update(Vector3 newPosition)
+        public void Update(Vector3 newPosition, ParticleSystem particleSystem)
         {
             float elapsedSeconds = Engine.Instance.ElapsedSeconds;
             
             // Work out how much time has passed since the previous update.
 
-            if (Enabled && elapsedSeconds > 0)
+            if (elapsedSeconds > 0 && Enabled)
             {
                 // Work out how fast we are moving.
                 Vector3 velocity = (newPosition - _previousPosition) / elapsedSeconds;
@@ -103,7 +110,7 @@ namespace Particle3DSample
                     Vector3 position = Vector3.Lerp(_previousPosition, newPosition, mu);
 
                     // Create the particle.
-                    ParticleSystem.AddParticle(position, velocity);
+                    particleSystem.AddParticle(position, velocity);
                 }
 
                 // Store any time we didn't use, so it can be part of the next update.

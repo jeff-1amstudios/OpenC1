@@ -20,12 +20,13 @@ namespace Carmageddon.Physics
         private VehicleChassis _chassis;
         public bool IsRear;
         private float _axleOffset;
-        private bool _handbrakeOn;
-        ParticleEmitter _smokeEmitter;
-        public bool IsSkiddingLat, IsSkiddingLng;
+        private float _handbrake;
+        public ParticleEmitter SmokeEmitter;
+        public bool IsSkiddingLat, IsSkiddingLng, ShouldPlaySkidSound;
         public Vector3 ContactPoint;
-        public int MaterialIndex;
         public int Index;
+        private TireFunctionDescription _latTireFn, _lngTireFn;
+        private float _defaultLatExtremum, _defaultLngExtremum;
 
         public bool InAir
         {
@@ -39,13 +40,14 @@ namespace Carmageddon.Physics
             _axleOffset = axleOffset;
             CActor = cactor;
 
-            if (_smokeEmitter == null)
-            {
-                if (GameVariables.TyreSmokeSystem == null) GameVariables.TyreSmokeSystem = new TyreSmokeParticleSystem();
-                _smokeEmitter = new ParticleEmitter(GameVariables.TyreSmokeSystem, 15, Vector3.Zero);
-            }
+            SmokeEmitter = new ParticleEmitter(null, 15, Vector3.Zero);
 
             IsRear = !CActor.IsFront;
+
+            _latTireFn = Shape.LateralTireForceFunction;
+            _lngTireFn = Shape.LongitudalTireForceFunction;
+            _defaultLatExtremum = _latTireFn.ExtremumValue;
+            _defaultLngExtremum = _lngTireFn.ExtremumValue;
         }
 
         public Vector3 GlobalPosition
@@ -56,40 +58,49 @@ namespace Carmageddon.Physics
         public void Update()
         {
             WheelContactData wcd = Shape.GetContactData();
-
             UpdateMatrices(wcd);
-
             ContactPoint = wcd.ContactPoint;
-            
+
+            SmokeEmitter.Enabled = false;
+            IsSkiddingLat = IsSkiddingLng = false;
+
             if (wcd.ContactForce != 0)
             {
-                CMaterialModifier materialModifier = Race.Current.RaceFile.MaterialModifiers[(int)wcd.OtherShapeMaterialIndex];
+                int materialIndex = (int)wcd.OtherShapeMaterialIndex;
+                CMaterialModifier materialModifier = Race.Current.RaceFile.MaterialModifiers[materialIndex];
                 materialModifier.UpdateWheelShape(_chassis, this);
-            }
 
-            if (_chassis.Speed > 10 && (_handbrakeOn || Math.Abs(wcd.LateralSlip) > 0.23f))
-            {
-                _smokeEmitter.Enabled = true;
-                IsSkiddingLat = true;
-            }
-            else if (_chassis.Speed > 3 && CActor.IsDriven && wcd.LongitudalSlip > 0.04f)
-            {
-                _smokeEmitter.Enabled = true;
-                IsSkiddingLng = true;
-            }
-            else
-            {
-                IsSkiddingLat = IsSkiddingLng = false;
-                _smokeEmitter.Enabled = false;
-            }
+                if (_chassis.Speed > 10 && (_handbrake==1 || Math.Abs(wcd.LateralSlip) > 0.23f))
+                {
+                    IsSkiddingLat = true;
+                    SmokeEmitter.Enabled = true;
+                }
+                else if (_chassis.Speed > 3 && CActor.IsDriven && wcd.LongitudalSlip > 0.04f)
+                {
+                    IsSkiddingLng = true;
+                    SmokeEmitter.Enabled = true;
+                }
 
-            _smokeEmitter.Update(wcd.ContactPoint);
+                // Setup tire functions taking into account handbrake and terrain
+                float latExtremum = _defaultLatExtremum;
+                if (IsRear)
+                    latExtremum = MathHelper.Lerp(2.1f, 1.7f, _handbrake);
+                latExtremum *= materialModifier.TyreRoadFriction;
+                _latTireFn.ExtremumValue = latExtremum;
+
+                _lngTireFn.ExtremumValue = _defaultLngExtremum * materialModifier.TyreRoadFriction;
+                Shape.LateralTireForceFunction = _latTireFn;
+                Shape.LongitudalTireForceFunction = _lngTireFn;
+                
+                ShouldPlaySkidSound = IsSkiddingLat | IsSkiddingLng && materialIndex == 0;
+                SmokeEmitter.Update(wcd.ContactPoint);
+            }
         }
 
-        public void ApplyHandbrake(bool apply)
+        public void ApplyHandbrake(float amount)
         {
-            _handbrakeOn = apply;
-            if (apply)
+            _handbrake = amount;
+            if (amount == 1)
             {
                 Shape.MotorTorque = 0;
                 Shape.BrakeTorque = 800;
@@ -106,7 +117,15 @@ namespace Carmageddon.Physics
             else
                 suspensionLength = wcd.ContactPosition - Shape.Radius;
 
-            if (!_handbrakeOn) _rotationMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(Shape.AxleSpeed));
+            if (_handbrake != 1)
+            {
+                if (IsSkiddingLng && Shape.MotorTorque != 0)
+                {
+                    _rotationMatrix *= Matrix.CreateRotationX(-0.3f);
+                }
+                else
+                    _rotationMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(Shape.AxleSpeed));
+            }
             
             Matrix translation = Matrix.CreateTranslation(_axleOffset, -suspensionLength, 0.0f);
             _renderMatrix = _rotationMatrix * Matrix.CreateRotationY(Shape.SteeringAngle) * translation;

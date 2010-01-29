@@ -21,18 +21,18 @@ namespace Carmageddon.Gfx
 
         protected override void InitializeSettings(ParticleSettings settings)
         {
-            settings.Texture = Engine.Instance.ContentManager.Load<Texture2D>("Content/smoke");
+            settings.Texture = Engine.Instance.ContentManager.Load<Texture2D>("Content/material-modifier-smoke");
             
-            settings.MaxParticles = 100;
-            //settings.MinColor = _color;
-            //settings.MaxColor = _color;
+            settings.MaxParticles = 150;
+            settings.MinColor = _color;
+            settings.MaxColor = _color;
 
-            settings.Duration = TimeSpan.FromSeconds(0.4f);
+            settings.Duration = TimeSpan.FromSeconds(1f);
 
             settings.MinHorizontalVelocity = 0;
             settings.MaxHorizontalVelocity = 1;
 
-            settings.MinVerticalVelocity = 2;
+            settings.MinVerticalVelocity = 1f;
             settings.MaxVerticalVelocity = 4;
 
             settings.Gravity = new Vector3(0, -5, 0);

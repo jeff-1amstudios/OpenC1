@@ -41,11 +41,7 @@ namespace Carmageddon.CameraViews
             foreach (BaseHUDItem item in _hudItems)
                 item.Render();
 
-            Engine.Instance.SpriteBatch.End();
-            Engine.Instance.Device.RenderState.DepthBufferEnable = true;
-            Engine.Instance.Device.RenderState.AlphaBlendEnable = false;
-            Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
-            Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
+            
         }
 
         public void Activate()

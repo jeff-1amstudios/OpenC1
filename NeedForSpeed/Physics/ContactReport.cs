@@ -26,7 +26,6 @@ namespace Carmageddon.Physics
             : base()
         {
             GameVariables.SparksEmitter = new ParticleEmitter(new SparksParticleSystem(), 10, Vector3.Zero);
-            GameVariables.SparksEmitter.Enabled = true;
         }
 
         public override void OnContactNotify(ContactPair contactInfo, ContactPairFlag events)
@@ -71,6 +70,7 @@ namespace Carmageddon.Physics
                                 while (iter.GoToNextPoint())
                                 {
                                     Vector3 pos = iter.GetPoint();
+                                    
                                     GameVariables.SparksEmitter.Update(pos);
                                     GameConsole.WriteEvent("noncar collision");
                                 }

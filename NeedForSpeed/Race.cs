@@ -129,9 +129,6 @@ namespace Carmageddon
                 }
             }
 
-            foreach (CMaterialModifier modifier in RaceFile.MaterialModifiers)
-                modifier.Update();
-
             MessageRenderer.Instance.Update();
         }
 
@@ -142,9 +139,6 @@ namespace Carmageddon
 
             RaceTime.Render();
             MessageRenderer.Instance.Render();
-
-            foreach (CMaterialModifier modifier in RaceFile.MaterialModifiers)
-                modifier.Render();
         }
 
         public ActFile GetTrackActors()

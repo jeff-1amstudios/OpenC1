@@ -135,13 +135,7 @@ namespace Carmageddon
 
         public void Update()
         {
-            GameVariables.TyreSmokeSystem.Update();
-            GameVariables.TyreSmokeSystem.SetCamera(Engine.Instance.Camera);
-
-            _vehicleBitsEmitter.ParticleSystem.Update();
-            _vehicleBitsEmitter.ParticleSystem.SetCamera(Engine.Instance.Camera);
-                        
-
+           
             foreach (BaseGroove groove in _grooves)
             {
                 groove.Update();
@@ -163,7 +157,7 @@ namespace Carmageddon
 
             foreach (VehicleWheel wheel in Chassis.Wheels)
             {
-                if (wheel.IsSkiddingLat)
+                if (wheel.ShouldPlaySkidSound) // wheel.IsSkiddingLat || wheel.IsSkiddingLng)
                 {
                     SoundCache.PlaySkid();
                     break;
@@ -174,7 +168,7 @@ namespace Carmageddon
 
         public void Render()
         {
-            _vehicleBitsEmitter.ParticleSystem.Render();
+            //_vehicleBitsEmitter.ParticleSystem.Render();
                        
 
             ModelShadow.Render(CarFile.BoundingBox, Chassis);

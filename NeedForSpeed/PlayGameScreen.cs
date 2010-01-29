@@ -12,6 +12,7 @@ using System.Diagnostics;
 using Carmageddon.CameraViews;
 using Carmageddon.Physics;
 using System.IO;
+using Particle3DSample;
 
 
 namespace Carmageddon
@@ -37,7 +38,7 @@ namespace Carmageddon
 
             _carModel = new VehicleModel(GameVariables.BasePath + @"data\cars\blkeagle.txt");
 
-            _race = new Race(GameVariables.BasePath + @"data\races\citya1.TXT");
+            _race = new Race(GameVariables.BasePath + @"data\races\ice2.TXT");
 
             _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX-3f, _race.RaceFile.DepthCueMode);
             _skybox.HeightOffset = -220 + _race.RaceFile.SkyboxPositionY * 1.5f;
@@ -78,7 +79,7 @@ namespace Carmageddon
                 _camera.Orientation = _chassis.Body.GlobalOrientation.Forward;
                 if (_chassis.Speed > 15)
                 {
-                    _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : 0);
+                    _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : MathHelper.PiOver2);
                 }
                 _camera.HeightOverride = 0;
             }
@@ -111,11 +112,10 @@ namespace Carmageddon
                         
             _carModel.Update();
 
-            GameVariables.SparksEmitter.ParticleSystem.SetCamera(Engine.Instance.Camera);
-            GameVariables.SparksEmitter.ParticleSystem.Update();
-            
-
             Engine.Instance.Camera.Update(gameTime);
+
+            foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
+                system.Update();
 
             if (_skybox != null) _skybox.Update(gameTime);
 
@@ -144,10 +144,22 @@ namespace Carmageddon
 
             _race.Render();
 
-            GameVariables.TyreSmokeSystem.Render();
-            GameVariables.SparksEmitter.ParticleSystem.Render();
-
             _chaseView.Render();
+
+            foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
+            {
+                system.Render();
+            }
+
+            //VehicleWheel.TyreSmokeSystem.Render();
+            //GameVariables.SparksEmitter.ParticleSystem.Render();
+
+            Engine.Instance.SpriteBatch.End();
+            Engine.Instance.Device.RenderState.DepthBufferEnable = true;
+            Engine.Instance.Device.RenderState.AlphaBlendEnable = false;
+            Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
+            Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
+
 
             GameVariables.CurrentEffect.End();
 

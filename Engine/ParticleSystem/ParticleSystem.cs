@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework.Graphics;
 using PlatformEngine;
 using NFSEngine;
 using System.Diagnostics;
+using System.Collections.Generic;
 #endregion
 
 namespace Particle3DSample
@@ -141,6 +142,8 @@ namespace Particle3DSample
 
         #endregion
 
+        public static List<ParticleSystem> AllParticleSystems = new List<ParticleSystem>();
+
         #region Initialization
 
 
@@ -157,6 +160,8 @@ namespace Particle3DSample
             int size = ParticleVertex.SizeInBytes * particles.Length;
 
             vertexBuffer = new DynamicVertexBuffer(Engine.Instance.Device, size, BufferUsage.WriteOnly | BufferUsage.Points);
+
+            AllParticleSystems.Add(this);
         }
 
 
@@ -315,6 +320,10 @@ namespace Particle3DSample
         {
             GraphicsDevice device = Engine.Instance.Device;
 
+            ICamera camera = Engine.Instance.Camera;
+            effectViewParameter.SetValue(camera.View);
+            effectProjectionParameter.SetValue(camera.Projection);
+
             // Restore the vertex buffer contents if the graphics device was lost.
             if (vertexBuffer.IsContentLost)
             {
@@ -463,18 +472,6 @@ namespace Particle3DSample
         #endregion
 
         #region Public Methods
-
-
-        /// <summary>
-        /// Sets the camera view and projection matrices
-        /// that will be used to draw this particle system.
-        /// </summary>
-        public void SetCamera(ICamera camera)
-        {
-            effectViewParameter.SetValue(camera.View);
-            effectProjectionParameter.SetValue(camera.Projection);
-        }
-
 
         /// <summary>
         /// Adds a new particle to the system.

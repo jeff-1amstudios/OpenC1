@@ -146,7 +146,7 @@ namespace Carmageddon.Parsers
         private void ReadPolygonBlock(EndianBinaryReader reader, CModel model)
         {
             model.Polygons = new List<Polygon>();
-            
+
             int polygonCount = reader.ReadInt32();
 
             for (int i = 0; i < polygonCount; i++)
@@ -158,6 +158,8 @@ namespace Carmageddon.Parsers
                 byte unk1 = reader.ReadByte();
                 byte unk2 = reader.ReadByte();
                 byte unk3 = reader.ReadByte();
+
+                //Debug.WriteLine(unk1 + ", " + unk2 + ", " + unk3);
 
                 Polygon polygon = new Polygon(v1, v2, v3);
                 polygon.CalculateNormal(_vertexPositions);

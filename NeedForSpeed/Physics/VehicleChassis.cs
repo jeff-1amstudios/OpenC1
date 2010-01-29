@@ -257,16 +257,16 @@ namespace Carmageddon.Physics
             GameConsole.WriteLine("Lat Speed", lateralSpeed);
             GameConsole.WriteLine("Handbrake", _handbrake);
 
-            float angVel = MathHelper.Lerp(2.1f, 1.7f, _handbrake);
-            _rearLateralTireFn.ExtremumValue = angVel;
+            //float angVel = MathHelper.Lerp(2.1f, 1.7f, _handbrake);
+            //_rearLateralTireFn.ExtremumValue = angVel;
 
             foreach (VehicleWheel wheel in Wheels)
             {
                 wheel.Update();
-                if (wheel.IsRear)
-                {
-                    wheel.Shape.LateralTireForceFunction = _rearLateralTireFn;
-                }
+                //if (wheel.IsRear)
+                //{
+                //    wheel.Shape.LateralTireForceFunction = _rearLateralTireFn;
+                //}
             }
         }
 
@@ -347,26 +347,16 @@ namespace Carmageddon.Physics
 
         private void UpdateTorque()
         {
-            if (_handbrake == 1)
+            foreach (VehicleWheel wheel in Wheels)
             {
-                //float brakeTorque = MathHelper.Lerp(0, 600, _handbrake);
-                foreach (VehicleWheel wheel in Wheels)
-                {
-                    if (wheel.IsRear)
-                        wheel.ApplyHandbrake(true);
-                }
-                return;
+                if (wheel.IsRear)
+                    wheel.ApplyHandbrake(_handbrake);
+                if (wheel.CActor.IsDriven)
+                    wheel.Shape.MotorTorque = _motorTorque;
             }
-            else
-            {
-                foreach (VehicleWheel wheel in Wheels)
-                {
-                    if (wheel.IsRear)
-                        wheel.ApplyHandbrake(false);
-                    if (wheel.CActor.IsDriven)
-                        wheel.Shape.MotorTorque = _motorTorque;
-                }
-            }
+
+            if (_handbrake == 1) return;
+
             foreach (VehicleWheel wheel in Wheels)
             {
                 wheel.Shape.BrakeTorque = _brakeTorque;
