@@ -172,6 +172,9 @@ namespace Carmageddon
                        
 
             ModelShadow.Render(CarFile.BoundingBox, Chassis);
+            
+            GameVariables.SkidMarkBuffer.Render();
+
 
             _models.SetupRender();
             _actors.Render(_models, Chassis.Body.GlobalPose);

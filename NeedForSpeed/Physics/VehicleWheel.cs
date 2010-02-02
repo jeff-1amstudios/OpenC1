@@ -70,7 +70,7 @@ namespace Carmageddon.Physics
                 CMaterialModifier materialModifier = Race.Current.RaceFile.MaterialModifiers[materialIndex];
                 materialModifier.UpdateWheelShape(_chassis, this);
 
-                if (_chassis.Speed > 10 && (_handbrake==1 || Math.Abs(wcd.LateralSlip) > 0.23f))
+                if (_chassis.Speed > 10 && (_handbrake == 1 || Math.Abs(wcd.LateralSlip) > 0.23f))
                 {
                     IsSkiddingLat = true;
                     SmokeEmitter.Enabled = true;
@@ -84,16 +84,21 @@ namespace Carmageddon.Physics
                 // Setup tire functions taking into account handbrake and terrain
                 float latExtremum = _defaultLatExtremum;
                 if (IsRear)
-                    latExtremum = MathHelper.Lerp(2.1f, 1.7f, _handbrake);
+                    latExtremum = MathHelper.Lerp(2.2f, 1.6f, _handbrake);
                 latExtremum *= materialModifier.TyreRoadFriction;
                 _latTireFn.ExtremumValue = latExtremum;
 
                 _lngTireFn.ExtremumValue = _defaultLngExtremum * materialModifier.TyreRoadFriction;
                 Shape.LateralTireForceFunction = _latTireFn;
                 Shape.LongitudalTireForceFunction = _lngTireFn;
-                
+
                 ShouldPlaySkidSound = IsSkiddingLat | IsSkiddingLng && materialIndex == 0;
                 SmokeEmitter.Update(wcd.ContactPoint);
+
+                if (IsSkiddingLat | IsSkiddingLng)
+                {
+                    GameVariables.SkidMarkBuffer.AddSkid(this, wcd.ContactPoint);
+                }
             }
         }
 

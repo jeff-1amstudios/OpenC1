@@ -46,7 +46,7 @@ namespace NFSEngine
         }
 
         public static void WriteEvent(string evt){
-            _scrollingLines[_currentLine++] = evt;
+            _scrollingLines[_currentLine++] = evt +  " [" + Math.Round(Engine.Instance.TotalSeconds, 2) + "]";
             if (_currentLine == _scrollingLines.Count) _currentLine = 0;
         }
 

@@ -216,9 +216,12 @@ namespace Carmageddon.Parsers
                         CrashSoundIndex = ReadLineAsInt(),
                         ScrapeSoundIndex = ReadLineAsInt(),
                         Sparkiness = ReadLineAsFloat(false),
-                        SmokeTableIndex = ReadLineAsInt(),
-                        SkidMaterial = ReadLine()
+                        SmokeTableIndex = ReadLineAsInt()
                     };
+
+                MatFile matFile = new MatFile(GameVariables.BasePath + "data\\material\\" + ReadLine());
+                modifier.SkidMaterial = matFile.Materials[0];
+                modifier.SkidMaterial.ResolveTexture();
                 MaterialModifiers.Add(modifier);
             }
         }

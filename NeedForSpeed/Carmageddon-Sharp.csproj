@@ -86,6 +86,7 @@
     <Compile Include="CMaterial.cs" />
     <Compile Include="CMaterialModifier.cs" />
     <Compile Include="Gfx\MaterialSmokeParticleSystem.cs" />
+    <Compile Include="Gfx\SkidMarkBuffer.cs" />
     <Compile Include="MessageRenderer.cs" />
     <Compile Include="RaceTimeController.cs" />
     <Compile Include="CSoundDescription.cs" />

@@ -22,7 +22,6 @@ namespace Carmageddon
         ResourceCache _resourceCache;
         public Texture2D HorizonTexture;
         public RaceTimeController RaceTime = new RaceTimeController();
-        bool _started;
 
         public static Race Current;
 
@@ -80,6 +79,9 @@ namespace Carmageddon
             Physics.TrackProcessor.GenerateTrackActor(RaceFile, _actors, _models);
             _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, RaceFile.NonCars);
 
+            
+            GameVariables.SkidMarkBuffer = new Carmageddon.Gfx.SkidMarkBuffer(200);
+
             Current = this;
         }
 
@@ -92,11 +94,6 @@ namespace Carmageddon
             PhysX.Instance.Scene.SetActorGroupPairFlags(10, 11, ContactPairFlag.OnTouch);
         }
 
-
-        public void Start()
-        {
-            _started = true;
-        }
 
         public void Update()
         {
@@ -130,6 +127,7 @@ namespace Carmageddon
             }
 
             MessageRenderer.Instance.Update();
+
         }
 
         public void Render()

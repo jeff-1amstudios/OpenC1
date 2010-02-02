@@ -79,7 +79,7 @@ namespace Carmageddon
                 _camera.Orientation = _chassis.Body.GlobalOrientation.Forward;
                 if (_chassis.Speed > 15)
                 {
-                    _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : MathHelper.PiOver2);
+                    _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : 0);
                 }
                 _camera.HeightOverride = 0;
             }

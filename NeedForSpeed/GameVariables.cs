@@ -5,6 +5,7 @@ using System.Text;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
 using Particle3DSample;
+using Carmageddon.Gfx;
 
 namespace Carmageddon
 {
@@ -22,6 +23,7 @@ namespace Carmageddon
         public static string BasePath = "c:\\games\\carma1\\";
         public static BasicEffect2 CurrentEffect;
         public static ParticleEmitter SparksEmitter;
+        public static SkidMarkBuffer SkidMarkBuffer; 
         
     }
 }

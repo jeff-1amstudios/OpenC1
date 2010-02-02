@@ -99,7 +99,7 @@ namespace Carmageddon.Physics
             TireFunctionDescription _frontLateralTireFn = new TireFunctionDescription();
 
             float mul = 20f;
-            _frontLateralTireFn.ExtremumSlip = 0.37f;
+            _frontLateralTireFn.ExtremumSlip = 0.30f;
             _frontLateralTireFn.ExtremumValue = 2.0f;
             _frontLateralTireFn.AsymptoteSlip = 1.4f * mul;
             _frontLateralTireFn.AsymptoteValue = 0.01f;
@@ -107,7 +107,7 @@ namespace Carmageddon.Physics
             _rearLateralTireFn = new TireFunctionDescription();
 
             mul = 20f;
-            _rearLateralTireFn.ExtremumSlip = 0.37f;
+            _rearLateralTireFn.ExtremumSlip = 0.33f;
             _rearLateralTireFn.ExtremumValue = 2.1f;
             _rearLateralTireFn.AsymptoteSlip = 1.4f * mul;
             _rearLateralTireFn.AsymptoteValue = 0.01f;
@@ -187,6 +187,7 @@ namespace Carmageddon.Physics
             float diff = Math.Abs(endLocal - _steerAngle);
             float max = 0.0007f;
             if (_desiredSteerAngle == 0) max = 0.0005f;
+            if (_desiredSteerAngle < -0.1f && _steerAngle > 0.1f || _desiredSteerAngle > 0.1f && _steerAngle < -0.1f) max = 0.002f;
             if (diff > 0.0025f) // Is the current steering angle ~= desired steering angle?
             { // If not, adjust carefully
 
@@ -337,7 +338,7 @@ namespace Carmageddon.Physics
         public void ReleaseHandbrake()
         {
             if (_handbrake == 0) return;
-            _handbrake -= Engine.Instance.ElapsedSeconds*0.4f;
+            _handbrake -= Engine.Instance.ElapsedSeconds*0.8f;
             if (_handbrake < 0) _handbrake = 0;
         }
 

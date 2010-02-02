@@ -22,7 +22,7 @@ namespace Carmageddon
         public int ScrapeSoundIndex;
         public float Sparkiness;
         public int SmokeTableIndex;
-        public string SkidMaterial;
+        public CMaterial SkidMaterial;
 
         private float _lastBump, _nextWheel;
         private static TyreSmokeParticleSystem _defaultTyreSmokeSystem;
@@ -61,6 +61,8 @@ namespace Carmageddon
             }
             else
                 wheel.SmokeEmitter.ParticleSystem = _defaultTyreSmokeSystem;
+
+            GameVariables.SkidMarkBuffer.SetTexture(SkidMaterial.Texture);
         }
     }
 }

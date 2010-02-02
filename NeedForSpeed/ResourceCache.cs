@@ -39,17 +39,7 @@ namespace Carmageddon
         {
             foreach (CMaterial material in _materials)
             {
-                if (material.PixName == null)
-                {
-                    //simp mat
-                    material.Texture = TextureGenerator.Generate(GameVariables.Palette.GetRGBColorForPixel(material.BasePixel));
-                }
-                else
-                {
-                    PixMap pixmap = GetPixelMap(material.PixName);
-                    if (pixmap != null)
-                        material.Texture = pixmap.Texture;
-                }
+                material.ResolveTexture(_pixMaps);
             }
         }
     }

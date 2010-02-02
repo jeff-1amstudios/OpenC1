@@ -30,10 +30,10 @@ namespace Carmageddon.Gfx
 
             settings.Duration = TimeSpan.FromSeconds(1.5f);
 
-            settings.MinHorizontalVelocity = 2f;
+            settings.MinHorizontalVelocity = 2.2f;
             settings.MaxHorizontalVelocity = 3f;
 
-            settings.MinVerticalVelocity = 1.5f;
+            settings.MinVerticalVelocity = 1.9f;
             settings.MaxVerticalVelocity = 3f;
             settings.DurationRandomness = 0.2f;
             settings.EmitterVelocitySensitivity = 0f;
@@ -42,11 +42,11 @@ namespace Carmageddon.Gfx
 
             settings.EndVelocity = 1f;
 
-            settings.MinStartSize = 0.2f;
-            settings.MaxStartSize = 0.8f;
+            settings.MinStartSize = 0.3f;
+            settings.MaxStartSize = 0.9f;
 
-            settings.MinEndSize = 0.2f;
-            settings.MaxEndSize = 0.8f;
+            settings.MinEndSize = 0.5f;
+            settings.MaxEndSize = 0.9f;
 
             settings.MinRotateSpeed = 6f;
             settings.MaxRotateSpeed = 8f;

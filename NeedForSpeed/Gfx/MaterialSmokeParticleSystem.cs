@@ -23,16 +23,16 @@ namespace Carmageddon.Gfx
         {
             settings.Texture = Engine.Instance.ContentManager.Load<Texture2D>("Content/material-modifier-smoke");
             
-            settings.MaxParticles = 150;
+            settings.MaxParticles = 200;
             settings.MinColor = _color;
             settings.MaxColor = _color;
 
-            settings.Duration = TimeSpan.FromSeconds(1f);
+            settings.Duration = TimeSpan.FromSeconds(0.7f);
 
-            settings.MinHorizontalVelocity = 0;
+            settings.MinHorizontalVelocity = 0.2f;
             settings.MaxHorizontalVelocity = 1;
 
-            settings.MinVerticalVelocity = 1f;
+            settings.MinVerticalVelocity = 1;
             settings.MaxVerticalVelocity = 4;
 
             settings.Gravity = new Vector3(0, -5, 0);
@@ -40,10 +40,10 @@ namespace Carmageddon.Gfx
             settings.EndVelocity = 0.75f;
 
             settings.MinStartSize = 1;
-            settings.MaxStartSize = 2;
+            settings.MaxStartSize = 1;
 
-            settings.MinEndSize = 3;
-            settings.MaxEndSize = 7;
+            settings.MinEndSize = 2;
+            settings.MaxEndSize = 2;
         }
     }
 }
