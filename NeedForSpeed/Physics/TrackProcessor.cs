@@ -175,7 +175,7 @@ namespace Carmageddon.Physics
                             anchorPos.Y = instance.GlobalPosition.Y;
                             jointDesc.SetGlobalAnchor(anchorPos);
                             jointDesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
-                            jointDesc.MaxForce = nonCar.BendAngleBeforeSnapping * 125;
+                            jointDesc.MaxForce = nonCar.BendAngleBeforeSnapping * nonCar.Mass * nonCar.TorqueRequiredToMove * 1.8f;
                             FixedJoint joint = (FixedJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
                             
                             //instance.SolverIterationCount = 128;

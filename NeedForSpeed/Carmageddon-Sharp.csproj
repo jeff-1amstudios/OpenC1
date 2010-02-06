@@ -82,12 +82,16 @@
     <Compile Include="BigEndianBitConverter.cs" />
     <Compile Include="CActor.cs" />
     <Compile Include="CameraViews\ChaseView.cs" />
+    <Compile Include="CameraViews\CockpitView.cs" />
+    <Compile Include="CameraViews\FlyView.cs" />
     <Compile Include="CameraViews\ICameraView.cs" />
     <Compile Include="CMaterial.cs" />
     <Compile Include="CMaterialModifier.cs" />
     <Compile Include="Gfx\MaterialSmokeParticleSystem.cs" />
     <Compile Include="Gfx\SkidMarkBuffer.cs" />
     <Compile Include="MessageRenderer.cs" />
+    <Compile Include="Parsers\CockpitFile.cs" />
+    <Compile Include="Parsers\TextFileDecryptor.cs" />
     <Compile Include="RaceTimeController.cs" />
     <Compile Include="CSoundDescription.cs" />
     <Compile Include="CWheelActor.cs" />

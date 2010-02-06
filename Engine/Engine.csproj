@@ -93,11 +93,9 @@
     <Compile Include="GameObject.cs" />
     <Compile Include="DebugRenderer.cs" />
     <Compile Include="Cameras\ICamera.cs" />
-    <Compile Include="IDrawableObject.cs" />
     <Compile Include="IGameScreen.cs" />
     <Compile Include="InputProvider.cs" />
     <Compile Include="IPlayer.cs" />
-    <Compile Include="IWorld.cs" />
     <Compile Include="ParticleSystem\ParticleEmitter.cs" />
     <Compile Include="ParticleSystem\ParticleSettings.cs" />
     <Compile Include="ParticleSystem\ParticleSystem.cs" />

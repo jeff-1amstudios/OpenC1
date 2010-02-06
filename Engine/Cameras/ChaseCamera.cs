@@ -249,7 +249,7 @@ namespace NFSEngine
         /// behind the chased object. The camera's animation is controlled by a simple
         /// physical spring attached to the camera and anchored to the desired position.
         /// </summary>
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             
             UpdateWorldPositions();

@@ -13,6 +13,7 @@ namespace Carmageddon.Parsers
         public List<Vector3> ExtraBoundingBoxPoints = new List<Vector3>();
         public float Mass, MassWhenAttached;
         public float BendAngleBeforeSnapping;
+        public float TorqueRequiredToMove;
         
         public NoncarFile(string filename)
             : base(filename)
@@ -34,7 +35,8 @@ namespace Carmageddon.Parsers
             MassWhenAttached = float.Parse(masses[1]) * 1000;
 
             ReadLine(); //ang mom dimensions
-            BendAngleBeforeSnapping = ReadLineAsFloat();
+            BendAngleBeforeSnapping = ReadLineAsFloat(false);
+            TorqueRequiredToMove = ReadLineAsFloat(false);
 
             CloseFile();
         }

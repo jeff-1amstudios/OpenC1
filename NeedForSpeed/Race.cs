@@ -11,6 +11,7 @@ using StillDesign.PhysX;
 using Carmageddon.Parsers.Grooves;
 using Carmageddon.Parsers.Funks;
 using NFSEngine;
+using Carmageddon.Gfx;
 
 namespace Carmageddon
 {
@@ -22,6 +23,7 @@ namespace Carmageddon
         ResourceCache _resourceCache;
         public Texture2D HorizonTexture;
         public RaceTimeController RaceTime = new RaceTimeController();
+        SkyBox _skybox;
 
         public static Race Current;
 
@@ -71,8 +73,9 @@ namespace Carmageddon
             
             if (RaceFile.SkyboxTexture != "none")
             {
-                PixFile horizonPix = new PixFile(@"C:\Games\carma1\data\pixelmap\" + RaceFile.SkyboxTexture);
-                HorizonTexture = horizonPix.PixMaps[0].Texture;
+                PixFile horizonPix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\" + RaceFile.SkyboxTexture);
+                _skybox = SkyboxGenerator.Generate(horizonPix.PixMaps[0].Texture, RaceFile.SkyboxRepetitionsX - 3f, RaceFile.DepthCueMode);
+                _skybox.HeightOffset = -220 + RaceFile.SkyboxPositionY * 1.5f;
             }
             GameVariables.DepthCueMode = RaceFile.DepthCueMode;
 
@@ -101,12 +104,15 @@ namespace Carmageddon
 
             if (!RaceTime.IsStarted)
             {
+
                 if ((int)RaceTime.TotalTime == 2 && !RaceTime.CountingDown)
                     RaceTime.StartCountdown();
-
-                float height = 55 -(RaceTime.CountdownTime * 35f);
-                if (height > 2)
-                    ((FixedChaseCamera)Engine.Instance.Camera).HeightOverride = height;
+                if (Engine.Instance.Camera is FixedChaseCamera)
+                {
+                    float height = 55 - (RaceTime.CountdownTime * 35f);
+                    if (height > 2)
+                        ((FixedChaseCamera)Engine.Instance.Camera).HeightOverride = height;
+                }
             }
 
             foreach (BaseGroove groove in RaceFile.Grooves)
@@ -132,6 +138,8 @@ namespace Carmageddon
 
         public void Render()
         {
+            if (_skybox != null) _skybox.Draw();
+
             _models.SetupRender();
             _actors.Render(_models, Matrix.Identity);
 

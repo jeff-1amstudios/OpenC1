@@ -42,6 +42,7 @@ namespace Carmageddon
             if (!_enabled) return null;
             CSoundDescription csound = _soundDescriptions.Find(a => a.Id == id);
             ISound instance = Engine.Instance.Audio.Load(GameVariables.BasePath + "data\\sound\\" + csound.FileName, false);
+            instance.Volume = -1000;
             instance.Id = csound.Id;
             _instances.Add(instance);
             return instance;

@@ -33,7 +33,7 @@ namespace PlatformEngine
         Cube
     }
 
-    public class DebugRenderer : IDrawableObject
+    public class DebugRenderer
     {
         #region Creation / Initialization
         public DebugRenderer()

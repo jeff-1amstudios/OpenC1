@@ -4,7 +4,9 @@ using System.Text;
 
 namespace PlatformEngine
 {
-    public interface IGameScreen : IDrawableObject
+    public interface IGameScreen
     {
+        void Update();
+        void Render();
     }
 }

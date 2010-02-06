@@ -218,10 +218,13 @@ namespace Carmageddon.Parsers
                         Sparkiness = ReadLineAsFloat(false),
                         SmokeTableIndex = ReadLineAsInt()
                     };
-
-                MatFile matFile = new MatFile(GameVariables.BasePath + "data\\material\\" + ReadLine());
-                modifier.SkidMaterial = matFile.Materials[0];
-                modifier.SkidMaterial.ResolveTexture();
+                string matName = ReadLine();
+                if (matName != "none")
+                {
+                    MatFile matFile = new MatFile(GameVariables.BasePath + "data\\material\\" + matName);
+                    modifier.SkidMaterial = matFile.Materials[0];
+                    modifier.SkidMaterial.ResolveTexture();
+                }
                 MaterialModifiers.Add(modifier);
             }
         }

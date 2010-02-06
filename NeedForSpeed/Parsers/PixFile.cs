@@ -53,8 +53,8 @@ namespace Carmageddon.Parsers
                         currentPix = new PixMap();
                                                 
 						int type = reader.ReadByte();
-						byte[] unk = reader.ReadBytes(2);
-						currentPix.Width = reader.ReadInt16();
+                        currentPix.Width = reader.ReadInt16();
+						int width2 = reader.ReadInt16();
                         currentPix.Height = reader.ReadInt16();
 						                        
 						byte[] unk2 = reader.ReadBytes(4);

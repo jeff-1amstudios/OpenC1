@@ -123,7 +123,7 @@ namespace PlatformEngine
             Projection = projection;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             InputProvider input = Engine.Instance.Input;
             float elapsedTime = Engine.Instance.ElapsedSeconds;
@@ -136,7 +136,7 @@ namespace PlatformEngine
             _orientation.X += input.RightThumbDelta * -1;
             _orientation.Y += input.LeftThumbDelta * -1;
             
-            UpdateVelocity(gameTime);
+            UpdateVelocity();
             MoveForward();
 
             _position.X += (float)(Math.Cos(_orientation.X) * input.Strafe);
@@ -152,10 +152,10 @@ namespace PlatformEngine
             view *= Matrix.CreateRotationZ(_orientation.Z);
 
             View = view;
-            SetPerspective(DEFAULT_FOVX, Engine.Instance.AspectRatio, DEFAULT_ZNEAR, DrawDistance);
+            SetPerspective(fovx, Engine.Instance.AspectRatio, this.znear, DrawDistance);
         }
 
-        private void UpdateVelocity(GameTime gameTime)
+        private void UpdateVelocity()
         {
             float elapsedTimeSec = Engine.Instance.ElapsedSeconds;
 

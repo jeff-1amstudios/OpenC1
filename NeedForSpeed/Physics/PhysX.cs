@@ -45,7 +45,6 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.VisualizationScale, (float)1f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
             
-            Core.SetParameter(PhysicsParameter.VisualizeJointLimits, false);
             
             
             SceneDescription sceneDescription = new SceneDescription();

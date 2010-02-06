@@ -19,15 +19,14 @@ namespace Carmageddon
 {
     class PlayGameScreen : IGameScreen
     {
-        VehicleModel _carModel;
-        private Carmageddon.Physics.VehicleChassis _chassis;
+        VehicleModel _playerVehicle;
         Race _race;
-        SkyBox _skybox;
         
         BasicEffect2 _effect;
-        ChaseView _chaseView;
+        List<ICameraView> _views = new List<ICameraView>();
+        int _currentView = 0;
         
-        FixedChaseCamera _camera;
+        
 
         public PlayGameScreen()
         {
@@ -36,98 +35,71 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            _carModel = new VehicleModel(GameVariables.BasePath + @"data\cars\blkeagle.txt");
+            _race = new Race(GameVariables.BasePath + @"data\races\citya1.TXT");
 
-            _race = new Race(GameVariables.BasePath + @"data\races\ice2.TXT");
+            string car = "blkeagle.txt";
+            _playerVehicle = new VehicleModel(GameVariables.BasePath + @"data\cars\" + car);
+            _playerVehicle.SetupChassis(_race.RaceFile.GridDirection, _race.RaceFile.GridPosition);
+            GameVariables.PlayerVehicle = _playerVehicle;
 
-            _skybox = SkyboxGenerator.Generate(_race.HorizonTexture, _race.RaceFile.SkyboxRepetitionsX-3f, _race.RaceFile.DepthCueMode);
-            _skybox.HeightOffset = -220 + _race.RaceFile.SkyboxPositionY * 1.5f;
+            Engine.Instance.Player = new Driver { VehicleModel = _playerVehicle };
 
-            _camera = new FixedChaseCamera(6.8f, 7);
-            _camera.FieldOfView = MathHelper.ToRadians(55.55f);
-            Engine.Instance.Camera = _camera;
-            //Engine.Instance.Camera = new FPSCamera();
-
-            Engine.Instance.Player = new Driver { VehicleModel = _carModel };
-
-            Engine.Instance.Camera.Position = _race.RaceFile.GridPosition;
             SetupPhysics();
 
-            _race.SetupPhysx(_carModel.Chassis);
+            _race.SetupPhysx(_playerVehicle.Chassis);
 
-            _chaseView = new ChaseView(_carModel);
+            _views.Add(new ChaseView(_playerVehicle));
+            _views.Add(new CockpitView(_playerVehicle, GameVariables.BasePath + @"data\32x20x8\cars\" + car));
+            _views.Add(new FlyView());
+            _views[_currentView].Activate();
         }
 
         private void SetupPhysics()
         {
-            Matrix pose = Matrix.CreateRotationY(MathHelper.ToRadians(_race.RaceFile.GridDirection)) * Matrix.CreateTranslation(_race.RaceFile.GridPosition);
-            _chassis = new Carmageddon.Physics.VehicleChassis(Carmageddon.Physics.PhysX.Instance.Scene, pose, 1, _carModel.CarFile);
-            _carModel.Chassis = _chassis;
+            
         }
 
 
         #region IDrawableObject Members
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
-            PhysX.Instance.Update();
-
-            _camera.Position = _chassis.Body.GlobalPosition;
-
-            if (!_chassis.InAir)
-            {
-                _camera.Orientation = _chassis.Body.GlobalOrientation.Forward;
-                if (_chassis.Speed > 15)
-                {
-                    _camera.Rotation = (_chassis.Backwards ? MathHelper.Pi : 0);
-                }
-                _camera.HeightOverride = 0;
-            }
-            else
-            {
-                _camera.HeightOverride = 2;
-            }
-
-            _chassis.Accelerate(PlayerVehicleController.Acceleration);
+            VehicleChassis playerCar = _playerVehicle.Chassis;
+            playerCar.Accelerate(PlayerVehicleController.Acceleration);
             if (PlayerVehicleController.Brake != 0)
             {
-                _chassis.Accelerate(-PlayerVehicleController.Brake);
+                playerCar.Accelerate(-PlayerVehicleController.Brake);
             }
-
-            _chassis.Steer(PlayerVehicleController.Turn);
+            playerCar.Steer(PlayerVehicleController.Turn);
 
             if (PlayerVehicleController.Handbrake)
-                _chassis.PullHandbrake();
+                playerCar.PullHandbrake();
             else
-                _chassis.ReleaseHandbrake();
+                playerCar.ReleaseHandbrake();
 
-            InputProvider input = Engine.Instance.Input;
-            if (input.WasPressed(Keys.C))
-            {
-                Engine.Instance.Camera = new FPSCamera();
-                Engine.Instance.Camera.Position = _carModel.Chassis.Body.GlobalPosition;
-            }
-            
-            _race.Update();
-                        
-            _carModel.Update();
+            _race.Update();                        
+            _playerVehicle.Update();
 
-            Engine.Instance.Camera.Update(gameTime);
+            PhysX.Instance.Update();
 
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
                 system.Update();
 
-            if (_skybox != null) _skybox.Update(gameTime);
+            if (Engine.Instance.Input.WasPressed(Keys.C))
+            {
+                _views[_currentView].Deactivate();
+                _currentView = (_currentView + 1) % _views.Count;
+                _views[_currentView].Activate();
+            }
+
+            _views[_currentView].Update();
+            Engine.Instance.Camera.Update();
+
 
             GameConsole.WriteLine("FPS", Engine.Instance.Fps);
-
-            Engine.Instance.Player.Orientation = _chassis.Body.GlobalOrientation;
-            Engine.Instance.Player.Velocity = _chassis.Body.LinearVelocity;
-            Engine.Instance.Player.Position = _camera.Position;
-            Engine.Instance.Player.Update();
         }
 
-        public void Draw()
+        public void Render()
         {
             GameVariables.NbrDrawCalls = 0;
             if (GameVariables.CullingDisabled)
@@ -137,22 +109,18 @@ namespace Carmageddon
 
             GameVariables.CurrentEffect = SetupRenderEffect();
 
-            if (_skybox != null) _skybox.Draw();
             GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
 
             Engine.Instance.SpriteBatch.Begin();
 
             _race.Render();
 
-            _chaseView.Render();
+            _views[_currentView].Render();
 
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
             {
                 system.Render();
             }
-
-            //VehicleWheel.TyreSmokeSystem.Render();
-            //GameVariables.SparksEmitter.ParticleSystem.Render();
 
             Engine.Instance.SpriteBatch.End();
             Engine.Instance.Device.RenderState.DepthBufferEnable = true;
@@ -160,12 +128,11 @@ namespace Carmageddon
             Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
             Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
 
-
             GameVariables.CurrentEffect.End();
 
             GameConsole.WriteLine("Draw Calls", GameVariables.NbrDrawCalls);
 
-            //Carmageddon.Physics.PhysX.Instance.Draw();
+            Carmageddon.Physics.PhysX.Instance.Draw();
         }
 
         #endregion

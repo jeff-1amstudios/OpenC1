@@ -10,7 +10,7 @@ namespace NFSEngine.Audio
     {
         int Id { get; set; }
         float Duration { get; }
-        float Volume { set; }
+        float Volume { get;  set; }
         void Stop();
         void Play(bool loop);
         Vector3 Position { set; }

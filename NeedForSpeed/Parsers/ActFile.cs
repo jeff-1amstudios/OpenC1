@@ -147,7 +147,7 @@ namespace Carmageddon.Parsers
 
         private void ResolveTransformations(Matrix world, CActor actor, List<BaseGroove> grooves)
         {
-            if (grooves.Exists(g => g.ActorName == actor.Name))
+            if (grooves != null && grooves.Exists(g => g.ActorName == actor.Name))
             {
                 actor.ParentMatrix = world;
                 actor.IsAnimated = true;

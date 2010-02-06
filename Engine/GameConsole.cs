@@ -4,6 +4,7 @@ using System.Text;
 using PlatformEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace NFSEngine
 {
@@ -52,6 +53,7 @@ namespace NFSEngine
 
         public static void Render()
         {
+            if (Engine.Instance.Input.WasPressed(Keys.OemTilde)) _enabled = !_enabled; 
             if (!_enabled) return;
 
             WriteLine(" ");

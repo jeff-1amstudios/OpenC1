@@ -15,6 +15,7 @@ namespace Carmageddon
         public List<string> MaterialNames { get; set; }
         public List<Polygon> Polygons { get; set; }
         public int VertexCount { get; set; }
+        public int TextureMapCount { get; set; }
         public int VertexBaseIndex { get; set; }
         public int IndexBufferStart { get; set; }
 

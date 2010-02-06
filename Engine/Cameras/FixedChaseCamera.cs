@@ -67,7 +67,7 @@ namespace NFSEngine
         /// </summary>
         public float Rotation { get; set; }
 		
-        public void Update(GameTime gameTime)
+        public void Update()
 		{
             if (_currentRotation != Rotation)
             {

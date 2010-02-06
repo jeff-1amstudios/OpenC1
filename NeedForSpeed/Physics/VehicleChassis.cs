@@ -130,7 +130,7 @@ namespace Carmageddon.Physics
 
             SpringDescription spring = new SpringDescription();
             float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
-            spring.SpringCoefficient = 3500 * heightModifier;
+            spring.SpringCoefficient = 3600 * heightModifier;
             spring.DamperCoefficient = carFile.SuspensionDamping * 4;
             //spring.TargetValue = 0.5f; // 0.5f * heightModifier;
             wheelDesc.Suspension = spring;

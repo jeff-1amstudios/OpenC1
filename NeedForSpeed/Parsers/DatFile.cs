@@ -71,7 +71,7 @@ namespace Carmageddon.Parsers
                         break;
 
                     case (int)BlockType.TextureCoords:
-                        ReadTextureMapBlock(reader, _vertexTextureMap);
+                        ReadTextureMapBlock(reader, currentModel);
                         break;
 
                     case (int)BlockType.Materials:
@@ -108,14 +108,14 @@ namespace Carmageddon.Parsers
             }
         }
 
-        private void ReadTextureMapBlock(EndianBinaryReader reader, List<Vector2> vertexUVs)
+        private void ReadTextureMapBlock(EndianBinaryReader reader, CModel currentModel)
         {
-            int texturePointsCount = reader.ReadInt32();
-            for (int i = 0; i < texturePointsCount; i++)
+            currentModel.TextureMapCount = reader.ReadInt32();
+            for (int i = 0; i < currentModel.TextureMapCount; i++)
             {
                 float tU = reader.ReadSingle();
                 float tV = reader.ReadSingle();
-                vertexUVs.Add(new Vector2(tU, tV));
+                _vertexTextureMap.Add(new Vector2(tU, tV));
             }
         }
 
@@ -213,8 +213,11 @@ namespace Carmageddon.Parsers
                 }
                 for (int i = 0; i < model.VertexCount; i++)
                 {
-                    Vector3 normal = model.Polygons[i / 3].Normal;
-                    _vertices[idx++] = new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], normal, _vertexTextureMap[i + model.VertexBaseIndex]);
+                    Vector3 normal = Vector3.Left; // model.Polygons[i / 3].Normal;
+                    if (model.TextureMapCount > 0)
+                        _vertices[idx++] = new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], normal, _vertexTextureMap[i + model.VertexBaseIndex]);
+                    else
+                        _vertices[idx++] = new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], normal, Vector2.Zero);
                 }
             }
 

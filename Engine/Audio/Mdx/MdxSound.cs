@@ -36,6 +36,7 @@ namespace NFSEngine.Audio
 
         public float Volume
         {
+            get { return _buffer.Volume; }
             set { _buffer.Volume = (int)value; }
         }
 

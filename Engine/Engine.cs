@@ -22,7 +22,6 @@ namespace PlatformEngine
         public IGameScreen Screen { get; set; }
         public GraphicsDevice Device { get; private set; }
         public BasicEffect CurrentEffect;
-        public IWorld World { get; set; }
         public InputProvider Input { get; set; }
         public float DrawDistance { get; set; }
         public float ElapsedSeconds { get; private set; }
@@ -82,7 +81,7 @@ namespace PlatformEngine
 
             if (Audio != null) Audio.Update();
             
-            Screen.Update(gameTime);
+            Screen.Update();
 
             ScreenEffects.Instance.Update(gameTime);
 
@@ -91,7 +90,7 @@ namespace PlatformEngine
 
         public override void Draw(GameTime gameTime)
         {            
-            Screen.Draw();
+            Screen.Render();
             DebugRenderer.Draw();
             ScreenEffects.Instance.Draw();
             GameConsole.Render();

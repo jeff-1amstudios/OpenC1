@@ -14,6 +14,6 @@ namespace NFSEngine
         Vector3 Position { get; set; }
         Vector3 Orientation { get; set; }
 
-        void Update(GameTime time);
+        void Update();
     }
 }

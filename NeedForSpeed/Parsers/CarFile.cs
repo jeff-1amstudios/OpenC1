@@ -64,6 +64,7 @@ namespace Carmageddon.Parsers
         public int EngineNoiseId;
         public List<int> DrivenWheelRefs, NonDrivenWheelRefs;
         public List<string> CrashMaterialFiles = new List<string>();
+        public Vector3 DriverHeadPosition;
 
         public CarFile(string filename)
             : base(filename)
@@ -71,7 +72,10 @@ namespace Carmageddon.Parsers
             MaterialFiles = new List<string>();
             PixFiles = new List<string>();
 
-            SkipLines(7);  //car name, pratcam shit
+            SkipLines(2);
+            DriverHeadPosition = ReadLineAsVector3();
+
+            SkipLines(4);  //car name, pratcam shit
 
             string[] engineNoises = ReadLine().Split(',');
             EngineNoiseId = int.Parse(engineNoises[0]);
@@ -116,6 +120,7 @@ namespace Carmageddon.Parsers
             ActorFile = ReadLine();
             ActorFile = ActorFile.Substring(ActorFile.IndexOf(",") + 1);  //this is in the format 0,Eagle.act
             BonnetActorFile = ReadLine();
+            BonnetActorFile = BonnetActorFile.Substring(BonnetActorFile.IndexOf(",") + 1);   //this is in the format 1,Ebonnect.act
 
             string windscreenReflection = ReadLine();
             int nbrSteerableWheels = ReadLineAsInt();

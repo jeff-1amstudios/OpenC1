@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace PlatformEngine
 {
-    public class ScreenEffects : IDrawableObject
+    public class ScreenEffects
     {
         public event EventHandler FadeCompleted;
 

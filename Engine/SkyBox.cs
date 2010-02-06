@@ -8,7 +8,7 @@ using NFSEngine;
 
 namespace PlatformEngine
 {
-    public class SkyBox : IDrawableObject
+    public class SkyBox
     {
 
         Texture2D[] _textures = new Texture2D[6];
@@ -149,18 +149,16 @@ namespace PlatformEngine
             _indices.SetData<short>(ib);
         }
 
-        public void Update(GameTime gameTime)
-        {
-            CameraPosition = Engine.Instance.Camera.Position + new Vector3(0, HeightOffset, 0);
-            ProjectionMatrix = Engine.Instance.Camera.Projection;
-            ViewMatrix = Engine.Instance.Camera.View;
-        }
-
 
         public void Draw()
         {
             if (_vertices == null)
                 return;
+
+            CameraPosition = Engine.Instance.Camera.Position + new Vector3(0, HeightOffset, 0);
+            ProjectionMatrix = Engine.Instance.Camera.Projection;
+            ViewMatrix = Engine.Instance.Camera.View;
+
 
             _effect.Begin(SaveStateMode.SaveState);
             _effect.Parameters["worldViewProjection"].SetValue(_worldMatrix * _viewMatrix * _projectionMatrix);

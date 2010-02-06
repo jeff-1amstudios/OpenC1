@@ -25,7 +25,9 @@ namespace NFSEngine.Audio
 
         public float Volume
         {
+            get { return _effect.Volume; }
             set { _effect.Volume = value; }
+
         }
 
         public void Stop()
