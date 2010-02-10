@@ -40,6 +40,9 @@ namespace Carmageddon.HUD
             return new Vector2(x * _window.Width, y * _window.Height);
         }
 
-
+        protected static Vector2 ScaleVec2(Vector2 vec)
+        {
+            return new Vector2(vec.X * _window.Width, vec.Y * _window.Height);
+        }
     }
 }

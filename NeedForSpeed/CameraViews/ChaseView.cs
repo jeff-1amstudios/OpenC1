@@ -45,7 +45,7 @@ namespace Carmageddon.CameraViews
                 _camera.Orientation = chassis.Body.GlobalOrientation.Forward;
                 if (chassis.Speed > 15)
                 {
-                    _camera.Rotation = (chassis.Backwards ? MathHelper.Pi : MathHelper.PiOver2);
+                    _camera.Rotation = (chassis.Backwards ? MathHelper.Pi : 0);
                 }
                 _camera.HeightOverride = 0;
             }
@@ -63,14 +63,7 @@ namespace Carmageddon.CameraViews
             _vehicle.Render();
 
             foreach (BaseHUDItem item in _hudItems)
-                item.Render();
-
-            //Engine.Instance.DebugRenderer.AddAxis(_vehicle.Chassis.Body.GlobalPose, 4);
-
-            Vector3 vehicleBottom = new Vector3(_vehicle.Chassis.Body.GlobalPosition.X, -53.4348f, _vehicle.Chassis.Body.GlobalPosition.Z);
-            Engine.Instance.DebugRenderer.AddAxis(Matrix.CreateTranslation(vehicleBottom + _vehicle.CarFile.DriverHeadPosition), 4);
-
-            
+                item.Render();            
         }
 
         public void Activate()

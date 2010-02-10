@@ -175,10 +175,16 @@ namespace Carmageddon.Physics
 
         #endregion
 
+        public float SteerRatio
+        {
+            get { return _steerAngle / 0.5f; }
+        }
+
         #region Update
 
         public void Update()
         {
+            GameConsole.WriteLine("Steer2", _steerAngle);
             Vector3 vDirection = VehicleBody.GlobalOrientation.Forward;
             Vector3 vNormal = VehicleBody.LinearVelocity * vDirection;
             _speed = vNormal.Length() * 2.9f;

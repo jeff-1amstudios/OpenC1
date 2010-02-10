@@ -174,11 +174,11 @@ namespace Carmageddon.Parsers
             _vertices = new VertexPositionNormalTexture[_vertexPositions.Count];
             int idx=0;
             
-            List<UInt16> vertIndexes = new List<UInt16>(_vertexPositions.Count);
+            List<UInt16> indices = new List<UInt16>(_vertexPositions.Count);
             
             foreach (CModel model in _models)
             {
-                model.IndexBufferStart = vertIndexes.Count;
+                model.IndexBufferStart = indices.Count;
                 model.Polygons.Sort(delegate(Polygon p1, Polygon p2) { return p1.MaterialIndex.CompareTo(p2.MaterialIndex); });
 
                 Polygon currentPoly = null;
@@ -186,9 +186,9 @@ namespace Carmageddon.Parsers
                 foreach (Polygon poly in model.Polygons)
                 {
                     poly.NbrPrims = 1;
-                    vertIndexes.Add(poly.Vertex1);
-                    vertIndexes.Add(poly.Vertex2);
-                    vertIndexes.Add(poly.Vertex3);
+                    indices.Add(poly.Vertex1);
+                    indices.Add(poly.Vertex2);
+                    indices.Add(poly.Vertex3);
 
                     if (poly.MaterialIndex >= 0 && model.MaterialNames != null)
                     {
@@ -213,20 +213,31 @@ namespace Carmageddon.Parsers
                 }
                 for (int i = 0; i < model.VertexCount; i++)
                 {
-                    Vector3 normal = Vector3.Left; // model.Polygons[i / 3].Normal;
+                    //Vector3 normal = model.Polygons[i / 3].Normal;
                     if (model.TextureMapCount > 0)
-                        _vertices[idx++] = new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], normal, _vertexTextureMap[i + model.VertexBaseIndex]);
+                        _vertices[idx++] = new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], Vector3.Zero, _vertexTextureMap[i + model.VertexBaseIndex]);
                     else
-                        _vertices[idx++] = new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], normal, Vector2.Zero);
+                        _vertices[idx++] = new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], Vector3.Zero, Vector2.Zero);
+                }
+
+                for (int i = 0; i < indices.Count / 3; i++)
+                {
+                    Vector3 firstvec = _vertices[indices[i * 3 + 1]].Position - _vertices[indices[i * 3]].Position;
+                    Vector3 secondvec = _vertices[indices[i * 3]].Position - _vertices[indices[i * 3 + 2]].Position;
+                    Vector3 normal = Vector3.Cross(firstvec, secondvec);
+                    normal.Normalize();
+                    _vertices[indices[i * 3]].Normal += normal;
+                    _vertices[indices[i * 3 + 1]].Normal += normal;
+                    _vertices[indices[i * 3 + 2]].Normal += normal;
                 }
             }
 
             _vertexBuffer = new VertexBuffer(Engine.Instance.Device, VertexPositionNormalTexture.SizeInBytes * _vertices.Length, BufferUsage.WriteOnly);
             _vertexBuffer.SetData<VertexPositionNormalTexture>(_vertices);
 
-            _indexBuffer = new IndexBuffer(Engine.Instance.Device, typeof(UInt16), vertIndexes.Count, BufferUsage.WriteOnly);
-            _indexBuffer.SetData<UInt16>(vertIndexes.ToArray());
-            _indices = vertIndexes;
+            _indexBuffer = new IndexBuffer(Engine.Instance.Device, typeof(UInt16), indices.Count, BufferUsage.WriteOnly);
+            _indexBuffer.SetData<UInt16>(indices.ToArray());
+            _indices = indices;
 
             _vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionNormalTexture.VertexElements);
             _vertexTextureMap=null; //dont need this data anymore

@@ -29,7 +29,7 @@ namespace Carmageddon.CameraViews
 
         public void Render()
         {
-            
+            GameVariables.PlayerVehicle.Render();
         }
 
         public void Activate()

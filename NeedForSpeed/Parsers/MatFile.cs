@@ -54,6 +54,9 @@ namespace Carmageddon.Parsers
                         byte[] transform = reader.ReadBytes(24);
                         currentMaterial.BasePixel = reader.ReadByte();
                         byte unk = reader.ReadByte(); //unk
+                        if (unk != 0)
+                        {
+                        }
                         currentMaterial.DoubleSided = flags[0] == 0x10;
                         currentMaterial.Name = ReadNullTerminatedString(reader);                        
                         break;

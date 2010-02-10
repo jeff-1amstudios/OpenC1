@@ -37,7 +37,7 @@ namespace Carmageddon
 
             _race = new Race(GameVariables.BasePath + @"data\races\citya1.TXT");
 
-            string car = "blkeagle.txt";
+            string car = "dump.txt";
             _playerVehicle = new VehicleModel(GameVariables.BasePath + @"data\cars\" + car);
             _playerVehicle.SetupChassis(_race.RaceFile.GridDirection, _race.RaceFile.GridPosition);
             GameVariables.PlayerVehicle = _playerVehicle;
@@ -49,7 +49,7 @@ namespace Carmageddon
             _race.SetupPhysx(_playerVehicle.Chassis);
 
             _views.Add(new ChaseView(_playerVehicle));
-            _views.Add(new CockpitView(_playerVehicle, GameVariables.BasePath + @"data\32x20x8\cars\" + car));
+            _views.Add(new CockpitView(_playerVehicle, GameVariables.BasePath + @"data\64x48x8\cars\" + car));
             _views.Add(new FlyView());
             _views[_currentView].Activate();
         }
@@ -59,8 +59,6 @@ namespace Carmageddon
             
         }
 
-
-        #region IDrawableObject Members
 
         public void Update()
         {
@@ -91,6 +89,10 @@ namespace Carmageddon
                 _currentView = (_currentView + 1) % _views.Count;
                 _views[_currentView].Activate();
             }
+            if (Engine.Instance.Input.WasPressed(Keys.D))
+            {
+                TakeScreenshot();
+            }
 
             _views[_currentView].Update();
             Engine.Instance.Camera.Update();
@@ -112,10 +114,12 @@ namespace Carmageddon
             GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
 
             Engine.Instance.SpriteBatch.Begin();
-
+            //GameVariables.CurrentEffect.LightingEnabled = false;
             _race.Render();
 
+            //GameVariables.CurrentEffect.LightingEnabled = true;
             _views[_currentView].Render();
+            //GameVariables.CurrentEffect.LightingEnabled = false;
 
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
             {
@@ -134,8 +138,6 @@ namespace Carmageddon
 
             Carmageddon.Physics.PhysX.Instance.Draw();
         }
-
-        #endregion
 
 
 
@@ -160,6 +162,7 @@ namespace Carmageddon
                 _effect.FogEnabled = true;
                 //_effect.LightingEnabled = true;
                 //_effect.EnableDefaultLighting();
+                //_effect.AmbientLightColor *= 4;
                 //_effect.AmbientLightColor = new Vector3(0.09f, 0.09f, 0.1f);
                 //_effect.DirectionalLight0.Direction = new Vector3(1.0f, -1.0f, -1.0f); 
                 _effect.TextureEnabled = true;
@@ -171,6 +174,19 @@ namespace Carmageddon
             _effect.Begin(SaveStateMode.None);
 
             return _effect;
+        }
+
+        private void TakeScreenshot()
+        {
+            GraphicsDevice device = Engine.Instance.Device;
+            new ResolveTexture2D(device, 10, 10, 1, SurfaceFormat.Color);
+            using (ResolveTexture2D screenshot = new ResolveTexture2D(device,
+                   device.PresentationParameters.BackBufferWidth,
+                   device.PresentationParameters.BackBufferHeight, 1, SurfaceFormat.Color))
+            {
+                device.ResolveBackBuffer(screenshot);
+                screenshot.Save(GameVariables.BasePath + "data\\dump" + Engine.Instance.TotalSeconds + ".jpg", ImageFileFormat.Jpg);
+            }
         }
     }
 }

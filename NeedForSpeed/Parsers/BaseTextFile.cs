@@ -101,6 +101,18 @@ namespace Carmageddon.Parsers
             return vec;
         }
 
+        public Rectangle ReadLineAsRect()
+        {
+            string line = ReadLine();
+            string[] tokens = line.Split(new char[] { ',', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            Debug.Assert(tokens.Length == 4);
+            Rectangle rectangle = new Rectangle(int.Parse(tokens[0]), int.Parse(tokens[1]), 0, 0);
+            rectangle.Width = int.Parse(tokens[2]) - rectangle.X;
+            rectangle.Height = int.Parse(tokens[3]) - rectangle.Y;
+            
+            return rectangle;
+        }
+
         public Vector2 ReadLineAsVector2(bool scale)
         {
             string line = ReadLine();

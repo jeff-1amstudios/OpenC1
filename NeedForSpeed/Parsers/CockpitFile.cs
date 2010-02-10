@@ -15,21 +15,26 @@ namespace Carmageddon.Parsers
 	class CockpitFile : BaseTextFile
 	{
 		public Texture2D Forward, Left, Right;
-		public List<CockpitHandFrame> Hands = new List<CockpitHandFrame>();
+        public Rectangle ForwardRect, LeftRect, RightRect;
+        public List<CockpitHandFrame> LeftHands = new List<CockpitHandFrame>();
+        public List<CockpitHandFrame> RightHands = new List<CockpitHandFrame>();
+        public CockpitHandFrame CenterHands;
+        
 
 		public CockpitFile(string filename) : base(filename)
 		{
             string folderName = Path.GetDirectoryName(filename);
 
 			Forward = GetTextureFromPixFile(folderName, ReadLine());
-			ReadLine();
+            ForwardRect = ReadLineAsRect();
             Left = GetTextureFromPixFile(folderName, ReadLine());
-			ReadLine();
+            LeftRect = ReadLineAsRect();
             Right = GetTextureFromPixFile(folderName, ReadLine());
-			ReadLine();
+            RightRect = ReadLineAsRect();
 			SkipLines(6); //internal & external speedo, tacho, gears
 			int nbrHandFrames = ReadLineAsInt();
 
+            int center = nbrHandFrames / 2;
             for (int i = 0; i < nbrHandFrames; i++)
             {
                 CockpitHandFrame frame = new CockpitHandFrame();
@@ -38,8 +43,14 @@ namespace Carmageddon.Parsers
                 frame.Position2 = new Vector2(int.Parse(frameParts[3]), int.Parse(frameParts[4]));
                 frame.Texture1 = GetTextureFromPixFile(folderName, frameParts[2]);
                 frame.Texture2 = GetTextureFromPixFile(folderName, frameParts[5]);
-                Hands.Add(frame);
+                if (i < center)
+                    LeftHands.Add(frame);
+                else if (i == center)
+                    CenterHands = frame;
+                else
+                    RightHands.Add(frame);
             }
+
 			SkipLines(2); //mirror
 
 			CloseFile();
