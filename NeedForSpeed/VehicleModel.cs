@@ -25,9 +25,11 @@ namespace Carmageddon
         public CarFile Config;
         public VehicleChassis Chassis { get; set; }
         private List<BaseGroove> _grooves;
+        List<ISound> _engineSounds = new List<ISound>();
         ISound _engineSound;
         
         ParticleEmitter _vehicleBitsEmitter;
+        public Stack<SpecialVolume> CurrentSpecialVolume = new Stack<SpecialVolume>();
 
         public VehicleModel(string filename)
         {
@@ -122,8 +124,10 @@ namespace Carmageddon
                     //GameConsole.WriteEvent("Actor not found: " + g.ActorName);
                 //}
             }
+            foreach (int id in Config.EngineSoundIds)
+                _engineSounds.Add(SoundCache.CreateInstance(id));
+            _engineSound = _engineSounds[0];
 
-            _engineSound = SoundCache.CreateInstance(Config.EngineNoiseId);
             if (_engineSound != null)
             {
                 _engineSound.Play(true);
@@ -136,10 +140,23 @@ namespace Carmageddon
             ContactReport.Instance.PlayerWorldCollision += ContactReport_PlayerWorldCollision;
         }
 
+        public int EngineSoundIndex
+        {
+            set
+            {
+                if (_engineSound != _engineSounds[value])
+                {
+                    _engineSound.Stop();
+                    _engineSound = _engineSounds[value];
+                    _engineSound.Play(true);
+                }
+            }
+        }
+
         public void SetupChassis(int direction, Vector3 position)
         {
             Matrix pose = Matrix.CreateRotationY(MathHelper.ToRadians(direction)) * Matrix.CreateTranslation(position);
-            Chassis = new Carmageddon.Physics.VehicleChassis(Carmageddon.Physics.PhysX.Instance.Scene, pose, 1, Config);
+            Chassis = new Carmageddon.Physics.VehicleChassis(Carmageddon.Physics.PhysX.Instance.Scene, pose, 1, this);
         }
 
         void ContactReport_PlayerWorldCollision(float force, Vector3 position, Vector3 normal)

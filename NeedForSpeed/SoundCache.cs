@@ -24,7 +24,7 @@ namespace Carmageddon
 
     static class SoundCache
     {
-        static bool _enabled = false;
+        static bool _enabled = true;
         static List<CSoundDescription> _soundDescriptions;
         public static bool IsInitialized;
         static List<ISound> _instances = new List<ISound>();
@@ -81,7 +81,6 @@ namespace Carmageddon
             {
                 int id = Engine.Instance.RandomNumber.Next(startId, endId);
                 instance = Play(id);
-                GameConsole.WriteEvent("Sound " + id);
             }
         }
     }

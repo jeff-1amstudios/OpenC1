@@ -29,6 +29,9 @@ using NFSEngine.Audio;
                 _graphics.PreferredBackBufferWidth = 800;
                 _graphics.PreferredBackBufferHeight = 600;
                 _graphics.PreferMultiSampling = true;
+
+                Engine.ScreenSize = new Vector2(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
+                
                 //_graphics.IsFullScreen = true;
                 //_graphics.SynchronizeWithVerticalRetrace = false;
 
@@ -101,7 +104,6 @@ using NFSEngine.Audio;
             /// <param name="gameTime">Provides a snapshot of timing values.</param>
             protected override void Draw(GameTime gameTime)
             {
-                _graphics.GraphicsDevice.Clear(Color.Black);
                 base.Draw(gameTime);
             }
         }

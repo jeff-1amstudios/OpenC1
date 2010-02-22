@@ -184,7 +184,7 @@ namespace Carmageddon.Parsers
             resolver(_actors[0]);
         }
 
-        public List<CActor> GetAllActors()
+        public List<CActor> All()
         {
             List<CActor> actors = new List<CActor>();
             Action<CActor> resolver = null;
@@ -206,7 +206,7 @@ namespace Carmageddon.Parsers
         public CActor GetByName(string name)
         {
             string nameWithExt = name + ".ACT";
-            List<CActor> all = GetAllActors();
+            List<CActor> all = All();
             return all.Find(a => a.Name == nameWithExt || a.Name == name);
         }
 

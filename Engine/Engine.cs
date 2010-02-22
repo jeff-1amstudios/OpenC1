@@ -28,28 +28,29 @@ namespace PlatformEngine
         public float TotalSeconds { get; private set; }
         public Random RandomNumber { get; private set; }
         public ISoundEngine Audio { get; set; }
+
+        private bool _isFullScreen;
+        public static Vector2 ScreenSize;
                 
         public static Engine Instance;
 
         public static void Initialize(Game game, GraphicsDeviceManager graphics)
         {
             Debug.Assert(Instance == null);
-            Instance = new Engine(game);
-            
-            Instance.EngineStartup(graphics);
+            Instance = new Engine(game, graphics);
+            Instance.Startup();
         }
 
-        
-        private Engine(Game game)
+
+        private Engine(Game game, GraphicsDeviceManager graphics)
             : base(game)
         {
-             
+            Device = graphics.GraphicsDevice;
+            _isFullScreen = graphics.IsFullScreen;
         }
 
-        private void EngineStartup(GraphicsDeviceManager graphics)
-        {
-            Device = graphics.GraphicsDevice;
-
+        private void Startup()
+        {            
             DrawDistance = 1000;
 
             _contentManager = new ContentManager(base.Game.Services);
@@ -123,8 +124,10 @@ namespace PlatformEngine
         {
             get
             {
-                Rectangle r = Window;
-                return (float)r.Width / (float)r.Height;
+                if (_isFullScreen)
+                    return ScreenSize.X / ScreenSize.Y;
+                else
+                    return (float)Window.Width / (float)Window.Height;
             }
         }
         

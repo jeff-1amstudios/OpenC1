@@ -19,11 +19,11 @@ namespace Carmageddon.Physics
             List<Vector3> verts = new List<Vector3>();
             List<ushort> indices = new List<ushort>();
             List<ushort> materialIndices = new List<ushort>();
-            List<Carmageddon.CActor> actorsList = actors.GetAllActors();
+            List<Carmageddon.CActor> actorsList = actors.All();
 
             for (int i = 0; i < actorsList.Count; i++)
             {
-                Carmageddon.CActor actor = actorsList[i];
+                CActor actor = actorsList[i];
                 if (actor.Model == null) continue;
                 if (actor.Name.StartsWith("&"))
                     continue; //dont-merge with track (non-car, animated etc)
@@ -63,7 +63,12 @@ namespace Carmageddon.Physics
                     }
 
                     if (Char.IsDigit(materialName[0]))
-                        materialIndices.Add((ushort)(ushort.Parse(materialName.Substring(0, 1)) + 1));
+                    {
+                        ushort matModiferId = (ushort)(ushort.Parse(materialName.Substring(0, 1))+1);
+                        if (matModiferId >= file.MaterialModifiers.Count) matModiferId = 0;
+                        
+                        materialIndices.Add(matModiferId);
+                    }
                     else
                         materialIndices.Add(0);
                 }
@@ -102,17 +107,103 @@ namespace Carmageddon.Physics
                 Shapes = { shape }
             };
 
+            foreach (Checkpoint checkpoint in file.Checkpoints)
+            {
+                ActorDescription actorDesc = new ActorDescription();
+                
+                BoxShapeDescription box = new BoxShapeDescription(checkpoint.BBox.GetSize());
+                box.Flags = ShapeFlag.TriggerOnEnter;// | ShapeFlag.Visualization;
+                actorDesc.Shapes.Add(box);
+                Actor actor = PhysX.Instance.Scene.CreateActor(actorDesc);
+                actor.GlobalPosition = checkpoint.BBox.GetCenter();
+                actor.UserData = checkpoint;
+            }
 
-            StillDesign.PhysX.Actor a = PhysX.Instance.Scene.CreateActor(actorDescription);
-            a.Group = 10;
-            a.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
-            return a;
+            StillDesign.PhysX.Actor environment = PhysX.Instance.Scene.CreateActor(actorDescription);
+            environment.Group = 10;
+            environment.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
+
+            CreateDefaultWaterSpecVols(file, actorsList, models);
+
+            for (int i = 1; i < file.SpecialVolumes.Count; i++)
+            {
+                SpecialVolume vol = file.SpecialVolumes[i];
+                ActorDescription actorDesc = new ActorDescription();
+                BoxShapeDescription box = new BoxShapeDescription(vol.BoundingBox.GetSize());
+                box.Flags = ShapeFlag.TriggerOnEnter | ShapeFlag.TriggerOnLeave | ShapeFlag.Visualization;
+                actorDesc.Shapes.Add(box);
+                Actor actor = PhysX.Instance.Scene.CreateActor(actorDesc);
+                actor.GlobalPosition = vol.BoundingBox.GetCenter();
+                actor.UserData = vol;
+
+                //ForceFieldDescription ffdesc = new ForceFieldDescription();
+
+                //ForceField ff = PhysX.Instance.Scene.CreateForceField(ffdesc);
+                //BoxForceFieldShapeDescription ffshape = new BoxForceFieldShapeDescription();
+                //ffshape.Size = vol.BoundingBox.GetSize();
+                //ForceFieldShape ffshape2 = ff.CreateShape(ffshape);
+            }
+
+            return environment;
+        }
+
+        private static void CreateDefaultWaterSpecVols(RaceFile file, List<CActor> actors, DatFile modelsFile)
+        {
+
+            for (int i = 0; i < actors.Count; i++)
+            {
+                CActor actor = actors[i];
+                if (actor.Model == null) continue;
+
+                CModel model = actor.Model;
+                bool foundWater = false;
+                Vector3 min = new Vector3(9999), max = new Vector3(-9999);
+                foreach (Polygon poly in model.Polygons)
+                {
+                    string materialName = model.MaterialNames[poly.MaterialIndex];
+                    //this is a non-solid material
+                    if (materialName.StartsWith("!"))
+                    {
+                        foundWater = true;
+                        Vector3 v1 = Vector3.Transform(modelsFile._vertices[model.VertexBaseIndex + poly.Vertex1].Position, actor.Matrix);
+                        Vector3 v2 = Vector3.Transform(modelsFile._vertices[model.VertexBaseIndex + poly.Vertex3].Position, actor.Matrix);
+                        Vector3 v3 = Vector3.Transform(modelsFile._vertices[model.VertexBaseIndex + poly.Vertex3].Position, actor.Matrix);
+
+                        min = TakeMin(min, v1); min = TakeMin(min, v2); min = TakeMin(min, v3);
+                        max = TakeMax(max, v1); max = TakeMax(max, v2); max = TakeMax(max, v3);
+                    }
+                }
+
+                if (foundWater)
+                {
+                    min.Y -= 6 * GameVariables.Scale.Y;
+                    BoundingBox bb = new BoundingBox(min, max);
+                    SpecialVolume vol = file.SpecialVolumes[0].Copy(); //copy default water
+                    vol.BoundingBox = bb;
+                    file.SpecialVolumes.Add(vol);
+                }
+            }
+        }
+
+        private static Vector3 TakeMin(Vector3 v1, Vector3 v2)
+        {
+            v1.X = Math.Min(v1.X, v2.X);
+            v1.Y = Math.Min(v1.Y, v2.Y);
+            v1.Z = Math.Min(v1.Z, v2.Z);
+            return v1;
+        }
+        private static Vector3 TakeMax(Vector3 v1, Vector3 v2)
+        {
+            v1.X = Math.Max(v1.X, v2.X);
+            v1.Y = Math.Max(v1.Y, v2.Y);
+            v1.Z = Math.Max(v1.Z, v2.Z);
+            return v1;
         }
 
         public static List<CActor> GenerateNonCars(ActFile actors, List<NoncarFile> nonCars)
         {
             List<CActor> nonCarActors = new List<CActor>();
-            List<CActor> actorsList = actors.GetAllActors();
+            List<CActor> actorsList = actors.All();
 
             for (int i = 0; i < actorsList.Count; i++)
             {
@@ -135,10 +226,7 @@ namespace Carmageddon.Physics
                         actorDesc.BodyDescription = new BodyDescription() { Mass = nonCar.Mass };
 
                         BoxShapeDescription boxDesc = new BoxShapeDescription();
-                        float w = nonCar.BoundingBox.Max.X - nonCar.BoundingBox.Min.X;
-                        float h = nonCar.BoundingBox.Max.Y - nonCar.BoundingBox.Min.Y;
-                        float l = nonCar.BoundingBox.Max.Z - nonCar.BoundingBox.Min.Z;
-                        boxDesc.Size = new Vector3(w, h, l);
+                        boxDesc.Size = nonCar.BoundingBox.GetSize();
                         boxDesc.LocalPosition = nonCar.BoundingBox.GetCenter();
                         actorDesc.Shapes.Add(boxDesc);
 

@@ -6,6 +6,7 @@ using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
 using Particle3DSample;
 using Carmageddon.Gfx;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon
 {
@@ -18,8 +19,7 @@ namespace Carmageddon
         public static int NbrSectionsChecked = 0;
         public static int NbrDrawCalls = 0;
         public static bool CullingDisabled { get; set; }
-        
-        public static string DepthCueMode = "dark";
+        public static Color FogColor;
         public static string BasePath = "c:\\games\\carma1\\";
         public static BasicEffect2 CurrentEffect;
         public static ParticleEmitter SparksEmitter;

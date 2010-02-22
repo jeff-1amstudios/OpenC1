@@ -44,7 +44,7 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.SkinWidth, (float)0.01f);
             Core.SetParameter(PhysicsParameter.VisualizationScale, (float)1f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
-            
+            Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
             
             
             SceneDescription sceneDescription = new SceneDescription();
@@ -57,6 +57,7 @@ namespace Carmageddon.Physics
             Scene = Core.CreateScene(sceneDescription);
 
             Scene.UserContactReport = ContactReport.Instance;
+            Scene.UserTriggerReport = TriggerReport.Instance;
             
             MaterialDescription description = new MaterialDescription();
             description.Restitution = 0.22f;

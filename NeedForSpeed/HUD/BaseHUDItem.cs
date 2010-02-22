@@ -15,12 +15,14 @@ namespace Carmageddon.HUD
         public abstract void Render();
         private static Rectangle _window;
         protected static float FontScale = 1f;
+        protected static SpriteFont _whiteFont;
 
         static BaseHUDItem()
         {
             _shadow = TextureGenerator.Generate(new Color(0f, 0f, 0f, 0.6f));
             _window = Engine.Instance.Window;
             FontScale = _window.Width / 800f;
+            _whiteFont = Engine.Instance.ContentManager.Load<SpriteFont>("content/white-font");
         }
 
         protected static Rectangle ScaleRect(float x, float y, float width, float height)
@@ -43,6 +45,11 @@ namespace Carmageddon.HUD
         protected static Vector2 ScaleVec2(Vector2 vec)
         {
             return new Vector2(vec.X * _window.Width, vec.Y * _window.Height);
+        }
+
+        protected void DrawShadow(Rectangle rect)
+        {
+            Engine.Instance.SpriteBatch.Draw(_shadow, rect, Color.White);
         }
     }
 }

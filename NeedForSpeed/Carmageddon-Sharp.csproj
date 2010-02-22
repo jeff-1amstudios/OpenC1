@@ -85,13 +85,17 @@
     <Compile Include="CameraViews\CockpitView.cs" />
     <Compile Include="CameraViews\FlyView.cs" />
     <Compile Include="CameraViews\ICameraView.cs" />
+    <Compile Include="Checkpoint.cs" />
     <Compile Include="CMaterial.cs" />
     <Compile Include="CMaterialModifier.cs" />
     <Compile Include="Gfx\MaterialSmokeParticleSystem.cs" />
     <Compile Include="Gfx\SkidMarkBuffer.cs" />
+    <Compile Include="HUD\StandardHudItem.cs" />
     <Compile Include="MessageRenderer.cs" />
     <Compile Include="Parsers\CockpitFile.cs" />
     <Compile Include="Parsers\TextFileDecryptor.cs" />
+    <Compile Include="Physics\TriggerReport.cs" />
+    <Compile Include="PhysXConsts.cs" />
     <Compile Include="RaceTimeController.cs" />
     <Compile Include="CSoundDescription.cs" />
     <Compile Include="CWheelActor.cs" />
@@ -132,6 +136,7 @@
     <Compile Include="Physics\VehicleWheel.cs" />
     <Compile Include="PlayerVehicleController.cs" />
     <Compile Include="SoundCache.cs" />
+    <Compile Include="SpecialVolume.cs" />
     <Compile Include="VehicleModel.cs" />
     <Compile Include="Driver.cs" />
     <Compile Include="EndianBinaryReader.cs" />

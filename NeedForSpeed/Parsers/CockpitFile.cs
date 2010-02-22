@@ -44,7 +44,7 @@ namespace Carmageddon.Parsers
                 frame.Texture1 = GetTextureFromPixFile(folderName, frameParts[2]);
                 frame.Texture2 = GetTextureFromPixFile(folderName, frameParts[5]);
                 if (i < center)
-                    LeftHands.Add(frame);
+                    LeftHands.Insert(0, frame);
                 else if (i == center)
                     CenterHands = frame;
                 else

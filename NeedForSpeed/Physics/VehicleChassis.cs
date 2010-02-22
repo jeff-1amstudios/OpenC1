@@ -18,17 +18,15 @@ namespace Carmageddon.Physics
     {
         #region Fields
 
-        private Actor VehicleBody;
-        //private WheelShape FLWheel;
-        //private WheelShape FRWheel;
-        //private WheelShape RLWheel;
-        //private WheelShape RRWheel;
+        private Actor _body;
+        
         public List<VehicleWheel> Wheels {get; private set; }
 
         float _desiredSteerAngle = 0f; // Desired steering angle
         public bool Backwards {get; private set; }
         float _currentTorque = 0f;
         Vector3 _centerOfMass;
+        public float SteerRatio2;
 
         private float _handbrake;
 
@@ -46,7 +44,7 @@ namespace Carmageddon.Physics
 
         public Actor Body
         {
-            get { return VehicleBody; }
+            get { return _body; }
         }
 
 
@@ -59,21 +57,20 @@ namespace Carmageddon.Physics
         /// <summary>
         /// Constructor
         /// </summary>
-        public VehicleChassis(Scene scene, Matrix pose, int id, CarFile carFile)
+        public VehicleChassis(Scene scene, Matrix pose, int id,  VehicleModel model)
         {
             Wheels = new List<VehicleWheel>();
+
+            CarFile carFile = model.Config;
             
             ActorDescription actorDesc = new ActorDescription();
             BodyDescription bodyDesc = new BodyDescription(carFile.Mass);
             actorDesc.BodyDescription = bodyDesc;
             
             BoxShapeDescription boxDesc = new BoxShapeDescription();
-            float w = carFile.BoundingBox.Max.X - carFile.BoundingBox.Min.X;
-            float h = carFile.BoundingBox.Max.Y - carFile.BoundingBox.Min.Y;
-            float l = carFile.BoundingBox.Max.Z - carFile.BoundingBox.Min.Z;
-            boxDesc.Size = new Vector3(w, h, l);
+            boxDesc.Size = carFile.BoundingBox.GetSize();
             boxDesc.LocalPosition = carFile.BoundingBox.GetCenter();
-            
+            boxDesc.Name = PhysXConsts.VehicleBody;
             actorDesc.Shapes.Add(boxDesc);
 
             foreach (Vector3 extraPoint in carFile.ExtraBoundingBoxPoints)
@@ -85,9 +82,11 @@ namespace Carmageddon.Physics
             }
 
             actorDesc.GlobalPose = pose;
-            VehicleBody = scene.CreateActor(actorDesc);
-            VehicleBody.Name = "Vehicle";
-            VehicleBody.Group = 1;
+            _body = scene.CreateActor(actorDesc);
+            _body.Name = "Vehicle";
+            _body.Group = 1;
+            //_body.BodyFlags.Visualization = true;
+            _body.UserData = model;
 
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 0.1f;
@@ -140,23 +139,21 @@ namespace Carmageddon.Physics
                 wheelDesc.LocalPosition = wheel.Position + new Vector3(0, wheelDesc.SuspensionTravel/2, 0);
                 wheelDesc.Radius = wheel.IsDriven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
 
-                WheelShape ws = (WheelShape)VehicleBody.CreateShape(wheelDesc);
+                WheelShape ws = (WheelShape)_body.CreateShape(wheelDesc);
                 ws.Name = wheel.Actor.Name;
                 ws.LateralTireForceFunction = wheel.IsFront ? _frontLateralTireFn : _rearLateralTireFn;
 
                 Wheels.Add(new VehicleWheel(this, wheel, ws, wheel.IsLeft ? 0.17f : -0.17f) { Index = Wheels.Count });
             }
 
-            Vector3 massPos = VehicleBody.CenterOfMassLocalPosition;
+            Vector3 massPos = _body.CenterOfMassLocalPosition;
             massPos = carFile.CenterOfMass;
             massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.48f /*carFile.CenterOfMass.Y*/ - 0.2f;
             
             _centerOfMass = massPos;
-            VehicleBody.SetCenterOfMassOffsetLocalPosition(massPos);
+            _body.SetCenterOfMassOffsetLocalPosition(massPos);
             
-            VehicleBody.WakeUp(60.0f);
-
-            VehicleBody.RaiseBodyFlag(BodyFlag.Visualization);
+            _body.WakeUp(60.0f);
 
             //a real power curve doesnt work too well in carmageddon :)
             List<float> power = new List<float>(new float[] { 0.5f, 0.5f, 0.5f, 1f, 1f, 1.0f, 1.0f, 0 });
@@ -169,8 +166,8 @@ namespace Carmageddon.Physics
 
         public void Delete()
         {
-            VehicleBody.Dispose();
-            VehicleBody = null;
+            _body.Dispose();
+            _body = null;
         }
 
         #endregion
@@ -184,12 +181,18 @@ namespace Carmageddon.Physics
 
         public void Update()
         {
-            GameConsole.WriteLine("Steer2", _steerAngle);
-            Vector3 vDirection = VehicleBody.GlobalOrientation.Forward;
-            Vector3 vNormal = VehicleBody.LinearVelocity * vDirection;
+            GameConsole.WriteLine("Steer2", SteerRatio2);
+            Vector3 vDirection = _body.GlobalOrientation.Forward;
+            Vector3 vNormal = _body.LinearVelocity * vDirection;
             _speed = vNormal.Length() * 2.9f;
 
             float endLocal = _desiredSteerAngle / (1 + _speed * 0.02f);
+
+            SteerRatio2 = _steerAngle / endLocal;
+            if (endLocal == 0) SteerRatio2 = 0;
+            if (_steerAngle < 0) SteerRatio2 = -SteerRatio2;
+
+
             float diff = Math.Abs(endLocal - _steerAngle);
             float max = 0.0007f;
             if (_desiredSteerAngle == 0) max = 0.0005f;
@@ -218,7 +221,7 @@ namespace Carmageddon.Physics
                 }
             }
             
-            Vector3 orientation = VehicleBody.GlobalOrientation.Up;
+            Vector3 orientation = _body.GlobalOrientation.Up;
 
             if (orientation.Y < 0 && _speed < 1f)
             {
@@ -259,7 +262,7 @@ namespace Carmageddon.Physics
 
         private void UpdateTireStiffness()
         {
-            Vector3 vNormal = VehicleBody.LinearVelocity * VehicleBody.GlobalOrientation.Left;
+            Vector3 vNormal = _body.LinearVelocity * _body.GlobalOrientation.Left;
             float lateralSpeed = vNormal.Length();
             GameConsole.WriteLine("Lat Speed", lateralSpeed);
             GameConsole.WriteLine("Handbrake", _handbrake);
@@ -328,7 +331,7 @@ namespace Carmageddon.Physics
             }
 
             UpdateTorque();
-            VehicleBody.WakeUp();
+            _body.WakeUp();
         }
 
         public void Steer(float angle)
@@ -373,17 +376,17 @@ namespace Carmageddon.Physics
 
         private void Reset()
         {
-            VehicleBody.GlobalOrientation = Matrix.Identity;
-            VehicleBody.GlobalPosition += new Vector3(0.0f, 1.0f, 0.0f);
-            VehicleBody.LinearMomentum = VehicleBody.LinearVelocity = Vector3.Zero;
-            VehicleBody.AngularMomentum = VehicleBody.AngularVelocity = Vector3.Zero;
+            _body.GlobalOrientation = Matrix.Identity;
+            _body.GlobalPosition += new Vector3(0.0f, 1.0f, 0.0f);
+            _body.LinearMomentum = _body.LinearVelocity = Vector3.Zero;
+            _body.AngularMomentum = _body.AngularVelocity = Vector3.Zero;
         }
 
         #endregion
 
         public void Explode(float strength)
         {
-            VehicleBody.AddForceAtLocalPosition(new Vector3(
+            _body.AddForceAtLocalPosition(new Vector3(
                 RandomNumber.NextFloat() * 200f - 100f,
                 155f + RandomNumber.NextFloat() * 40f,
                 RandomNumber.NextFloat() * 200f - 100f

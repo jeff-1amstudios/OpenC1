@@ -61,7 +61,7 @@ namespace Carmageddon.Parsers
         public Vector3 CenterOfMass;
         public float Mass;
         public float TopSpeed, EnginePower;
-        public int EngineNoiseId;
+        public List<int> EngineSoundIds;
         public List<int> DrivenWheelRefs, NonDrivenWheelRefs;
         public List<string> CrashMaterialFiles = new List<string>();
         public Vector3 DriverHeadPosition;
@@ -78,7 +78,10 @@ namespace Carmageddon.Parsers
             SkipLines(4);  //car name, pratcam shit
 
             string[] engineNoises = ReadLine().Split(',');
-            EngineNoiseId = int.Parse(engineNoises[0]);
+            EngineSoundIds = new List<int>();
+            foreach (string id in engineNoises)
+                EngineSoundIds.Add(int.Parse(id));
+            
             SkipLines(1); //stealworthy
 
             //jump over the damage info for now

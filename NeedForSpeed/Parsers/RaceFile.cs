@@ -11,6 +11,12 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.Parsers
 {
+    enum DepthCueMode
+    {
+        None,
+        Dark,
+        Fog
+    }
     
     class RaceFile : BaseTextFile
     {
@@ -21,7 +27,7 @@ namespace Carmageddon.Parsers
         public string AdditionalActorFile { get; private set; }
         public string SkyboxTexture { get; private set; }
         public float SkyboxPositionY, SkyboxRepetitionsX;
-        public string DepthCueMode { get; private set; }
+        public DepthCueMode DepthCueMode { get; private set; }
         public Vector3 GridPosition;
         public int GridDirection;
         public List<NoncarFile> NonCars { get; set; }
@@ -30,6 +36,9 @@ namespace Carmageddon.Parsers
         public List<BaseFunk> Funks;
         public List<CMaterialModifier> MaterialModifiers;
         public List<Color> SmokeTables;
+        public List<Checkpoint> Checkpoints;
+        public int LapCount;
+        public List<SpecialVolume> SpecialVolumes;
 
         public RaceFile(string filename) : base(filename)
         {
@@ -42,11 +51,11 @@ namespace Carmageddon.Parsers
 
             GridDirection = ReadLineAsInt();
             string initialTimerPerSkill = ReadLine();
-            int lapCount = ReadLineAsInt();
-            SkipLines(3);
-            SkipLines(2); //checkpoint width/height ?
-            int nbrCheckPoints = ReadLineAsInt();
-            SkipLines(9 * nbrCheckPoints);
+            LapCount = ReadLineAsInt();
+            SkipLines(3);  //race completed bonuses
+            SkipLines(2); //?
+            
+            ReadCheckpointsSection();
 
             int nbrPixMaps = ReadLineAsInt();
             for (int i = 0; i < nbrPixMaps; i++)
@@ -86,7 +95,10 @@ namespace Carmageddon.Parsers
             SkyboxRepetitionsX = ReadLineAsInt();
             ReadLine();
             SkyboxPositionY = ReadLineAsInt();
-            DepthCueMode = ReadLine().ToLower();
+            string cueMode = ReadLine().ToLower();
+            if (cueMode == "dark") DepthCueMode = DepthCueMode.Dark;
+            else if (cueMode == "fog") DepthCueMode = DepthCueMode.Fog;
+            else DepthCueMode = DepthCueMode.Fog; //default to fog?
             ReadLine(); //degree of dark
 
             int defaultEngineNoise = ReadLineAsInt();
@@ -117,17 +129,62 @@ namespace Carmageddon.Parsers
             CloseFile();
         }
 
+        private void ReadCheckpointsSection()
+        {
+            Checkpoints = new List<Checkpoint>();
+
+            int nbrCheckPoints = ReadLineAsInt();
+            for (int i = 0; i < nbrCheckPoints; i++)
+            {
+                SkipLines(2);
+                int quads = ReadLineAsInt();
+                Debug.Assert(quads == 1);
+                Checkpoint point = new Checkpoint { Number = i };
+                Vector3 point1 = ReadLineAsVector3();
+                ReadLineAsVector3();
+                Vector3 point3 = ReadLineAsVector3();
+                ReadLineAsVector3();
+                point.BBox = new BoundingBox(point1, point3);
+                Checkpoints.Add(point);
+                SkipLines(2);
+            }
+        }
+
         private void ReadSpecialEffectsVolumes()
         {
+            SpecialVolumes = new List<SpecialVolume>();
             int nbrSpecialEffectsVolumes = ReadLineAsInt();
             for (int i = 0; i < nbrSpecialEffectsVolumes; i++)
             {
                 string name = ReadLine();
-                if (name != "DEFAULT WATER")
+
+                SpecialVolume vol = new SpecialVolume();
+                vol.Id = i;
+
+                if (i > 0)
                 {
                     Matrix m = ReadMatrix();
+                    
+                    Vector3 scale = new Vector3();
+                    Vector3 trans = new Vector3();
+                    Quaternion q = new Quaternion();
+                    m.Decompose(out scale, out q, out trans);
+                    m = GameVariables.ScaleMatrix * m;
+                    m.Translation = GameVariables.Scale * m.Translation;
+                    vol.BoundingBox = m.GetBoundingBox();
                 }
-                SkipLines(11);
+                vol.Gravity = ReadLineAsFloat(false);
+                vol.Viscosity = ReadLineAsFloat(false);
+                vol.CarDamagePerMs = ReadLineAsFloat(false);
+                vol.PedDamagePerMs = ReadLineAsFloat(false);
+                vol.CameraEffectIndex = ReadLineAsInt();
+                vol.SkyColor = ReadLineAsInt();
+                vol.WindscreenMaterial = ReadLine();
+                vol.EntrySoundId = ReadLineAsInt();
+                vol.ExitSoundId = ReadLineAsInt();
+                vol.EngineSoundIndex = ReadLineAsInt();
+                vol.MaterialIndex = ReadLineAsInt();
+                SpecialVolumes.Add(vol);
             }
         }
 

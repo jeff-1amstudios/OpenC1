@@ -37,9 +37,9 @@ namespace Carmageddon
 
             _race = new Race(GameVariables.BasePath + @"data\races\citya1.TXT");
 
-            string car = "dump.txt";
+            string car = "blkeagle.txt";
             _playerVehicle = new VehicleModel(GameVariables.BasePath + @"data\cars\" + car);
-            _playerVehicle.SetupChassis(_race.RaceFile.GridDirection, _race.RaceFile.GridPosition);
+            _playerVehicle.SetupChassis(_race.Config.GridDirection, _race.Config.GridPosition);
             GameVariables.PlayerVehicle = _playerVehicle;
 
             Engine.Instance.Player = new Driver { VehicleModel = _playerVehicle };
@@ -103,6 +103,7 @@ namespace Carmageddon
 
         public void Render()
         {
+            Engine.Instance.Device.Clear(GameVariables.FogColor);
             GameVariables.NbrDrawCalls = 0;
             if (GameVariables.CullingDisabled)
                 Engine.Instance.Device.RenderState.CullMode = CullMode.None;
@@ -114,12 +115,9 @@ namespace Carmageddon
             GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
 
             Engine.Instance.SpriteBatch.Begin();
-            //GameVariables.CurrentEffect.LightingEnabled = false;
+            
             _race.Render();
-
-            //GameVariables.CurrentEffect.LightingEnabled = true;
             _views[_currentView].Render();
-            //GameVariables.CurrentEffect.LightingEnabled = false;
 
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
             {
@@ -148,20 +146,25 @@ namespace Carmageddon
             if (_effect == null)
             {
                 _effect = new BasicEffect2();
-                _effect.FogEnabled = false;
-                if (GameVariables.DepthCueMode == "dark")
+                if (Race.Current.Config.DepthCueMode == DepthCueMode.Dark)
+                {
                     _effect.FogColor = new Vector3(0, 0, 0);
-                else if (GameVariables.DepthCueMode == "fog" || GameVariables.DepthCueMode == "none")
+                    GameVariables.FogColor = new Color(0, 0, 0);
+                }
+                else if (Race.Current.Config.DepthCueMode == DepthCueMode.Fog)
+                {
                     _effect.FogColor = new Vector3(245, 245, 245);
+                    GameVariables.FogColor = new Color(245, 245, 245);
+                }
                 else
                 {
                     Debug.Assert(false);
                 }
+                
                 _effect.FogStart = Engine.Instance.DrawDistance - 45 * GameVariables.Scale.Z;
                 _effect.FogEnd = Engine.Instance.DrawDistance;
                 _effect.FogEnabled = true;
-                //_effect.LightingEnabled = true;
-                //_effect.EnableDefaultLighting();
+                _effect.LightingEnabled = false;
                 //_effect.AmbientLightColor *= 4;
                 //_effect.AmbientLightColor = new Vector3(0.09f, 0.09f, 0.1f);
                 //_effect.DirectionalLight0.Direction = new Vector3(1.0f, -1.0f, -1.0f); 

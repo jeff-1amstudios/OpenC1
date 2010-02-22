@@ -65,23 +65,21 @@ namespace Carmageddon.CameraViews
         #region ICameraView Members
 
         public bool Selectable
-        {
+        { 
             get { return true; }
         }
 
         public override void Update()
         {
-            Vector3 forward = _vehicle.Chassis.Body.GlobalOrientation.Forward;
-            forward.Y -= 0.1198517f;
-            _camera.Orientation = forward; // Vector3.Transform(forward, Matrix.CreateRotationX(0.12f));
+            Matrix m = Matrix.CreateRotationX(-0.08f) * _vehicle.Chassis.Body.GlobalOrientation;
+            Vector3 forward = m.Forward;
+            _camera.Orientation = forward;
 
-            _camera.Up = _vehicle.Chassis.Body.GlobalOrientation.Up;
+            _camera.Up = m.Up;
             Vector3 vehicleBottom = new Vector3(_vehicle.Chassis.Body.GlobalPosition.X, -53.4348f, _vehicle.Chassis.Body.GlobalPosition.Z);
             vehicleBottom = GetBodyBottom();
             
             _camera.Position = vehicleBottom + Vector3.Transform(_vehicle.Config.DriverHeadPosition, _vehicle.Chassis.Body.GlobalOrientation) + new Vector3(0, 0.018f, 0);
-            GameConsole.WriteLine("pos", _camera.Orientation.Y);
-            
         }
 
         public override void Render()
@@ -90,9 +88,7 @@ namespace Carmageddon.CameraViews
             Rectangle rect = new Rectangle(0, 0, 800, 600);
             Engine.Instance.SpriteBatch.Draw(_cockpitFile.Forward, rect, src, Color.White);
 
-            
             float steerRatio = _vehicle.Chassis.SteerRatio;
-                        
             
             CockpitHandFrame frame = null;
             if (steerRatio < -0.2)
@@ -111,14 +107,14 @@ namespace Carmageddon.CameraViews
             else if (steerRatio > 0.2f)
             {
                 if (steerRatio > 0.8f)
-                    frame = _cockpitFile.LeftHands[0];
+                {
+                    int hands = Math.Min(2, _cockpitFile.LeftHands.Count - 1);
+                    frame = _cockpitFile.LeftHands[hands];
+                }
                 else if (steerRatio > 0.5f)
                     frame = _cockpitFile.LeftHands[1];
                 else if (steerRatio > 0.2)
-                {
-                    int hands = Math.Min(2, _cockpitFile.LeftHands.Count - 1);
-                    frame = _cockpitFile.LeftHands[1];
-                }
+                    frame = _cockpitFile.LeftHands[0];
             }
             else
             {
@@ -141,7 +137,6 @@ namespace Carmageddon.CameraViews
         {
             Engine.Instance.Camera = _camera;
 
-            //Vector3 vehicleBottom = new Vector3(GameVariables.PlayerVehicle.Chassis.Body.GlobalPosition.X, -53.4348f, GameVariables.PlayerVehicle.Chassis.Body.GlobalPosition.Z);
             Vector3 vehicleBottom = GetBodyBottom();
             
             _camera.Position = vehicleBottom + Vector3.Transform(_vehicle.Config.DriverHeadPosition, _vehicle.Chassis.Body.GlobalOrientation);
@@ -160,7 +155,6 @@ namespace Carmageddon.CameraViews
             Vector3 pos = _vehicle.Chassis.Body.GlobalPosition;
             pos.Y = pos.Y - _vehicle.Config.WheelActors[0].Position.Y - _vehicle.Config.DrivenWheelRadius;
             return pos;
-            Vector3 vehicleBottom = new Vector3(GameVariables.PlayerVehicle.Chassis.Body.GlobalPosition.X, -53.4348f, GameVariables.PlayerVehicle.Chassis.Body.GlobalPosition.Z);
         }
     }
 }

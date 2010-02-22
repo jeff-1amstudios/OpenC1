@@ -23,8 +23,8 @@ namespace Carmageddon.HUD
         public override void Render()
         {
             Rectangle rect = CenterRectX(0, 0.182f, 0.075f);
-            Engine.Instance.SpriteBatch.Draw(_shadow, rect, Color.White);
-
+            DrawShadow(rect);
+            
             TimeSpan ts = TimeSpan.FromSeconds(Race.Current.RaceTime.TimeRemaining);
             float nudge = ts.Minutes < 10 ? 13 * FontScale : 0;
             Engine.Instance.SpriteBatch.DrawString(_font,

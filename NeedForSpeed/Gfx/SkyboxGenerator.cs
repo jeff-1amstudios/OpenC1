@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using PlatformEngine;
+using Carmageddon.Parsers;
 
 
 namespace Carmageddon.Gfx
 {
     class SkyboxGenerator
     {
-        public static SkyBox Generate(Texture2D horizon, float repetionsX, string depthCueMode)
+        public static SkyBox Generate(Texture2D horizon, float repetionsX, DepthCueMode depthCueMode)
         {
             if (horizon == null)
             {
                 Color c;
-                if (depthCueMode == "dark")
+                if (depthCueMode ==  DepthCueMode.Dark)
                     c = new Color(0, 0, 0);
-                else if (depthCueMode == "fog" || depthCueMode == "none")
+                else if (depthCueMode == DepthCueMode.Fog)
                     c = Color.WhiteSmoke;
                 else
                     throw new NotImplementedException();

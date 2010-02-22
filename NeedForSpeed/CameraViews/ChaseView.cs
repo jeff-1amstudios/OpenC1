@@ -23,8 +23,10 @@ namespace Carmageddon.CameraViews
 
             _vehicle = vehicle;
 
+            _hudItems.Add(new StandardHudItem());
             _hudItems.Add(new RevCounter(_vehicle.Chassis));
             _hudItems.Add(new Timer());
+            
         }
 
         #region ICameraView Members
@@ -47,11 +49,11 @@ namespace Carmageddon.CameraViews
                 {
                     _camera.Rotation = (chassis.Backwards ? MathHelper.Pi : 0);
                 }
-                _camera.HeightOverride = 0;
+                if (Race.Current.RaceTime.IsStarted) _camera.HeightOverride = 0;
             }
             else
             {
-                _camera.HeightOverride = 2;
+                if (Race.Current.RaceTime.IsStarted) _camera.HeightOverride = 2;
             }
 
             foreach (BaseHUDItem item in _hudItems)

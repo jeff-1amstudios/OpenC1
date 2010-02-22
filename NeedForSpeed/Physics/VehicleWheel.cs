@@ -67,7 +67,7 @@ namespace Carmageddon.Physics
             if (wcd.ContactForce != 0)
             {
                 int materialIndex = (int)wcd.OtherShapeMaterialIndex;
-                CMaterialModifier materialModifier = Race.Current.RaceFile.MaterialModifiers[materialIndex];
+                CMaterialModifier materialModifier = Race.Current.Config.MaterialModifiers[materialIndex];
                 materialModifier.UpdateWheelShape(_chassis, this);
 
                 if (_chassis.Speed > 10 && (_handbrake == 1 || Math.Abs(wcd.LateralSlip) > 0.23f))

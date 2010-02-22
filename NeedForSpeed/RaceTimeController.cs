@@ -15,26 +15,19 @@ namespace Carmageddon
         public bool CountingDown { get; private set; }
         public float CountdownTime;
         int _lastSecond=-1;
-        public float TimeRemaining = 20; // 90; //1:30
-        List<Texture2D> _countdownTextures = new List<Texture2D>();
+        public float TimeRemaining = 1; // 90; //1:30
+        List<string> _countdownTextures = new List<string>();
         List<int> _countdownSoundIds = new List<int>();
-        Texture2D _outOfTime;
         public float TotalTime;
 
         public RaceTimeController()
         {
-            PixFile pix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\number5.pix");
-            _countdownTextures.Add(pix.PixMaps[0].Texture);
-            pix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\number4.pix");
-            _countdownTextures.Add(pix.PixMaps[0].Texture);
-            pix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\number3.pix");
-            _countdownTextures.Add(pix.PixMaps[0].Texture);
-            pix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\number2.pix");
-            _countdownTextures.Add(pix.PixMaps[0].Texture);
-            pix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\number1.pix");
-            _countdownTextures.Add(pix.PixMaps[0].Texture);
-            pix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\go.pix");
-            _countdownTextures.Add(pix.PixMaps[0].Texture);
+            _countdownTextures.Add("number5.pix");
+            _countdownTextures.Add("number4.pix");
+            _countdownTextures.Add("number3.pix");
+            _countdownTextures.Add("number2.pix");
+            _countdownTextures.Add("number1.pix");
+            _countdownTextures.Add("go.pix");
 
             _countdownSoundIds.Add(8005);
             _countdownSoundIds.Add(8004);
@@ -42,9 +35,6 @@ namespace Carmageddon
             _countdownSoundIds.Add(8002);
             _countdownSoundIds.Add(8001);
             _countdownSoundIds.Add(8000);
-
-            pix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\timeup.pix");
-            _outOfTime = pix.PixMaps[0].Texture;
         }
 
         public void StartCountdown()
@@ -89,7 +79,7 @@ namespace Carmageddon
                 if (second > _lastSecond)
                 {
                     SoundCache.Play(_countdownSoundIds[second]);
-                    MessageRenderer.Instance.PostMessage(_countdownTextures[second], 0.7f, 0.24f, 0.003f);
+                    MessageRenderer.Instance.PostMessagePix(_countdownTextures[second], 0.7f, 0.24f, 0.003f, 0);
                 }
 
                 _lastSecond = second;
@@ -97,7 +87,7 @@ namespace Carmageddon
 
             if (TimeRemaining == 0)
             {
-                //MessageRenderer.Instance.PostMessage(_outOfTime, 10, 0.6f, 0.0033f);   
+                //MessageRenderer.Instance.PostMessagePix("timeup.pix", 10, 0.6f, 0.0033f);   
             }
         }
     }
