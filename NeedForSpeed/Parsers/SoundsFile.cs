@@ -6,7 +6,7 @@ namespace Carmageddon.Parsers
 {
     class SoundsFile : BaseTextFile
     {
-        public List<CSoundDescription> Sounds = new List<CSoundDescription>();
+        public List<SoundDesc> Sounds = new List<SoundDesc>();
 
         public SoundsFile(string filename)
             : base(filename)
@@ -14,7 +14,7 @@ namespace Carmageddon.Parsers
 
             while (_file.BaseStream.Position < _file.BaseStream.Length)
             {
-                CSoundDescription sound = new CSoundDescription();
+                SoundDesc sound = new SoundDesc();
                 sound.Id = ReadLineAsInt();
                 string[] flags = ReadLine().Split(',');
                 sound.FileName = ReadLine();

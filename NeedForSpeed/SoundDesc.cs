@@ -5,7 +5,7 @@ using NFSEngine.Audio;
 
 namespace Carmageddon
 {
-    class CSoundDescription
+    class SoundDesc
     {
         public int Id;
         public string FileName;

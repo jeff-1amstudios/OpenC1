@@ -25,7 +25,7 @@ namespace Carmageddon
     static class SoundCache
     {
         static bool _enabled = true;
-        static List<CSoundDescription> _soundDescriptions;
+        static List<SoundDesc> _soundDescriptions;
         public static bool IsInitialized;
         static List<ISound> _instances = new List<ISound>();
         static ISound _currentSkid, _currentCrash, _scrape;
@@ -40,7 +40,7 @@ namespace Carmageddon
         public static ISound CreateInstance(int id)
         {
             if (!_enabled) return null;
-            CSoundDescription csound = _soundDescriptions.Find(a => a.Id == id);
+            SoundDesc csound = _soundDescriptions.Find(a => a.Id == id);
             ISound instance = Engine.Instance.Audio.Load(GameVariables.BasePath + "data\\sound\\" + csound.FileName, false);
             instance.Volume = -1000;
             instance.Id = csound.Id;

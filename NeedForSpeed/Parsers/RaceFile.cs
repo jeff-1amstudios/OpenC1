@@ -34,7 +34,7 @@ namespace Carmageddon.Parsers
         public List<Vector3> CopStartPoints { get; set; }
         public List<BaseGroove> Grooves;
         public List<BaseFunk> Funks;
-        public List<CMaterialModifier> MaterialModifiers;
+        public List<MaterialModifier> MaterialModifiers;
         public List<Color> SmokeTables;
         public List<Checkpoint> Checkpoints;
         public int LapCount;
@@ -258,12 +258,12 @@ namespace Carmageddon.Parsers
 
         private void ReadMaterialModifierSection()
         {
-            MaterialModifiers = new List<CMaterialModifier>();
+            MaterialModifiers = new List<MaterialModifier>();
 
             int nbrMaterialModifiers = ReadLineAsInt();
             for (int i = 0; i < nbrMaterialModifiers; i++)
             {
-                CMaterialModifier modifier = new CMaterialModifier
+                MaterialModifier modifier = new MaterialModifier
                     {
                         CarWallFriction = ReadLineAsFloat(false),
                         TyreRoadFriction = ReadLineAsFloat(false),
@@ -311,7 +311,7 @@ namespace Carmageddon.Parsers
 
             // now we have smoke tables, initialize material modifiers
 
-            foreach (CMaterialModifier modifier in MaterialModifiers)
+            foreach (MaterialModifier modifier in MaterialModifiers)
                 modifier.Initialize(this);
         }
     }

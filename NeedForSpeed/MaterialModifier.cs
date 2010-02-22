@@ -11,7 +11,7 @@ using Carmageddon.Parsers;
 
 namespace Carmageddon
 {
-    class CMaterialModifier
+    class MaterialModifier
     {
         public float CarWallFriction;
         public float TyreRoadFriction;

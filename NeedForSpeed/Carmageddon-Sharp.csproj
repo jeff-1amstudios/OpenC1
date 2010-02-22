@@ -87,7 +87,7 @@
     <Compile Include="CameraViews\ICameraView.cs" />
     <Compile Include="Checkpoint.cs" />
     <Compile Include="CMaterial.cs" />
-    <Compile Include="CMaterialModifier.cs" />
+    <Compile Include="MaterialModifier.cs" />
     <Compile Include="Gfx\MaterialSmokeParticleSystem.cs" />
     <Compile Include="Gfx\SkidMarkBuffer.cs" />
     <Compile Include="HUD\StandardHudItem.cs" />
@@ -97,7 +97,7 @@
     <Compile Include="Physics\TriggerReport.cs" />
     <Compile Include="PhysXConsts.cs" />
     <Compile Include="RaceTimeController.cs" />
-    <Compile Include="CSoundDescription.cs" />
+    <Compile Include="SoundDesc.cs" />
     <Compile Include="CWheelActor.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Gfx\ModelShadow.cs" />

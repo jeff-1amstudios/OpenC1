@@ -25,8 +25,6 @@ namespace Carmageddon.CameraViews
         {
             _vehicle = vehicle;
             _cockpitFile = new CockpitFile(cockpitFile);
-            //_camera = new FPSCamera();
-            //_camera.SetPerspective(55.55f, Engine.Instance.AspectRatio, 0.1f, 500);
             _camera = new SimpleCamera();
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
             _camera.AspectRatio = Engine.Instance.AspectRatio;
