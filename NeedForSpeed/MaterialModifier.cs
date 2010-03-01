@@ -62,7 +62,7 @@ namespace Carmageddon
             else
                 wheel.SmokeEmitter.ParticleSystem = _defaultTyreSmokeSystem;
 
-            GameVariables.SkidMarkBuffer.SetTexture(SkidMaterial.Texture);
+            GameVariables.SkidMarkBuffer.SetTexture(SkidMaterial == null ? null : SkidMaterial.Texture);
         }
     }
 }

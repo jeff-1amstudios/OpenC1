@@ -14,11 +14,17 @@ namespace Carmageddon.Parsers
         public UInt16 Vertex3 { get; private set; }
         public Vector3 Normal { get; private set; }
 
+        public Vector3 V1, V2, V3;
+
         public int MaterialIndex;
         public bool DoubleSided;
         public CMaterial Material {get; set; }
         public bool Skip;
         public int NbrPrims;
+
+        public Polygon()
+        {
+        }
 
         public Polygon(UInt16 v1, UInt16 v2, UInt16 v3)
         {
@@ -27,10 +33,16 @@ namespace Carmageddon.Parsers
             Vertex3 = v3;
         }
 
-        public void CalculateNormal(List<Vector3> vertices)
+        public void CalculateNormal2()
         {
-            Vector3 ab = vertices[Vertex1] - vertices[Vertex3];
-            Vector3 ac = vertices[Vertex1] - vertices[Vertex2];
+            Normal = Vector3.Cross(V1-V3, V1-V2);
+            Normal.Normalize();
+        }
+
+        public void CalculateNormal(List<Vector3> vertices, int baseIndex)
+        {
+            Vector3 ab = vertices[baseIndex + Vertex1] - vertices[baseIndex + Vertex3];
+            Vector3 ac = vertices[baseIndex + Vertex1] - vertices[baseIndex + Vertex2];
             Normal = Vector3.Cross(ab, ac);
             Normal.Normalize();
         }

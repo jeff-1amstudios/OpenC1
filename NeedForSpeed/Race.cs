@@ -180,11 +180,18 @@ namespace Carmageddon
         public void OnVehicleExitSpecVol(SpecialVolume volume, VehicleModel vehicle)
         {
             SpecialVolume vol = vehicle.CurrentSpecialVolume.Pop();
-            int nextVolumeId = vehicle.CurrentSpecialVolume.Count == 0 ? -1 : vehicle.CurrentSpecialVolume.Peek().Id;
-            if (nextVolumeId != vol.Id)
+            SpecialVolume nextVol = vehicle.CurrentSpecialVolume.Count == 0 ? null : vehicle.CurrentSpecialVolume.Peek();
+            GameConsole.WriteEvent("Exit specvol - " + vehicle.CurrentSpecialVolume.Count);
+
+            if (nextVol == null)
             {
-                GameConsole.WriteEvent("Exit specvol - " + vehicle.CurrentSpecialVolume.Count);
                 vehicle.EngineSoundIndex = 0;
+                if (volume.ExitSoundId > 0)
+                    SoundCache.Play(volume.ExitSoundId);
+            }
+            else if (nextVol.Id != vol.Id)
+            {
+                vehicle.EngineSoundIndex = nextVol.EngineSoundIndex;
                 if (volume.ExitSoundId > 0)
                     SoundCache.Play(volume.ExitSoundId);
             }

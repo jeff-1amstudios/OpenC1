@@ -35,9 +35,10 @@ namespace Carmageddon
 
                 if (GameVariables.CullingDisabled != poly.DoubleSided)
                 {
-                    device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
+                    device.RenderState.CullMode =  (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
                     GameVariables.CullingDisabled = poly.DoubleSided;
                 }
+                
 
                 if (poly.Material != null)
                 {
@@ -66,7 +67,8 @@ namespace Carmageddon
                     currentMaterial.Funk.BeforeRender();
                 }
                 GameVariables.NbrDrawCalls++;
-                Engine.Instance.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3*poly.NbrPrims, indexBufferStart, poly.NbrPrims);
+                //Engine.Instance.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3*poly.NbrPrims, indexBufferStart, poly.NbrPrims);
+                Engine.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, indexBufferStart, poly.NbrPrims);
                 indexBufferStart += poly.NbrPrims * 3;
 
                 if (currentMaterial != null && currentMaterial.Funk != null)

@@ -44,21 +44,21 @@ namespace Carmageddon.Physics
                     indices.Add((ushort)index);
                     if (verts[index] == Vector3.Zero)
                     {
-                        Vector3 transformedVec = Vector3.Transform(models._vertices[actor.Model.VertexBaseIndex + poly.Vertex1].Position, actor.Matrix);
+                        Vector3 transformedVec = Vector3.Transform(models._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex1], actor.Matrix);
                         verts[index] = transformedVec;
                     }
                     index = baseIndex + poly.Vertex2;
                     indices.Add((ushort)index);
                     if (verts[index] == Vector3.Zero)
                     {
-                        Vector3 transformedVec = Vector3.Transform(models._vertices[actor.Model.VertexBaseIndex + poly.Vertex2].Position, actor.Matrix);
+                        Vector3 transformedVec = Vector3.Transform(models._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex2], actor.Matrix);
                         verts[index] = transformedVec;
                     }
                     index = baseIndex + poly.Vertex3;
                     indices.Add((ushort)index);
                     if (verts[index] == Vector3.Zero)
                     {
-                        Vector3 transformedVec = Vector3.Transform(models._vertices[actor.Model.VertexBaseIndex + poly.Vertex3].Position, actor.Matrix);
+                        Vector3 transformedVec = Vector3.Transform(models._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex3], actor.Matrix);
                         verts[index] = transformedVec;
                     }
 
@@ -136,12 +136,20 @@ namespace Carmageddon.Physics
                 actor.GlobalPosition = vol.BoundingBox.GetCenter();
                 actor.UserData = vol;
 
-                //ForceFieldDescription ffdesc = new ForceFieldDescription();
+                if (vol.Gravity < 1)
+                {
+                    ForceFieldDescription ffdesc = new ForceFieldDescription();
+                    ffdesc.Constant = new Vector3(0, 11000, 0);
 
-                //ForceField ff = PhysX.Instance.Scene.CreateForceField(ffdesc);
-                //BoxForceFieldShapeDescription ffshape = new BoxForceFieldShapeDescription();
-                //ffshape.Size = vol.BoundingBox.GetSize();
-                //ForceFieldShape ffshape2 = ff.CreateShape(ffshape);
+                    ForceField ff = PhysX.Instance.Scene.CreateForceField(ffdesc);
+
+                    BoxForceFieldShapeDescription ffshape = new BoxForceFieldShapeDescription();
+                    ffshape.Size = vol.BoundingBox.GetSize();
+
+                    ForceFieldShape ffshape2 = ff.CreateShape(ffshape);
+                    ffshape2.Pose = Matrix.CreateTranslation(vol.BoundingBox.GetCenter());
+                }
+                
             }
 
             return environment;
@@ -165,9 +173,9 @@ namespace Carmageddon.Physics
                     if (materialName.StartsWith("!"))
                     {
                         foundWater = true;
-                        Vector3 v1 = Vector3.Transform(modelsFile._vertices[model.VertexBaseIndex + poly.Vertex1].Position, actor.Matrix);
-                        Vector3 v2 = Vector3.Transform(modelsFile._vertices[model.VertexBaseIndex + poly.Vertex3].Position, actor.Matrix);
-                        Vector3 v3 = Vector3.Transform(modelsFile._vertices[model.VertexBaseIndex + poly.Vertex3].Position, actor.Matrix);
+                        Vector3 v1 = Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex1], actor.Matrix);
+                        Vector3 v2 = Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex3], actor.Matrix);
+                        Vector3 v3 = Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex3], actor.Matrix);
 
                         min = TakeMin(min, v1); min = TakeMin(min, v2); min = TakeMin(min, v3);
                         max = TakeMax(max, v1); max = TakeMax(max, v2); max = TakeMax(max, v3);

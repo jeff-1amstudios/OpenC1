@@ -35,7 +35,7 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            _race = new Race(GameVariables.BasePath + @"data\races\citya1.TXT");
+            _race = new Race(GameVariables.BasePath + @"data\races\ice.TXT");
 
             string car = "blkeagle.txt";
             _playerVehicle = new VehicleModel(GameVariables.BasePath + @"data\cars\" + car);
@@ -92,6 +92,11 @@ namespace Carmageddon
             if (Engine.Instance.Input.WasPressed(Keys.D))
             {
                 TakeScreenshot();
+            }
+            if (Engine.Instance.Input.WasPressed(Keys.L))
+            {
+                GameVariables.LightingEnabled = !GameVariables.LightingEnabled;
+                _effect = null;
             }
 
             _views[_currentView].Update();
@@ -164,11 +169,23 @@ namespace Carmageddon
                 _effect.FogStart = Engine.Instance.DrawDistance - 45 * GameVariables.Scale.Z;
                 _effect.FogEnd = Engine.Instance.DrawDistance;
                 _effect.FogEnabled = true;
-                _effect.LightingEnabled = false;
-                //_effect.AmbientLightColor *= 4;
-                //_effect.AmbientLightColor = new Vector3(0.09f, 0.09f, 0.1f);
-                //_effect.DirectionalLight0.Direction = new Vector3(1.0f, -1.0f, -1.0f); 
                 _effect.TextureEnabled = true;
+
+                if (GameVariables.LightingEnabled)
+                {
+                    //_effect.EnableDefaultLighting();
+                    _effect.LightingEnabled = true;
+                    _effect.DiffuseColor = new Vector3(1);
+                    _effect.DirectionalLight0.DiffuseColor = new Vector3(1);
+                    Vector3 dir = new Vector3(-0.6f, -3, -0.6f);
+                    dir.Normalize();
+                    _effect.DirectionalLight0.Direction = dir;
+                    _effect.DirectionalLight0.Enabled = true;
+                    _effect.SpecularColor = new Vector3(0.3f);
+                    _effect.SpecularPower = 16;
+                    _effect.AmbientLightColor = new Vector3(0.65f);
+                    //_effect.PreferPerPixelLighting = true;
+                }
             }
 
             _effect.View = Engine.Instance.Camera.View;

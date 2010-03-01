@@ -44,8 +44,8 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.SkinWidth, (float)0.01f);
             Core.SetParameter(PhysicsParameter.VisualizationScale, (float)1f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
-            Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
-            
+            Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, false);
+            Core.SetParameter(PhysicsParameter.VisualizeForceFields, false);
             
             SceneDescription sceneDescription = new SceneDescription();
             sceneDescription.Gravity = new Vector3(0f, -9.81f*1.35f, 0f);  //double gravity
