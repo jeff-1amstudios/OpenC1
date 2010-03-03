@@ -63,6 +63,9 @@ namespace Carmageddon
 
         public void PostMessage(string message, float displayTime)
         {
+            _messageText = message;
+            _ttl = displayTime;
+             _rect = CenterRectX(0.2f, _messageText.Length * _scale * 7.5f, 50 * _scale);
         }
 
 
@@ -85,6 +88,7 @@ namespace Carmageddon
             _rect = CenterRectX(_y, _messageTexture.Width * _scale, _messageTexture.Height * _scale);
             _centerX = _rect.X;
             _x = _screenWidth;
+            _messageText = null;
 
         }
 
@@ -94,7 +98,10 @@ namespace Carmageddon
             if (_animationSpeed == 0)
             {
                 if (_ttl > 0)
-                    Engine.Instance.SpriteBatch.Draw(_messageTexture, _rect, Color.White);
+                {
+                    if (_messageText != null) DrawString(_textFont, _messageText, new Vector2(_rect.Left, _rect.Top), Color.White);
+                    else Engine.Instance.SpriteBatch.Draw(_messageTexture, _rect, Color.White);
+                }
             }
             else
             {

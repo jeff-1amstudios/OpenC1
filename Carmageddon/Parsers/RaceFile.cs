@@ -164,14 +164,10 @@ namespace Carmageddon.Parsers
                 if (i > 0)
                 {
                     Matrix m = ReadMatrix();
-                    
-                    Vector3 scale = new Vector3();
-                    Vector3 trans = new Vector3();
-                    Quaternion q = new Quaternion();
-                    m.Decompose(out scale, out q, out trans);
+                                        
                     m = GameVariables.ScaleMatrix * m;
                     m.Translation = GameVariables.Scale * m.Translation;
-                    vol.BoundingBox = m.GetBoundingBox();
+                    vol.Matrix = Matrix.CreateScale(2) * m;
                 }
                 vol.Gravity = ReadLineAsFloat(false);
                 vol.Viscosity = ReadLineAsFloat(false);

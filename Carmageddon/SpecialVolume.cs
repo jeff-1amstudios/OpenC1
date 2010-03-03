@@ -8,7 +8,7 @@ namespace Carmageddon
     class SpecialVolume
     {
         public int Id;
-        public BoundingBox BoundingBox;// Matrix;
+        public Matrix Matrix;
         public float Gravity, Viscosity, CarDamagePerMs, PedDamagePerMs;
         public int CameraEffectIndex, SkyColor, EntrySoundId, ExitSoundId;
         public int EngineSoundIndex, MaterialIndex;

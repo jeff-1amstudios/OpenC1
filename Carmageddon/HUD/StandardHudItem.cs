@@ -21,11 +21,11 @@ namespace Carmageddon.HUD
 
             Engine.Instance.SpriteBatch.DrawString(_whiteFont, "CP", pos, Color.White);
             pos.X += 25f;
-            Engine.Instance.SpriteBatch.DrawString(_whiteFont, String.Format("{0}/{1}", Race.Current.NextCheckpoint, Race.Current.Config.Checkpoints.Count), pos, Color.White);
+            Engine.Instance.SpriteBatch.DrawString(_whiteFont, String.Format("{0}/{1}", Race.Current.NextCheckpoint, Race.Current.ConfigFile.Checkpoints.Count), pos, Color.White);
             pos.X += 45f;
             Engine.Instance.SpriteBatch.DrawString(_whiteFont, "LAP", pos, Color.White);
             pos.X += 35f;
-            Engine.Instance.SpriteBatch.DrawString(_whiteFont, String.Format("{0}/{1}", Race.Current.CurrentLap, Race.Current.Config.LapCount), pos, Color.White);
+            Engine.Instance.SpriteBatch.DrawString(_whiteFont, String.Format("{0}/{1}", Race.Current.CurrentLap, Race.Current.ConfigFile.LapCount), pos, Color.White);
 
             pos = ScaleVec2(0.25f, 0.05f);
 

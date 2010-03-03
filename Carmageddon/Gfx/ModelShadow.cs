@@ -55,7 +55,7 @@ namespace Carmageddon
             GameVariables.CullingDisabled = true;
             
             GameVariables.CurrentEffect.World = Matrix.Identity;
-            GameVariables.CurrentEffect.TextureEnabled = false;
+            GameVariables.CurrentEffect.Texture = null; //.TextureEnabled = false;
             GameVariables.CurrentEffect.VertexColorEnabled = true;
             VertexDeclaration oldVertDecl = device.VertexDeclaration;
             device.VertexDeclaration = _vertexDeclaration;
@@ -71,7 +71,7 @@ namespace Carmageddon
             device.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleStrip, verts, 0, 2);
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
 
-            GameVariables.CurrentEffect.TextureEnabled = true;
+            //GameVariables.CurrentEffect.TextureEnabled = true;
             GameVariables.CurrentEffect.VertexColorEnabled = false;
             device.RenderState.AlphaBlendEnable = false;
             //device.RenderState.DepthBufferEnable = true;

@@ -112,7 +112,7 @@ namespace Carmageddon.Physics
                 ActorDescription actorDesc = new ActorDescription();
                 
                 BoxShapeDescription box = new BoxShapeDescription(checkpoint.BBox.GetSize());
-                box.Flags = ShapeFlag.TriggerOnEnter;// | ShapeFlag.Visualization;
+                box.Flags = ShapeFlag.TriggerOnEnter | ShapeFlag.Visualization;
                 actorDesc.Shapes.Add(box);
                 Actor actor = PhysX.Instance.Scene.CreateActor(actorDesc);
                 actor.GlobalPosition = checkpoint.BBox.GetCenter();
@@ -123,17 +123,27 @@ namespace Carmageddon.Physics
             environment.Group = 10;
             environment.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
 
-            CreateDefaultWaterSpecVols(file, actorsList, models);
+            //CreateDefaultWaterSpecVols(file, actorsList, models);
 
+            
             for (int i = 1; i < file.SpecialVolumes.Count; i++)
             {
                 SpecialVolume vol = file.SpecialVolumes[i];
+
+                Vector3 scale = new Vector3();
+                Vector3 trans = new Vector3();
+                Quaternion q = new Quaternion();
+                vol.Matrix.Decompose(out scale, out q, out trans);
+
                 ActorDescription actorDesc = new ActorDescription();
-                BoxShapeDescription box = new BoxShapeDescription(vol.BoundingBox.GetSize());
+                BoxShapeDescription box = new BoxShapeDescription(scale);
+                box.LocalRotation = Matrix.CreateFromQuaternion(q);
+                
                 box.Flags = ShapeFlag.TriggerOnEnter | ShapeFlag.TriggerOnLeave | ShapeFlag.Visualization;
                 actorDesc.Shapes.Add(box);
                 Actor actor = PhysX.Instance.Scene.CreateActor(actorDesc);
-                actor.GlobalPosition = vol.BoundingBox.GetCenter();
+
+                actor.GlobalPosition = vol.Matrix.Translation;
                 actor.UserData = vol;
 
                 if (vol.Gravity < 1)
@@ -144,10 +154,8 @@ namespace Carmageddon.Physics
                     ForceField ff = PhysX.Instance.Scene.CreateForceField(ffdesc);
 
                     BoxForceFieldShapeDescription ffshape = new BoxForceFieldShapeDescription();
-                    ffshape.Size = vol.BoundingBox.GetSize();
-
                     ForceFieldShape ffshape2 = ff.CreateShape(ffshape);
-                    ffshape2.Pose = Matrix.CreateTranslation(vol.BoundingBox.GetCenter());
+                    ffshape2.Pose = vol.Matrix;
                 }
                 
             }

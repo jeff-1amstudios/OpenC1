@@ -37,12 +37,14 @@ namespace Carmageddon
 
         public static BoundingBox GetBoundingBox(this Matrix matrix)
         {
-            Vector3 topleft = new Vector3(-1, -1, -1);
-            Vector3 botRight = new Vector3(1, 1, 1);
-            topleft = Vector3.Transform(topleft, matrix);
-            botRight = Vector3.Transform(botRight, matrix);
-
-            return new BoundingBox(topleft, botRight);
+            List<Vector3> points = new List<Vector3>();
+            points.Add(Vector3.Transform(new Vector3(-1, 1, -1), matrix));
+            points.Add(Vector3.Transform(new Vector3(1, -1, -1), matrix));
+            points.Add(Vector3.Transform(new Vector3(-1, 1, 1), matrix));
+            points.Add(Vector3.Transform(new Vector3(1, -1, 1), matrix));
+            
+            BoundingBox bb = BoundingBox.CreateFromPoints(points);
+            return bb;
         }
     }
 }

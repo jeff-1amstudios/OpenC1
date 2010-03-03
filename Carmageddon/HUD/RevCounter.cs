@@ -41,10 +41,12 @@ namespace Carmageddon.HUD
             DrawShadow(ScaleRect(x + 0.06f, y + 0.112f, 0.03f, 0.057f));
             if (_chassis.Motor.Gearbox.CurrentGear >= 0)
             {
-                Engine.Instance.SpriteBatch.DrawString(_font, _chassis.Motor.Gearbox.CurrentGear.ToString(), ScaleVec2(x + 0.065f, y + 0.118f), Color.Yellow, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
+                DrawString(_font, _chassis.Motor.Gearbox.CurrentGear.ToString(), ScaleVec2(x + 0.065f, y + 0.118f), Color.Yellow);
+                //Engine.Instance.SpriteBatch.DrawString(_font, _chassis.Motor.Gearbox.CurrentGear.ToString(), ScaleVec2(x + 0.065f, y + 0.118f), Color.Yellow, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
             }
             DrawShadow(ScaleRect(x + 0.1f, y + 0.112f, 0.068f, 0.057f));
-            Engine.Instance.SpriteBatch.DrawString(_font, ((int)_chassis.Speed).ToString("000"), ScaleVec2(x + 0.102f, y + 0.118f), Color.GreenYellow, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
+            DrawString(_font, ((int)_chassis.Speed).ToString("000"), ScaleVec2(x + 0.102f, y + 0.118f), Color.GreenYellow);
+            //Engine.Instance.SpriteBatch.DrawString(_font, ((int)_chassis.Speed).ToString("000"), ScaleVec2(x + 0.102f, y + 0.118f), Color.GreenYellow, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
 
             float rpmFactor = _chassis.Motor.Rpm / _chassis.Motor.RedlineRpm;
             float rotation = (float)(rpmFactor * 4f) + 0.5f;

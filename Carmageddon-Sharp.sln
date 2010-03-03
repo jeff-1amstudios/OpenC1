@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "Engine\Engine.csproj", "{32825548-A7A9-4D8E-A3AC-5DDA50EDB14B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carmageddon-Sharp", "NeedForSpeed\Carmageddon-Sharp.csproj", "{31C0A532-654F-42FE-B871-9A497528A9D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carmageddon-Sharp", "Carmageddon\Carmageddon-Sharp.csproj", "{31C0A532-654F-42FE-B871-9A497528A9D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

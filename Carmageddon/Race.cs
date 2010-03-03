@@ -27,21 +27,21 @@ namespace Carmageddon
 
         public static Race Current;
 
-        public RaceFile Config { get; private set; }
+        public RaceFile ConfigFile { get; private set; }
 
         public Race(string filename)
         {
-            Config = new RaceFile(filename);
+            ConfigFile = new RaceFile(filename);
 
             _resourceCache = new ResourceCache();
 
-            foreach (string matFileName in Config.MaterialFiles)
+            foreach (string matFileName in ConfigFile.MaterialFiles)
             {
                 MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
                 _resourceCache.Add(matFile);
             }
 
-            foreach (string pixFileName in Config.PixFiles)
+            foreach (string pixFileName in ConfigFile.PixFiles)
             {
                 PixFile pixFile = new PixFile(@"C:\Games\carma1\data\pixelmap\" + pixFileName);
                 _resourceCache.Add(pixFile);
@@ -51,19 +51,19 @@ namespace Carmageddon
 
             _resourceCache.ResolveMaterials();
 
-            _models = new DatFile(@"C:\Games\carma1\data\models\" + Config.ModelFile);
+            _models = new DatFile(@"C:\Games\carma1\data\models\" + ConfigFile.ModelFile);
 
-            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + Config.ActorFile, _models);
-            _actors.ResolveHierarchy(false, Config.Grooves);
+            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + ConfigFile.ActorFile, _models);
+            _actors.ResolveHierarchy(false, ConfigFile.Grooves);
             _actors.ResolveMaterials(_resourceCache);
             _models.Resolve(_resourceCache);
 
             // link the actors and grooves
-            foreach (BaseGroove g in Config.Grooves)
+            foreach (BaseGroove g in ConfigFile.Grooves)
                 g.SetActor(_actors.GetByName(g.ActorName));
 
             // link the funks and materials
-            foreach (BaseFunk f in Config.Funks)
+            foreach (BaseFunk f in ConfigFile.Funks)
             {
                 if (f is FramesFunk) ((FramesFunk)f).Resolve(_resourceCache);
                 CMaterial cm = _resourceCache.GetMaterial(f.MaterialName);
@@ -71,15 +71,15 @@ namespace Carmageddon
                 f.Material = cm;
             }
             
-            if (Config.SkyboxTexture != "none")
+            if (ConfigFile.SkyboxTexture != "none")
             {
-                PixFile horizonPix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\" + Config.SkyboxTexture);
-                _skybox = SkyboxGenerator.Generate(horizonPix.PixMaps[0].Texture, Config.SkyboxRepetitionsX - 3f, Config.DepthCueMode);
-                _skybox.HeightOffset = -220 + Config.SkyboxPositionY * 1.5f;
+                PixFile horizonPix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\" + ConfigFile.SkyboxTexture);
+                _skybox = SkyboxGenerator.Generate(horizonPix.PixMaps[0].Texture, ConfigFile.SkyboxRepetitionsX - 3f, ConfigFile.DepthCueMode);
+                _skybox.HeightOffset = -220 + ConfigFile.SkyboxPositionY * 1.5f;
             }
 
-            Physics.TrackProcessor.GenerateTrackActor(Config, _actors, _models);
-            _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, Config.NonCars);
+            Physics.TrackProcessor.GenerateTrackActor(ConfigFile, _actors, _models);
+            _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);
 
             
             GameVariables.SkidMarkBuffer = new Carmageddon.Gfx.SkidMarkBuffer(200);
@@ -113,11 +113,11 @@ namespace Carmageddon
                 }
             }
 
-            foreach (BaseGroove groove in Config.Grooves)
+            foreach (BaseGroove groove in ConfigFile.Grooves)
             {
                 groove.Update();
             }
-            foreach (BaseFunk funk in Config.Funks)
+            foreach (BaseFunk funk in ConfigFile.Funks)
             {
                 funk.Update();
             }
@@ -141,6 +141,11 @@ namespace Carmageddon
             _models.SetupRender();
             _actors.Render(_models, Matrix.Identity);
 
+            foreach (SpecialVolume vol in ConfigFile.SpecialVolumes)
+            {
+                //Engine.Instance.DebugRenderer.AddSquareGrid(vol.Matrix, 20, Color.Yellow); // Matrix.CreateScale(vol.BoundingBox.GetSize()) * Matrix.CreateTranslation(vol.BoundingBox.GetCenter()), Color.Yellow);
+            }
+
             RaceTime.Render();
             MessageRenderer.Instance.Render();
         }
@@ -151,7 +156,7 @@ namespace Carmageddon
             {
                 SoundCache.Play(SoundIds.Checkpoint);
                 NextCheckpoint++;
-                if (NextCheckpoint == Config.Checkpoints.Count)
+                if (NextCheckpoint == ConfigFile.Checkpoints.Count)
                 {
                     CurrentLap++;
                     NextCheckpoint = 0;
@@ -167,9 +172,10 @@ namespace Carmageddon
         public void OnVehicleEnterSpecVol(SpecialVolume volume, VehicleModel vehicle)
         {
             int currentVolumeId = vehicle.CurrentSpecialVolume.Count == 0 ? -1 : vehicle.CurrentSpecialVolume.Peek().Id;
+            GameConsole.WriteEvent("Enter specvol - " + vehicle.CurrentSpecialVolume.Count);
+
             if (currentVolumeId != volume.Id)
-            {
-                GameConsole.WriteEvent("Enter specvol");
+            {                
                 vehicle.EngineSoundIndex = volume.EngineSoundIndex;
                 if (volume.EntrySoundId > 0)
                     SoundCache.Play(volume.EntrySoundId);
