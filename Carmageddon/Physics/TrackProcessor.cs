@@ -123,7 +123,8 @@ namespace Carmageddon.Physics
             environment.Group = 10;
             environment.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
 
-            //CreateDefaultWaterSpecVols(file, actorsList, models);
+            
+            CreateDefaultWaterSpecVols(file, actorsList, models);
 
             
             for (int i = 1; i < file.SpecialVolumes.Count; i++)
@@ -133,12 +134,27 @@ namespace Carmageddon.Physics
                 Vector3 scale = new Vector3();
                 Vector3 trans = new Vector3();
                 Quaternion q = new Quaternion();
-                vol.Matrix.Decompose(out scale, out q, out trans);
+                Matrix matrix = vol.Matrix;
+                bool success = matrix.Decompose(out scale, out q, out trans);
 
                 ActorDescription actorDesc = new ActorDescription();
                 BoxShapeDescription box = new BoxShapeDescription(scale);
-                box.LocalRotation = Matrix.CreateFromQuaternion(q);
-                
+
+                if (success)
+                {
+                    box.LocalRotation = Matrix.CreateFromQuaternion(q);
+                }
+                else
+                {
+                    //if the matrix cannot be decomposed, like part of the long tunnel in coasta...
+                    // get the rotation by calculating some points and working out rotation from them
+                    Vector3 v1 = Vector3.Transform(new Vector3(-1, -1, 1), matrix);
+                    Vector3 v2 = Vector3.Transform(new Vector3(-1, 1, -1), matrix);
+                    Vector3 forwards = v2 - v1;
+                    forwards.Normalize();
+                    box.LocalRotation = Matrix.CreateWorld(Vector3.Zero, forwards, Vector3.Up);
+                }
+
                 box.Flags = ShapeFlag.TriggerOnEnter | ShapeFlag.TriggerOnLeave | ShapeFlag.Visualization;
                 actorDesc.Shapes.Add(box);
                 Actor actor = PhysX.Instance.Scene.CreateActor(actorDesc);
@@ -146,17 +162,17 @@ namespace Carmageddon.Physics
                 actor.GlobalPosition = vol.Matrix.Translation;
                 actor.UserData = vol;
 
-                if (vol.Gravity < 1)
-                {
-                    ForceFieldDescription ffdesc = new ForceFieldDescription();
-                    ffdesc.Constant = new Vector3(0, 11000, 0);
+                //if (vol.Gravity < 1)
+                //{
+                //    ForceFieldDescription ffdesc = new ForceFieldDescription();
+                //    ffdesc.Constant = new Vector3(0, 11000, 0);
 
-                    ForceField ff = PhysX.Instance.Scene.CreateForceField(ffdesc);
+                //    ForceField ff = PhysX.Instance.Scene.CreateForceField(ffdesc);
 
-                    BoxForceFieldShapeDescription ffshape = new BoxForceFieldShapeDescription();
-                    ForceFieldShape ffshape2 = ff.CreateShape(ffshape);
-                    ffshape2.Pose = vol.Matrix;
-                }
+                //    BoxForceFieldShapeDescription ffshape = new BoxForceFieldShapeDescription();
+                //    ForceFieldShape ffshape2 = ff.CreateShape(ffshape);
+                //    ffshape2.Pose = vol.Matrix;
+                //}
                 
             }
 
@@ -174,6 +190,7 @@ namespace Carmageddon.Physics
                 CModel model = actor.Model;
                 bool foundWater = false;
                 Vector3 min = new Vector3(9999), max = new Vector3(-9999);
+                List<Vector3> waterVerts = new List<Vector3>();
                 foreach (Polygon poly in model.Polygons)
                 {
                     string materialName = model.MaterialNames[poly.MaterialIndex];
@@ -181,41 +198,29 @@ namespace Carmageddon.Physics
                     if (materialName.StartsWith("!"))
                     {
                         foundWater = true;
-                        Vector3 v1 = Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex1], actor.Matrix);
-                        Vector3 v2 = Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex3], actor.Matrix);
-                        Vector3 v3 = Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex3], actor.Matrix);
-
-                        min = TakeMin(min, v1); min = TakeMin(min, v2); min = TakeMin(min, v3);
-                        max = TakeMax(max, v1); max = TakeMax(max, v2); max = TakeMax(max, v3);
+                        waterVerts.Add(Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex1], actor.Matrix));
+                        waterVerts.Add(Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex2], actor.Matrix));
+                        waterVerts.Add(Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex3], actor.Matrix));
                     }
                 }
 
                 if (foundWater)
                 {
-                    min.Y -= 6 * GameVariables.Scale.Y;
-                    BoundingBox bb = new BoundingBox(min, max);
+                    //add a bottom
+                    waterVerts.Add(new Vector3(waterVerts[0].X, waterVerts[0].Y - 6 * GameVariables.Scale.Y, waterVerts[0].Z));
+
+                    BoundingBox bb = BoundingBox.CreateFromPoints(waterVerts);
+                    
+                    Matrix m = Matrix.CreateScale(bb.GetSize()) * Matrix.CreateTranslation(bb.GetCenter());
+                    
                     SpecialVolume vol = file.SpecialVolumes[0].Copy(); //copy default water
-                    vol.BoundingBox = bb;
+                    vol.Matrix = m;
                     file.SpecialVolumes.Add(vol);
                 }
             }
         }
 
-        private static Vector3 TakeMin(Vector3 v1, Vector3 v2)
-        {
-            v1.X = Math.Min(v1.X, v2.X);
-            v1.Y = Math.Min(v1.Y, v2.Y);
-            v1.Z = Math.Min(v1.Z, v2.Z);
-            return v1;
-        }
-        private static Vector3 TakeMax(Vector3 v1, Vector3 v2)
-        {
-            v1.X = Math.Max(v1.X, v2.X);
-            v1.Y = Math.Max(v1.Y, v2.Y);
-            v1.Z = Math.Max(v1.Z, v2.Z);
-            return v1;
-        }
-
+        
         public static List<CActor> GenerateNonCars(ActFile actors, List<NoncarFile> nonCars)
         {
             List<CActor> nonCarActors = new List<CActor>();

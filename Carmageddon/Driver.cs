@@ -24,7 +24,7 @@ namespace Carmageddon
                 
         public Driver()
         {
-            _audioListener = Engine.Instance.Audio.CreateListener();
+            _audioListener = Engine.Audio.CreateListener();
             
         }
 

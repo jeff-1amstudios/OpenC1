@@ -254,7 +254,7 @@ namespace NFSEngine
             
             UpdateWorldPositions();
 
-            float elapsed = Engine.Instance.ElapsedSeconds;
+            float elapsed = Engine.ElapsedSeconds;
 
             // Calculate spring force
             Vector3 stretch = (Position - _desiredPosition);

@@ -112,7 +112,7 @@ namespace Carmageddon.Physics
         {
             if (_gearChange != null)
             {
-                _gearChange.TimeTillEngaged -= Engine.Instance.ElapsedSeconds;
+                _gearChange.TimeTillEngaged -= Engine.ElapsedSeconds;
 
                 if (_gearChange.TimeTillEngaged <= 0)
                 {

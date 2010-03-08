@@ -70,7 +70,7 @@ namespace Carmageddon.CameraViews
 
         public void Activate()
         {
-            Engine.Instance.Camera = _camera;
+            Engine.Camera = _camera;
         }
 
         public void Deactivate()

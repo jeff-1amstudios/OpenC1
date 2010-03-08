@@ -15,7 +15,7 @@ namespace Carmageddon
 
         static ModelShadow()
         {
-            _vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionColor.VertexElements);
+            _vertexDeclaration = new VertexDeclaration(Engine.Device, VertexPositionColor.VertexElements);
         }
 
         public static void Render(BoundingBox bb, VehicleChassis chassis)
@@ -50,8 +50,8 @@ namespace Carmageddon
                 verts[i2++] = new VertexPositionColor(points[i], shadowColor);
             }
 
-            GraphicsDevice device = Engine.Instance.Device;
-            Engine.Instance.Device.RenderState.CullMode = CullMode.None;
+            GraphicsDevice device = Engine.Device;
+            Engine.Device.RenderState.CullMode = CullMode.None;
             GameVariables.CullingDisabled = true;
             
             GameVariables.CurrentEffect.World = Matrix.Identity;

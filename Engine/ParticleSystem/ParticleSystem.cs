@@ -154,12 +154,12 @@ namespace Particle3DSample
 
             LoadParticleEffect();
 
-            vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, ParticleVertex.VertexElements);
+            vertexDeclaration = new VertexDeclaration(Engine.Device, ParticleVertex.VertexElements);
 
             // Create a dynamic vertex buffer.
             int size = ParticleVertex.SizeInBytes * particles.Length;
 
-            vertexBuffer = new DynamicVertexBuffer(Engine.Instance.Device, size, BufferUsage.WriteOnly | BufferUsage.Points);
+            vertexBuffer = new DynamicVertexBuffer(Engine.Device, size, BufferUsage.WriteOnly | BufferUsage.Points);
 
             AllParticleSystems.Add(this);
         }
@@ -177,7 +177,7 @@ namespace Particle3DSample
         /// </summary>
         void LoadParticleEffect()
         {
-            Effect effect = Engine.Instance.ContentManager.Load<Effect>("Content/ParticleEffect");
+            Effect effect = Engine.ContentManager.Load<Effect>("Content/ParticleEffect");
 
             // If we have several particle systems, the content manager will return
             // a single shared effect instance to them all. But we want to preconfigure
@@ -185,7 +185,7 @@ namespace Particle3DSample
             // particle system. By cloning the effect, we prevent one particle system
             // from stomping over the parameter settings of another.
             
-            particleEffect = effect.Clone(Engine.Instance.Device);
+            particleEffect = effect.Clone(Engine.Device);
 
             EffectParameterCollection parameters = particleEffect.Parameters;
 
@@ -237,7 +237,7 @@ namespace Particle3DSample
         /// </summary>
         public void Update()
         {
-            currentTime += Engine.Instance.ElapsedSeconds;
+            currentTime += Engine.ElapsedSeconds;
 
             RetireActiveParticles();
             FreeRetiredParticles();
@@ -318,9 +318,9 @@ namespace Particle3DSample
         /// </summary>
         public void Render()
         {
-            GraphicsDevice device = Engine.Instance.Device;
+            GraphicsDevice device = Engine.Device;
 
-            ICamera camera = Engine.Instance.Camera;
+            ICamera camera = Engine.Camera;
             effectViewParameter.SetValue(camera.View);
             effectProjectionParameter.SetValue(camera.Projection);
 

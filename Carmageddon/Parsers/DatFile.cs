@@ -169,7 +169,7 @@ namespace Carmageddon.Parsers
         }
 
 
-        public void Resolve(ResourceCache resources)
+        public void Resolve()
         {
             _vertices = new List<VertexPositionNormalTexture>();
             ushort indIdx = 0;
@@ -204,7 +204,7 @@ namespace Carmageddon.Parsers
 
                     if (poly.MaterialIndex >= 0 && model.MaterialNames != null)
                     {
-                        CMaterial material = resources.GetMaterial(model.MaterialNames[poly.MaterialIndex]);
+                        CMaterial material = ResourceCache.GetMaterial(model.MaterialNames[poly.MaterialIndex]);
                         
                         if (material != null)
                         {
@@ -244,14 +244,14 @@ namespace Carmageddon.Parsers
                 //}
             }
 
-            _vertexBuffer = new VertexBuffer(Engine.Instance.Device, VertexPositionNormalTexture.SizeInBytes * _vertices.Count, BufferUsage.WriteOnly);
+            _vertexBuffer = new VertexBuffer(Engine.Device, VertexPositionNormalTexture.SizeInBytes * _vertices.Count, BufferUsage.WriteOnly);
             _vertexBuffer.SetData<VertexPositionNormalTexture>(_vertices.ToArray());
 
-            _indexBuffer = new IndexBuffer(Engine.Instance.Device, typeof(UInt16), indices.Count, BufferUsage.WriteOnly);
+            _indexBuffer = new IndexBuffer(Engine.Device, typeof(UInt16), indices.Count, BufferUsage.WriteOnly);
             _indexBuffer.SetData<UInt16>(indices.ToArray());
             _indices = indices;
 
-            _vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionNormalTexture.VertexElements);
+            _vertexDeclaration = new VertexDeclaration(Engine.Device, VertexPositionNormalTexture.VertexElements);
             _vertexTextureMap=null; //dont need this data anymore
             //_vertexPositions = null;
         }
@@ -259,7 +259,7 @@ namespace Carmageddon.Parsers
 
         public void SetupRender()
         {
-            GraphicsDevice device = Engine.Instance.Device;
+            GraphicsDevice device = Engine.Device;
             device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionNormalTexture.SizeInBytes);
             device.Indices = _indexBuffer;
             device.VertexDeclaration = _vertexDeclaration;
@@ -280,7 +280,7 @@ namespace Carmageddon.Parsers
             foreach (CrushData data in crush.Data)
             {
                 Vector3 pos = _vertices[data.RefVertex].Position;
-                //Engine.Instance.GraphicsUtils.AddSolidShape(ShapeType.Cube, Matrix.CreateTranslation(pos), Color.White, null);
+                //Engine.GraphicsUtils.AddSolidShape(ShapeType.Cube, Matrix.CreateTranslation(pos), Color.White, null);
                 Vector3 v = Vector3.Lerp(data.V1, data.V2, (float)new Random().NextDouble());
                 //_vertices[data.RefVertex].Position = v;// = Vector3.Transform(pos, data.Matrix);
             }

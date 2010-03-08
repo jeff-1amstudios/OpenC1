@@ -41,7 +41,7 @@ namespace Carmageddon.Parsers.Funks
             // _cyclePosition is the current position in the cycle. As the cycle gets to 
             // halfway, _cyclePosition starts returning to origin
 
-            _cycleTime += Engine.Instance.ElapsedSeconds * _harmonicMultiplier;
+            _cycleTime += Engine.ElapsedSeconds * _harmonicMultiplier;
 
             if (_cycleTime > _targetTime)
             {
@@ -51,7 +51,7 @@ namespace Carmageddon.Parsers.Funks
 
             if (_cycleTime > _targetTime / 2)
             {
-                _cyclePosition -= Engine.Instance.ElapsedSeconds * _harmonicMultiplier;  //sither back to start
+                _cyclePosition -= Engine.ElapsedSeconds * _harmonicMultiplier;  //sither back to start
             }
             else
             {
@@ -72,13 +72,13 @@ namespace Carmageddon.Parsers.Funks
 
         private void AssignNewTarget()
         {
-            _direction.X = RandomBetween(0.5f, 1) * (Engine.Instance.RandomNumber.Next(1, 20) % 2 == 0 ? 1 : -1);
-            _direction.Y = RandomBetween(0.5f, 1) * (Engine.Instance.RandomNumber.Next(1, 20) % 2 == 0 ? 1 : -1);
+            _direction.X = RandomBetween(0.5f, 1) * (Engine.RandomNumber.Next(1, 20) % 2 == 0 ? 1 : -1);
+            _direction.Y = RandomBetween(0.5f, 1) * (Engine.RandomNumber.Next(1, 20) % 2 == 0 ? 1 : -1);
         }
 
         public static float RandomBetween(double min, double max)
         {            
-            return (float)(min + (float)Engine.Instance.RandomNumber.NextDouble() * (max - min));
+            return (float)(min + (float)Engine.RandomNumber.NextDouble() * (max - min));
         }
     }
 }

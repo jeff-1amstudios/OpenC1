@@ -38,7 +38,7 @@ namespace PlatformEngine
         {
             _fadeDirection = FadeDirection.None;
 
-            _fadeTexture = new Texture2D(Engine.Instance.Device, 1, 1);
+            _fadeTexture = new Texture2D(Engine.Device, 1, 1);
             _fadeTexture.SetData<Color>(new Color[] { Color.Black });
         }
 
@@ -64,13 +64,13 @@ namespace PlatformEngine
         {
             if (_fadeDirection == FadeDirection.FadeOut)
             {
-                _alpha += FadeSpeed * Engine.Instance.ElapsedSeconds;
+                _alpha += FadeSpeed * Engine.ElapsedSeconds;
                 if (_alpha >= 255)
                     CompleteFade();
             }
             else if (_fadeDirection == FadeDirection.FadeIn)
             {
-                _alpha -= FadeSpeed * 0.5f * Engine.Instance.ElapsedSeconds;
+                _alpha -= FadeSpeed * 0.5f * Engine.ElapsedSeconds;
                 if (_alpha <= 0)
                     CompleteFade();
             }
@@ -81,16 +81,16 @@ namespace PlatformEngine
         {
             if (_fadeDirection != FadeDirection.None)
             {
-                Viewport viewport = Engine.Instance.Device.Viewport;
+                Viewport viewport = Engine.Device.Viewport;
 
-                Engine.Instance.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
+                Engine.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
 
 
-                Engine.Instance.SpriteBatch.Draw(_fadeTexture,
+                Engine.SpriteBatch.Draw(_fadeTexture,
                                  new Rectangle(0, 0, viewport.Width, viewport.Height),
                                  new Color(255, 255, 255, (byte)_alpha));
 
-                Engine.Instance.SpriteBatch.End();
+                Engine.SpriteBatch.End();
             }
         }
 
@@ -107,11 +107,11 @@ namespace PlatformEngine
 
         public static Texture2D TakeScreenshot()
         {
-            int w = Engine.Instance.Device.PresentationParameters.BackBufferWidth;
-            int h = Engine.Instance.Device.PresentationParameters.BackBufferHeight;
+            int w = Engine.Device.PresentationParameters.BackBufferWidth;
+            int h = Engine.Device.PresentationParameters.BackBufferHeight;
 
-            ResolveTexture2D screenshot = new ResolveTexture2D(Engine.Instance.Device, w, h, 1, Engine.Instance.Device.PresentationParameters.BackBufferFormat);
-            Engine.Instance.Device.ResolveBackBuffer(screenshot);
+            ResolveTexture2D screenshot = new ResolveTexture2D(Engine.Device, w, h, 1, Engine.Device.PresentationParameters.BackBufferFormat);
+            Engine.Device.ResolveBackBuffer(screenshot);
             return screenshot;
         }
     }

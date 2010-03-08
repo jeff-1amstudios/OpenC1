@@ -35,28 +35,21 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            _race = new Race(GameVariables.BasePath + @"data\races\coastb2.TXT");
+            _race = new Race(GameVariables.BasePath + @"data\races\industa1.TXT");
 
             string car = "blkeagle.txt";
-            _playerVehicle = new VehicleModel(GameVariables.BasePath + @"data\cars\" + car);
-            _playerVehicle.SetupChassis(_race.ConfigFile.GridDirection, _race.ConfigFile.GridPosition);
+            _playerVehicle = new VehicleModel(GameVariables.BasePath + @"data\cars\" + car, true);
+            _playerVehicle.SetupChassis(_race.ConfigFile.GridPosition, _race.ConfigFile.GridDirection);
+
             GameVariables.PlayerVehicle = _playerVehicle;
 
-            Engine.Instance.Player = new Driver { VehicleModel = _playerVehicle };
+            Engine.Player = new Driver { VehicleModel = _playerVehicle };
 
-            SetupPhysics();
-
-            _race.SetupPhysx(_playerVehicle.Chassis);
 
             _views.Add(new ChaseView(_playerVehicle));
             _views.Add(new CockpitView(_playerVehicle, GameVariables.BasePath + @"data\64x48x8\cars\" + car));
             _views.Add(new FlyView());
             _views[_currentView].Activate();
-        }
-
-        private void SetupPhysics()
-        {
-
         }
 
 
@@ -83,17 +76,17 @@ namespace Carmageddon
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
                 system.Update();
 
-            if (Engine.Instance.Input.WasPressed(Keys.C))
+            if (Engine.Input.WasPressed(Keys.C))
             {
                 _views[_currentView].Deactivate();
                 _currentView = (_currentView + 1) % _views.Count;
                 _views[_currentView].Activate();
             }
-            if (Engine.Instance.Input.WasPressed(Keys.P))
+            if (Engine.Input.WasPressed(Keys.P))
             {
                 TakeScreenshot();
             }
-            if (Engine.Instance.Input.WasPressed(Keys.L))
+            if (Engine.Input.WasPressed(Keys.L))
             {
                 GameVariables.LightingEnabled = !GameVariables.LightingEnabled;
                 MessageRenderer.Instance.PostMessage("Lighting: " + (GameVariables.LightingEnabled ? "Enabled" : "Disabled"), 2);
@@ -101,26 +94,26 @@ namespace Carmageddon
             }
 
             _views[_currentView].Update();
-            Engine.Instance.Camera.Update();
+            Engine.Camera.Update();
 
 
-            GameConsole.WriteLine("FPS", Engine.Instance.Fps);
+            GameConsole.WriteLine("FPS", Engine.Fps);
         }
 
         public void Render()
         {
-            Engine.Instance.Device.Clear(GameVariables.FogColor);
+            Engine.Device.Clear(GameVariables.FogColor);
             GameVariables.NbrDrawCalls = 0;
             if (GameVariables.CullingDisabled)
-                Engine.Instance.Device.RenderState.CullMode = CullMode.None;
+                Engine.Device.RenderState.CullMode = CullMode.None;
             else
-                Engine.Instance.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
+                Engine.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
 
             GameVariables.CurrentEffect = SetupRenderEffect();
 
             GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
 
-            Engine.Instance.SpriteBatch.Begin();
+            Engine.SpriteBatch.Begin();
 
             _race.Render();
             _views[_currentView].Render();
@@ -130,11 +123,11 @@ namespace Carmageddon
                 system.Render();
             }
 
-            Engine.Instance.SpriteBatch.End();
-            Engine.Instance.Device.RenderState.DepthBufferEnable = true;
-            Engine.Instance.Device.RenderState.AlphaBlendEnable = false;
-            Engine.Instance.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
-            Engine.Instance.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
+            Engine.SpriteBatch.End();
+            Engine.Device.RenderState.DepthBufferEnable = true;
+            Engine.Device.RenderState.AlphaBlendEnable = false;
+            Engine.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
+            Engine.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
 
             GameVariables.CurrentEffect.End();
 
@@ -147,7 +140,7 @@ namespace Carmageddon
 
         private BasicEffect2 SetupRenderEffect()
         {
-            GraphicsDevice device = Engine.Instance.Device;
+            GraphicsDevice device = Engine.Device;
 
             if (_effect == null)
             {
@@ -167,8 +160,8 @@ namespace Carmageddon
                     Debug.Assert(false);
                 }
 
-                _effect.FogStart = Engine.Instance.DrawDistance - 45 * GameVariables.Scale.Z;
-                _effect.FogEnd = Engine.Instance.DrawDistance;
+                _effect.FogStart = Engine.DrawDistance - 45 * GameVariables.Scale.Z;
+                _effect.FogEnd = Engine.DrawDistance;
                 _effect.FogEnabled = true;
                 _effect.TextureEnabled = true;
 
@@ -189,8 +182,8 @@ namespace Carmageddon
                 }
             }
 
-            _effect.View = Engine.Instance.Camera.View;
-            _effect.Projection = Engine.Instance.Camera.Projection;
+            _effect.View = Engine.Camera.View;
+            _effect.Projection = Engine.Camera.Projection;
 
             _effect.Begin(SaveStateMode.None);
 
@@ -202,7 +195,7 @@ namespace Carmageddon
             int count = Directory.GetFiles(GameVariables.BasePath + "data", "ndump*.jpg").Length;
             string name = "ndump" + count.ToString("000") + ".jpg";
 
-            GraphicsDevice device = Engine.Instance.Device;
+            GraphicsDevice device = Engine.Device;
             new ResolveTexture2D(device, 10, 10, 1, SurfaceFormat.Color);
             using (ResolveTexture2D screenshot = new ResolveTexture2D(device, device.PresentationParameters.BackBufferWidth, device.PresentationParameters.BackBufferHeight, 1, SurfaceFormat.Color))
             {

@@ -20,10 +20,10 @@ namespace Carmageddon
         DatFile _models;
         ActFile _actors;
         List<CActor> _nonCars;
-        ResourceCache _resourceCache;
         public RaceTimeController RaceTime = new RaceTimeController();
         SkyBox _skybox;
         public int NextCheckpoint = 0, CurrentLap;
+        public List<Opponent> Opponents = new List<Opponent>();
 
         public static Race Current;
 
@@ -33,30 +33,28 @@ namespace Carmageddon
         {
             ConfigFile = new RaceFile(filename);
 
-            _resourceCache = new ResourceCache();
-
             foreach (string matFileName in ConfigFile.MaterialFiles)
             {
                 MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
-                _resourceCache.Add(matFile);
+                ResourceCache.Add(matFile);
             }
 
             foreach (string pixFileName in ConfigFile.PixFiles)
             {
                 PixFile pixFile = new PixFile(@"C:\Games\carma1\data\pixelmap\" + pixFileName);
-                _resourceCache.Add(pixFile);
+                ResourceCache.Add(pixFile);
             }
 
-            _resourceCache.Add(new MatFile(@"C:\Games\carma1\data\material\" + "drkcurb.mat"));
+            ResourceCache.Add(new MatFile(@"C:\Games\carma1\data\material\" + "drkcurb.mat"));
 
-            _resourceCache.ResolveMaterials();
+            ResourceCache.ResolveMaterials();
 
             _models = new DatFile(@"C:\Games\carma1\data\models\" + ConfigFile.ModelFile);
 
             _actors = new ActFile(@"C:\Games\carma1\data\actors\" + ConfigFile.ActorFile, _models);
             _actors.ResolveHierarchy(false, ConfigFile.Grooves);
-            _actors.ResolveMaterials(_resourceCache);
-            _models.Resolve(_resourceCache);
+            _actors.ResolveMaterials();
+            _models.Resolve();
 
             // link the actors and grooves
             foreach (BaseGroove g in ConfigFile.Grooves)
@@ -65,10 +63,7 @@ namespace Carmageddon
             // link the funks and materials
             foreach (BaseFunk f in ConfigFile.Funks)
             {
-                if (f is FramesFunk) ((FramesFunk)f).Resolve(_resourceCache);
-                CMaterial cm = _resourceCache.GetMaterial(f.MaterialName);
-                cm.Funk = f;
-                f.Material = cm;
+                f.Resolve();
             }
             
             if (ConfigFile.SkyboxTexture != "none")
@@ -81,19 +76,19 @@ namespace Carmageddon
             Physics.TrackProcessor.GenerateTrackActor(ConfigFile, _actors, _models);
             _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);
 
-            
             GameVariables.SkidMarkBuffer = new Carmageddon.Gfx.SkidMarkBuffer(200);
 
-            Current = this;
-        }
-
-        public void SetupPhysx(VehicleChassis vehicle)
-        {
-            //PhysX.Instance.Scene.SetGroupCollisionFlag(10, 1, true);
-            //PhysX.Instance.Scene.SetGroupCollisionFlag(10, 1, true);
             PhysX.Instance.Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
             PhysX.Instance.Scene.SetActorGroupPairFlags(11, 1, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
             PhysX.Instance.Scene.SetActorGroupPairFlags(10, 11, ContactPairFlag.OnTouch);
+
+            Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("pitbull.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("vlad.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+
+            Race.Current = this;
         }
 
 
@@ -106,10 +101,10 @@ namespace Carmageddon
 
                 if ((int)RaceTime.TotalTime == 2 && !RaceTime.CountingDown)
                     RaceTime.StartCountdown();
-                if (Engine.Instance.Camera is FixedChaseCamera)
+                if (Engine.Camera is FixedChaseCamera)
                 {
                     float height = 55 - (RaceTime.CountdownTime * 35f);
-                    ((FixedChaseCamera)Engine.Instance.Camera).HeightOverride = Math.Max(2, height);
+                    ((FixedChaseCamera)Engine.Camera).HeightOverride = Math.Max(2, height);
                 }
             }
 
@@ -130,6 +125,11 @@ namespace Carmageddon
                 }
             }
 
+            foreach (Opponent opponent in Opponents)
+            {
+                opponent.Vehicle.Update();
+            }
+
             MessageRenderer.Instance.Update();
 
         }
@@ -141,9 +141,9 @@ namespace Carmageddon
             _models.SetupRender();
             _actors.Render(_models, Matrix.Identity);
 
-            foreach (SpecialVolume vol in ConfigFile.SpecialVolumes)
+            foreach (Opponent opponent in Opponents)
             {
-                //Engine.Instance.DebugRenderer.AddSquareGrid(vol.Matrix, 20, Color.Yellow); // Matrix.CreateScale(vol.BoundingBox.GetSize()) * Matrix.CreateTranslation(vol.BoundingBox.GetCenter()), Color.Yellow);
+                opponent.Vehicle.Render();
             }
 
             RaceTime.Render();
@@ -175,15 +175,13 @@ namespace Carmageddon
             GameConsole.WriteEvent("Enter specvol - " + vehicle.CurrentSpecialVolume.Count);
 
             if (currentVolumeId != volume.Id)
-            {                
-                vehicle.EngineSoundIndex = volume.EngineSoundIndex;
-                if (volume.EntrySoundId > 0)
-                    SoundCache.Play(volume.EntrySoundId);
+            {
+                volume.Enter(vehicle);
             }
             vehicle.CurrentSpecialVolume.Push(volume);
         }
 
-        public void OnVehicleExitSpecVol(SpecialVolume volume, VehicleModel vehicle)
+        public void OnVehicleExitSpecVol(SpecialVolume exitedVolume, VehicleModel vehicle)
         {
             SpecialVolume vol = vehicle.CurrentSpecialVolume.Pop();
             SpecialVolume nextVol = vehicle.CurrentSpecialVolume.Count == 0 ? null : vehicle.CurrentSpecialVolume.Peek();
@@ -191,15 +189,14 @@ namespace Carmageddon
 
             if (nextVol == null)
             {
-                vehicle.EngineSoundIndex = 0;
-                if (volume.ExitSoundId > 0)
-                    SoundCache.Play(volume.ExitSoundId);
+                //reset
+                exitedVolume.Reset(vehicle);
+                exitedVolume.Exit();
             }
             else if (nextVol.Id != vol.Id)
             {
-                vehicle.EngineSoundIndex = nextVol.EngineSoundIndex;
-                if (volume.ExitSoundId > 0)
-                    SoundCache.Play(volume.ExitSoundId);
+                nextVol.Enter(vehicle);
+                exitedVolume.Exit();
             }
         }
     }

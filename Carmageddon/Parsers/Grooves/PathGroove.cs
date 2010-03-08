@@ -19,7 +19,7 @@ namespace Carmageddon.Parsers.Grooves
             switch (Motion)
             {
                 case Motion.Harmonic:
-                //_currentPos += _direction * Engine.Instance.ElapsedSeconds * Speed * Movement * _speed2;
+                //_currentPos += _direction * Engine.ElapsedSeconds * Speed * Movement * _speed2;
 
                 //float distance = Vector3.Distance(Movement, _currentPos);
                 //if (distance < 0.15f)
@@ -28,7 +28,7 @@ namespace Carmageddon.Parsers.Grooves
                 //    _speed2 = 1;
                 //break;
                 case Motion.Linear:
-                    _currentPos += _direction * Engine.Instance.ElapsedSeconds * Speed * 2;
+                    _currentPos += _direction * Engine.ElapsedSeconds * Speed * 2;
                     break;
                 default:
                     throw new NotImplementedException();

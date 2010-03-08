@@ -14,7 +14,7 @@ namespace NFSEngine
         TimeSpan elapsedTime = TimeSpan.Zero;
         
         public FrameRateCounter()
-            : base(Engine.Instance.Game)
+            : base(Engine.Game)
         {
         }
 

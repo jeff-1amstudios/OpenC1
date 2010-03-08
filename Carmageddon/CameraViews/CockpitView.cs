@@ -27,14 +27,14 @@ namespace Carmageddon.CameraViews
             _cockpitFile = new CockpitFile(cockpitFile);
             _camera = new SimpleCamera();
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
-            _camera.AspectRatio = Engine.Instance.AspectRatio;
+            _camera.AspectRatio = Engine.AspectRatio;
 
             _modelsFile = new DatFile(GameVariables.BasePath + "data\\models\\" + vehicle.Config.BonnetModelFile);
             _actorFile = new ActFile(GameVariables.BasePath + "data\\actors\\" + vehicle.Config.BonnetActorFile, _modelsFile);
 
             _actorFile.ResolveHierarchy(false, null);
-            _actorFile.ResolveMaterials(vehicle.Resources);
-            _modelsFile.Resolve(vehicle.Resources);
+            _actorFile.ResolveMaterials();
+            _modelsFile.Resolve();
 
             //move head back
             _vehicle.Config.DriverHeadPosition.Z += 0.11f;
@@ -84,7 +84,7 @@ namespace Carmageddon.CameraViews
         {
             Rectangle src = new Rectangle(32, 20, 640, 480);
             Rectangle rect = new Rectangle(0, 0, 800, 600);
-            Engine.Instance.SpriteBatch.Draw(_cockpitFile.Forward, rect, src, Color.White);
+            Engine.SpriteBatch.Draw(_cockpitFile.Forward, rect, src, Color.White);
 
             float steerRatio = _vehicle.Chassis.SteerRatio;
             
@@ -120,9 +120,9 @@ namespace Carmageddon.CameraViews
             }
 
             if (frame.Texture1 != null)
-                Engine.Instance.SpriteBatch.Draw(frame.Texture1, ScaleVec2(frame.Position1), Color.White);
+                Engine.SpriteBatch.Draw(frame.Texture1, ScaleVec2(frame.Position1), Color.White);
             if (frame.Texture2 != null)
-                Engine.Instance.SpriteBatch.Draw(frame.Texture2, ScaleVec2(frame.Position2), Color.White);
+                Engine.SpriteBatch.Draw(frame.Texture2, ScaleVec2(frame.Position2), Color.White);
             
             Vector3 vehicleBottom = new Vector3(_vehicle.Chassis.Body.GlobalPosition.X, -53.4348f, _vehicle.Chassis.Body.GlobalPosition.Z);
             vehicleBottom = GetBodyBottom();
@@ -133,7 +133,7 @@ namespace Carmageddon.CameraViews
 
         public void Activate()
         {
-            Engine.Instance.Camera = _camera;
+            Engine.Camera = _camera;
 
             Vector3 vehicleBottom = GetBodyBottom();
             

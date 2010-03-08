@@ -1,46 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using System.Text;
 using Carmageddon.Parsers;
-using NFSEngine;
 
 namespace Carmageddon
 {
-    class ResourceCache
+    static class ResourceCache
     {
-        List<PixMap> _pixMaps = new List<PixMap>();
-        List<CMaterial> _materials = new List<CMaterial>();
+        static List<PixMap> _pixMaps = new List<PixMap>();
+        static List<CMaterial> _materials = new List<CMaterial>();
+        static List<FliFile> _fliFiles = new List<FliFile>();
 
-        public void Add(PixFile pixFile)
+        public static void Add(PixFile pixFile)
         {
             foreach (PixMap pixMap in pixFile.PixMaps)
                 _pixMaps.Add(pixMap);
         }
 
-        public void Add(MatFile matFile)
+        public static void Add(MatFile matFile)
         {
             foreach (CMaterial material in matFile.Materials)
                 _materials.Add(material);
         }
 
-        public PixMap GetPixelMap(string name)
+        public static PixMap GetPixelMap(string name)
         {
             return _pixMaps.Find(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public CMaterial GetMaterial(string name)
+        public static CMaterial GetMaterial(string name)
         {
             return _materials.Find(m => m.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         // load textures for materials
-        public void ResolveMaterials()
+        public static void ResolveMaterials()
         {
             foreach (CMaterial material in _materials)
             {
                 material.ResolveTexture(_pixMaps);
             }
+        }
+
+        public static FliFile GetFliFile(string filename)
+        {
+            FliFile fli = _fliFiles.Find(a=>a.Filename == filename);
+            if (fli != null) return fli;
+            fli = new FliFile(filename);
+            _fliFiles.Add(fli);
+            return fli;
+        }
+
+        public static void Clear()
+        {
+            _pixMaps.Clear();
+            _materials.Clear();
         }
     }
 }

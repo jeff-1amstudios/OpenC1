@@ -20,7 +20,7 @@ namespace Carmageddon.HUD
         public RevCounter(VehicleChassis vehicle)
         {
             _chassis = vehicle;
-            _font = Engine.Instance.ContentManager.Load<SpriteFont>("content/speedo-font");
+            _font = Engine.ContentManager.Load<SpriteFont>("content/speedo-font");
 
             x = 0.01f;
             y = 0.8f;
@@ -36,21 +36,21 @@ namespace Carmageddon.HUD
 
         public override void Render()
         {
-            Engine.Instance.SpriteBatch.Draw(_speedoTexture, ScaleRect(x, y, 0.145f, 0.16f), Color.White);
+            Engine.SpriteBatch.Draw(_speedoTexture, ScaleRect(x, y, 0.145f, 0.16f), Color.White);
 
             DrawShadow(ScaleRect(x + 0.06f, y + 0.112f, 0.03f, 0.057f));
             if (_chassis.Motor.Gearbox.CurrentGear >= 0)
             {
                 DrawString(_font, _chassis.Motor.Gearbox.CurrentGear.ToString(), ScaleVec2(x + 0.065f, y + 0.118f), Color.Yellow);
-                //Engine.Instance.SpriteBatch.DrawString(_font, _chassis.Motor.Gearbox.CurrentGear.ToString(), ScaleVec2(x + 0.065f, y + 0.118f), Color.Yellow, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
+                //Engine.SpriteBatch.DrawString(_font, _chassis.Motor.Gearbox.CurrentGear.ToString(), ScaleVec2(x + 0.065f, y + 0.118f), Color.Yellow, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
             }
             DrawShadow(ScaleRect(x + 0.1f, y + 0.112f, 0.068f, 0.057f));
             DrawString(_font, ((int)_chassis.Speed).ToString("000"), ScaleVec2(x + 0.102f, y + 0.118f), Color.GreenYellow);
-            //Engine.Instance.SpriteBatch.DrawString(_font, ((int)_chassis.Speed).ToString("000"), ScaleVec2(x + 0.102f, y + 0.118f), Color.GreenYellow, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
+            //Engine.SpriteBatch.DrawString(_font, ((int)_chassis.Speed).ToString("000"), ScaleVec2(x + 0.102f, y + 0.118f), Color.GreenYellow, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
 
             float rpmFactor = _chassis.Motor.Rpm / _chassis.Motor.RedlineRpm;
             float rotation = (float)(rpmFactor * 4f) + 0.5f;
-            Engine.Instance.SpriteBatch.Draw(_speedoLineTexture, ScaleVec2(x + 0.07f, y + 0.09f),
+            Engine.SpriteBatch.Draw(_speedoLineTexture, ScaleVec2(x + 0.07f, y + 0.09f),
                 null, Color.White, rotation, Vector2.Zero, ScaleVec2(0.0037f, 0.075f), SpriteEffects.None, 0);
         }
     }

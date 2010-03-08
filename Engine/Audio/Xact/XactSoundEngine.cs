@@ -17,7 +17,7 @@ namespace NFSEngine
 
         public ISound Load(string name, bool is3d)
         {
-            XactSound sound = new XactSound(Engine.Instance.ContentManager.Load<SoundEffectInstance>(name));
+            XactSound sound = new XactSound(Engine.ContentManager.Load<SoundEffectInstance>(name));
             return sound;
         }
 
@@ -36,7 +36,7 @@ namespace NFSEngine
         {
             for (int i = _sounds.Count - 1; i >= 0; i--)
             {
-                _sounds[i].RemainingDuration -= Engine.Instance.ElapsedSeconds;
+                _sounds[i].RemainingDuration -= Engine.ElapsedSeconds;
                 if (_sounds[i].RemainingDuration <= 0)
                 {
                     _sounds[i].Sound.Stop();

@@ -29,10 +29,9 @@ namespace Carmageddon.Parsers.Funks
             if (animation == "FLIC")
             {
                 file.ReadLine(); //approximate/accurate
-
-                FlicFunk flic = new FlicFunk();
+                string fliname = file.ReadLine();
+                FlicFunk flic = new FlicFunk(fliname);
                 flic.MaterialName = materialName;
-                flic.FliName = file.ReadLine();
                 ReadToEndOfFunk(file);
                 return flic;
             }

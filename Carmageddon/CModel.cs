@@ -22,7 +22,7 @@ namespace Carmageddon
         public void Render(CMaterial actorMaterial)
         {
             
-            GraphicsDevice device = Engine.Instance.Device;
+            GraphicsDevice device = Engine.Device;
             
             CMaterial currentMaterial = null;
             int baseVert = VertexBaseIndex;
@@ -61,14 +61,17 @@ namespace Carmageddon
                     device.Textures[0] = null; currentMaterial = null;
                 }
 
+                if (currentMaterial != null && currentMaterial.Name == "DRSKY.MAT")
+                {
+                }
 
                 if (currentMaterial != null && currentMaterial.Funk != null)
                 {
                     currentMaterial.Funk.BeforeRender();
                 }
                 GameVariables.NbrDrawCalls++;
-                //Engine.Instance.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3*poly.NbrPrims, indexBufferStart, poly.NbrPrims);
-                Engine.Instance.Device.DrawPrimitives(PrimitiveType.TriangleList, indexBufferStart, poly.NbrPrims);
+                //Engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3*poly.NbrPrims, indexBufferStart, poly.NbrPrims);
+                Engine.Device.DrawPrimitives(PrimitiveType.TriangleList, indexBufferStart, poly.NbrPrims);
                 indexBufferStart += poly.NbrPrims * 3;
 
                 if (currentMaterial != null && currentMaterial.Funk != null)

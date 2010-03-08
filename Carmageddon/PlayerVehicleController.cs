@@ -17,10 +17,10 @@ namespace Carmageddon
                 if (ForceBrake)
                     return 0;
 
-                if (Engine.Instance.Input.IsKeyDown(Keys.Up))
+                if (Engine.Input.IsKeyDown(Keys.Up))
                     return 1.0f;
 
-                return Engine.Instance.Input.GamePadState.Triggers.Right;
+                return Engine.Input.GamePadState.Triggers.Right;
             }
         }
 
@@ -31,10 +31,10 @@ namespace Carmageddon
                 if (ForceBrake)
                     return 1.0f;
 
-                if (Engine.Instance.Input.IsKeyDown(Keys.Down))
+                if (Engine.Input.IsKeyDown(Keys.Down))
                     return 1.0f;
 
-                return Engine.Instance.Input.GamePadState.Triggers.Left;
+                return Engine.Input.GamePadState.Triggers.Left;
             }
         }
 
@@ -42,12 +42,12 @@ namespace Carmageddon
         {
             get
             {
-                if (Engine.Instance.Input.IsKeyDown(Keys.Left))
+                if (Engine.Input.IsKeyDown(Keys.Left))
                     return -1;
-                else if (Engine.Instance.Input.IsKeyDown(Keys.Right))
+                else if (Engine.Input.IsKeyDown(Keys.Right))
                     return 1;
 
-                return Engine.Instance.Input.GamePadState.ThumbSticks.Left.X;
+                return Engine.Input.GamePadState.ThumbSticks.Left.X;
             }
         }
 
@@ -55,9 +55,9 @@ namespace Carmageddon
         {
             get
             {
-                if (Engine.Instance.Input.WasPressed(Keys.C))
+                if (Engine.Input.WasPressed(Keys.C))
                     return true;
-                if (Engine.Instance.Input.WasPressed(Buttons.RightShoulder))
+                if (Engine.Input.WasPressed(Buttons.RightShoulder))
                     return true;
                 return false;
             }
@@ -67,9 +67,9 @@ namespace Carmageddon
         {
             get
             {
-                if (Engine.Instance.Input.WasPressed(Keys.A))
+                if (Engine.Input.WasPressed(Keys.A))
                     return true;
-                if (Engine.Instance.Input.WasPressed(Buttons.B))
+                if (Engine.Input.WasPressed(Buttons.B))
                     return true;
                 return false;
             }
@@ -79,9 +79,9 @@ namespace Carmageddon
         {
             get
             {
-                if (Engine.Instance.Input.WasPressed(Keys.Z))
+                if (Engine.Input.WasPressed(Keys.Z))
                     return true;
-                if (Engine.Instance.Input.WasPressed(Buttons.X))
+                if (Engine.Input.WasPressed(Buttons.X))
                     return true;
                 return false;
             }
@@ -89,7 +89,7 @@ namespace Carmageddon
 
         public static bool Handbrake
         {
-            get { return Engine.Instance.Input.IsKeyDown(Keys.Space); }
+            get { return Engine.Input.IsKeyDown(Keys.Space); }
         }
     }
 }

@@ -80,7 +80,7 @@ namespace Particle3DSample
         /// </summary>
         public void Update(Vector3 newPosition, ParticleSystem particleSystem)
         {
-            float elapsedSeconds = Engine.Instance.ElapsedSeconds;
+            float elapsedSeconds = Engine.ElapsedSeconds;
             
             // Work out how much time has passed since the previous update.
 
@@ -128,14 +128,14 @@ namespace Particle3DSample
         public void DumpParticles(Vector3 newPosition, float nbr)
         {
             //only allow dumpparticles every 0.2 of a second
-            if (LastDumpTime + 0.2f > Engine.Instance.TotalSeconds)
+            if (LastDumpTime + 0.2f > Engine.TotalSeconds)
                 return;
 
             for (int i = 0; i < nbr; i++)
             {
                 ParticleSystem.AddParticle(newPosition, Vector3.Zero);
             }
-            LastDumpTime = Engine.Instance.TotalSeconds;
+            LastDumpTime = Engine.TotalSeconds;
         }
     }
 }

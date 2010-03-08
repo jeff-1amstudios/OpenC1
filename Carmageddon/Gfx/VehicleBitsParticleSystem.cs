@@ -21,7 +21,7 @@ namespace Carmageddon.Gfx
 
         protected override void InitializeSettings(ParticleSettings settings)
         {
-            settings.Texture = Engine.Instance.ContentManager.Load<Texture2D>("Content/blank-particle");
+            settings.Texture = Engine.ContentManager.Load<Texture2D>("Content/blank-particle");
 
             settings.MaxParticles = 100;
             Color color = GameVariables.Palette.GetRGBColorForPixel(_material.BasePixel);

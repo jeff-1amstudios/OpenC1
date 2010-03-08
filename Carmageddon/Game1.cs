@@ -50,19 +50,19 @@ using NFSEngine.Audio;
             {
                 base.Initialize();
 
-                Engine.Initialize(this, _graphics);
-                Engine.Instance.DrawDistance = GameVariables.Scale.Z * 60;
-                Engine.Instance.Audio = new NFSEngine.Audio.MdxSoundEngine();
+                Engine.Startup(this, _graphics);
+                Engine.DrawDistance = GameVariables.Scale.Z * 60;
+                Engine.Audio = new NFSEngine.Audio.MdxSoundEngine();
 
 
                 //enable per-pixel transparency
-                Engine.Instance.Device.RenderState.AlphaTestEnable = true;
-                Engine.Instance.Device.RenderState.ReferenceAlpha = 50;
-                Engine.Instance.Device.RenderState.AlphaFunction = CompareFunction.Greater;
+                Engine.Device.RenderState.AlphaTestEnable = true;
+                Engine.Device.RenderState.ReferenceAlpha = 50;
+                Engine.Device.RenderState.AlphaFunction = CompareFunction.Greater;
 
                 //IsFixedTimeStep = false;
                 
-                Engine.Instance.Screen = new PlayGameScreen();
+                Engine.Screen = new PlayGameScreen();
             }
 
             /// <summary>
@@ -79,7 +79,7 @@ using NFSEngine.Audio;
             /// </summary>
             protected override void UnloadContent()
             {
-                Engine.Instance.ContentManager.Unload();
+                Engine.ContentManager.Unload();
             }
 
             /// <summary>
@@ -90,10 +90,12 @@ using NFSEngine.Audio;
             protected override void Update(GameTime gameTime)
             {
                 //check for exit
-                if (Engine.Instance.Input.WasPressed(Keys.Escape))
+                if (Engine.Input.WasPressed(Keys.Escape))
                 {
                     Exit();
                 }
+
+                Engine.Update(gameTime);
 
                 base.Update(gameTime);
             }
@@ -104,6 +106,7 @@ using NFSEngine.Audio;
             /// <param name="gameTime">Provides a snapshot of timing values.</param>
             protected override void Draw(GameTime gameTime)
             {
+                Engine.Render(gameTime);
                 base.Draw(gameTime);
             }
         }

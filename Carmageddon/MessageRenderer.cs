@@ -33,19 +33,19 @@ namespace Carmageddon
 
         private MessageRenderer()
         {
-            _screenWidth = Engine.Instance.Window.Width;
+            _screenWidth = Engine.Window.Width;
         }
 
         public override void Update()
         {
             if (_ttl > 0)
-                _ttl -= Engine.Instance.ElapsedSeconds;
+                _ttl -= Engine.ElapsedSeconds;
 
             if (_animationSpeed > 0)
             {
                 if (_pauseTime <= 0)
                 {
-                    _progress += _animationSpeed * Engine.Instance.ElapsedSeconds;
+                    _progress += _animationSpeed * Engine.ElapsedSeconds;
                     _x = MathHelper.Lerp(_screenWidth, -300, _progress);
                     if (_x < _centerX && !_hasPaused)
                     {
@@ -56,7 +56,7 @@ namespace Carmageddon
                 }
                 else
                 {
-                    _pauseTime -= Engine.Instance.ElapsedSeconds;
+                    _pauseTime -= Engine.ElapsedSeconds;
                 }
             }
         }
@@ -100,7 +100,7 @@ namespace Carmageddon
                 if (_ttl > 0)
                 {
                     if (_messageText != null) DrawString(_textFont, _messageText, new Vector2(_rect.Left, _rect.Top), Color.White);
-                    else Engine.Instance.SpriteBatch.Draw(_messageTexture, _rect, Color.White);
+                    else Engine.SpriteBatch.Draw(_messageTexture, _rect, Color.White);
                 }
             }
             else
@@ -108,7 +108,7 @@ namespace Carmageddon
                 if (_progress < 1)
                 {
                     _rect.X = (int)_x;
-                    Engine.Instance.SpriteBatch.Draw(_messageTexture, _rect, Color.White);
+                    Engine.SpriteBatch.Draw(_messageTexture, _rect, Color.White);
                 }
             }
         }

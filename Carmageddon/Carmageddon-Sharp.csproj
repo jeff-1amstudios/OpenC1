@@ -87,12 +87,15 @@
     <Compile Include="CameraViews\ICameraView.cs" />
     <Compile Include="Checkpoint.cs" />
     <Compile Include="CMaterial.cs" />
+    <Compile Include="GridPlacer.cs" />
     <Compile Include="MaterialModifier.cs" />
     <Compile Include="Gfx\MaterialSmokeParticleSystem.cs" />
     <Compile Include="Gfx\SkidMarkBuffer.cs" />
     <Compile Include="HUD\StandardHudItem.cs" />
     <Compile Include="MessageRenderer.cs" />
+    <Compile Include="Opponent.cs" />
     <Compile Include="Parsers\CockpitFile.cs" />
+    <Compile Include="Parsers\Funks\WindscreenFunk.cs" />
     <Compile Include="Parsers\TextFileDecryptor.cs" />
     <Compile Include="Physics\TriggerReport.cs" />
     <Compile Include="PhysXConsts.cs" />

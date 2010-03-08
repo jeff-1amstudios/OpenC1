@@ -21,6 +21,8 @@ namespace Carmageddon
 
         public void ResolveTexture(List<PixMap> pixmaps)
         {
+            if (Texture != null) return;  //weve already resolved this material
+
             if (PixName == null)
             {
                 //simp mat

@@ -23,7 +23,7 @@ namespace Carmageddon.Parsers.Grooves
             switch (Motion)
             {
                 case Motion.Harmonic:
-                    _currentRock += _direction * Engine.Instance.ElapsedSeconds * Speed * 6.28f * _speed2;
+                    _currentRock += _direction * Engine.ElapsedSeconds * Speed * 6.28f * _speed2;
 
                     float distance = (MaxAngle - Math.Abs(_currentRock)) / MaxAngle;
                     //if (distance < 0.15f)
@@ -32,7 +32,7 @@ namespace Carmageddon.Parsers.Grooves
                     //    _speed2 = 1;
                     break;
                 case Motion.Linear:
-                    _currentRock += _direction * Engine.Instance.ElapsedSeconds * Speed * 6.28f;
+                    _currentRock += _direction * Engine.ElapsedSeconds * Speed * 6.28f;
                     break;
                 default:
                     throw new NotImplementedException();

@@ -450,8 +450,8 @@ VertexLightingVSOutputTx VSBasicTx(VSInputTx vin)
 	vout.PositionPS	= cout.Pos_ps;
 	vout.Diffuse	= cout.Diffuse;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
-	vout.TexCoord	= vin.TexCoord;
-	vout.TexCoord = vout.TexCoord + TexCoordsOffset;
+	//vout.TexCoord	= vin.TexCoord;
+	vout.TexCoord = vin.TexCoord + TexCoordsOffset;
 
 	return vout;
 }
@@ -466,8 +466,8 @@ VertexLightingVSOutputTx VSBasicTxVc(VSInputTxVc vin)
 	vout.PositionPS	= cout.Pos_ps;
 	vout.Diffuse	= cout.Diffuse * vin.Color;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
-	vout.TexCoord	= vin.TexCoord;
-	
+	//vout.TexCoord	= vin.TexCoord;
+	vout.TexCoord = vin.TexCoord + TexCoordsOffset;
 	return vout;
 }
 
@@ -481,8 +481,8 @@ VertexLightingVSOutputTx VSBasicNmTx(VSInputNmTx vin)
 	vout.PositionPS	= cout.Pos_ps;
 	vout.Diffuse	= cout.Diffuse;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
-	vout.TexCoord	= vin.TexCoord;
-
+	//vout.TexCoord	= vin.TexCoord;
+	vout.TexCoord = vin.TexCoord + TexCoordsOffset;
 	return vout;
 }
 
@@ -496,8 +496,8 @@ VertexLightingVSOutputTx VSBasicNmTxVc(VSInputNmTxVc vin)
 	vout.PositionPS	= cout.Pos_ps;
 	vout.Diffuse	= cout.Diffuse * vin.Color;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
-	vout.TexCoord	= vin.TexCoord;
-	
+	//vout.TexCoord	= vin.TexCoord;
+	vout.TexCoord = vin.TexCoord + TexCoordsOffset;
 	return vout;
 }
 

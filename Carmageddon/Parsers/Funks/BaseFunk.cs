@@ -27,5 +27,12 @@ namespace Carmageddon.Parsers.Funks
         public virtual void BeforeRender() { }
         public virtual void AfterRender() { }
         public abstract void Update();
+        
+        public virtual void Resolve()
+        {
+            CMaterial cm = ResourceCache.GetMaterial(MaterialName);
+            cm.Funk = this;
+            Material = cm;
+        }
     }
 }

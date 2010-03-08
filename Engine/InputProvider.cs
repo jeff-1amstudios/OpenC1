@@ -73,7 +73,7 @@ namespace PlatformEngine
 
         public override void Update(GameTime gameTime)
         {
-            float frameTime = Engine.Instance.ElapsedSeconds;
+            float frameTime = Engine.ElapsedSeconds;
             _perFrameMultiplier = frameTime * SENSITIVITY;
             
             _previousKeyboardState = _keyboardState;
@@ -107,7 +107,7 @@ namespace PlatformEngine
 
         private Vector2 GetScreenCenter()
         {
-            GameWindow window = Engine.Instance.Game.Window;
+            GameWindow window = Engine.Game.Window;
             return new Vector2(window.ClientBounds.Width / 2, window.ClientBounds.Height / 2);
         }
 

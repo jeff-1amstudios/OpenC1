@@ -125,8 +125,8 @@ namespace PlatformEngine
 
         public void Update()
         {
-            InputProvider input = Engine.Instance.Input;
-            float elapsedTime = Engine.Instance.ElapsedSeconds;
+            InputProvider input = Engine.Input;
+            float elapsedTime = Engine.ElapsedSeconds;
 
             _forwardDelta = input.MoveForward * elapsedTime * Acceleration;
 
@@ -143,8 +143,8 @@ namespace PlatformEngine
             _position.Z -= (float)(Math.Sin(_orientation.X) * input.Strafe);
             
 
-            Engine.Instance.Camera.Orientation = Orientation;
-            Engine.Instance.Camera.Position = Position;
+            Engine.Camera.Orientation = Orientation;
+            Engine.Camera.Position = Position;
 
             Matrix view = Matrix.CreateTranslation(-Position);
             view *= Matrix.CreateRotationY(-_orientation.X);
@@ -152,12 +152,12 @@ namespace PlatformEngine
             view *= Matrix.CreateRotationZ(_orientation.Z);
 
             View = view;
-            SetPerspective(fovx, Engine.Instance.AspectRatio, this.znear, DrawDistance);
+            SetPerspective(fovx, Engine.AspectRatio, this.znear, DrawDistance);
         }
 
         private void UpdateVelocity()
         {
-            float elapsedTimeSec = Engine.Instance.ElapsedSeconds;
+            float elapsedTimeSec = Engine.ElapsedSeconds;
 
             // Accelerate or decelerate as camera is moved forward or backward.
             float acceleration = Acceleration;

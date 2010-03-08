@@ -46,11 +46,11 @@ namespace Carmageddon
         {
             if (Bumpiness > 0)
             {
-                if (wheel.Index == _nextWheel && chassis.Speed > 5 && _lastBump + 0.3f < Engine.Instance.TotalSeconds)
+                if (wheel.Index == _nextWheel && chassis.Speed > 5 && _lastBump + 0.3f < Engine.TotalSeconds)
                 {
                     chassis.Body.AddForceAtLocalPosition(new Vector3(0, Bumpiness * 55, 0), wheel.Shape.LocalPosition, ForceMode.Impulse, true);
-                    _lastBump = Engine.Instance.TotalSeconds;
-                    _nextWheel = Engine.Instance.RandomNumber.Next(0, chassis.Wheels.Count - 1);
+                    _lastBump = Engine.TotalSeconds;
+                    _nextWheel = Engine.RandomNumber.Next(0, chassis.Wheels.Count - 1);
                 }
             }
 

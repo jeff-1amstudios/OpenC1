@@ -65,6 +65,7 @@ namespace Carmageddon.Physics
             
             ActorDescription actorDesc = new ActorDescription();
             BodyDescription bodyDesc = new BodyDescription(carFile.Mass);
+            //bodyDesc.LinearDamping = 0.1f;
             actorDesc.BodyDescription = bodyDesc;
             
             BoxShapeDescription boxDesc = new BoxShapeDescription();
@@ -160,7 +161,7 @@ namespace Carmageddon.Physics
             List<float> ratios = new List<float>(new float[] { 3.227f, 2.360f, 1.685f, 1.312f, 1.000f, 0.793f });
 
             BaseGearbox gearbox = BaseGearbox.Create(false, ratios, 0.4f);
-            Motor = new Motor(power, carFile.EnginePower * 132.5f, 6f, carFile.TopSpeed, gearbox);
+            Motor = new Motor(power, carFile.EnginePower, 6f, carFile.TopSpeed, gearbox);
             Motor.Gearbox.CurrentGear = 0;
         }
 
@@ -205,7 +206,7 @@ namespace Carmageddon.Physics
                 else
                     diff *= 0.05f;
 
-                diff *= Engine.Instance.ElapsedSeconds * 1000; //TotalMilliseconds;
+                diff *= Engine.ElapsedSeconds * 1000; //TotalMilliseconds;
                 if (endLocal > _steerAngle)
                 {
                     _steerAngle += diff;
@@ -347,7 +348,7 @@ namespace Carmageddon.Physics
         public void ReleaseHandbrake()
         {
             if (_handbrake == 0) return;
-            _handbrake -= Engine.Instance.ElapsedSeconds*0.8f;
+            _handbrake -= Engine.ElapsedSeconds*0.8f;
             if (_handbrake < 0) _handbrake = 0;
         }
 

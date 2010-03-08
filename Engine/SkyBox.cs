@@ -62,9 +62,9 @@ namespace PlatformEngine
         
         public void LoadResources(float repetionsX)
         {
-            _effect = Engine.Instance.ContentManager.Load<Effect>("Content\\Skybox\\skybox");
-            _vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionTexture.VertexElements);
-            _vertices = new VertexBuffer(Engine.Instance.Device, typeof(VertexPositionTexture), 4 * 6, BufferUsage.WriteOnly);
+            _effect = Engine.ContentManager.Load<Effect>("Content\\Skybox\\skybox");
+            _vertexDeclaration = new VertexDeclaration(Engine.Device, VertexPositionTexture.VertexElements);
+            _vertices = new VertexBuffer(Engine.Device, typeof(VertexPositionTexture), 4 * 6, BufferUsage.WriteOnly);
             VertexPositionTexture[] data = new VertexPositionTexture[4 * 6];
 
             Vector3 vExtents = new Vector3(200, 125, 200);
@@ -131,7 +131,7 @@ namespace PlatformEngine
             _vertices.SetData<VertexPositionTexture>(data);
 
 
-            _indices = new IndexBuffer(Engine.Instance.Device, typeof(short), 6 * 6, BufferUsage.WriteOnly);
+            _indices = new IndexBuffer(Engine.Device, typeof(short), 6 * 6, BufferUsage.WriteOnly);
 
             short[] ib = new short[6 * 6];
 
@@ -155,15 +155,15 @@ namespace PlatformEngine
             if (_vertices == null)
                 return;
 
-            CameraPosition = Engine.Instance.Camera.Position + new Vector3(0, HeightOffset, 0);
-            ProjectionMatrix = Engine.Instance.Camera.Projection;
-            ViewMatrix = Engine.Instance.Camera.View;
+            CameraPosition = Engine.Camera.Position + new Vector3(0, HeightOffset, 0);
+            ProjectionMatrix = Engine.Camera.Projection;
+            ViewMatrix = Engine.Camera.View;
 
 
             _effect.Begin(SaveStateMode.SaveState);
             _effect.Parameters["worldViewProjection"].SetValue(_worldMatrix * _viewMatrix * _projectionMatrix);
 
-            GraphicsDevice device = Engine.Instance.Device;
+            GraphicsDevice device = Engine.Device;
 
             device.RenderState.DepthBufferWriteEnable = false;
             device.VertexDeclaration = _vertexDeclaration;

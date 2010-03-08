@@ -12,7 +12,7 @@ namespace Carmageddon.CameraViews
         public FlyView()
         {
             _camera = new FPSCamera();
-            _camera.SetPerspective(55.55f, Engine.Instance.AspectRatio, 1, 500);
+            _camera.SetPerspective(55.55f, Engine.AspectRatio, 1, 500);
         }
 
         #region ICameraView Members
@@ -34,7 +34,7 @@ namespace Carmageddon.CameraViews
 
         public void Activate()
         {
-            Engine.Instance.Camera = _camera;
+            Engine.Camera = _camera;
             _camera.Position = GameVariables.PlayerVehicle.Chassis.Body.GlobalPosition;
         }
 

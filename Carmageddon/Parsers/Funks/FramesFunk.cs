@@ -19,20 +19,22 @@ namespace Carmageddon.Parsers.Funks
 
         public FramesFunk()
         {
-            
+
         }
 
-        public void Resolve(ResourceCache resources)
+        public override void Resolve()
         {
+            base.Resolve();
+
             foreach (string frameName in FrameNames)
             {
-                _frames.Add(resources.GetPixelMap(frameName).Texture);
+                _frames.Add(ResourceCache.GetPixelMap(frameName).Texture);
             }
         }
 
         public override void Update()
         {
-            _currentFrameTime += Engine.Instance.ElapsedSeconds;
+            _currentFrameTime += Engine.ElapsedSeconds;
             if (_currentFrameTime > Speed)
             {
                 _currentFrame++;

@@ -10,65 +10,51 @@ using NFSEngine.Audio;
 
 namespace PlatformEngine
 {
-    public class Engine : DrawableGameComponent
+    public static class Engine
     {
-        private ContentManager _contentManager;
-        private ICamera _camera;
-        public IPlayer Player { get; set; }
-        private SpriteBatch _spriteBatch;
-        private FrameRateCounter _fpsCounter;
+        public static Game Game;
+        private static ContentManager _contentManager;
+        private static ICamera _camera;
+        public static IPlayer Player { get; set; }
+        private static SpriteBatch _spriteBatch;
+        private static FrameRateCounter _fpsCounter;
 
-        public DebugRenderer DebugRenderer;
-        public IGameScreen Screen { get; set; }
-        public GraphicsDevice Device { get; private set; }
-        public BasicEffect CurrentEffect;
-        public InputProvider Input { get; set; }
-        public float DrawDistance { get; set; }
-        public float ElapsedSeconds { get; private set; }
-        public float TotalSeconds { get; private set; }
-        public Random RandomNumber { get; private set; }
-        public ISoundEngine Audio { get; set; }
+        public static DebugRenderer DebugRenderer;
+        public static IGameScreen Screen { get; set; }
+        public static GraphicsDevice Device { get; private set; }
+        public static BasicEffect CurrentEffect;
+        public static InputProvider Input { get; set; }
+        public static float DrawDistance { get; set; }
+        public static float ElapsedSeconds { get; private set; }
+        public static float TotalSeconds { get; private set; }
+        public static Random RandomNumber { get; private set; }
+        public static ISoundEngine Audio { get; set; }
 
-        private bool _isFullScreen;
+        private static bool _isFullScreen;
         public static Vector2 ScreenSize;
-                
-        public static Engine Instance;
 
-        public static void Initialize(Game game, GraphicsDeviceManager graphics)
+
+        public static void Startup(Game game, GraphicsDeviceManager graphics)
         {
-            Debug.Assert(Instance == null);
-            Instance = new Engine(game, graphics);
-            Instance.Startup();
-        }
-
-
-        private Engine(Game game, GraphicsDeviceManager graphics)
-            : base(game)
-        {
+            Game = game;
             Device = graphics.GraphicsDevice;
             _isFullScreen = graphics.IsFullScreen;
-        }
 
-        private void Startup()
-        {            
             DrawDistance = 1000;
 
-            _contentManager = new ContentManager(base.Game.Services);
+            _contentManager = new ContentManager(Game.Services);
 
-            //Game bits
-            Input = new InputProvider(base.Game);
+            Input = new InputProvider(Game);
             DebugRenderer = new DebugRenderer();
             _spriteBatch = new SpriteBatch(Device);
             _fpsCounter = new FrameRateCounter();
             RandomNumber = new Random();
-
-            base.Game.Components.Add(this);
         }
-        
 
-        public override void Update(GameTime gameTime)
+
+        public static void Update(GameTime gameTime)
         {
-            
+
             ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             TotalSeconds = (float)gameTime.TotalGameTime.TotalSeconds;
 
@@ -76,12 +62,10 @@ namespace PlatformEngine
 
             _fpsCounter.Update(gameTime);
 
-            base.Update(gameTime);
-            
             Input.Update(gameTime);
 
             if (Audio != null) Audio.Update();
-            
+
             Screen.Update();
 
             ScreenEffects.Instance.Update(gameTime);
@@ -89,8 +73,8 @@ namespace PlatformEngine
             DebugRenderer.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
-        {            
+        public static void Render(GameTime gameTime)
+        {
             Screen.Render();
             DebugRenderer.Draw();
             ScreenEffects.Instance.Draw();
@@ -99,13 +83,13 @@ namespace PlatformEngine
             _fpsCounter.Draw(gameTime);
         }
 
-        public ContentManager ContentManager
+        public static ContentManager ContentManager
         {
             get { return _contentManager; }
         }
 
-        
-        public ICamera Camera
+
+        public static ICamera Camera
         {
             get { return _camera; }
             set
@@ -115,12 +99,12 @@ namespace PlatformEngine
             }
         }
 
-        public Rectangle Window
+        public static Rectangle Window
         {
             get { return Game.Window.ClientBounds; }
         }
 
-        public float AspectRatio
+        public static float AspectRatio
         {
             get
             {
@@ -130,14 +114,14 @@ namespace PlatformEngine
                     return (float)Window.Width / (float)Window.Height;
             }
         }
-        
 
-        public SpriteBatch SpriteBatch
+
+        public static SpriteBatch SpriteBatch
         {
             get { return _spriteBatch; }
         }
 
-        public int Fps
+        public static int Fps
         {
             get { return _fpsCounter.FrameRate; }
         }

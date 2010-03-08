@@ -15,7 +15,7 @@ namespace NFSEngine.Audio
 		public MdxSoundEngine()
 		{
 			_audioDevice = new Device();
-			_audioDevice.SetCooperativeLevel(Engine.Instance.Game.Window.Handle, CooperativeLevel.Priority);
+			_audioDevice.SetCooperativeLevel(Engine.Game.Window.Handle, CooperativeLevel.Priority);
 		}
 
 		public IListener CreateListener()
@@ -39,7 +39,7 @@ namespace NFSEngine.Audio
         {
             for (int i = _sounds.Count - 1; i >= 0; i--)
             {
-                _sounds[i].RemainingDuration -= Engine.Instance.ElapsedSeconds;
+                _sounds[i].RemainingDuration -= Engine.ElapsedSeconds;
                 if (_sounds[i].RemainingDuration <= 0)
                 {
                     _sounds[i].Sound.Stop();

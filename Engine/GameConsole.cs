@@ -33,7 +33,7 @@ namespace NFSEngine
         public static void WriteLine(object o)
         {
             if (!_enabled) return;
-            Engine.Instance.DebugRenderer.AddText(new Vector2(5, ((_lines++)+1) * 18), o.ToString(), Justify.TOP_LEFT, Color.YellowGreen);
+            Engine.DebugRenderer.AddText(new Vector2(5, ((_lines++)+1) * 18), o.ToString(), Justify.TOP_LEFT, Color.YellowGreen);
         }
 
         public static void WriteLine(string s, float o)
@@ -47,13 +47,13 @@ namespace NFSEngine
         }
 
         public static void WriteEvent(string evt){
-            _scrollingLines[_currentLine++] = evt +  " [" + Math.Round(Engine.Instance.TotalSeconds, 2) + "]";
+            _scrollingLines[_currentLine++] = evt +  " [" + Math.Round(Engine.TotalSeconds, 2) + "]";
             if (_currentLine == _scrollingLines.Count) _currentLine = 0;
         }
 
         public static void Render()
         {
-            if (Engine.Instance.Input.WasPressed(Keys.OemTilde)) _enabled = !_enabled; 
+            if (Engine.Input.WasPressed(Keys.OemTilde)) _enabled = !_enabled; 
             if (!_enabled) return;
 
             WriteLine(" ");
@@ -61,9 +61,9 @@ namespace NFSEngine
             {
                 WriteLine(_scrollingLines[(i + _currentLine) % _scrollingLines.Count]);
             }
-            Engine.Instance.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
-            Engine.Instance.SpriteBatch.Draw(_shadow, new Rectangle(0, 0, 220, (_lines+1) * 18), Color.White);
-            Engine.Instance.SpriteBatch.End();
+            Engine.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
+            Engine.SpriteBatch.Draw(_shadow, new Rectangle(0, 0, 220, (_lines+1) * 18), Color.White);
+            Engine.SpriteBatch.End();
         }
     }
 }

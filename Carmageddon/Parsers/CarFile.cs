@@ -65,6 +65,7 @@ namespace Carmageddon.Parsers
         public List<int> DrivenWheelRefs, NonDrivenWheelRefs;
         public List<string> CrashMaterialFiles = new List<string>();
         public Vector3 DriverHeadPosition;
+        public string WindscreenMaterial;
 
         public CarFile(string filename)
             : base(filename)
@@ -125,7 +126,7 @@ namespace Carmageddon.Parsers
             BonnetActorFile = ReadLine();
             BonnetActorFile = BonnetActorFile.Substring(BonnetActorFile.IndexOf(",") + 1);   //this is in the format 1,Ebonnect.act
 
-            string windscreenReflection = ReadLine();
+            WindscreenMaterial = ReadLine();
             int nbrSteerableWheels = ReadLineAsInt();
             //Debug.Assert(nbrSteerableWheels == 2);
             for (int i = 0; i < nbrSteerableWheels; i++)

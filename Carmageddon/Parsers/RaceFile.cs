@@ -29,7 +29,7 @@ namespace Carmageddon.Parsers
         public float SkyboxPositionY, SkyboxRepetitionsX;
         public DepthCueMode DepthCueMode { get; private set; }
         public Vector3 GridPosition;
-        public int GridDirection;
+        public float GridDirection;
         public List<NoncarFile> NonCars { get; set; }
         public List<Vector3> CopStartPoints { get; set; }
         public List<BaseGroove> Grooves;
@@ -49,7 +49,7 @@ namespace Carmageddon.Parsers
             
             GridPosition = ReadLineAsVector3() + new Vector3(0, GameVariables.Scale.Y*0.5f, 0);
 
-            GridDirection = ReadLineAsInt();
+            GridDirection = MathHelper.ToRadians(ReadLineAsInt());
             string initialTimerPerSkill = ReadLine();
             LapCount = ReadLineAsInt();
             SkipLines(3);  //race completed bonuses
@@ -140,11 +140,12 @@ namespace Carmageddon.Parsers
                 int quads = ReadLineAsInt();
                 Debug.Assert(quads == 1);
                 Checkpoint point = new Checkpoint { Number = i };
-                Vector3 point1 = ReadLineAsVector3();
-                ReadLineAsVector3();
-                Vector3 point3 = ReadLineAsVector3();
-                ReadLineAsVector3();
-                point.BBox = new BoundingBox(point1, point3);
+                List<Vector3> points = new List<Vector3>();
+                points.Add(ReadLineAsVector3());
+                points.Add(ReadLineAsVector3());
+                points.Add(ReadLineAsVector3());
+                points.Add(ReadLineAsVector3());
+                point.BBox = BoundingBox.CreateFromPoints(points);
                 Checkpoints.Add(point);
                 SkipLines(2);
             }
@@ -165,9 +166,9 @@ namespace Carmageddon.Parsers
                 {
                     Matrix m = ReadMatrix();
                                         
-                    m = GameVariables.ScaleMatrix * m;
+                    m = GameVariables.ScaleMatrix * Matrix.CreateScale(2) * m;
                     m.Translation = GameVariables.Scale * m.Translation;
-                    vol.Matrix = Matrix.CreateScale(2) * m;
+                    vol.Matrix = m;
                 }
                 vol.Gravity = ReadLineAsFloat(false);
                 vol.Viscosity = ReadLineAsFloat(false);

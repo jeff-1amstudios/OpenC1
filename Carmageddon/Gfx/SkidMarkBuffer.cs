@@ -41,12 +41,12 @@ namespace Carmageddon.Gfx
 
             _particles = new VertexPositionTexture[_maxSkids * 6];
 
-            _vertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionTexture.VertexElements);
+            _vertexDeclaration = new VertexDeclaration(Engine.Device, VertexPositionTexture.VertexElements);
 
             // Create a dynamic vertex buffer.
             int size = VertexPositionTexture.SizeInBytes * _particles.Length;
 
-            _vertexBuffer = new DynamicVertexBuffer(Engine.Instance.Device, size, BufferUsage.WriteOnly);
+            _vertexBuffer = new DynamicVertexBuffer(Engine.Device, size, BufferUsage.WriteOnly);
 
             MatFile matfile = new MatFile(GameVariables.BasePath + "Data\\Material\\skidmark.mat");
             matfile.Materials[0].ResolveTexture();
@@ -64,7 +64,7 @@ namespace Carmageddon.Gfx
 
         public void Render()
         {
-            GraphicsDevice device = Engine.Instance.Device;
+            GraphicsDevice device = Engine.Device;
 
             // Restore the vertex buffer contents if the graphics device was lost.
             if (_vertexBuffer.IsContentLost)
@@ -81,11 +81,11 @@ namespace Carmageddon.Gfx
                     i--;
                     AddCurrentSkid(skid);
                 }
-                else if (Engine.Instance.TotalSeconds - skid.StartTime > 0.03f)
+                else if (Engine.TotalSeconds - skid.StartTime > 0.03f)
                 {
                     AddCurrentSkid(skid);
                     skid.StartPosition = skid.EndPosition;
-                    skid.StartTime = Engine.Instance.TotalSeconds;
+                    skid.StartTime = Engine.TotalSeconds;
                 }
             }
 
@@ -160,7 +160,7 @@ namespace Carmageddon.Gfx
             }
             if (skid == null)
             {
-                skid = new CurrentSkid { Wheel = wheel, StartPosition = pos, EndPosition = pos, StartTime = Engine.Instance.TotalSeconds };
+                skid = new CurrentSkid { Wheel = wheel, StartPosition = pos, EndPosition = pos, StartTime = Engine.TotalSeconds };
                 _currentSkids.Add(skid);
             }
             else

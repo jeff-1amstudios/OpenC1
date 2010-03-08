@@ -26,6 +26,11 @@ namespace Carmageddon.Physics
             }
         }
 
+        public float Gravity
+        {
+            get { return -9.81f * 1.35f; }  //gravity + a bit extra
+        }
+
         private PhysX()
         {
             try
@@ -44,11 +49,11 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.SkinWidth, (float)0.01f);
             Core.SetParameter(PhysicsParameter.VisualizationScale, (float)1f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
-            Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
+            Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, false);
             Core.SetParameter(PhysicsParameter.VisualizeForceFields, false);
             
             SceneDescription sceneDescription = new SceneDescription();
-            sceneDescription.Gravity = new Vector3(0f, -9.81f*1.35f, 0f);  //double gravity
+            sceneDescription.Gravity = new Vector3(0f, Gravity, 0f);
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
             
             sceneDescription.Flags = SceneFlag.EnableMultithread | SceneFlag.SimulateSeparateThread;
@@ -79,14 +84,14 @@ namespace Carmageddon.Physics
         {
             if (_debugEffect == null)
             {
-                _debugEffect = new BasicEffect(Engine.Instance.Device, null);
+                _debugEffect = new BasicEffect(Engine.Device, null);
             }
 
-            _debugEffect.View = Engine.Instance.Camera.View;
+            _debugEffect.View = Engine.Camera.View;
             _debugEffect.World = Matrix.Identity;
-            _debugEffect.Projection = Engine.Instance.Camera.Projection;;
+            _debugEffect.Projection = Engine.Camera.Projection;;
             DebugRenderable debugRenderable = Scene.GetDebugRenderable();
-            Engine.Instance.Device.VertexDeclaration = new VertexDeclaration(Engine.Instance.Device, VertexPositionColor.VertexElements);
+            Engine.Device.VertexDeclaration = new VertexDeclaration(Engine.Device, VertexPositionColor.VertexElements);
             _debugEffect.Begin();
 
             foreach (EffectPass pass in _debugEffect.CurrentTechnique.Passes)
@@ -95,7 +100,7 @@ namespace Carmageddon.Physics
                 if (debugRenderable.PointCount > 0)
                 {
                     DebugPoint[] debugPoints = debugRenderable.GetDebugPoints();
-                    Engine.Instance.Device.DrawUserPrimitives<DebugPoint>(PrimitiveType.PointList, debugPoints, 0, debugPoints.Length);
+                    Engine.Device.DrawUserPrimitives<DebugPoint>(PrimitiveType.PointList, debugPoints, 0, debugPoints.Length);
                 }
                 if (debugRenderable.LineCount > 0)
                 {
@@ -107,7 +112,7 @@ namespace Carmageddon.Physics
                         vertexData[i * 2] = new VertexPositionColor(line.Point0, Color.White);
                         vertexData[(i * 2) + 1] = new VertexPositionColor(line.Point1, Color.White);
                     }
-                    Engine.Instance.Device.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.LineList, vertexData, 0, debugLines.Length);
+                    Engine.Device.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.LineList, vertexData, 0, debugLines.Length);
                 }
                 if (debugRenderable.TriangleCount > 0)
                 {
@@ -120,7 +125,7 @@ namespace Carmageddon.Physics
                         colorArray2[(j * 3) + 1] = new VertexPositionColor(triangle.Point1, Color.White);
                         colorArray2[(j * 3) + 2] = new VertexPositionColor(triangle.Point2, Color.White);
                     }
-                    Engine.Instance.Device.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, colorArray2, 0, debugTriangles.Length);
+                    Engine.Device.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, colorArray2, 0, debugTriangles.Length);
                 }
                 pass.End();
             }
@@ -133,7 +138,7 @@ namespace Carmageddon.Physics
 
         public void Update()
         {
-            Scene.Simulate(Engine.Instance.ElapsedSeconds);
+            Scene.Simulate(Engine.ElapsedSeconds);
             Scene.FlushStream();
             Scene.FetchResults(SimulationStatus.RigidBodyFinished, true);
         }

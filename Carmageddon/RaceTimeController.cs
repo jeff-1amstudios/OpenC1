@@ -44,13 +44,13 @@ namespace Carmageddon
 
         public void Update()
         {
-            TotalTime += Engine.Instance.ElapsedSeconds;
+            TotalTime += Engine.ElapsedSeconds;
 
             if (IsOver) return;
 
             if (IsStarted)
             {
-                TimeRemaining -= Engine.Instance.ElapsedSeconds;
+                TimeRemaining -= Engine.ElapsedSeconds;
                 if (TimeRemaining < 0)
                 {
                     TimeRemaining = 0;
@@ -60,11 +60,11 @@ namespace Carmageddon
             }
             if (CountingDown)
             {
-                CountdownTime += Engine.Instance.ElapsedSeconds;
+                CountdownTime += Engine.ElapsedSeconds;
                 if (CountdownTime > 5)
                 {
                     IsStarted = true;
-                    ((Driver)Engine.Instance.Player).VehicleModel.Chassis.Motor.Gearbox.CurrentGear = 1;
+                    ((Driver)Engine.Player).VehicleModel.Chassis.Motor.Gearbox.CurrentGear = 1;
                 }
                 if (CountdownTime > 6)
                     CountingDown = false;

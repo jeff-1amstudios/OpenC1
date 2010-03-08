@@ -21,7 +21,7 @@ namespace Carmageddon.Gfx
 
         protected override void InitializeSettings(ParticleSettings settings)
         {
-            settings.Texture = Engine.Instance.ContentManager.Load<Texture2D>("Content/material-modifier-smoke");
+            settings.Texture = Engine.ContentManager.Load<Texture2D>("Content/material-modifier-smoke");
             
             settings.MaxParticles = 200;
             settings.MinColor = _color;

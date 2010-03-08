@@ -169,14 +169,14 @@ namespace Carmageddon.Parsers
                 ScaleTransformations(scale, child);
         }
 
-        public void ResolveMaterials(ResourceCache resources)
+        public void ResolveMaterials()
         {
             Action<CActor> resolver = null;
             resolver = (actor) =>
             {
                 if (actor.MaterialName != null)
                 {
-                    actor.Material = resources.GetMaterial(actor.MaterialName);
+                    actor.Material = ResourceCache.GetMaterial(actor.MaterialName);
                 }
                 foreach (CActor child in actor.Children)
                     resolver(child);
@@ -215,7 +215,7 @@ namespace Carmageddon.Parsers
         {
             GameVariables.NbrSectionsRendered = GameVariables.NbrSectionsChecked = 0;
 
-            BoundingFrustum frustum = new BoundingFrustum(Engine.Instance.Camera.View * Engine.Instance.Camera.Projection);
+            BoundingFrustum frustum = new BoundingFrustum(Engine.Camera.View * Engine.Camera.Projection);
 
 
             bool overrideActor = world != Matrix.Identity;

@@ -41,7 +41,7 @@ namespace Carmageddon.Parsers.Funks
             // _cyclePosition is the current position in the cycle. As the cycle gets to 
             // halfway, _cyclePosition starts returning to origin
 
-            _cycleTime += Engine.Instance.ElapsedSeconds * _harmonicMultiplier;
+            _cycleTime += Engine.ElapsedSeconds * _harmonicMultiplier;
 
             if (_cycleTime > _targetTime)
             {
@@ -50,7 +50,7 @@ namespace Carmageddon.Parsers.Funks
 
             if (_cycleTime > _targetTime / 2)
             {
-                _cyclePosition -= Engine.Instance.ElapsedSeconds *_harmonicMultiplier;  //sither back to start
+                _cyclePosition -= Engine.ElapsedSeconds *_harmonicMultiplier;  //sither back to start
             }
             else
             {

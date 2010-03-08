@@ -19,13 +19,13 @@ namespace Carmageddon.Parsers.Grooves
             switch (Axis)
             {
                 case Axis.X:
-                    rot = Matrix.CreateRotationX(Speed * 6.28f /*=rads*/ * Engine.Instance.ElapsedSeconds);
+                    rot = Matrix.CreateRotationX(Speed * 6.28f /*=rads*/ * Engine.ElapsedSeconds);
                     break;
                 case Axis.Y:
-                    rot = Matrix.CreateRotationY(Speed * 6.28f /*=rads*/ * Engine.Instance.ElapsedSeconds);
+                    rot = Matrix.CreateRotationY(Speed * 6.28f /*=rads*/ * Engine.ElapsedSeconds);
                     break;
                 case Axis.Z:
-                    rot = Matrix.CreateRotationZ(Speed * 6.28f /*=rads*/ * Engine.Instance.ElapsedSeconds);
+                    rot = Matrix.CreateRotationZ(Speed * 6.28f /*=rads*/ * Engine.ElapsedSeconds);
                     break;
                 default:
                     throw new NotImplementedException();

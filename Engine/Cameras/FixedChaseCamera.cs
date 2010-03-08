@@ -18,7 +18,7 @@ namespace NFSEngine
         public FixedChaseCamera(float chaseDistance, float height)
 		{
             _chaseDistance = new Vector3(chaseDistance, height, chaseDistance);
-            AspectRatio = Engine.Instance.AspectRatio;
+            AspectRatio = Engine.AspectRatio;
             FieldOfView = MathHelper.ToRadians(45f);
             NearPlaneDistance = 1.0f;
 		}
@@ -72,9 +72,9 @@ namespace NFSEngine
             if (_currentRotation != Rotation)
             {
                 if (_currentRotation < Rotation)
-                    _currentRotation += Engine.Instance.ElapsedSeconds*3;
+                    _currentRotation += Engine.ElapsedSeconds*3;
                 else
-                    _currentRotation -= Engine.Instance.ElapsedSeconds*3;
+                    _currentRotation -= Engine.ElapsedSeconds*3;
                 if (Math.Abs(_currentRotation - Rotation) < 0.05f)
                     _currentRotation = Rotation;
             }

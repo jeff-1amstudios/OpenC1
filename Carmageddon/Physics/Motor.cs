@@ -45,7 +45,7 @@ namespace Carmageddon.Physics
         public float MaxPower
         {
             get { return _maxPower; }
-            set { _maxPower = value; }
+            set { _maxPower = value * 132.5f; }  //magic number...
         }
 
         public bool AtRedline
@@ -82,7 +82,7 @@ namespace Carmageddon.Physics
         public Motor(List<float> powerCurve, float maxPower, float redline, float driveTrainMultipler, BaseGearbox gearbox)
         {
             _powerCurve = powerCurve;
-            _maxPower = maxPower;
+            MaxPower = maxPower;
             _redlineRpm = redline;
             _gearbox = gearbox;
             _gearbox.CurrentGear = 1;
@@ -104,7 +104,7 @@ namespace Carmageddon.Physics
             if (_rpmLimiter > 0)
             {
                 if (!WheelsSpinning) _currentPowerOutput = 0;
-                _rpmLimiter -= Engine.Instance.ElapsedSeconds;
+                _rpmLimiter -= Engine.ElapsedSeconds;
             }
             else
                 _currentPowerOutput = _maxPower * MathHelper.Lerp(_powerCurve[(int)_rpm], _powerCurve[(int)_rpm + 1], _rpm - (int)_rpm);
@@ -169,14 +169,14 @@ namespace Carmageddon.Physics
         {
             if (_throttle == 0.0f || _rpmLimiter > 0)
             {
-                _rpm -= Engine.Instance.ElapsedSeconds * 4.4f;
+                _rpm -= Engine.ElapsedSeconds * 4.4f;
 
                 if (_rpm < 0.8f)
                     _rpm = 0.8f;
             }
             else
             {
-                _rpm += Engine.Instance.ElapsedSeconds * _throttle * 8f;
+                _rpm += Engine.ElapsedSeconds * _throttle * 8f;
             }
         }
 

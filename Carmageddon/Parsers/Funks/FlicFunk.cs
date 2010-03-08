@@ -14,23 +14,17 @@ namespace Carmageddon.Parsers.Funks
         float _currentFrameTime;
         int _currentFrame;
 
-        public FlicFunk()
+        public FlicFunk(string fliname)
         {
+            FliFile fli = ResourceCache.GetFliFile(GameVariables.BasePath + "data\\anim\\" + fliname);
+            _frames = fli.Frames;
+            _speed = (float)fli.FrameRate / 1000; // to seconds
         }
 
-        public string FliName
-        {
-            set
-            {
-                FliFile fli = new FliFile("c:\\games\\carma1\\data\\anim\\" + value);
-                _frames = fli.Frames;
-                _speed = (float)fli.FrameRate / 1000; // to seconds
-            }
-        }
 
         public override void Update()
         {
-            _currentFrameTime += Engine.Instance.ElapsedSeconds;
+            _currentFrameTime += Engine.ElapsedSeconds;
             if (_currentFrameTime > _speed)
             {
                 _currentFrame++;

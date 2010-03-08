@@ -43,10 +43,10 @@ namespace Carmageddon
 
         public BasicEffect2()
         {
-            _effect = Engine.Instance.ContentManager.Load<Effect>("Content/BasicEffect2");
+            _effect = Engine.ContentManager.Load<Effect>("Content/BasicEffect2");
 
 
-            this.CacheEffectParams(Engine.Instance.Device);
+            this.CacheEffectParams(Engine.Device);
         }
 
         private void CacheEffectParams(GraphicsDevice device)

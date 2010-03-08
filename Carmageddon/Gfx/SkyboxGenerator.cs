@@ -21,20 +21,20 @@ namespace Carmageddon.Gfx
                     c = Color.WhiteSmoke;
                 else
                     throw new NotImplementedException();
-                horizon = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+                horizon = new Texture2D(Engine.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
                 horizon.SetData<Color>(new Color[] { c });  //top left pixel
             }
 
             Color[] pixels = new Color[horizon.Width * horizon.Height];
             horizon.GetData<Color>(pixels);
 
-            Texture2D topTexture = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+            Texture2D topTexture = new Texture2D(Engine.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
             topTexture.SetData<Color>(new Color[] { pixels[0] });  //top left pixel
 
-            Texture2D bottomTexture = new Texture2D(Engine.Instance.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
+            Texture2D bottomTexture = new Texture2D(Engine.Device, 1, 1, 1, TextureUsage.None, SurfaceFormat.Color);
             bottomTexture.SetData<Color>(new Color[] { pixels[pixels.Length - 1] }); //bottom right pixel
 
-            Texture2D sideTexture = new Texture2D(Engine.Instance.Device, horizon.Width, horizon.Height, 1, TextureUsage.None, SurfaceFormat.Color);
+            Texture2D sideTexture = new Texture2D(Engine.Device, horizon.Width, horizon.Height, 1, TextureUsage.None, SurfaceFormat.Color);
             int ptr = 0;
             Color[] flippedPixels = new Color[pixels.Length];
             for (int h = 0; h < horizon.Height; h++)
