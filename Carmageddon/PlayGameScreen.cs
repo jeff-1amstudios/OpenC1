@@ -35,7 +35,7 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            _race = new Race(GameVariables.BasePath + @"data\races\industa1.TXT");
+            _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT");
 
             string car = "blkeagle.txt";
             _playerVehicle = new VehicleModel(GameVariables.BasePath + @"data\cars\" + car, true);
@@ -92,6 +92,8 @@ namespace Carmageddon
                 MessageRenderer.Instance.PostMessage("Lighting: " + (GameVariables.LightingEnabled ? "Enabled" : "Disabled"), 2);
                 _effect = null;
             }
+            if (Engine.Input.WasPressed(Keys.R))
+                _playerVehicle.Reset();
 
             _views[_currentView].Update();
             Engine.Camera.Update();
@@ -122,6 +124,8 @@ namespace Carmageddon
             {
                 system.Render();
             }
+
+            Engine.DebugRenderer.AddAxis(_playerVehicle.Chassis.Body.CenterOfMassGlobalPose, 5);
 
             Engine.SpriteBatch.End();
             Engine.Device.RenderState.DepthBufferEnable = true;

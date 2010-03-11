@@ -18,7 +18,7 @@ namespace Carmageddon.CameraViews
 
         public ChaseView(VehicleModel vehicle)
         {
-            _camera = new FixedChaseCamera(6.8f, 7);
+            _camera = new FixedChaseCamera(6.3f, 2.3f);
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
 
             _vehicle = vehicle;
@@ -40,7 +40,8 @@ namespace Carmageddon.CameraViews
         public void Update()
         {
             VehicleChassis chassis = _vehicle.Chassis;
-            _camera.Position = chassis.Body.GlobalPosition;
+            _camera.Position = _vehicle.GetBodyBottom() + new Vector3(0, 0.0f, 0);
+            //chassis.Body.GlobalPosition;
 
             if (!chassis.InAir)
             {

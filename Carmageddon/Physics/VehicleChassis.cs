@@ -49,7 +49,7 @@ namespace Carmageddon.Physics
 
 
         public float Speed { get { return _speed; } }
-        
+
 
 
         #region Constructor
@@ -98,28 +98,24 @@ namespace Carmageddon.Physics
 
             TireFunctionDescription _frontLateralTireFn = new TireFunctionDescription();
 
-            float mul = 20f;
-            _frontLateralTireFn.ExtremumSlip = 0.30f;
+            _frontLateralTireFn.ExtremumSlip = 0.26f;
             _frontLateralTireFn.ExtremumValue = 2.0f;
-            _frontLateralTireFn.AsymptoteSlip = 1.4f * mul;
+            _frontLateralTireFn.AsymptoteSlip = 20;
             _frontLateralTireFn.AsymptoteValue = 0.01f;
 
             _rearLateralTireFn = new TireFunctionDescription();
 
-            mul = 20f;
-            _rearLateralTireFn.ExtremumSlip = 0.33f;
-            _rearLateralTireFn.ExtremumValue = 2.1f;
-            _rearLateralTireFn.AsymptoteSlip = 1.4f * mul;
+            
+            _rearLateralTireFn.ExtremumSlip = 0.35f;
+            //_rearLateralTireFn.ExtremumValue = 2.3f;  not used here
+            _rearLateralTireFn.AsymptoteSlip = 20f;
             _rearLateralTireFn.AsymptoteValue = 0.01f;
 
             
             WheelShapeDescription wheelDesc = new WheelShapeDescription();
-            wheelDesc.Radius = carFile.NonDrivenWheelRadius;
-
-            wheelDesc.SuspensionTravel = carFile.NonDrivenWheelRadius / 2; // carFile.SuspensionGiveFront; // carFile.RideHeight * 2.8f; // 0.18f;
+            // carFile.SuspensionGiveFront; // carFile.RideHeight * 2.8f; // 0.18f;
             wheelDesc.InverseWheelMass = 0.08f;
             wheelDesc.LongitudalTireForceFunction = lngTFD;
-            wheelDesc.LateralTireForceFunction = _frontLateralTireFn;
             wheelDesc.Flags = WheelShapeFlag.ClampedFriction;
 
             
@@ -128,17 +124,17 @@ namespace Carmageddon.Physics
             Material m = scene.CreateMaterial(md);
             wheelDesc.Material = m;
 
-            SpringDescription spring = new SpringDescription();
-            float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
-            spring.SpringCoefficient = 3600 * heightModifier;
-            spring.DamperCoefficient = carFile.SuspensionDamping * 4;
-            //spring.TargetValue = 0.5f; // 0.5f * heightModifier;
-            wheelDesc.Suspension = spring;
-
             foreach (CWheelActor wheel in carFile.WheelActors)
             {
-                wheelDesc.LocalPosition = wheel.Position + new Vector3(0, wheelDesc.SuspensionTravel/2, 0);
                 wheelDesc.Radius = wheel.IsDriven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
+                wheelDesc.SuspensionTravel = wheelDesc.Radius / 2;
+                wheelDesc.LocalPosition = wheel.Position + new Vector3(0, wheelDesc.SuspensionTravel / 2, 0);
+
+                SpringDescription spring = new SpringDescription();
+                float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
+                spring.SpringCoefficient = 3600 * heightModifier;
+                spring.DamperCoefficient = carFile.SuspensionDamping * 4;
+                wheelDesc.Suspension = spring;
 
                 WheelShape ws = (WheelShape)_body.CreateShape(wheelDesc);
                 ws.Name = wheel.Actor.Name;
@@ -150,7 +146,7 @@ namespace Carmageddon.Physics
             Vector3 massPos = _body.CenterOfMassLocalPosition;
             massPos = carFile.CenterOfMass;
             massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.48f /*carFile.CenterOfMass.Y*/ - 0.2f;
-            
+
             _centerOfMass = massPos;
             _body.SetCenterOfMassOffsetLocalPosition(massPos);
             
@@ -182,12 +178,11 @@ namespace Carmageddon.Physics
 
         public void Update()
         {
-            GameConsole.WriteLine("Steer2", SteerRatio2);
             Vector3 vDirection = _body.GlobalOrientation.Forward;
             Vector3 vNormal = _body.LinearVelocity * vDirection;
             _speed = vNormal.Length() * 2.9f;
 
-            float endLocal = _desiredSteerAngle / (1 + _speed * 0.02f);
+            float endLocal = _desiredSteerAngle; // / (1 + _speed * 0.02f);
 
             SteerRatio2 = _steerAngle / endLocal;
             if (endLocal == 0) SteerRatio2 = 0;
@@ -337,7 +332,7 @@ namespace Carmageddon.Physics
 
         public void Steer(float angle)
         {
-            _desiredSteerAngle = -angle*0.5f;
+            _desiredSteerAngle = -angle*0.33f;
         }
 
         public void PullHandbrake()
@@ -348,7 +343,7 @@ namespace Carmageddon.Physics
         public void ReleaseHandbrake()
         {
             if (_handbrake == 0) return;
-            _handbrake -= Engine.ElapsedSeconds*0.8f;
+            _handbrake -= Engine.ElapsedSeconds*0.5f;
             if (_handbrake < 0) _handbrake = 0;
         }
 
@@ -375,7 +370,7 @@ namespace Carmageddon.Physics
         }
 
 
-        private void Reset()
+        public void Reset()
         {
             _body.GlobalOrientation = Matrix.Identity;
             _body.GlobalPosition += new Vector3(0.0f, 1.0f, 0.0f);

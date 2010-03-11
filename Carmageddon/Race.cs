@@ -104,7 +104,7 @@ namespace Carmageddon
                 if (Engine.Camera is FixedChaseCamera)
                 {
                     float height = 55 - (RaceTime.CountdownTime * 35f);
-                    ((FixedChaseCamera)Engine.Camera).HeightOverride = Math.Max(2, height);
+                    ((FixedChaseCamera)Engine.Camera).HeightOverride = Math.Max(0, height);
                 }
             }
 

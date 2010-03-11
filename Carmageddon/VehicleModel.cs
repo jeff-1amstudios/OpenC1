@@ -23,7 +23,7 @@ namespace Carmageddon
         CrushSection _crushSection;
         public CarFile Config;
         public VehicleChassis Chassis { get; set; }
-        private List<BaseGroove> _grooves;
+        private List<BaseGroove> _grooves = new List<BaseGroove>();
         List<ISound> _engineSounds = new List<ISound>();
         ISound _engineSound;
         
@@ -54,8 +54,6 @@ namespace Carmageddon
 
             ResourceCache.ResolveMaterials();
 
-            //_grooves = new List<BaseGroove>(Config.Grooves);
-            _grooves = new List<BaseGroove>();
             foreach (BaseGroove g in Config.Grooves)
                 if (!g.IsWheelActor) _grooves.Add(g);
 
@@ -139,6 +137,14 @@ namespace Carmageddon
                     _engineSound.Play(true);
                 }
             }
+        }
+
+        public Vector3 GetBodyBottom()
+        {
+            
+            Vector3 pos = Chassis.Body.GlobalPosition;
+            pos.Y = pos.Y + Chassis.Wheels[0].Shape.LocalPosition.Y - Config.DrivenWheelRadius;
+            return pos;
         }
 
         public void SetupChassis(Vector3 position, float direction)
@@ -260,6 +266,11 @@ namespace Carmageddon
         internal void Crush()
         {
             _models.Crush(_crushSection);
+        }
+
+        public void Reset()
+        {
+            Chassis.Reset();
         }
     }
 }

@@ -84,7 +84,7 @@ namespace Carmageddon.Physics
                 // Setup tire functions taking into account handbrake and terrain
                 float latExtremum = _defaultLatExtremum;
                 if (IsRear)
-                    latExtremum = MathHelper.Lerp(2.2f, 1.6f, _handbrake);
+                    latExtremum = MathHelper.Lerp(3.5f, 1.6f, _handbrake);
                 latExtremum *= materialModifier.TyreRoadFriction;
                 _latTireFn.ExtremumValue = latExtremum;
 

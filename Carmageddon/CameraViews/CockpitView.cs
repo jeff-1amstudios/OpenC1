@@ -9,6 +9,7 @@ using NFSEngine;
 using StillDesign.PhysX;
 using Carmageddon.HUD;
 using System.Diagnostics;
+using System.IO;
 
 namespace Carmageddon.CameraViews
 {
@@ -24,6 +25,10 @@ namespace Carmageddon.CameraViews
         public CockpitView(VehicleModel vehicle, string cockpitFile)
         {
             _vehicle = vehicle;
+            if (!File.Exists(cockpitFile))
+            {
+                cockpitFile = Path.GetDirectoryName(cockpitFile) + "\\blkeagle.txt";
+            }
             _cockpitFile = new CockpitFile(cockpitFile);
             _camera = new SimpleCamera();
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
@@ -74,10 +79,8 @@ namespace Carmageddon.CameraViews
             _camera.Orientation = forward;
 
             _camera.Up = m.Up;
-            Vector3 vehicleBottom = new Vector3(_vehicle.Chassis.Body.GlobalPosition.X, -53.4348f, _vehicle.Chassis.Body.GlobalPosition.Z);
-            vehicleBottom = GetBodyBottom();
             
-            _camera.Position = vehicleBottom + Vector3.Transform(_vehicle.Config.DriverHeadPosition, _vehicle.Chassis.Body.GlobalOrientation) + new Vector3(0, 0.018f, 0);
+            _camera.Position = _vehicle.GetBodyBottom() + Vector3.Transform(_vehicle.Config.DriverHeadPosition, _vehicle.Chassis.Body.GlobalOrientation) + new Vector3(0, 0.018f, 0);
         }
 
         public override void Render()
@@ -124,20 +127,15 @@ namespace Carmageddon.CameraViews
             if (frame.Texture2 != null)
                 Engine.SpriteBatch.Draw(frame.Texture2, ScaleVec2(frame.Position2), Color.White);
             
-            Vector3 vehicleBottom = new Vector3(_vehicle.Chassis.Body.GlobalPosition.X, -53.4348f, _vehicle.Chassis.Body.GlobalPosition.Z);
-            vehicleBottom = GetBodyBottom();
-            
             _modelsFile.SetupRender();
-            _actorFile.Render(_modelsFile, Matrix.CreateFromQuaternion(_vehicle.Chassis.Body.GlobalOrientationQuat) * Matrix.CreateTranslation(vehicleBottom));
+            _actorFile.Render(_modelsFile, Matrix.CreateFromQuaternion(_vehicle.Chassis.Body.GlobalOrientationQuat) * Matrix.CreateTranslation(_vehicle.GetBodyBottom()));
         }
 
         public void Activate()
         {
             Engine.Camera = _camera;
 
-            Vector3 vehicleBottom = GetBodyBottom();
-            
-            _camera.Position = vehicleBottom + Vector3.Transform(_vehicle.Config.DriverHeadPosition, _vehicle.Chassis.Body.GlobalOrientation);
+            _camera.Position = _vehicle.GetBodyBottom() + Vector3.Transform(_vehicle.Config.DriverHeadPosition, _vehicle.Chassis.Body.GlobalOrientation);
             _camera.Update(); 
         }
 
@@ -148,11 +146,5 @@ namespace Carmageddon.CameraViews
 
         #endregion
 
-        private Vector3 GetBodyBottom()
-        {
-            Vector3 pos = _vehicle.Chassis.Body.GlobalPosition;
-            pos.Y = pos.Y - _vehicle.Config.WheelActors[0].Position.Y - _vehicle.Config.DrivenWheelRadius;
-            return pos;
-        }
     }
 }
