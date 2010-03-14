@@ -79,7 +79,7 @@ namespace Carmageddon
         {
             if (instance == null || !instance.IsPlaying)
             {
-                int id = Engine.RandomNumber.Next(startId, endId);
+                int id = Engine.Random.Next(startId, endId);
                 instance = Play(id);
             }
         }

@@ -13,18 +13,21 @@ using Carmageddon.CameraViews;
 using Carmageddon.Physics;
 using System.IO;
 using Particle3DSample;
+using Carmageddon.EditModes;
 
 
 namespace Carmageddon
 {
     class PlayGameScreen : IGameScreen
     {
-        VehicleModel _playerVehicle;
+        //Vehicle _playerVehicle;
         Race _race;
 
         BasicEffect2 _effect;
-        List<ICameraView> _views = new List<ICameraView>();
-        int _currentView = 0;
+        
+        List<IEditMode> _editModes = new List<IEditMode>();
+        
+        int _currentEditMode = 0;
 
 
 
@@ -35,52 +38,28 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT");
-
-            string car = "blkeagle.txt";
-            _playerVehicle = new VehicleModel(GameVariables.BasePath + @"data\cars\" + car, true);
-            _playerVehicle.SetupChassis(_race.ConfigFile.GridPosition, _race.ConfigFile.GridDirection);
-
-            GameVariables.PlayerVehicle = _playerVehicle;
-
-            Engine.Player = new Driver { VehicleModel = _playerVehicle };
-
-
-            _views.Add(new ChaseView(_playerVehicle));
-            _views.Add(new CockpitView(_playerVehicle, GameVariables.BasePath + @"data\64x48x8\cars\" + car));
-            _views.Add(new FlyView());
-            _views[_currentView].Activate();
+            string playerCar = "blkeagle.txt";
+            _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT", playerCar);
+            
+            _editModes.Add(new NoEditMode());
+            _editModes.Add(new OpponentEditMode());
         }
 
 
         public void Update()
         {
-            VehicleChassis playerCar = _playerVehicle.Chassis;
-            playerCar.Accelerate(PlayerVehicleController.Acceleration);
-            if (PlayerVehicleController.Brake != 0)
-            {
-                playerCar.Accelerate(-PlayerVehicleController.Brake);
-            }
-            playerCar.Steer(PlayerVehicleController.Turn);
-
-            if (PlayerVehicleController.Handbrake)
-                playerCar.PullHandbrake();
-            else
-                playerCar.ReleaseHandbrake();
-
+            
             _race.Update();
-            _playerVehicle.Update();
-
+            
             PhysX.Instance.Update();
 
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
                 system.Update();
 
-            if (Engine.Input.WasPressed(Keys.C))
+            if (Engine.Input.WasPressed(Keys.F4))
             {
-                _views[_currentView].Deactivate();
-                _currentView = (_currentView + 1) % _views.Count;
-                _views[_currentView].Activate();
+                _currentEditMode = (_currentEditMode + 1) % _editModes.Count;
+                _editModes[_currentEditMode].Activate();
             }
             if (Engine.Input.WasPressed(Keys.P))
             {
@@ -92,13 +71,11 @@ namespace Carmageddon
                 MessageRenderer.Instance.PostMessage("Lighting: " + (GameVariables.LightingEnabled ? "Enabled" : "Disabled"), 2);
                 _effect = null;
             }
-            if (Engine.Input.WasPressed(Keys.R))
-                _playerVehicle.Reset();
+                        
+            _editModes[_currentEditMode].Update();
 
-            _views[_currentView].Update();
             Engine.Camera.Update();
-
-
+            
             GameConsole.WriteLine("FPS", Engine.Fps);
         }
 
@@ -118,15 +95,15 @@ namespace Carmageddon
             Engine.SpriteBatch.Begin();
 
             _race.Render();
-            _views[_currentView].Render();
-
+            _editModes[_currentEditMode].Render();
+            
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
             {
                 system.Render();
             }
 
-            Engine.DebugRenderer.AddAxis(_playerVehicle.Chassis.Body.CenterOfMassGlobalPose, 5);
-
+            
+            
             Engine.SpriteBatch.End();
             Engine.Device.RenderState.DepthBufferEnable = true;
             Engine.Device.RenderState.AlphaBlendEnable = false;

@@ -13,10 +13,10 @@ namespace Carmageddon.CameraViews
     class ChaseView : ICameraView
     {
         List<BaseHUDItem> _hudItems = new List<BaseHUDItem>();
-        VehicleModel _vehicle;
+        Vehicle _vehicle;
         FixedChaseCamera _camera;
 
-        public ChaseView(VehicleModel vehicle)
+        public ChaseView(Vehicle vehicle)
         {
             _camera = new FixedChaseCamera(6.3f, 2.3f);
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
@@ -40,12 +40,11 @@ namespace Carmageddon.CameraViews
         public void Update()
         {
             VehicleChassis chassis = _vehicle.Chassis;
-            _camera.Position = _vehicle.GetBodyBottom() + new Vector3(0, 0.0f, 0);
-            //chassis.Body.GlobalPosition;
-
+            _camera.Position = _vehicle.GetBodyBottom();
+            
             if (!chassis.InAir)
             {
-                _camera.Orientation = chassis.Body.GlobalOrientation.Forward;
+                _camera.Orientation = chassis.Actor.GlobalOrientation.Forward;
                 if (chassis.Speed > 15)
                 {
                     _camera.Rotation = (chassis.Backwards ? MathHelper.Pi : 0);
@@ -59,6 +58,8 @@ namespace Carmageddon.CameraViews
 
             foreach (BaseHUDItem item in _hudItems)
                 item.Update();
+
+            Engine.Camera = _camera;
         }
 
         public void Render()

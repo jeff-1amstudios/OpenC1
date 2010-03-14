@@ -29,13 +29,14 @@ namespace Carmageddon.CameraViews
 
         public void Render()
         {
-            GameVariables.PlayerVehicle.Render();
+            Race.Current.PlayerVehicle.Render();
+            Engine.Camera = _camera;
         }
 
         public void Activate()
         {
             Engine.Camera = _camera;
-            _camera.Position = GameVariables.PlayerVehicle.Chassis.Body.GlobalPosition;
+            _camera.Position = Race.Current.PlayerVehicle.Position;
         }
 
         public void Deactivate()

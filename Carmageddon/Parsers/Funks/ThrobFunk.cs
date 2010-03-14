@@ -72,13 +72,10 @@ namespace Carmageddon.Parsers.Funks
 
         private void AssignNewTarget()
         {
-            _direction.X = RandomBetween(0.5f, 1) * (Engine.RandomNumber.Next(1, 20) % 2 == 0 ? 1 : -1);
-            _direction.Y = RandomBetween(0.5f, 1) * (Engine.RandomNumber.Next(1, 20) % 2 == 0 ? 1 : -1);
+            _direction.X = Engine.Random.Next(0.5f, 1f) * (Engine.Random.Next(1, 20) % 2 == 0 ? 1 : -1);
+            _direction.Y = Engine.Random.Next(0.5f, 1) * (Engine.Random.Next(1, 20) % 2 == 0 ? 1 : -1);
         }
 
-        public static float RandomBetween(double min, double max)
-        {            
-            return (float)(min + (float)Engine.RandomNumber.NextDouble() * (max - min));
-        }
+        
     }
 }

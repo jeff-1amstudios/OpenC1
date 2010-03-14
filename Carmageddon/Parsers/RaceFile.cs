@@ -39,6 +39,10 @@ namespace Carmageddon.Parsers
         public List<Checkpoint> Checkpoints;
         public int LapCount;
         public List<SpecialVolume> SpecialVolumes;
+        public List<OpponentPathNode> OpponentPathNodes;
+
+        int _fileVersion;
+        
 
         public RaceFile(string filename) : base(filename)
         {
@@ -46,6 +50,7 @@ namespace Carmageddon.Parsers
             PixFiles = new List<string>();
                         
             string version = ReadLine();
+            _fileVersion = int.Parse(version.Substring(8,1));
             
             GridPosition = ReadLineAsVector3() + new Vector3(0, GameVariables.Scale.Y*0.5f, 0);
 
@@ -78,14 +83,14 @@ namespace Carmageddon.Parsers
             int nbrModels = ReadLineAsInt();
             ModelFile = ReadLine();
 
-            if (version == "VERSION 6")
+            if (_fileVersion == 6)
             {
                 int nbrLowMemModels = ReadLineAsInt();
                 SkipLines(nbrLowMemModels);
             }
 
             ActorFile = ReadLine();
-            if (version == "VERSION 6")
+            if (_fileVersion == 6)
             {
                 SkipLines(1); //low mem actor
             }
@@ -116,7 +121,7 @@ namespace Carmageddon.Parsers
 
             ReadPedestrianSection();
 
-            ReadOpponentPathSection();
+            ReadOpponentPathsSection();
 
             ReadCopStartPointsSection();
 
@@ -162,7 +167,7 @@ namespace Carmageddon.Parsers
                 SpecialVolume vol = new SpecialVolume();
                 vol.Id = i;
 
-                if (i > 0)
+                if (name != "DEFAULT WATER")
                 {
                     Matrix m = ReadMatrix();
                                         
@@ -233,13 +238,37 @@ namespace Carmageddon.Parsers
             }
         }
 
-        private void ReadOpponentPathSection()
+        private void ReadOpponentPathsSection()
         {
             Debug.Assert(ReadLine() == "START OF OPPONENT PATHS");
+            
             int nbrNodes = ReadLineAsInt();
-            SkipLines(nbrNodes);
+
+            OpponentPathNodes = new List<OpponentPathNode>();
+            
+            for (int i = 0; i < nbrNodes; i++)
+            {
+                OpponentPathNodes.Add(new OpponentPathNode { Position = ReadLineAsVector3(), Number=i });
+            }
+
             int nbrSections = ReadLineAsInt();
-            SkipLines(nbrSections);
+            for (int i = 0; i < nbrSections; i++)
+            {
+                string[] tokens = ReadLine().Split(',');
+
+                OpponentPathNode startNode = OpponentPathNodes[int.Parse(tokens[0])];
+
+                OpponentPath path = new OpponentPath();
+                path.Number = i;
+                path.Start = startNode;
+                path.End = OpponentPathNodes[int.Parse(tokens[1])];
+                path.MinSpeedAtEnd = float.Parse(tokens[4]) * 2.2f; //speeds are in BRU (BRender units). Convert to game speed
+                path.MaxSpeedAtEnd = float.Parse(tokens[5]) * 2.2f;
+                path.Width = float.Parse(tokens[6]);
+                path.Type = (PathType)int.Parse(tokens[7]);
+
+                startNode.Paths.Add(path);
+            }
         }
 
         private void ReadCopStartPointsSection()

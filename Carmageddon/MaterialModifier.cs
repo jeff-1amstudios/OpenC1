@@ -48,9 +48,9 @@ namespace Carmageddon
             {
                 if (wheel.Index == _nextWheel && chassis.Speed > 5 && _lastBump + 0.3f < Engine.TotalSeconds)
                 {
-                    chassis.Body.AddForceAtLocalPosition(new Vector3(0, Bumpiness * 55, 0), wheel.Shape.LocalPosition, ForceMode.Impulse, true);
+                    chassis.Actor.AddForceAtLocalPosition(new Vector3(0, Bumpiness * 55, 0), wheel.Shape.LocalPosition, ForceMode.Impulse, true);
                     _lastBump = Engine.TotalSeconds;
-                    _nextWheel = Engine.RandomNumber.Next(0, chassis.Wheels.Count - 1);
+                    _nextWheel = Engine.Random.Next(0, chassis.Wheels.Count - 1);
                 }
             }
 

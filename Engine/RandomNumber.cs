@@ -1,46 +1,39 @@
-﻿namespace OneamEngine
+﻿using System;
+
+namespace OneamEngine
 {
-    using System;
-
-    public class RandomNumber
+    public class RandomGenerator
     {
-        private static Random myrnd;
+        private Random _random;
 
-        public static int Next()
+        public RandomGenerator()
         {
-            return rnd.Next();
+            _random = new Random();
         }
 
-        public static int Next(int maxValue)
+        public int Next()
         {
-            return rnd.Next(maxValue);
+            return _random.Next();
         }
 
-        public static int Next(int minValue, int maxValue)
+        public float Next(float minValue, float maxValue)
         {
-            return rnd.Next(minValue, maxValue);
+            return (float)(minValue + (float)_random.NextDouble() * (maxValue - minValue));
         }
 
-        public static double NextDouble()
+        public int Next(int maxValue)
         {
-            return rnd.NextDouble();
+            return _random.Next(maxValue);
         }
 
-        public static float NextFloat()
+        public int Next(int minValue, int maxValue)
         {
-            return (float)rnd.NextDouble();
+            return _random.Next(minValue, maxValue);
         }
 
-        public static Random rnd
+        public float NextFloat()
         {
-            get
-            {
-                if (myrnd == null)
-                {
-                    myrnd = new Random();
-                }
-                return myrnd;
-            }
+            return (float)_random.NextDouble();
         }
     }
 }

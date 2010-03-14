@@ -12,6 +12,7 @@ using Carmageddon.Parsers.Grooves;
 using Carmageddon.Parsers.Funks;
 using NFSEngine;
 using Carmageddon.Gfx;
+using Microsoft.Xna.Framework.Input;
 
 namespace Carmageddon
 {
@@ -23,14 +24,17 @@ namespace Carmageddon
         public RaceTimeController RaceTime = new RaceTimeController();
         SkyBox _skybox;
         public int NextCheckpoint = 0, CurrentLap;
+        public Vehicle PlayerVehicle;
         public List<Opponent> Opponents = new List<Opponent>();
+        public List<IDriver> Drivers = new List<IDriver>(); //opponent + player drivers
 
         public static Race Current;
 
         public RaceFile ConfigFile { get; private set; }
 
-        public Race(string filename)
+        public Race(string filename, string playerVehicleFile)
         {
+            
             ConfigFile = new RaceFile(filename);
 
             foreach (string matFileName in ConfigFile.MaterialFiles)
@@ -82,11 +86,20 @@ namespace Carmageddon
             PhysX.Instance.Scene.SetActorGroupPairFlags(11, 1, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
             PhysX.Instance.Scene.SetActorGroupPairFlags(10, 11, ContactPairFlag.OnTouch);
 
+                        
             Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+           Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("pitbull.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("vlad.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+
+            foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
+                        
+            OpponentController.Nodes = ConfigFile.OpponentPathNodes;
+
+            PlayerVehicle = new Vehicle(GameVariables.BasePath + @"data\cars\" + playerVehicleFile, new PlayerDriver());
+            PlayerVehicle.SetupPhysics(ConfigFile.GridPosition, ConfigFile.GridDirection);
+            Drivers.Add(PlayerVehicle.Driver);
 
             Race.Current = this;
         }
@@ -98,7 +111,6 @@ namespace Carmageddon
 
             if (!RaceTime.IsStarted)
             {
-
                 if ((int)RaceTime.TotalTime == 2 && !RaceTime.CountingDown)
                     RaceTime.StartCountdown();
                 if (Engine.Camera is FixedChaseCamera)
@@ -108,6 +120,9 @@ namespace Carmageddon
                 }
             }
 
+            foreach (IDriver driver in Drivers)
+                driver.Update();
+            
             foreach (BaseGroove groove in ConfigFile.Grooves)
             {
                 groove.Update();
@@ -125,13 +140,14 @@ namespace Carmageddon
                 }
             }
 
+            PlayerVehicle.Update();
+
             foreach (Opponent opponent in Opponents)
             {
                 opponent.Vehicle.Update();
             }
 
             MessageRenderer.Instance.Update();
-
         }
 
         public void Render()
@@ -145,7 +161,7 @@ namespace Carmageddon
             {
                 opponent.Vehicle.Render();
             }
-
+            
             RaceTime.Render();
             MessageRenderer.Instance.Render();
         }
@@ -169,7 +185,7 @@ namespace Carmageddon
             }
         }
 
-        public void OnVehicleEnterSpecVol(SpecialVolume volume, VehicleModel vehicle)
+        public void OnVehicleEnterSpecVol(SpecialVolume volume, Vehicle vehicle)
         {
             int currentVolumeId = vehicle.CurrentSpecialVolume.Count == 0 ? -1 : vehicle.CurrentSpecialVolume.Peek().Id;
             GameConsole.WriteEvent("Enter specvol - " + vehicle.CurrentSpecialVolume.Count);
@@ -181,7 +197,7 @@ namespace Carmageddon
             vehicle.CurrentSpecialVolume.Push(volume);
         }
 
-        public void OnVehicleExitSpecVol(SpecialVolume exitedVolume, VehicleModel vehicle)
+        public void OnVehicleExitSpecVol(SpecialVolume exitedVolume, Vehicle vehicle)
         {
             SpecialVolume vol = vehicle.CurrentSpecialVolume.Pop();
             SpecialVolume nextVol = vehicle.CurrentSpecialVolume.Count == 0 ? null : vehicle.CurrentSpecialVolume.Peek();

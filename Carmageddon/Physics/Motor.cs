@@ -25,7 +25,11 @@ namespace Carmageddon.Physics
             get
             {
                 if (_gearbox.GearEngaged)
-                    return _currentPowerOutput * _throttle; // _gearbox.CurrentRatio;
+                {
+                    float power = _currentPowerOutput * _throttle; //* _gearbox.CurrentRatio;
+                    if (AtRedline && !WheelsSpinning) power *= 0.2f;
+                    return power;
+                }
                 else
                     return 0;
             }

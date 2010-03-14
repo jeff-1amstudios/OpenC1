@@ -64,7 +64,8 @@ namespace Carmageddon
                 if (CountdownTime > 5)
                 {
                     IsStarted = true;
-                    ((Driver)Engine.Player).VehicleModel.Chassis.Motor.Gearbox.CurrentGear = 1;
+                    foreach (IDriver driver in Race.Current.Drivers)
+                        driver.OnRaceStart();
                 }
                 if (CountdownTime > 6)
                     CountingDown = false;

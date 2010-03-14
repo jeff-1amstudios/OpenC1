@@ -19,8 +19,6 @@ namespace Carmageddon.Physics
                 return _instance;
             }
         }
-        public delegate void CollisionHandler(float force, Vector3 position, Vector3 normal);
-        public event CollisionHandler PlayerWorldCollision;
 
         private ContactReport()
             : base()
@@ -34,7 +32,7 @@ namespace Carmageddon.Physics
             using (ContactStreamIterator iter = new ContactStreamIterator(contactInfo.ContactStream))
             {
                 //if we are looking at the player car
-                if (contactInfo.ActorB.Group == 1)
+                if (contactInfo.ActorB.Group == PhysXConsts.VehicleId)
                 {
                     while (iter.GoToNextPair())
                     {
@@ -52,14 +50,23 @@ namespace Carmageddon.Physics
                                     {
                                         GameVariables.SparksEmitter.Update(pos);
                                         if (force > 850000) GameVariables.SparksEmitter.DumpParticles(pos, 6);
-                                        PlayerWorldCollision(force, pos, iter.GetPatchNormal());
+                                        Vehicle vehicle = (Vehicle)contactInfo.ActorB.UserData;
+                                        vehicle.ContactReport_Collision(force, pos, iter.GetPatchNormal());
+
+                                        if (contactInfo.ActorA.Group == PhysXConsts.VehicleId)
+                                        {
+                                            Vehicle vehicle2 = (Vehicle)contactInfo.ActorA.UserData;
+                                            vehicle2.ContactReport_Collision(force, pos, iter.GetPatchNormal());
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-                else if (contactInfo.ActorB.Group == 11 && contactInfo.ActorA.Group == 10)
+
+                // a non-car object sliding along the track
+                else if (contactInfo.ActorB.Group == PhysXConsts.NonCarId && contactInfo.ActorA.Group == PhysXConsts.TrackId)
                 {
                     if (contactInfo.ActorB.LinearVelocity.Length() > 2)
                     {
@@ -72,7 +79,7 @@ namespace Carmageddon.Physics
                                     Vector3 pos = iter.GetPoint();
                                     
                                     GameVariables.SparksEmitter.Update(pos);
-                                    GameConsole.WriteEvent("noncar collision");
+                                    //GameConsole.WriteEvent("noncar collision");
                                 }
                             }
                         }

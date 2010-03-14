@@ -12,10 +12,10 @@ namespace Carmageddon.Parsers.Funks
         public Vector2 Speed;
         Vector2 _uvOffset;
         TextureAddressMode _lastMode;
-        VehicleModel _vehicle;
+        Vehicle _vehicle;
         Texture2D _origTexture;
 
-        public WindscreenFunk(string materialName, VehicleModel vehicle)
+        public WindscreenFunk(string materialName, Vehicle vehicle)
         {
             _vehicle = vehicle;
             MaterialName = materialName;
@@ -49,9 +49,9 @@ namespace Carmageddon.Parsers.Funks
 
         public override void Update()
         {
-            float y = Math.Min(1, _vehicle.Chassis.Body.AngularVelocity.Y / 10);
+            float y = Math.Min(1, _vehicle.Chassis.Actor.AngularVelocity.Y / 10);
             Speed.X = y;
-            Speed.Y = Math.Min(1, _vehicle.Chassis.Body.LinearVelocity.Length() / 10); 
+            Speed.Y = Math.Min(1, _vehicle.Chassis.Actor.LinearVelocity.Length() / 10); 
             _uvOffset += Speed * Engine.ElapsedSeconds;
             if (_uvOffset.X > 1) _uvOffset.X = 1 - _uvOffset.X;
             if (_uvOffset.Y > 1) _uvOffset.Y = 1 - _uvOffset.Y;

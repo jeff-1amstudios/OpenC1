@@ -120,7 +120,7 @@ namespace Carmageddon.Physics
             }
 
             StillDesign.PhysX.Actor environment = PhysX.Instance.Scene.CreateActor(actorDescription);
-            environment.Group = 10;
+            environment.Group = PhysXConsts.TrackId;
             environment.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
 
             
@@ -160,20 +160,7 @@ namespace Carmageddon.Physics
                 Actor actor = PhysX.Instance.Scene.CreateActor(actorDesc);
 
                 actor.GlobalPosition = vol.Matrix.Translation;
-                actor.UserData = vol;
-
-                //if (vol.Gravity < 1)
-                //{
-                //    ForceFieldDescription ffdesc = new ForceFieldDescription();
-                //    ffdesc.Constant = new Vector3(0, 11000, 0);
-
-                //    ForceField ff = PhysX.Instance.Scene.CreateForceField(ffdesc);
-
-                //    BoxForceFieldShapeDescription ffshape = new BoxForceFieldShapeDescription();
-                //    ForceFieldShape ffshape2 = ff.CreateShape(ffshape);
-                //    ffshape2.Pose = vol.Matrix;
-                //}
-                
+                actor.UserData = vol;                
             }
 
             return environment;
@@ -261,7 +248,8 @@ namespace Carmageddon.Physics
 
                         Vector3 scaleout, transout;
                         Quaternion b;
-                        actor.Matrix.Decompose(out scaleout, out b, out transout);
+                        bool success = actor.Matrix.Decompose(out scaleout, out b, out transout);
+                        if (!success) throw new Exception();
 
                         Matrix m =
                             Matrix.CreateFromQuaternion(b) *
@@ -270,7 +258,7 @@ namespace Carmageddon.Physics
                         StillDesign.PhysX.Actor instance = PhysX.Instance.Scene.CreateActor(actorDesc);
                         instance.GlobalPose = m;
                         instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMass);
-                        instance.Group = 11;
+                        instance.Group = PhysXConsts.NonCarId;
                         instance.UserData = nonCar;
                         
                         if (nonCar.BendAngleBeforeSnapping > 0)

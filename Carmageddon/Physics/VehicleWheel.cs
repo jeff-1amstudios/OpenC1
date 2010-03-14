@@ -84,8 +84,9 @@ namespace Carmageddon.Physics
                 // Setup tire functions taking into account handbrake and terrain
                 float latExtremum = _defaultLatExtremum;
                 if (IsRear)
-                    latExtremum = MathHelper.Lerp(3.5f, 1.6f, _handbrake);
+                    latExtremum = MathHelper.Lerp(2.7f, 1.6f, _handbrake);
                 latExtremum *= materialModifier.TyreRoadFriction;
+                latExtremum *= _chassis._lateralFrictionMultiplier;
                 _latTireFn.ExtremumValue = latExtremum;
 
                 _lngTireFn.ExtremumValue = _defaultLngExtremum * materialModifier.TyreRoadFriction;
@@ -130,6 +131,9 @@ namespace Carmageddon.Physics
                 }
                 else
                     _rotationMatrix *= Matrix.CreateRotationX(MathHelper.ToRadians(Shape.AxleSpeed));
+            }
+            else
+            {
             }
             
             Matrix translation = Matrix.CreateTranslation(_axleOffset, -suspensionLength, 0.0f);

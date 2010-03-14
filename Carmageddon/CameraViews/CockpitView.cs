@@ -20,9 +20,9 @@ namespace Carmageddon.CameraViews
         SimpleCamera _camera;
         ActFile _actorFile;
         DatFile _modelsFile;
-        VehicleModel _vehicle;
+        Vehicle _vehicle;
 
-        public CockpitView(VehicleModel vehicle, string cockpitFile)
+        public CockpitView(Vehicle vehicle, string cockpitFile)
         {
             _vehicle = vehicle;
             if (!File.Exists(cockpitFile))
@@ -74,13 +74,15 @@ namespace Carmageddon.CameraViews
 
         public override void Update()
         {
-            Matrix m = Matrix.CreateRotationX(-0.08f) * _vehicle.Chassis.Body.GlobalOrientation;
+            Matrix m = Matrix.CreateRotationX(-0.08f) * _vehicle.Chassis.Actor.GlobalOrientation;
             Vector3 forward = m.Forward;
             _camera.Orientation = forward;
 
             _camera.Up = m.Up;
-            
-            _camera.Position = _vehicle.GetBodyBottom() + Vector3.Transform(_vehicle.Config.DriverHeadPosition, _vehicle.Chassis.Body.GlobalOrientation) + new Vector3(0, 0.018f, 0);
+                        
+            _camera.Position = _vehicle.GetBodyBottom() + Vector3.Transform(_vehicle.Config.DriverHeadPosition, _vehicle.Chassis.Actor.GlobalOrientation) + new Vector3(0, 0.018f, 0);
+
+            Engine.Camera = _camera;
         }
 
         public override void Render()
@@ -128,14 +130,13 @@ namespace Carmageddon.CameraViews
                 Engine.SpriteBatch.Draw(frame.Texture2, ScaleVec2(frame.Position2), Color.White);
             
             _modelsFile.SetupRender();
-            _actorFile.Render(_modelsFile, Matrix.CreateFromQuaternion(_vehicle.Chassis.Body.GlobalOrientationQuat) * Matrix.CreateTranslation(_vehicle.GetBodyBottom()));
+            _actorFile.Render(_modelsFile, Matrix.CreateFromQuaternion(_vehicle.Chassis.Actor.GlobalOrientationQuat) * Matrix.CreateTranslation(_vehicle.GetBodyBottom()));
         }
 
         public void Activate()
         {
             Engine.Camera = _camera;
-
-            _camera.Position = _vehicle.GetBodyBottom() + Vector3.Transform(_vehicle.Config.DriverHeadPosition, _vehicle.Chassis.Body.GlobalOrientation);
+            _camera.Position = _vehicle.GetBodyBottom() + Vector3.Transform(_vehicle.Config.DriverHeadPosition, _vehicle.Chassis.Actor.GlobalOrientation);
             _camera.Update(); 
         }
 
@@ -146,5 +147,5 @@ namespace Carmageddon.CameraViews
 
         #endregion
 
+        }
     }
-}

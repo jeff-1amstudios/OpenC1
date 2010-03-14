@@ -37,7 +37,8 @@ namespace Carmageddon.Parsers.Grooves
 
             Vector3 s, t;
             Quaternion r;
-            actor.Matrix.Decompose(out s, out r, out t);
+            bool success = actor.Matrix.Decompose(out s, out r, out t);
+            if (!success) throw new Exception();
             _scale = Matrix.CreateScale(s);
             _translation = Matrix.CreateTranslation(t);
             _actorRotation = Matrix.CreateFromQuaternion(r);

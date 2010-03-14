@@ -22,7 +22,7 @@ namespace Carmageddon
         {
             Vector3[] points = new Vector3[4];
 
-            Matrix pose = chassis.Body.GlobalPose;
+            Matrix pose = chassis.Actor.GlobalPose;
             float shadowWidth = 0.0f;
             Vector3 pos = new Vector3(bb.Min.X - shadowWidth, 0, bb.Min.Z);
             points[0] = Vector3.Transform(pos, pose);
@@ -33,7 +33,7 @@ namespace Carmageddon
             pos = new Vector3(bb.Max.X + shadowWidth, 0, bb.Max.Z);
             points[3] = Vector3.Transform(pos, pose);
 
-            StillDesign.PhysX.Scene scene = chassis.Body.Scene;
+            StillDesign.PhysX.Scene scene = chassis.Actor.Scene;
             Vector3 offset = new Vector3(0, 0.1f, 0);
             for (int i = 0; i < 4; i++)
             {

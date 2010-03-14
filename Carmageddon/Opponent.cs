@@ -7,13 +7,21 @@ namespace Carmageddon
 {
     class Opponent
     {
-        public VehicleModel Vehicle;
+        public Vehicle Vehicle;
+        public IDriver Driver;
 
         public Opponent(string carFile, Vector3 position, float direction)
         {
-            Vehicle = new VehicleModel(GameVariables.BasePath + @"data\cars\" + carFile, false);
-            Vehicle.SetupChassis(position, direction);
-            //Vehicle.Chassis.Body.Sleep();
+            Driver = new CpuDriver();
+            Vehicle = new Vehicle(GameVariables.BasePath + @"data\cars\" + carFile, Driver);
+            Vehicle.SetupPhysics(position, direction);
+            Vehicle.Chassis.Actor.LinearDamping = 0.02f;
+            Vector3 com = Vehicle.Chassis.Actor.CenterOfMassLocalPosition;
+            com.Y -= 0.06f;
+            Vehicle.Chassis.Actor.SetCenterOfMassOffsetLocalPosition(com); //help out ai to keep the car stable
+
+            //give cpu driver a bit more grip
+            Vehicle.Chassis.SetLateralFrictionMultiplier(1.1111f);
         }
     }
 }

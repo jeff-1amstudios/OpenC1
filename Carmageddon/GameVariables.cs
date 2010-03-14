@@ -24,7 +24,6 @@ namespace Carmageddon
         public static BasicEffect2 CurrentEffect;
         public static ParticleEmitter SparksEmitter;
         public static SkidMarkBuffer SkidMarkBuffer;
-        public static VehicleModel PlayerVehicle;
         public static bool LightingEnabled = true;
         
     }

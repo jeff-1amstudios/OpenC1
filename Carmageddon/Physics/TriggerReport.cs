@@ -31,11 +31,11 @@ namespace Carmageddon.Physics
             {
                 if (status == TriggerFlag.OnEnter)
                 {
-                    Race.Current.OnVehicleEnterSpecVol((SpecialVolume)triggerShape.Actor.UserData, (VehicleModel)otherShape.Actor.UserData);
+                    Race.Current.OnVehicleEnterSpecVol((SpecialVolume)triggerShape.Actor.UserData, (Vehicle)otherShape.Actor.UserData);
                 }
                 else if (status == TriggerFlag.OnLeave)
                 {
-                    Race.Current.OnVehicleExitSpecVol((SpecialVolume)triggerShape.Actor.UserData, (VehicleModel)otherShape.Actor.UserData);
+                    Race.Current.OnVehicleExitSpecVol((SpecialVolume)triggerShape.Actor.UserData, (Vehicle)otherShape.Actor.UserData);
                 }
             }
         }

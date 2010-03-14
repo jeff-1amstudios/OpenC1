@@ -42,6 +42,7 @@ namespace Carmageddon.Parsers
 
     class CarFile : BaseTextFile
     {
+        public string FileName;
         public List<string> MaterialFiles { get; private set; }
         public List<string> PixFiles { get; private set; }
         public string ModelFile { get; private set; }
@@ -70,6 +71,7 @@ namespace Carmageddon.Parsers
         public CarFile(string filename)
             : base(filename)
         {
+            FileName = Path.GetFileName(filename);
             MaterialFiles = new List<string>();
             PixFiles = new List<string>();
 

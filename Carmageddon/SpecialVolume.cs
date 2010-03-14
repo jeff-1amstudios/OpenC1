@@ -35,12 +35,12 @@ namespace Carmageddon
             return vol2;
         }
 
-        public void Enter(VehicleModel vehicle)
+        public void Enter(Vehicle vehicle)
         {
             if (Gravity < 1)
-                vehicle.Chassis.Body.RaiseBodyFlag(StillDesign.PhysX.BodyFlag.DisableGravity);
+                vehicle.Chassis.Actor.RaiseBodyFlag(StillDesign.PhysX.BodyFlag.DisableGravity);
             else
-                vehicle.Chassis.Body.ClearBodyFlag(StillDesign.PhysX.BodyFlag.DisableGravity);
+                vehicle.Chassis.Actor.ClearBodyFlag(StillDesign.PhysX.BodyFlag.DisableGravity);
             vehicle.EngineSoundIndex = EngineSoundIndex;
             //vehicle.Chassis.Motor.MaxPower = vehicle.Config.EnginePower / (Viscosity / 35f);
             //vehicle.Chassis.Body.LinearDamping = Viscosity / 200f;
@@ -53,11 +53,11 @@ namespace Carmageddon
                 SoundCache.Play(EntrySoundId);
         }
 
-        public void Update(VehicleModel vehicle)
+        public void Update(Vehicle vehicle)
         {
             if (Gravity < 1)
             {
-                vehicle.Chassis.Body.AddForce(new Vector3(0, PhysX.Instance.Gravity * Gravity * 10f, 0), ForceMode.SmoothImpulse);
+                vehicle.Chassis.Actor.AddForce(new Vector3(0, PhysX.Instance.Gravity * Gravity * 15f, 0), ForceMode.SmoothImpulse);
             }
         }
 
@@ -67,9 +67,9 @@ namespace Carmageddon
                 SoundCache.Play(ExitSoundId);
         }
 
-        public void Reset(VehicleModel vehicle)
+        public void Reset(Vehicle vehicle)
         {
-            vehicle.Chassis.Body.ClearBodyFlag(StillDesign.PhysX.BodyFlag.DisableGravity);
+            vehicle.Chassis.Actor.ClearBodyFlag(StillDesign.PhysX.BodyFlag.DisableGravity);
             vehicle.EngineSoundIndex = 0;
             //vehicle.Chassis.Motor.MaxPower = vehicle.Config.EnginePower;
             //vehicle.Chassis.Body.Mass = vehicle.Config.Mass;

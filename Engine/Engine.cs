@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using NFSEngine;
 using NFSEngine.Audio;
+using OneamEngine;
 
 namespace PlatformEngine
 {
@@ -27,7 +28,7 @@ namespace PlatformEngine
         public static float DrawDistance { get; set; }
         public static float ElapsedSeconds { get; private set; }
         public static float TotalSeconds { get; private set; }
-        public static Random RandomNumber { get; private set; }
+        public static RandomGenerator Random { get; private set; }
         public static ISoundEngine Audio { get; set; }
 
         private static bool _isFullScreen;
@@ -48,7 +49,7 @@ namespace PlatformEngine
             DebugRenderer = new DebugRenderer();
             _spriteBatch = new SpriteBatch(Device);
             _fpsCounter = new FrameRateCounter();
-            RandomNumber = new Random();
+            Random = new RandomGenerator();
         }
 
 
