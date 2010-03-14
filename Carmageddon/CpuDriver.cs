@@ -163,7 +163,7 @@ namespace Carmageddon
                 Vehicle.Chassis.Steer(_reverseTurning);
             }            
 
-            Engine.DebugRenderer.AddCube(Matrix.CreateScale(2) * Matrix.CreateTranslation(_targetNode.Position), Color.Blue);
+            Engine.DebugRenderer.AddWireframeCube(Matrix.CreateScale(2) * Matrix.CreateTranslation(_targetNode.Position), Color.Green);
         }
 
         private void LogPosition(Vector3 pos)
