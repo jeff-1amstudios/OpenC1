@@ -41,7 +41,7 @@ namespace Carmageddon
                 vehicle.Chassis.Actor.RaiseBodyFlag(StillDesign.PhysX.BodyFlag.DisableGravity);
             else
                 vehicle.Chassis.Actor.ClearBodyFlag(StillDesign.PhysX.BodyFlag.DisableGravity);
-            vehicle.EngineSoundIndex = EngineSoundIndex;
+            vehicle.Audio.SetSound(EngineSoundIndex);
             //vehicle.Chassis.Motor.MaxPower = vehicle.Config.EnginePower / (Viscosity / 35f);
             //vehicle.Chassis.Body.LinearDamping = Viscosity / 200f;
             //vehicle.Chassis.Body.AngularDamping = Viscosity / 80f;
@@ -70,7 +70,7 @@ namespace Carmageddon
         public void Reset(Vehicle vehicle)
         {
             vehicle.Chassis.Actor.ClearBodyFlag(StillDesign.PhysX.BodyFlag.DisableGravity);
-            vehicle.EngineSoundIndex = 0;
+            vehicle.Audio.SetSound(0);
             //vehicle.Chassis.Motor.MaxPower = vehicle.Config.EnginePower;
             //vehicle.Chassis.Body.Mass = vehicle.Config.Mass;
             //vehicle.Chassis.Body.LinearDamping = 0.0f;

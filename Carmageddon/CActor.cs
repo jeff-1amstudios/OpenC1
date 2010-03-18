@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StillDesign.PhysX;
 
 namespace Carmageddon
 {
@@ -35,7 +36,7 @@ namespace Carmageddon
                 || name.StartsWith("MLWHEEL") || name.StartsWith("MRWHEEL"));
         }
 
-        internal void AttachPhysxActor(StillDesign.PhysX.Actor instance)
+        internal void AttachToPhysX(Actor instance)
         {
             // if this CActor is attached to a PhysX object, reduce the Matrix to a scale, 
             // as the position/orienation will come from PhysX

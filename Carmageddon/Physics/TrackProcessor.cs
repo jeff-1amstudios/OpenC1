@@ -14,7 +14,7 @@ namespace Carmageddon.Physics
 {
     class TrackProcessor
     {
-        public static Actor GenerateTrackActor(RaceFile file, ActFile actors, DatFile models)
+        public static Actor GenerateTrackActor(RaceFile file, CActorHierarchy actors)
         {
             List<Vector3> verts = new List<Vector3>();
             List<ushort> indices = new List<ushort>();
@@ -44,21 +44,21 @@ namespace Carmageddon.Physics
                     indices.Add((ushort)index);
                     if (verts[index] == Vector3.Zero)
                     {
-                        Vector3 transformedVec = Vector3.Transform(models._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex1], actor.Matrix);
+                        Vector3 transformedVec = Vector3.Transform(actors.ModelsFile._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex1], actor.Matrix);
                         verts[index] = transformedVec;
                     }
                     index = baseIndex + poly.Vertex2;
                     indices.Add((ushort)index);
                     if (verts[index] == Vector3.Zero)
                     {
-                        Vector3 transformedVec = Vector3.Transform(models._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex2], actor.Matrix);
+                        Vector3 transformedVec = Vector3.Transform(actors.ModelsFile._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex2], actor.Matrix);
                         verts[index] = transformedVec;
                     }
                     index = baseIndex + poly.Vertex3;
                     indices.Add((ushort)index);
                     if (verts[index] == Vector3.Zero)
                     {
-                        Vector3 transformedVec = Vector3.Transform(models._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex3], actor.Matrix);
+                        Vector3 transformedVec = Vector3.Transform(actors.ModelsFile._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex3], actor.Matrix);
                         verts[index] = transformedVec;
                     }
 
@@ -124,7 +124,7 @@ namespace Carmageddon.Physics
             environment.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
 
             
-            CreateDefaultWaterSpecVols(file, actorsList, models);
+            CreateDefaultWaterSpecVols(file, actorsList, actors.ModelsFile);
 
             
             for (int i = 1; i < file.SpecialVolumes.Count; i++)
@@ -208,7 +208,7 @@ namespace Carmageddon.Physics
         }
 
         
-        public static List<CActor> GenerateNonCars(ActFile actors, List<NoncarFile> nonCars)
+        public static List<CActor> GenerateNonCars(CActorHierarchy actors, List<NoncarFile> nonCars)
         {
             List<CActor> nonCarActors = new List<CActor>();
             List<CActor> actorsList = actors.All();
@@ -278,7 +278,7 @@ namespace Carmageddon.Physics
                             //instance.SolverIterationCount = 128;
                         }
                         instance.Sleep();
-                        actor.AttachPhysxActor(instance);
+                        actor.AttachToPhysX(instance);
                         nonCarActors.Add(actor);
                     }
                 }

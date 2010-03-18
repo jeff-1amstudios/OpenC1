@@ -30,7 +30,12 @@ namespace Carmageddon.Parsers
             BoundingBox = 50
         }
 
-        List<CActor> _actors = new List<CActor>();
+        CActorHierarchy _actors = new CActorHierarchy();
+
+        public CActorHierarchy Hierarchy
+        {
+            get { return _actors; }
+        }
 
         public ActFile(string filename, DatFile modelFile)
         {
@@ -108,7 +113,6 @@ namespace Carmageddon.Parsers
                         string modelName = ReadNullTerminatedString(reader);
                         currentActor.ModelName = modelName;
                         currentActor.Model = modelFile.GetModel(modelName);
-                        //Debug.WriteLine("ModelName: " + modelName);
                         break;
 
                     case ActorBlockType.BoundingBox:
@@ -129,226 +133,9 @@ namespace Carmageddon.Parsers
                     break;
             }
             reader.Close();
-        }
 
-        /// <summary>
-        /// Pre-calculate recursive transformations and apply scaling, ignoring groove animations
-        /// </summary>
-        public void ResolveHierarchy(bool removeRootTransform, List<BaseGroove> grooves)
-        {
-            if (removeRootTransform)
-            {
-                _actors[0].Matrix.Translation = Vector3.Zero;
-            }
-
-            ResolveTransformations(Matrix.Identity, _actors[0], grooves);
-            ScaleTransformations(GameVariables.Scale, _actors[0]);
-        }
-
-        private void ResolveTransformations(Matrix world, CActor actor, List<BaseGroove> grooves)
-        {
-            if (grooves != null && grooves.Exists(g => g.ActorName == actor.Name))
-            {
-                actor.ParentMatrix = world;
-                actor.IsAnimated = true;
-                return;
-            }
-            //Debug.WriteLine(actor.Name + ", " + actor.ModelName + ", " + actor.Flags[0] + ":" + actor.Flags[1] + "Animated: " + actor.IsAnimated);
-            actor.Matrix = world * actor.Matrix;
-
-            foreach (CActor child in actor.Children)
-                ResolveTransformations(actor.Matrix, child, grooves);
-        }
-
-        private void ScaleTransformations(Vector3 scale, CActor actor)
-        {
-            if (actor.IsAnimated) return;
-            actor.Matrix = actor.Matrix * Matrix.CreateScale(scale);
-
-            foreach (CActor child in actor.Children)
-                ScaleTransformations(scale, child);
-        }
-
-        public void ResolveMaterials()
-        {
-            Action<CActor> resolver = null;
-            resolver = (actor) =>
-            {
-                if (actor.MaterialName != null)
-                {
-                    actor.Material = ResourceCache.GetMaterial(actor.MaterialName);
-                }
-                foreach (CActor child in actor.Children)
-                    resolver(child);
-            };
-            resolver(_actors[0]);
-        }
-
-        public List<CActor> All()
-        {
-            List<CActor> actors = new List<CActor>();
-            Action<CActor> resolver = null;
-            resolver = (actor) =>
-            {
-                actors.Add(actor);
-                foreach (CActor child in actor.Children)
-                    resolver(child);
-            };
-            resolver(_actors[0]);
-            return actors;
-        }
-
-        public CActor First
-        {
-            get { return _actors[0]; }
-        }
-
-        public CActor GetByName(string name)
-        {
-            string nameWithExt = name + ".ACT";
-            List<CActor> all = All();
-            return all.Find(a => a.Name == nameWithExt || a.Name == name);
-        }
-
-
-        public void Render(DatFile models, Matrix world)
-        {
-            GameVariables.NbrSectionsRendered = GameVariables.NbrSectionsChecked = 0;
-
-            BoundingFrustum frustum = new BoundingFrustum(Engine.Camera.View * Engine.Camera.Projection);
-
-
-            bool overrideActor = world != Matrix.Identity;
-
-            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
-
-            for (int i = 0; i < _actors.Count; i++)
-            {
-                RenderChildren(frustum, _actors[i], world, false);
-            }
-
-            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
-
-            GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered);
-        }
-
-        private void RenderChildren(BoundingFrustum frustum, CActor actor, Matrix world, bool parentAnimated)
-        {
-            if (actor.IsWheel) return;
-
-            bool intersects;
-
-            intersects = actor.BoundingBox.Max.X == 0;
-            if (!intersects)
-            {
-                frustum.Intersects(ref actor.BoundingBox, out intersects);
-                GameVariables.NbrSectionsChecked++;
-            }
-
-            if (intersects)
-            {
-                if (actor.Model != null)
-                {
-                    Matrix m = actor.GetDynamicMatrix();
-
-                    if (actor.IsAnimated || parentAnimated)
-                    {
-
-                        if (actor.IsAnimated && !parentAnimated)
-                        {
-                            world = m * actor.ParentMatrix * GameVariables.ScaleMatrix * world;
-                        }
-                        else
-                        {
-                            world = m * world;
-                        }
-
-                        GameVariables.CurrentEffect.World = world;
-                        parentAnimated = true;
-                    }
-                    else
-                    {
-                        GameVariables.CurrentEffect.World = m * world;
-                    }
-
-                    GameVariables.CurrentEffect.CommitChanges();
-
-                    actor.Model.Render(actor.Material);
-
-                    GameVariables.NbrSectionsRendered++;
-                }
-                foreach (CActor child in actor.Children)
-                    RenderChildren(frustum, child, world, parentAnimated);
-            }
-        }
-
-        public void RenderSingle(CActor actor)
-        {
-            Matrix m = actor.Matrix;
-            m.Translation = Vector3.Zero;
-            GameVariables.CurrentEffect.World = m * GameVariables.CurrentEffect.World;
-            GameVariables.CurrentEffect.CommitChanges();
-
-            actor.Model.Render(actor.Material);
-        }
-
-        public Matrix CalculateDynamicActorMatrix(CActor actorToFind)
-        {
-            bool done = false;
-            Matrix m = CalculateDynamicActorMatrixInternal(_actors[0], Matrix.Identity, actorToFind, ref done);
-            return m * GameVariables.ScaleMatrix;
-        }
-
-        private Matrix CalculateDynamicActorMatrixInternal(CActor actor, Matrix matrix, CActor actorToFind, ref bool done)
-        {
-            if (done) return matrix;
-
-            matrix = matrix * actor.Matrix;
-
-            if (actorToFind == actor)
-            {
-                done = true;
-                return matrix;
-            }
-            foreach (CActor child in actor.Children)
-            {
-                Matrix m = CalculateDynamicActorMatrixInternal(child, matrix, actorToFind, ref done);
-                if (done) return m;
-            }
-            return matrix;
-        }
-
-        public void RecalculateActorParent(CActor actor)
-        {
-            actor.Parent.Children.Remove(actor); //remove it from current parent
-
-            bool found = false;
-            for (int i = 0; i < _actors.Count; i++)
-            {
-                MoveChildren(actor, _actors[i], null, ref found);
-            }
-        }
-
-        private void MoveChildren(CActor actorToMove, CActor parent, CActor parentParent, ref bool found)
-        {
-            if (found || parent.BoundingBox.Max.X == 0)
-            {
-                return;
-            }
-
-            if (parent.BoundingBox.Contains(actorToMove.PhysXActor.GlobalPosition) == ContainmentType.Contains)
-            {
-                foreach (CActor child in parent.Children)
-                    MoveChildren(actorToMove, child, parent, ref found);
-                if (!found)
-                {
-                    if (!parent.Children.Contains(actorToMove))
-                    {
-                        parent.Children.Add(actorToMove);
-                    }
-                    found = true;
-                }
-            }
-        }
+            _actors.ModelsFile = modelFile;
+            _actors.ResolveMaterials();
+        }        
     }
 }

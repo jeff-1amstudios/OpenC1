@@ -23,7 +23,6 @@ namespace Carmageddon
         public static string BasePath = "c:\\games\\carma1\\";
         public static BasicEffect2 CurrentEffect;
         public static ParticleEmitter SparksEmitter;
-        public static SkidMarkBuffer SkidMarkBuffer;
         public static bool LightingEnabled = true;
         
     }

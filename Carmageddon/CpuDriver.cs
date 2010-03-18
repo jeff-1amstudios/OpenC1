@@ -18,6 +18,8 @@ namespace Carmageddon
     class CpuDriver : IDriver
     {
         public Vehicle Vehicle { get; set; }
+        public bool InPlayersView;
+
         CpuDriverState _state = CpuDriverState.Racing;
         OpponentPathNode _targetNode;
         OpponentPath _currentPath, _nextPath;
@@ -28,6 +30,7 @@ namespace Carmageddon
         float _reverseTurning;
         int _nbrFails = -1;
         float _lastDistance;
+        
         bool _raceStarted = false;
 
         public CpuDriver()

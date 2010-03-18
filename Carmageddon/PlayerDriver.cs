@@ -11,10 +11,7 @@ namespace Carmageddon
 {
     class PlayerDriver : IDriver
     {
-        public Vector3 Position {get; set; }
-        public Vector3 Velocity { get; set; }
-        public Matrix Orientation { get; set; }
-
+        
         public Vehicle Vehicle {get; set; }
 
         IListener _audioListener;
@@ -22,6 +19,8 @@ namespace Carmageddon
         public PlayerDriver()
         {
             _audioListener = Engine.Audio.CreateListener();
+            _audioListener.DistanceFactor = 1f;
+            _audioListener.RolloffFactor = 0.1f;
         }
 
         public void OnRaceStart()
@@ -48,11 +47,11 @@ namespace Carmageddon
             if (Engine.Input.WasPressed(Keys.R))
                 Vehicle.Reset();
 
-            //_audioListener.BeginUpdate();
-            //_audioListener.Position = Position;
-            //_audioListener.Orientation = Orientation;
-            //_audioListener.Velocity = Velocity;
-            //_audioListener.CommitChanges();
+            _audioListener.BeginUpdate();
+            _audioListener.Position = Vehicle.Position;
+            _audioListener.Orientation = Matrix.CreateRotationY(0);
+            _audioListener.Velocity = Vector3.Zero;
+            _audioListener.CommitChanges();
         }
     }
 }

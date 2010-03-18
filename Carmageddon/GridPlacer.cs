@@ -18,9 +18,9 @@ namespace Carmageddon
         {
             Vector3 offset = new Vector3();
             offset.X = _number % 2 == 0 ? 0 : -6f;
-            float z = (_number / 2) * 15f;
+            offset.Z = (_number / 2) * -15f;
 
-            Matrix m = Matrix.CreateTranslation(offset) * Matrix.CreateRotationY(gridDirection) * Matrix.CreateTranslation(new Vector3(0, 0, -z)) * Matrix.CreateTranslation(gridPosition);
+            Matrix m = Matrix.CreateTranslation(offset) * Matrix.CreateRotationY(gridDirection) * Matrix.CreateTranslation(gridPosition);
             
             _number++;
             return m;

@@ -62,6 +62,14 @@ namespace NFSEngine.Audio
             }
         }
 
+        public float MaximumDistance
+        {
+            set
+            {
+                
+            }
+        }
+
         #endregion
     }
 }

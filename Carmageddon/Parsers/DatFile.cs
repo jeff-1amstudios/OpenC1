@@ -93,6 +93,8 @@ namespace Carmageddon.Parsers
             }
 
             reader.Close();
+
+            Resolve();
             
         }
 
@@ -169,7 +171,7 @@ namespace Carmageddon.Parsers
         }
 
 
-        public void Resolve()
+        private void Resolve()
         {
             _vertices = new List<VertexPositionNormalTexture>();
             ushort indIdx = 0;

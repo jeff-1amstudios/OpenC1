@@ -41,6 +41,16 @@ namespace NFSEngine.Audio
 			set { _listener.Velocity = MdxHelpers.ToMdx(value); }
 		}
 
+        public float DistanceFactor
+        {
+            set { _listener.DistanceFactor = value; }
+        }
+
+        public float RolloffFactor
+        {
+            set { _listener.RolloffFactor = value; }
+        }
+
 		public void BeginUpdate()
 		{
 			_listener.Deferred = true;

@@ -18,8 +18,7 @@ namespace Carmageddon
 {
     class Race
     {
-        DatFile _models;
-        ActFile _actors;
+        CActorHierarchy _actors;
         List<CActor> _nonCars;
         public RaceTimeController RaceTime = new RaceTimeController();
         SkyBox _skybox;
@@ -53,12 +52,11 @@ namespace Carmageddon
 
             ResourceCache.ResolveMaterials();
 
-            _models = new DatFile(@"C:\Games\carma1\data\models\" + ConfigFile.ModelFile);
+            DatFile models = new DatFile(@"C:\Games\carma1\data\models\" + ConfigFile.ModelFile);
 
-            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + ConfigFile.ActorFile, _models);
-            _actors.ResolveHierarchy(false, ConfigFile.Grooves);
-            _actors.ResolveMaterials();
-            _models.Resolve();
+            ActFile actFile = new ActFile(@"C:\Games\carma1\data\actors\" + ConfigFile.ActorFile, models);
+            _actors = actFile.Hierarchy;
+            _actors.ResolveTransforms(false, ConfigFile.Grooves);
 
             // link the actors and grooves
             foreach (BaseGroove g in ConfigFile.Grooves)
@@ -77,20 +75,18 @@ namespace Carmageddon
                 _skybox.HeightOffset = -220 + ConfigFile.SkyboxPositionY * 1.5f;
             }
 
-            Physics.TrackProcessor.GenerateTrackActor(ConfigFile, _actors, _models);
+            Physics.TrackProcessor.GenerateTrackActor(ConfigFile, _actors);
             _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);
 
-            GameVariables.SkidMarkBuffer = new Carmageddon.Gfx.SkidMarkBuffer(200);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.TrackId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.NonCarId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.TrackId, PhysXConsts.NonCarId, ContactPairFlag.OnTouch);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.VehicleId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
 
-            PhysX.Instance.Scene.SetActorGroupPairFlags(10, 1, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
-            PhysX.Instance.Scene.SetActorGroupPairFlags(11, 1, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
-            PhysX.Instance.Scene.SetActorGroupPairFlags(10, 11, ContactPairFlag.OnTouch);
-
-
-            Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 
             foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
@@ -154,13 +150,22 @@ namespace Carmageddon
         {
             if (_skybox != null) _skybox.Draw();
 
-            _models.SetupRender();
-            _actors.Render(_models, Matrix.Identity);
+            BoundingFrustum frustum = new BoundingFrustum(Engine.Camera.View * Engine.Camera.Projection);
 
-            foreach (Opponent opponent in Opponents)
-            {
-                opponent.Vehicle.Render();
-            }
+             _actors.Render(Matrix.Identity, frustum);
+
+             foreach (Opponent opponent in Opponents)
+             {
+                 if (frustum.Intersects(opponent.GetBoundingSphere()))
+                 {
+                     opponent.Driver.InPlayersView = true;
+                     opponent.Vehicle.Render();
+                 }
+                 else
+                 {
+                     opponent.Driver.InPlayersView = true;
+                 }
+             }
             
             RaceTime.Render();
             MessageRenderer.Instance.Render();

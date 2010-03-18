@@ -19,8 +19,9 @@ namespace NFSEngine.Audio
 
             if (is3d)
             {
-                desc.Control3D = true;
+                desc.Control3D = true;                
                 desc.Guid3DAlgorithm = DSoundHelper.Guid3DAlgorithmDefault;
+                desc.Mute3DAtMaximumDistance = true;
             }
 			desc.ControlVolume = true;
 			desc.ControlFrequency = true;
@@ -50,13 +51,21 @@ namespace NFSEngine.Audio
 
 		public Vector3 Position
 		{
-			set { _buffer3d.Position = MdxHelpers.ToMdx(value); }
+            set
+            {
+                if (_buffer3d == null) return;
+                _buffer3d.Position = MdxHelpers.ToMdx(value);
+            }
 		}
 
-		public Vector3 Velocity
-		{
-			set { _buffer3d.Velocity = MdxHelpers.ToMdx(value); }
-		}
+        public Vector3 Velocity
+        {
+            set
+            {
+                if (_buffer3d == null) return;
+                _buffer3d.Velocity = MdxHelpers.ToMdx(value);
+            }
+        }
 
 		public int Frequency
 		{
@@ -65,6 +74,7 @@ namespace NFSEngine.Audio
 
 		public void Play(bool loop)
 		{
+            
 			_buffer.Play(0, loop ? BufferPlayFlags.Looping : BufferPlayFlags.Default);
 		}
 
@@ -83,6 +93,15 @@ namespace NFSEngine.Audio
             get
             {
                 return _buffer.Status.Playing;
+            }
+        }
+
+        public float MaximumDistance
+        {
+            set
+            {
+                if (_buffer3d == null) return;
+                _buffer3d.MaxDistance = value;
             }
         }
 	}

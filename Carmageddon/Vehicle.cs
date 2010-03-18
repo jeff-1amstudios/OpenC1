@@ -18,40 +18,31 @@ namespace Carmageddon
 {
     class Vehicle
     {
-        DatFile _models;
-        ActFile _actors;
+        CActorHierarchy _actors;
         CrushSection _crushSection;
+        List<BaseGroove> _grooves;
+        ParticleEmitter _vehicleBitsEmitter;
+
         public CarFile Config;
         public VehicleChassis Chassis { get; set; }
-        private List<BaseGroove> _grooves;
-        List<ISound> _engineSounds = new List<ISound>();
-        ISound _engineSound;
-        
-        ParticleEmitter _vehicleBitsEmitter;
+        public SkidMarkBuffer SkidMarkBuffer = new SkidMarkBuffer(200);
         public Stack<SpecialVolume> CurrentSpecialVolume = new Stack<SpecialVolume>();
         public IDriver Driver { get; private set; }
+        public VehicleAudio Audio;
 
         public Vehicle(string filename, IDriver driver)
         {
+            Driver = driver;
+            Driver.Vehicle = this;
+
             LoadModel(filename);
 
             _crushSection = Config.CrushSections[1];
-            _engineSound = _engineSounds[0];
-
+            
             CMaterial crashMat = ResourceCache.GetMaterial(Config.CrashMaterialFiles[0]);
             _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMat), 6, Vector3.Zero);
 
-            if (driver is PlayerDriver)
-            {
-                if (_engineSound != null)
-                {
-                    _engineSound.Play(true);
-                    _engineSound.Volume -= 1000;
-                }
-            }
-
-            Driver = driver;
-            Driver.Vehicle = this;
+            Audio.Play();                  
         }
 
         private void LoadModel(string filename)
@@ -60,19 +51,19 @@ namespace Carmageddon
 
             foreach (string pixFileName in Config.PixFiles)
             {
-                PixFile pixFile = new PixFile(@"C:\Games\carma1\data\pixelmap\" + pixFileName);
+                PixFile pixFile = new PixFile(GameVariables.BasePath + "data\\pixelmap\\" + pixFileName);
                 ResourceCache.Add(pixFile);
             }
 
             foreach (string matFileName in Config.MaterialFiles)
             {
-                MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
+                MatFile matFile = new MatFile(GameVariables.BasePath + "data\\material\\" + matFileName);
                 ResourceCache.Add(matFile);
             }
 
             foreach (string matFileName in Config.CrashMaterialFiles)
             {
-                MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
+                MatFile matFile = new MatFile(GameVariables.BasePath + "data\\material\\" + matFileName);
                 ResourceCache.Add(matFile);
             }
 
@@ -82,12 +73,11 @@ namespace Carmageddon
             foreach (BaseGroove g in Config.Grooves)
                 if (!g.IsWheelActor) _grooves.Add(g);
 
-            _models = new DatFile(@"C:\Games\carma1\data\models\" + Config.ModelFile);
+            DatFile models = new DatFile(GameVariables.BasePath + "data\\models\\" + Config.ModelFile);
 
-            _actors = new ActFile(@"C:\Games\carma1\data\actors\" + Config.ActorFile, _models);
-            _actors.ResolveHierarchy(true, _grooves);
-            _actors.ResolveMaterials();
-            _models.Resolve();
+            ActFile actFile = new ActFile(GameVariables.BasePath +  "data\\actors\\" + Config.ActorFile, models);
+            _actors = actFile.Hierarchy;
+            _actors.ResolveTransforms(true, _grooves);
 
             if (Config.WindscreenMaterial != "none")
                 Config.Funks.Add(new WindscreenFunk(Config.WindscreenMaterial, this));
@@ -118,23 +108,11 @@ namespace Carmageddon
                 ca.Position = actor.Matrix.Translation + (ca.IsLeft ? -1 * tireWidth : tireWidth);
                 Config.WheelActors.Add(ca);
             }
-            foreach (int id in Config.EngineSoundIds)
-                _engineSounds.Add(SoundCache.CreateInstance(id));
+
+            Audio = new VehicleAudio(this);
         }
 
-        public int EngineSoundIndex
-        {
-            set
-            {
-                if (_engineSound != _engineSounds[value])
-                {
-                    _engineSound.Stop();
-                    _engineSound = _engineSounds[value];
-                    _engineSound.Play(true);
-                }
-            }
-        }
-
+        
         public void SetupPhysics(Vector3 position, float direction)
         {
             Matrix pose = GridPlacer.GetGridPosition(position, direction);
@@ -177,12 +155,7 @@ namespace Carmageddon
                 funk.Update();
             }
 
-            if (_engineSound != null)
-            {
-                _engineSound.Frequency = 8000 + (int)(Chassis.Motor.Rpm * 2500);
-                //_engineSound.Position = Chassis.Body.GlobalPosition;
-                //_engineSound.Velocity = Chassis.Body.LinearVelocity;
-            }
+            Audio.Update();
 
             if (CurrentSpecialVolume.Count > 0)
                 CurrentSpecialVolume.Peek().Update(this);
@@ -191,7 +164,7 @@ namespace Carmageddon
 
             foreach (VehicleWheel wheel in Chassis.Wheels)
             {
-                if (wheel.ShouldPlaySkidSound) // wheel.IsSkiddingLat || wheel.IsSkiddingLng)
+                if (wheel.ShouldPlaySkidSound)
                 {
                     SoundCache.PlaySkid();
                     break;
@@ -203,10 +176,9 @@ namespace Carmageddon
         public void Render()
         {
             ModelShadow.Render(Config.BoundingBox, Chassis);
-            GameVariables.SkidMarkBuffer.Render();
+            SkidMarkBuffer.Render();
 
-            _models.SetupRender();
-            _actors.Render(_models, Chassis.Actor.GlobalPose);
+            _actors.Render(Chassis.Actor.GlobalPose, null);
             
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
@@ -250,7 +222,7 @@ namespace Carmageddon
 
         internal void Crush()
         {
-            _models.Crush(_crushSection);
+            _actors.ModelsFile.Crush(_crushSection);
         }
 
         public Vector3 Position

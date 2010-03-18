@@ -16,9 +16,7 @@ namespace Carmageddon.Physics
     
     class VehicleChassis
     {
-        
-        
-
+        public Vehicle Vehicle { get; set; }
         public Actor Actor { get { return _physXActor; } }
         public List<VehicleWheel> Wheels {get; private set; }
         public float _lateralFrictionMultiplier = 1;
@@ -40,6 +38,8 @@ namespace Carmageddon.Physics
         
         public VehicleChassis(Matrix pose, Vehicle vehicle)
         {
+            Vehicle = vehicle;
+
             Wheels = new List<VehicleWheel>();
 
             CarFile carFile = vehicle.Config;

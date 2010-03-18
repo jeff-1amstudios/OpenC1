@@ -10,6 +10,8 @@ namespace NFSEngine.Audio
         Matrix Orientation { set; }
         Vector3 Position { set; }
         Vector3 Velocity { set; }
+        float DistanceFactor { set; }
+        float RolloffFactor { set; }
         void BeginUpdate();
         void CommitChanges();
     }

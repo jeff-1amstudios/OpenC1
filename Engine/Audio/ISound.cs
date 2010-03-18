@@ -17,5 +17,6 @@ namespace NFSEngine.Audio
         Vector3 Velocity { set; }
         int Frequency { set; }
         bool IsPlaying { get; }
+        float MaximumDistance { set; }
     }
 }

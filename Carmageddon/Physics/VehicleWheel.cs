@@ -98,7 +98,7 @@ namespace Carmageddon.Physics
 
                 if (IsSkiddingLat | IsSkiddingLng)
                 {
-                    GameVariables.SkidMarkBuffer.AddSkid(this, wcd.ContactPoint);
+                    _chassis.Vehicle.SkidMarkBuffer.AddSkid(this, wcd.ContactPoint);
                 }
             }
         }

@@ -8,7 +8,8 @@ namespace Carmageddon
     class Opponent
     {
         public Vehicle Vehicle;
-        public IDriver Driver;
+        public CpuDriver Driver;
+        BoundingSphere _boundingSphere;
 
         public Opponent(string carFile, Vector3 position, float direction)
         {
@@ -22,6 +23,16 @@ namespace Carmageddon
 
             //give cpu driver a bit more grip
             Vehicle.Chassis.SetLateralFrictionMultiplier(1.1111f);
+        }
+
+        public BoundingSphere GetBoundingSphere()
+        {
+            if (_boundingSphere == null)
+            {
+                _boundingSphere = new BoundingSphere(Vector3.Zero, Vehicle.Config.BoundingBox.GetSize().Length());
+            }
+            _boundingSphere.Center = Vehicle.Position;
+            return _boundingSphere;
         }
     }
 }

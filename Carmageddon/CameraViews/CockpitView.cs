@@ -16,10 +16,8 @@ namespace Carmageddon.CameraViews
     class CockpitView : BaseHUDItem, ICameraView
     {
         CockpitFile _cockpitFile;
-        //FPSCamera _camera;
         SimpleCamera _camera;
-        ActFile _actorFile;
-        DatFile _modelsFile;
+        CActorHierarchy _actors;
         Vehicle _vehicle;
 
         public CockpitView(Vehicle vehicle, string cockpitFile)
@@ -34,12 +32,10 @@ namespace Carmageddon.CameraViews
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
             _camera.AspectRatio = Engine.AspectRatio;
 
-            _modelsFile = new DatFile(GameVariables.BasePath + "data\\models\\" + vehicle.Config.BonnetModelFile);
-            _actorFile = new ActFile(GameVariables.BasePath + "data\\actors\\" + vehicle.Config.BonnetActorFile, _modelsFile);
-
-            _actorFile.ResolveHierarchy(false, null);
-            _actorFile.ResolveMaterials();
-            _modelsFile.Resolve();
+            DatFile modelsFile = new DatFile(GameVariables.BasePath + "data\\models\\" + vehicle.Config.BonnetModelFile);
+            ActFile actFile = new ActFile(GameVariables.BasePath + "data\\actors\\" + vehicle.Config.BonnetActorFile, modelsFile);
+            _actors = actFile.Hierarchy;
+            _actors.ResolveTransforms(false, null);
 
             //move head back
             _vehicle.Config.DriverHeadPosition.Z += 0.11f;
@@ -129,8 +125,7 @@ namespace Carmageddon.CameraViews
             if (frame.Texture2 != null)
                 Engine.SpriteBatch.Draw(frame.Texture2, ScaleVec2(frame.Position2), Color.White);
             
-            _modelsFile.SetupRender();
-            _actorFile.Render(_modelsFile, Matrix.CreateFromQuaternion(_vehicle.Chassis.Actor.GlobalOrientationQuat) * Matrix.CreateTranslation(_vehicle.GetBodyBottom()));
+            _actors.Render(Matrix.CreateFromQuaternion(_vehicle.Chassis.Actor.GlobalOrientationQuat) * Matrix.CreateTranslation(_vehicle.GetBodyBottom()), null);
         }
 
         public void Activate()

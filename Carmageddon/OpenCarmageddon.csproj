@@ -81,6 +81,7 @@
     <Compile Include="BasicEffect2.cs" />
     <Compile Include="BigEndianBitConverter.cs" />
     <Compile Include="CActor.cs" />
+    <Compile Include="CActorHierarchy.cs" />
     <Compile Include="CameraViews\ChaseView.cs" />
     <Compile Include="CameraViews\CockpitView.cs" />
     <Compile Include="CameraViews\FlyView.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Race.cs" />
+    <Compile Include="VehicleAudio.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
