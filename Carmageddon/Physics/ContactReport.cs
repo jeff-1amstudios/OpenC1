@@ -40,24 +40,27 @@ namespace Carmageddon.Physics
                         {
                             while (iter.GoToNextPoint())
                             {
-                                Shape shapeA = iter.GetShapeA();
                                 Shape shapeB = iter.GetShapeB();
-                                if (!(shapeB is WheelShape))
+                                if (contactInfo.ActorA.Group == PhysXConsts.TrackId && shapeB is WheelShape)
+                                    continue; //we dont want to know each time a wheel is touching the ground...
+
+                                Vector3 pos = iter.GetPoint();
+                                float force = contactInfo.NormalForce.Length();
+                                if (force > 0)
                                 {
-                                    Vector3 pos = iter.GetPoint();
-                                    float force = contactInfo.NormalForce.Length();
-                                    if (force > 0)
+                                    GameVariables.SparksEmitter.Update(pos);
+                                                                       
+
+                                    if (contactInfo.ActorA.Group == PhysXConsts.VehicleId)
                                     {
-                                        GameVariables.SparksEmitter.Update(pos);
-                                        if (force > 850000) GameVariables.SparksEmitter.DumpParticles(pos, 6);
+                                        //2 vehicle collision
+                                        HandleVehicleOnVehicleCollision((Vehicle)contactInfo.ActorA.UserData, (Vehicle)contactInfo.ActorB.UserData, force, pos);
+                                        
+                                    }
+                                    else
+                                    {
                                         Vehicle vehicle = (Vehicle)contactInfo.ActorB.UserData;
                                         vehicle.ContactReport_Collision(force, pos, iter.GetPatchNormal());
-
-                                        if (contactInfo.ActorA.Group == PhysXConsts.VehicleId)
-                                        {
-                                            Vehicle vehicle2 = (Vehicle)contactInfo.ActorA.UserData;
-                                            vehicle2.ContactReport_Collision(force, pos, iter.GetPatchNormal());
-                                        }
                                     }
                                 }
                             }
@@ -77,7 +80,7 @@ namespace Carmageddon.Physics
                                 while (iter.GoToNextPoint())
                                 {
                                     Vector3 pos = iter.GetPoint();
-                                    
+
                                     GameVariables.SparksEmitter.Update(pos);
                                     //GameConsole.WriteEvent("noncar collision");
                                 }
@@ -86,6 +89,23 @@ namespace Carmageddon.Physics
                     }
                 }
             }
+        }
+
+        private void HandleVehicleOnVehicleCollision(Vehicle v1, Vehicle v2, float force, Vector3 position)
+        {            
+            if (force > 200)
+            {
+                GameVariables.SparksEmitter.DumpParticles(position, 6);
+                SoundCache.PlayCrash(v1);
+            }
+
+            //float product = Math.Abs(Vector3.Dot(Chassis.Actor.GlobalPose.Forward, normal));
+            //if (product < 0.3f)
+            //{
+            //    SoundCache.PlayScrape(this);
+            //}
+            //else if (force > 200)
+            //    SoundCache.PlayCrash(this);
         }
     }
 }

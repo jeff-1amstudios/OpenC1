@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.DirectX.DirectSound;
 using PlatformEngine;
+using Microsoft.Xna.Framework;
 
 namespace NFSEngine.Audio
 {
@@ -10,7 +11,8 @@ namespace NFSEngine.Audio
 	public class MdxSoundEngine : ISoundEngine
 	{
 		Device _audioDevice;
-        private List<SoundInstance> _sounds = new List<SoundInstance>();
+        private List<ISound> _sounds = new List<ISound>();
+        IListener _listener;
 
 		public MdxSoundEngine()
 		{
@@ -18,9 +20,11 @@ namespace NFSEngine.Audio
 			_audioDevice.SetCooperativeLevel(Engine.Game.Window.Handle, CooperativeLevel.Priority);
 		}
 
-		public IListener CreateListener()
+		public IListener GetListener()
 		{
-			return new MdxListener(_audioDevice);
+            if (_listener == null)
+                _listener = new MdxListener(_audioDevice);
+            return _listener;
 		}
 
 		public ISound Load(string name, bool is3d)
@@ -29,21 +33,34 @@ namespace NFSEngine.Audio
 			return sound;
 		}
 
-        public void Play(ISound sound, float duration)
+        public void Register3dSound(ISound sound)
         {
-            SoundInstance inst = new SoundInstance() { Sound = sound, RemainingDuration = duration };
-            _sounds.Add(inst);
+            _sounds.Add(sound);
         }
+
+        public void Unregister3dSound(ISound sound)
+        {
+            _sounds.Remove(sound);
+        }
+
 
         public void Update()
         {
+            Vector3 listenerPos = _listener.Position;
+
             for (int i = _sounds.Count - 1; i >= 0; i--)
             {
-                _sounds[i].RemainingDuration -= Engine.ElapsedSeconds;
-                if (_sounds[i].RemainingDuration <= 0)
+                float distance = Vector3.Distance(_sounds[i].Position, listenerPos);
+                if (distance > _sounds[i].MaximumDistance && _sounds[i].IsPlaying)
                 {
-                    _sounds[i].Sound.Stop();
+                    GameConsole.WriteEvent("stopping sound");
+                    _sounds[i].Pause();
                     _sounds.RemoveAt(i);
+                }
+                else if (distance < _sounds[i].MaximumDistance && !_sounds[i].IsPlaying)
+                {
+                    GameConsole.WriteEvent("restarting sound");
+                    _sounds[i].Play(true);
                 }
             }
         }

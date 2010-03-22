@@ -22,20 +22,25 @@ namespace Carmageddon.Physics
         {
             if (otherShape.Name != PhysXConsts.VehicleBody) return;
 
+            Vehicle vehicle = (Vehicle)otherShape.Actor.UserData;
+            
             if (triggerShape.Actor.UserData is Checkpoint)
             {
-                Checkpoint checkpoint = (Checkpoint)triggerShape.Actor.UserData;
-                Race.Current.OnCheckpointHit(checkpoint);
+                if (vehicle.Driver is PlayerDriver)
+                {
+                    Checkpoint checkpoint = (Checkpoint)triggerShape.Actor.UserData;
+                    Race.Current.OnCheckpointHit(checkpoint);
+                }
             }
             else if (triggerShape.Actor.UserData is SpecialVolume)
             {
                 if (status == TriggerFlag.OnEnter)
                 {
-                    Race.Current.OnVehicleEnterSpecVol((SpecialVolume)triggerShape.Actor.UserData, (Vehicle)otherShape.Actor.UserData);
+                    Race.Current.OnVehicleEnterSpecVol((SpecialVolume)triggerShape.Actor.UserData, vehicle);
                 }
                 else if (status == TriggerFlag.OnLeave)
                 {
-                    Race.Current.OnVehicleExitSpecVol((SpecialVolume)triggerShape.Actor.UserData, (Vehicle)otherShape.Actor.UserData);
+                    Race.Current.OnVehicleExitSpecVol((SpecialVolume)triggerShape.Actor.UserData, vehicle);
                 }
             }
         }

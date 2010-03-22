@@ -8,7 +8,7 @@ namespace NFSEngine.Audio
     public interface IListener
     {
         Matrix Orientation { set; }
-        Vector3 Position { set; }
+        Vector3 Position { get;  set; }
         Vector3 Velocity { set; }
         float DistanceFactor { set; }
         float RolloffFactor { set; }

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
 using Carmageddon.HUD;
+using NFSEngine.Audio;
 
 namespace Carmageddon
 {
@@ -79,7 +80,8 @@ namespace Carmageddon
                 int second = (int)CountdownTime;
                 if (second > _lastSecond)
                 {
-                    SoundCache.Play(_countdownSoundIds[second]);
+                    ISound sound = SoundCache.Play(_countdownSoundIds[second], null, false);
+                    sound.Volume = -2000;
                     MessageRenderer.Instance.PostMessagePix(_countdownTextures[second], 0.7f, 0.24f, 0.003f, 0);
                 }
 

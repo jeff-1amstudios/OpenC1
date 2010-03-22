@@ -82,7 +82,6 @@
     <Compile Include="Audio\ISound.cs" />
     <Compile Include="Audio\ISoundEngine.cs" />
     <Compile Include="Audio\SoundInstance.cs" />
-    <Compile Include="Audio\Xact\XactSound.cs" />
     <Compile Include="AverageValueVector3.cs" />
     <Compile Include="Cameras\ChaseCamera.cs" />
     <Compile Include="Engine.cs" />
@@ -106,7 +105,6 @@
     <Compile Include="Cameras\SimpleCamera.cs" />
     <Compile Include="SkyBox.cs" />
     <Compile Include="HeightmapTerrain.cs" />
-    <Compile Include="Audio\Xact\XactSoundEngine.cs" />
     <Compile Include="TextureGenerator.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>

@@ -28,7 +28,7 @@ namespace Carmageddon
         static List<SoundDesc> _soundDescriptions;
         public static bool IsInitialized;
         static List<ISound> _instances = new List<ISound>();
-        static ISound _currentSkid, _currentCrash, _scrape;
+        static ISound _currentSkid, _currentCrash, _currentScrape;
 
         public static void Initialize()
         {
@@ -41,50 +41,72 @@ namespace Carmageddon
         {
             return CreateInstance(id, false);
         }
+
         public static ISound CreateInstance(int id, bool is3d)
         {
             if (!_enabled) return null;
             SoundDesc csound = _soundDescriptions.Find(a => a.Id == id);
             ISound instance = Engine.Audio.Load(GameVariables.BasePath + "data\\sound\\" + csound.FileName, is3d);
-            instance.Volume = -1000;
+            //instance.Volume = -1000;
+            instance.MinimumDistance = 20;
+            instance.MaximumDistance = 200;
             instance.Id = csound.Id;
             _instances.Add(instance);
             return instance;
         }
 
-        public static ISound Play(int id)
+
+
+        public static ISound Play(int id, Vehicle vehicle, bool is3d)
         {
-            ISound instance = _instances.Find(a => a.Id == id);
-            if (instance == null)
+            if (vehicle == null
+                || (vehicle.Driver is CpuDriver && ((CpuDriver)vehicle.Driver).InPlayersView)
+                || vehicle.Driver is PlayerDriver)
             {
-                instance = CreateInstance(id);
+                ISound instance = _instances.Find(a => a.Id == id);
+                if (instance == null)
+                {
+                    instance = CreateInstance(id, is3d);
+                }
+                if (instance != null)
+                {
+                    if (is3d) instance.Position = vehicle.Position;
+                    instance.Owner = vehicle;
+                    instance.Play(false);
+                }
+                return instance;
             }
-            if (instance != null)
-                instance.Play(false);
-            return instance;
+            else
+                return null;
         }
 
-        public static void PlayCrash()
+        public static void PlayCrash(Vehicle vehicle)
         {
-            PlayGroup(SoundIds.CrashStart, SoundIds.CrashEnd, ref _currentCrash);
+            PlayGroup(SoundIds.CrashStart, SoundIds.CrashEnd, ref _currentCrash, vehicle);
         }
 
-        public static void PlayScrape()
+        public static void PlayScrape(Vehicle vehicle)
         {
-            PlayGroup(SoundIds.ScrapeStart, SoundIds.ScrapeEnd, ref _scrape);
+            PlayGroup(SoundIds.ScrapeStart, SoundIds.ScrapeEnd, ref _currentScrape, vehicle);
         }
 
-        public static void PlaySkid()
+        public static void PlaySkid(Vehicle vehicle)
         {
-            PlayGroup(SoundIds.SkidStart, SoundIds.SkidEnd, ref _currentSkid);
+            PlayGroup(SoundIds.SkidStart, SoundIds.SkidEnd, ref _currentSkid, vehicle);
         }
 
-        private static void PlayGroup(int startId, int endId, ref ISound instance)
+        private static void PlayGroup(int startId, int endId, ref ISound instance, Vehicle vehicle)
         {
+            if (vehicle.Driver is PlayerDriver)  //priority
+            {
+                if (instance != null && instance.IsPlaying && instance.Owner != vehicle)
+                    instance.Stop();
+            }
+
             if (instance == null || !instance.IsPlaying)
             {
                 int id = Engine.Random.Next(startId, endId);
-                instance = Play(id);
+                instance = Play(id, vehicle, true);
             }
         }
     }

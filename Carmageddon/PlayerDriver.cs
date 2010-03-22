@@ -18,9 +18,9 @@ namespace Carmageddon
 
         public PlayerDriver()
         {
-            _audioListener = Engine.Audio.CreateListener();
+            _audioListener = Engine.Audio.GetListener();
             _audioListener.DistanceFactor = 1f;
-            _audioListener.RolloffFactor = 0.1f;
+            _audioListener.RolloffFactor = 1f;
         }
 
         public void OnRaceStart()

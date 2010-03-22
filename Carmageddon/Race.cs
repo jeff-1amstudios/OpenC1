@@ -83,11 +83,11 @@ namespace Carmageddon
             PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.TrackId, PhysXConsts.NonCarId, ContactPairFlag.OnTouch);
             PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.VehicleId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
 
-            //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 
             foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
                         
@@ -175,7 +175,7 @@ namespace Carmageddon
         {
             if (checkpoint.Number == NextCheckpoint)
             {
-                SoundCache.Play(SoundIds.Checkpoint);
+                SoundCache.Play(SoundIds.Checkpoint, PlayerVehicle, false);
                 NextCheckpoint++;
                 if (NextCheckpoint == ConfigFile.Checkpoints.Count)
                 {
@@ -185,8 +185,8 @@ namespace Carmageddon
                 MessageRenderer.Instance.PostMessagePix("checkpnt.pix", 10, 0.7f, 0.003f, 1.4f);
             }
             else
-            {   
-                SoundCache.Play(SoundIds.WrongCheckpoint);
+            {
+                SoundCache.Play(SoundIds.WrongCheckpoint, PlayerVehicle, false);
             }
         }
 
@@ -212,12 +212,12 @@ namespace Carmageddon
             {
                 //reset
                 exitedVolume.Reset(vehicle);
-                exitedVolume.Exit();
+                exitedVolume.Exit(vehicle);
             }
             else if (nextVol.Id != vol.Id)
             {
                 nextVol.Enter(vehicle);
-                exitedVolume.Exit();
+                exitedVolume.Exit(vehicle);
             }
         }
     }

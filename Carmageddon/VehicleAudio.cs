@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using NFSEngine.Audio;
+using NFSEngine;
+using Microsoft.Xna.Framework;
 
 namespace Carmageddon
 {
@@ -9,32 +11,34 @@ namespace Carmageddon
     {
         Vehicle _vehicle;
 
-        List<ISound> _engineSounds = new List<ISound>();
+        List<ISound> _engineSounds;
         ISound _fromSound, _sound;
         
 
         public VehicleAudio(Vehicle vehicle)
         {
+            _vehicle = vehicle;
+            if (vehicle.Driver is CpuDriver) return;
+
+            _engineSounds = new List<ISound>();
             foreach (int id in vehicle.Config.EngineSoundIds)
             {
-                ISound sound = SoundCache.CreateInstance(id, vehicle.Driver is CpuDriver);
-                sound.MaximumDistance = 10;
+                ISound sound = SoundCache.CreateInstance(id, true);
+                sound.MinimumDistance = 20;
+                sound.MaximumDistance = 100;
+
                 _engineSounds.Add(sound);
             }
 
             _sound = _engineSounds[0];
-            _vehicle = vehicle;
+            
         }
 
         public void Play()
         {
-            if (!(_vehicle.Driver is PlayerDriver))
+            if (_sound != null)
             {
-                if (_sound != null)
-                {
-                    _sound.Play(true);
-                    //_engineSound.Volume -= 1000;
-                }
+                _sound.Play(true);
             }
         }
 
@@ -44,12 +48,17 @@ namespace Carmageddon
             {
                 _sound.Frequency = 8000 + (int)(_vehicle.Chassis.Motor.Rpm * 2500);
                 _sound.Position = _vehicle.Position;
-                _sound.Velocity = _vehicle.Chassis.Actor.LinearVelocity;
+                if (!(_vehicle.Driver is PlayerDriver))
+                {
+                    _sound.Velocity = _vehicle.Chassis.Actor.LinearVelocity;
+                }
             }
         }
 
         public void SetSound(int index)
         {
+            if (_engineSounds == null) return;
+
             if (_sound != _engineSounds[index])
             {
                 _sound.Stop();

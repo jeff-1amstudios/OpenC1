@@ -33,6 +33,7 @@ namespace NFSEngine.Audio
 
 		public Vector3 Position
 		{
+            get { return MdxHelpers.ToXna(_listener.Position); }
 			set { _listener.Position = MdxHelpers.ToMdx(value); }
 		}
 

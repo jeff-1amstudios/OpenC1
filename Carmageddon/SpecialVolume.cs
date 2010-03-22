@@ -48,9 +48,11 @@ namespace Carmageddon
             //vehicle.Chassis.Body.SetCenterOfMassOffsetLocalPosition(new Vector3(0, 0.25f, 0));
             
             //vehicle.Chassis.Body.Mass = vehicle.Config.Mass * Gravity;
-            
+
             if (EntrySoundId > 0)
-                SoundCache.Play(EntrySoundId);
+            {
+                SoundCache.Play(EntrySoundId, vehicle, true);
+            }
         }
 
         public void Update(Vehicle vehicle)
@@ -61,10 +63,10 @@ namespace Carmageddon
             }
         }
 
-        public void Exit()
+        public void Exit(Vehicle vehicle)
         {
             if (ExitSoundId > 0)
-                SoundCache.Play(ExitSoundId);
+                SoundCache.Play(ExitSoundId, vehicle, true);
         }
 
         public void Reset(Vehicle vehicle)
