@@ -46,7 +46,7 @@ namespace Carmageddon.Physics
             
             ActorDescription actorDesc = new ActorDescription();
             BodyDescription bodyDesc = new BodyDescription(carFile.Mass);
-            //bodyDesc.LinearDamping = 0.1f;
+            
             actorDesc.BodyDescription = bodyDesc;
                         
             BoxShapeDescription boxDesc = new BoxShapeDescription();
@@ -62,13 +62,14 @@ namespace Carmageddon.Physics
                 boxDesc.Mass = 0;
                 actorDesc.Shapes.Add(boxDesc);
             }
-
+            
             actorDesc.GlobalPose = pose;
             _physXActor = PhysX.Instance.Scene.CreateActor(actorDesc);
             _physXActor.Name = "Vehicle";
             _physXActor.Group = PhysXConsts.VehicleId;
             //_body.BodyFlags.Visualization = true;
             _physXActor.UserData = vehicle;
+            _physXActor.MaximumAngularVelocity = 3.4f;
 
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 0.1f;
@@ -89,12 +90,13 @@ namespace Carmageddon.Physics
             _rearLateralTireFn.AsymptoteSlip = 20f;
             _rearLateralTireFn.AsymptoteValue = 0.001f;
 
-            _rearLateralTireFn.ExtremumSlip = 0.5f;
-            _rearLateralTireFn.ExtremumValue = 2.9f;
-            _rearLateralTireFn.AsymptoteSlip = 1.3f;
+            _rearLateralTireFn.ExtremumSlip = 0.2f;
+            _rearLateralTireFn.ExtremumValue = 2.95f;
+            _rearLateralTireFn.AsymptoteSlip = 1.25f;
             _rearLateralTireFn.AsymptoteValue = 0.01f;
 
             _frontLateralTireFn = _rearLateralTireFn;
+            //_frontLateralTireFn.AsymptoteSlip = 1.25f;
             //lngTFD = _frontLateralTireFn;
 
             
@@ -236,6 +238,7 @@ namespace Carmageddon.Physics
         {
             GameConsole.WriteLine("Speed", Speed);
             GameConsole.WriteLine("Brake", _brakeTorque);
+            GameConsole.WriteLine("ang vel", Actor.AngularVelocity.Length());
         }
     
 
@@ -283,7 +286,7 @@ namespace Carmageddon.Physics
             else
             {
                 _motorTorque = 0.0f;
-                _brakeTorque = Motor.CurrentFriction;
+                _brakeTorque = 0.0f; // Motor.CurrentFriction;
             }
 
             UpdateTorque();
@@ -324,6 +327,11 @@ namespace Carmageddon.Physics
             {
                 wheel.Shape.BrakeTorque = _brakeTorque;
             }
+
+            if (_currentTorque == 0)
+                Actor.LinearDamping = 0.035f;
+            else
+                Actor.LinearDamping = 0.0f;
         }
 
 
