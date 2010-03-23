@@ -38,23 +38,23 @@ namespace Carmageddon
 
             foreach (string matFileName in ConfigFile.MaterialFiles)
             {
-                MatFile matFile = new MatFile(@"C:\Games\carma1\data\material\" + matFileName);
+                MatFile matFile = new MatFile(GameVariables.BasePath + @"data\material\" + matFileName);
                 ResourceCache.Add(matFile);
             }
 
             foreach (string pixFileName in ConfigFile.PixFiles)
             {
-                PixFile pixFile = new PixFile(@"C:\Games\carma1\data\pixelmap\" + pixFileName);
+                PixFile pixFile = new PixFile(GameVariables.BasePath + @"data\pixelmap\" + pixFileName);
                 ResourceCache.Add(pixFile);
             }
 
-            ResourceCache.Add(new MatFile(@"C:\Games\carma1\data\material\" + "drkcurb.mat"));
+            ResourceCache.Add(new MatFile(GameVariables.BasePath + @"data\material\" + "drkcurb.mat"));
 
             ResourceCache.ResolveMaterials();
 
-            DatFile models = new DatFile(@"C:\Games\carma1\data\models\" + ConfigFile.ModelFile);
+            DatFile models = new DatFile(GameVariables.BasePath + @"data\models\" + ConfigFile.ModelFile);
 
-            ActFile actFile = new ActFile(@"C:\Games\carma1\data\actors\" + ConfigFile.ActorFile, models);
+            ActFile actFile = new ActFile(GameVariables.BasePath + @"data\actors\" + ConfigFile.ActorFile, models);
             _actors = actFile.Hierarchy;
             _actors.ResolveTransforms(false, ConfigFile.Grooves);
 
@@ -83,9 +83,9 @@ namespace Carmageddon
             PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.TrackId, PhysXConsts.NonCarId, ContactPairFlag.OnTouch);
             PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.VehicleId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
 
-            Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 

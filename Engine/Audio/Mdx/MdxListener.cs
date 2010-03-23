@@ -15,8 +15,11 @@ namespace NFSEngine.Audio
 			BufferDescription desc = new BufferDescription();
 			desc.PrimaryBuffer = true;
 			desc.Control3D = true;
+            desc.Mute3DAtMaximumDistance = true;
+            
 			Microsoft.DirectX.DirectSound.Buffer buffer = new Microsoft.DirectX.DirectSound.Buffer(desc, device);
 			_listener = new Listener3D(buffer);
+            
 			Orientation = Matrix.Identity;
 		}
 

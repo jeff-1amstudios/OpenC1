@@ -47,8 +47,8 @@ namespace Carmageddon
             if (!_enabled) return null;
             SoundDesc csound = _soundDescriptions.Find(a => a.Id == id);
             ISound instance = Engine.Audio.Load(GameVariables.BasePath + "data\\sound\\" + csound.FileName, is3d);
-            //instance.Volume = -1000;
-            instance.MinimumDistance = 20;
+           
+            instance.MinimumDistance = 10;
             instance.MaximumDistance = 200;
             instance.Id = csound.Id;
             _instances.Add(instance);
@@ -73,6 +73,7 @@ namespace Carmageddon
                     if (is3d) instance.Position = vehicle.Position;
                     instance.Owner = vehicle;
                     instance.Play(false);
+                    GameConsole.WriteEvent("PlaySound " + id.ToString());
                 }
                 return instance;
             }
@@ -97,10 +98,14 @@ namespace Carmageddon
 
         private static void PlayGroup(int startId, int endId, ref ISound instance, Vehicle vehicle)
         {
-            if (vehicle.Driver is PlayerDriver)  //priority
+            if (instance != null && instance.IsPlaying && instance.Owner != vehicle)
             {
-                if (instance != null && instance.IsPlaying && instance.Owner != vehicle)
-                    instance.Stop();
+                if (vehicle.Driver is PlayerDriver)  //priority
+                    instance.Reset();
+                else if (((Vehicle)instance.Owner).Driver is PlayerDriver)
+                {
+                    return; //dont steal player's sound
+                }
             }
 
             if (instance == null || !instance.IsPlaying)

@@ -19,8 +19,9 @@ namespace Carmageddon
         public PlayerDriver()
         {
             _audioListener = Engine.Audio.GetListener();
-            _audioListener.DistanceFactor = 1f;
+            _audioListener.DistanceFactor = 2f;
             _audioListener.RolloffFactor = 1f;
+
         }
 
         public void OnRaceStart()
@@ -49,7 +50,7 @@ namespace Carmageddon
 
             _audioListener.BeginUpdate();
             _audioListener.Position = Vehicle.Position;
-            _audioListener.Orientation = Matrix.CreateRotationY(0);
+            _audioListener.Orientation = Vehicle.Chassis.Actor.GlobalOrientation;
             _audioListener.Velocity = Vector3.Zero;
             _audioListener.CommitChanges();
         }

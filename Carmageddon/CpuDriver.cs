@@ -40,7 +40,7 @@ namespace Carmageddon
 
         public void OnRaceStart()
         {
-            Vehicle.Chassis.Motor.Gearbox.CurrentGear = 1;
+            //Vehicle.Chassis.Motor.Gearbox.CurrentGear = 1;
             LogPosition(Vehicle.Position);
             SetTarget(OpponentController.GetClosestNode(_lastPosition));
             
@@ -130,7 +130,7 @@ namespace Carmageddon
                     else
                     {
                         SetTarget(_currentPath.End);
-                        GameConsole.WriteEvent("NextPath " + _currentPath.End.Number);
+                        //GameConsole.WriteEvent("NextPath " + _currentPath.End.Number);
                     }
 
                     //GetNextPath();
@@ -147,8 +147,7 @@ namespace Carmageddon
                 if (angle > 1) angle = 1;
                 else if (angle < -1) angle = -1;
 
-                if (angle > 0.003f) Vehicle.Chassis.Steer(angle);
-                else if (angle < -0.003f) Vehicle.Chassis.Steer(angle);
+                if (Math.Abs(angle) > 0.003f) Vehicle.Chassis.Steer(angle);
 
                 if (!isBraking)
                 {

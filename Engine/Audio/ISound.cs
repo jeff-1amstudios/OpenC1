@@ -14,6 +14,7 @@ namespace NFSEngine.Audio
         float Volume { get; set; }
         void Pause();
         void Stop();
+        void Reset();
         void Play(bool loop);
         Vector3 Position { get; set; }
         Vector3 Velocity { set; }
@@ -21,6 +22,7 @@ namespace NFSEngine.Audio
         bool IsPlaying { get; }
         float MinimumDistance { get; set; }
         float MaximumDistance { get; set; }
+        bool MuteAtMaximumDistance { get; set; }
         //    bool 
     }   
 }

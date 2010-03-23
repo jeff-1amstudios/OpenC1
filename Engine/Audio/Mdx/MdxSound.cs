@@ -15,6 +15,7 @@ namespace NFSEngine.Audio
 
         public int Id { get; set; }        
         public object Owner { get; set; }
+        public bool MuteAtMaximumDistance { get; set; }
 
         internal MdxSound(Device device, string filename, bool is3d)
 		{
@@ -22,16 +23,14 @@ namespace NFSEngine.Audio
 
             if (is3d)
             {
-                desc.Control3D = true;                
+                desc.Control3D = true;
                 desc.Guid3DAlgorithm = DSoundHelper.Guid3DAlgorithmDefault;
                 desc.Mute3DAtMaximumDistance = true;
             }
 			desc.ControlVolume = true;
 			desc.ControlFrequency = true;
-			
 			_buffer = new SecondaryBuffer(filename, desc, device);
             
-
             if (is3d)
             {
                 _buffer3d = new Buffer3D(_buffer);
@@ -85,7 +84,7 @@ namespace NFSEngine.Audio
 		public void Play(bool loop)
 		{
 			_buffer.Play(0, loop ? BufferPlayFlags.Looping : BufferPlayFlags.Default);
-            if (_is3d && loop)
+            if (_is3d && loop && MuteAtMaximumDistance)
             {
                 Engine.Audio.Register3dSound(this);
             }

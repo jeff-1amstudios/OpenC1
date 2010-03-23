@@ -50,9 +50,9 @@ namespace Carmageddon
         /// <summary>
         /// Pre-calculate recursive transformations and apply scaling, ignoring groove animations
         /// </summary>
-        public void ResolveTransforms(bool removeRootTransform, List<BaseGroove> grooves)
+        public void ResolveTransforms(bool removeRootTranslation, List<BaseGroove> grooves)
         {
-            if (removeRootTransform)
+            if (removeRootTranslation)
             {
                 Root.Matrix.Translation = Vector3.Zero;
             }
@@ -101,7 +101,7 @@ namespace Carmageddon
         }
 
 
-        public BoundingFrustum Render(Matrix world, BoundingFrustum frustum)
+        public void Render(Matrix world, BoundingFrustum frustum)
         {
             ModelsFile.SetupRender();
 
@@ -119,8 +119,6 @@ namespace Carmageddon
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
 
             GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered);
-
-            return frustum;
         }
 
         private void RenderChildren(BoundingFrustum frustum, CActor actor, Matrix world, bool parentAnimated)

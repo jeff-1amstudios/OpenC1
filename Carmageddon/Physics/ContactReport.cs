@@ -55,7 +55,7 @@ namespace Carmageddon.Physics
                                     {
                                         //2 vehicle collision
                                         HandleVehicleOnVehicleCollision((Vehicle)contactInfo.ActorA.UserData, (Vehicle)contactInfo.ActorB.UserData, force, pos);
-                                        
+                                        return;
                                     }
                                     else
                                     {
@@ -92,12 +92,13 @@ namespace Carmageddon.Physics
         }
 
         private void HandleVehicleOnVehicleCollision(Vehicle v1, Vehicle v2, float force, Vector3 position)
-        {            
-            if (force > 200)
-            {
+        {
+            //GameConsole.WriteEvent("caroncar");
+            //if (v1.Chassis.Speed > 3 || v2.Chassis.Speed > 3)
+            //{
                 GameVariables.SparksEmitter.DumpParticles(position, 6);
                 SoundCache.PlayCrash(v1);
-            }
+            //}
 
             //float product = Math.Abs(Vector3.Dot(Chassis.Actor.GlobalPose.Forward, normal));
             //if (product < 0.3f)
