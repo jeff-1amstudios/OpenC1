@@ -74,7 +74,7 @@ namespace Carmageddon.Physics
             lngTFD.ExtremumSlip = 0.1f;
             lngTFD.ExtremumValue = 5f;
             lngTFD.AsymptoteSlip = 2.0f;
-            lngTFD.AsymptoteValue = 5.0f;
+            lngTFD.AsymptoteValue = 4.5f;
             
 
             _frontLateralTireFn = new TireFunctionDescription();
@@ -88,6 +88,14 @@ namespace Carmageddon.Physics
             
             _rearLateralTireFn.AsymptoteSlip = 20f;
             _rearLateralTireFn.AsymptoteValue = 0.001f;
+
+            _rearLateralTireFn.ExtremumSlip = 0.5f;
+            _rearLateralTireFn.ExtremumValue = 2.9f;
+            _rearLateralTireFn.AsymptoteSlip = 1.3f;
+            _rearLateralTireFn.AsymptoteValue = 0.01f;
+
+            _frontLateralTireFn = _rearLateralTireFn;
+            //lngTFD = _frontLateralTireFn;
 
             
             WheelShapeDescription wheelDesc = new WheelShapeDescription();

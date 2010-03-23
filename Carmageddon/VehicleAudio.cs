@@ -24,13 +24,15 @@ namespace Carmageddon
             foreach (int id in vehicle.Config.EngineSoundIds)
             {
                 ISound sound = SoundCache.CreateInstance(id, true);
-                sound.MinimumDistance = 20;
-                sound.MaximumDistance = 100;
-
-                _engineSounds.Add(sound);
+                if (sound != null)
+                {
+                    sound.MinimumDistance = 20;
+                    sound.MaximumDistance = 100;
+                    _engineSounds.Add(sound);
+                }
             }
-
-            _sound = _engineSounds[0];
+            if (_engineSounds.Count > 0)
+                _sound = _engineSounds[0];
             
         }
 
@@ -57,7 +59,7 @@ namespace Carmageddon
 
         public void SetSound(int index)
         {
-            if (_engineSounds == null) return;
+            if (_engineSounds == null || _engineSounds.Count == 0) return;
 
             if (_sound != _engineSounds[index])
             {

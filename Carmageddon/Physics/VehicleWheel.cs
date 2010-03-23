@@ -90,8 +90,8 @@ namespace Carmageddon.Physics
                 _latTireFn.ExtremumValue = latExtremum;
 
                 _lngTireFn.ExtremumValue = _defaultLngExtremum * materialModifier.TyreRoadFriction;
-                Shape.LateralTireForceFunction = _latTireFn;
-                Shape.LongitudalTireForceFunction = _lngTireFn;
+                //Shape.LateralTireForceFunction = _latTireFn;
+                //Shape.LongitudalTireForceFunction = _lngTireFn;
 
                 ShouldPlaySkidSound = IsSkiddingLat | IsSkiddingLng && materialIndex == 0;
                 SmokeEmitter.Update(wcd.ContactPoint);

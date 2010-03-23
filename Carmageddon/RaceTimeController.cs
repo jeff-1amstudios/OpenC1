@@ -81,7 +81,7 @@ namespace Carmageddon
                 if (second > _lastSecond)
                 {
                     ISound sound = SoundCache.Play(_countdownSoundIds[second], null, false);
-                    sound.Volume = -2000;
+                    //sound.Volume = -2000;
                     MessageRenderer.Instance.PostMessagePix(_countdownTextures[second], 0.7f, 0.24f, 0.003f, 0);
                 }
 
