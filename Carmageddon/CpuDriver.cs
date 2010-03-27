@@ -40,7 +40,7 @@ namespace Carmageddon
 
         public void OnRaceStart()
         {
-            //Vehicle.Chassis.Motor.Gearbox.CurrentGear = 1;
+            Vehicle.Chassis.Motor.Gearbox.CurrentGear = 1;
             LogPosition(Vehicle.Position);
             SetTarget(OpponentController.GetClosestNode(_lastPosition));
             

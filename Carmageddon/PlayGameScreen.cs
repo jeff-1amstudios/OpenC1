@@ -38,8 +38,8 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            string playerCar = "blkeagle.txt";
-            _race = new Race(GameVariables.BasePath + @"data\races\coastc1.TXT", playerCar);
+            string playerCar = "kutter.txt";
+            _race = new Race(GameVariables.BasePath + @"data\races\citya1.TXT", playerCar);
             
             _editModes.Add(new NoEditMode());
             _editModes.Add(new OpponentEditMode());
@@ -71,6 +71,10 @@ namespace Carmageddon
                 MessageRenderer.Instance.PostMessage("Lighting: " + (GameVariables.LightingEnabled ? "Enabled" : "Disabled"), 2);
                 _effect = null;
             }
+            if (Engine.Input.IsKeyDown(Keys.S))
+                Engine.TimeScale = 0.2f;
+            else
+                Engine.TimeScale = 1;
                         
             _editModes[_currentEditMode].Update();
 

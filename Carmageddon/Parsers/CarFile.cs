@@ -67,6 +67,7 @@ namespace Carmageddon.Parsers
         public List<string> CrashMaterialFiles = new List<string>();
         public Vector3 DriverHeadPosition;
         public string WindscreenMaterial;
+        public Vector3 Size;
 
         public CarFile(string filename)
             : base(filename)
@@ -266,7 +267,10 @@ namespace Carmageddon.Parsers
             RideHeight = ReadLineAsFloat(false);
             SuspensionDamping = ReadLineAsFloat(false);
             Mass = ReadLineAsFloat(false) * 1000;
-            SkipLines(9);
+            SkipLines(2);
+            Size = ReadLineAsVector3();
+
+            SkipLines(6);
             TopSpeed = ReadLineAsFloat(false);
             EnginePower = ReadLineAsFloat(false);
 

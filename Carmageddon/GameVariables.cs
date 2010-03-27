@@ -13,7 +13,7 @@ namespace Carmageddon
     static class GameVariables
     {
         public static PaletteFile Palette { get; set; }
-        public static Vector3 Scale = new Vector3(6);
+        public static Vector3 Scale = new Vector3(1);
         public static Matrix ScaleMatrix = Matrix.CreateScale(Scale);
         public static int NbrSectionsRendered = 0;
         public static int NbrSectionsChecked = 0;

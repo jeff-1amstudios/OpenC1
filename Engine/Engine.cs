@@ -30,6 +30,7 @@ namespace PlatformEngine
         public static float TotalSeconds { get; private set; }
         public static RandomGenerator Random { get; private set; }
         public static ISoundEngine Audio { get; set; }
+        public static float TimeScale { get; set; }
 
         private static bool _isFullScreen;
         public static Vector2 ScreenSize;
@@ -50,14 +51,15 @@ namespace PlatformEngine
             _spriteBatch = new SpriteBatch(Device);
             _fpsCounter = new FrameRateCounter();
             Random = new RandomGenerator();
+            TimeScale = 1;
         }
 
 
         public static void Update(GameTime gameTime)
         {
-
-            ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds * TimeScale;
             TotalSeconds = (float)gameTime.TotalGameTime.TotalSeconds;
+            
 
             GameConsole.Clear();
 

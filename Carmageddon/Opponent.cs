@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Carmageddon.Physics;
+using StillDesign.PhysX;
 
 namespace Carmageddon
 {
@@ -16,13 +18,38 @@ namespace Carmageddon
             Driver = new CpuDriver();
             Vehicle = new Vehicle(GameVariables.BasePath + @"data\cars\" + carFile, Driver);
             Vehicle.SetupPhysics(position, direction);
+
+            SetupVehicle();
+        }
+
+        public void SetupVehicle()
+        {
             Vehicle.Chassis.Actor.LinearDamping = 0.02f;
             Vector3 com = Vehicle.Chassis.Actor.CenterOfMassLocalPosition;
-            com.Y -= 0.06f;
-            Vehicle.Chassis.Actor.SetCenterOfMassOffsetLocalPosition(com); //help out ai to keep the car stable
+            //com.Y -= 0.3f;
+            //Vehicle.Chassis.Actor.SetCenterOfMassOffsetLocalPosition(com); //help out ai to keep the car stable
+
+
+            TireFunctionDescription frontLateralTireFn = new TireFunctionDescription();
+            frontLateralTireFn.ExtremumSlip = 0.26f;
+            frontLateralTireFn.ExtremumValue = 1.8f;
+            frontLateralTireFn.AsymptoteSlip = 2;
+            frontLateralTireFn.AsymptoteValue = 0.001f;
+
+            TireFunctionDescription rearLateralTireFn = new TireFunctionDescription();
+            rearLateralTireFn.ExtremumSlip = 0.35f;
+            rearLateralTireFn.ExtremumValue = 2.7f;
+            rearLateralTireFn.AsymptoteSlip = 2f;
+            rearLateralTireFn.AsymptoteValue = 0.001f;
+
+            foreach (VehicleWheel wheel in Vehicle.Chassis.Wheels)
+            {
+                wheel.Shape.LateralTireForceFunction = wheel.IsRear ? rearLateralTireFn : frontLateralTireFn;
+            }
+
 
             //give cpu driver a bit more grip
-            Vehicle.Chassis.SetLateralFrictionMultiplier(1.1111f);
+            Vehicle.Chassis.SetLateralFrictionMultiplier(1.111f);
         }
 
         public BoundingSphere GetBoundingSphere()

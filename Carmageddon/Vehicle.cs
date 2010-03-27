@@ -194,7 +194,7 @@ namespace Carmageddon
                 _actors.RenderSingle(Config.WheelActors[i].Actor);
             }
 
-            //Engine.DebugRenderer.AddAxis(Chassis.Body.CenterOfMassGlobalPose, 5);
+            Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 5);
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
 
