@@ -65,15 +65,21 @@ namespace Carmageddon.Physics
                 boxDesc.Mass = 0;
                 actorDesc.Shapes.Add(boxDesc);
             }
+
+            UtilitiesLibrary lib = new UtilitiesLibrary();
+            Vector3 inertiaTensor = lib.ComputeBoxInteriaTensor(Vector3.Zero, carFile.Mass, carFile.Size);
+            actorDesc.BodyDescription.MassSpaceInertia = inertiaTensor;
             
             actorDesc.GlobalPose = pose;
             _physXActor = PhysX.Instance.Scene.CreateActor(actorDesc);
+
+            
             _physXActor.Name = "Vehicle";
             _physXActor.Group = PhysXConsts.VehicleId;
-            //_body.BodyFlags.Visualization = true;
+            
             _physXActor.UserData = vehicle;
-            _physXActor.MaximumAngularVelocity = 3.4f;
-            _physXActor.AngularDamping = 0.07f;
+            _physXActor.MaximumAngularVelocity = 3.3f;
+            _physXActor.AngularDamping = 0.1f;
             
 
             TireFunctionDescription lngTFD = new TireFunctionDescription();
@@ -98,7 +104,7 @@ namespace Carmageddon.Physics
 
             _rearLateralTireFn.ExtremumSlip = 0.2f;
             _rearLateralTireFn.ExtremumValue = 2.1f;
-            _rearLateralTireFn.AsymptoteSlip = 0.0013f * carFile.Mass; // 1.3f;
+            _rearLateralTireFn.AsymptoteSlip = 0.0013f * carFile.Mass;
             _rearLateralTireFn.AsymptoteValue = 0.016f;
 
             _frontLateralTireFn = _rearLateralTireFn;
@@ -120,12 +126,12 @@ namespace Carmageddon.Physics
             foreach (CWheelActor wheel in carFile.WheelActors)
             {
                 wheelDesc.Radius = wheel.IsDriven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
-                wheelDesc.SuspensionTravel = 0;// Math.Max(wheelDesc.Radius / 2f, 0.1f);
-                wheelDesc.LocalPosition = wheel.Position;// +new Vector3(0, wheelDesc.Radius / 4, 0);
+                wheelDesc.SuspensionTravel = (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear) * 18; // Math.Max(wheelDesc.Radius / 2f, 0.21f);
+                wheelDesc.LocalPosition = wheel.Position + new Vector3(0, wheelDesc.SuspensionTravel * carFile.Mass * 0.00045f, 0);
                 
                 SpringDescription spring = new SpringDescription();
                 float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
-                spring.SpringCoefficient = 3.637f * heightModifier * Math.Max(1000, carFile.Mass) * (1 - (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear));
+                spring.SpringCoefficient = 3.6f * heightModifier * Math.Max(1000, carFile.Mass); // *(1 - (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear));
                 spring.DamperCoefficient = carFile.SuspensionDamping * 4f;
                 
                 wheelDesc.Suspension = spring;
@@ -148,10 +154,10 @@ namespace Carmageddon.Physics
             Motor.Gearbox.CurrentGear = 0;
 
             //set center of mass
-            Vector3 massPos = _physXActor.CenterOfMassLocalPosition;
-            massPos = carFile.CenterOfMass;
-            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.31f;
-            //massPos.Y = Wheels[0].Shape.LocalPosition.Y - carFile.DrivenWheelRadius + carFile.CenterOfMass.Y - 0.38f;
+            //Vector3 massPos = _physXActor.CenterOfMassLocalPosition;
+            Vector3 massPos = carFile.CenterOfMass;
+            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.37f;
+
             _physXActor.SetCenterOfMassOffsetLocalPosition(massPos);
         }
 
@@ -206,9 +212,7 @@ namespace Carmageddon.Physics
                 }
             }
             
-            Vector3 orientation = _physXActor.GlobalOrientation.Up;
-
-            if (orientation.Y < 0 && Speed < 1f)
+            if (_physXActor.GlobalOrientation.Up.Y < 0 && Speed < 1f)
             {
                 Reset();
                 return;
@@ -228,6 +232,7 @@ namespace Carmageddon.Physics
                 }
             }
 
+            bool isSkiddingTooMuch = false;
             Motor.WheelsSpinning = false;
             foreach (VehicleWheel wheel in Wheels)
             {
@@ -236,7 +241,15 @@ namespace Carmageddon.Physics
                 {
                     Motor.WheelsSpinning = true;
                 }
+                if (wheel.LatSlip > 1) isSkiddingTooMuch = true;
             }
+
+            if (isSkiddingTooMuch || _physXActor.GlobalOrientation.Up.Y < 0)
+            {
+                Actor.LinearDamping = 0.7f;  //stop insane sliding
+            }
+            else
+                Actor.LinearDamping = 0.0f;
         }
 
 
@@ -244,7 +257,8 @@ namespace Carmageddon.Physics
         {
             GameConsole.WriteLine("Speed", Speed);
             GameConsole.WriteLine("Brake", _brakeTorque);
-            GameConsole.WriteLine("ang vel", Actor.AngularVelocity.Length());
+            //GameConsole.WriteLine("ang vel", Actor.AngularVelocity.Length());
+            GameConsole.WriteLine("slip", Wheels[0].LatSlip);
         }
     
 
@@ -292,7 +306,7 @@ namespace Carmageddon.Physics
             else
             {
                 _motorTorque = 0.0f;
-                _brakeTorque = 0.0f; // Motor.CurrentFriction;
+                _brakeTorque = Motor.CurrentFriction;
             }
 
             UpdateTorque();
@@ -329,15 +343,12 @@ namespace Carmageddon.Physics
 
             if (_handbrake == 1) return;
 
+            
             foreach (VehicleWheel wheel in Wheels)
             {
                 wheel.Shape.BrakeTorque = _brakeTorque;
+                
             }
-
-            if (_currentTorque == 0 && Motor.Gearbox.GearEngaged)
-                Actor.LinearDamping = 0.17f;
-            else
-                Actor.LinearDamping = 0.0f;
         }
 
 
@@ -394,3 +405,4 @@ namespace Carmageddon.Physics
         }
     }
 }
+

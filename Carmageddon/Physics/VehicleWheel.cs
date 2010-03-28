@@ -27,6 +27,7 @@ namespace Carmageddon.Physics
         public int Index;
         private TireFunctionDescription _latTireFn, _lngTireFn;
         private float _defaultLatExtremum, _defaultLngExtremum;
+        public float LatSlip;
 
         public bool InAir
         {
@@ -69,6 +70,8 @@ namespace Carmageddon.Physics
                 int materialIndex = (int)wcd.OtherShapeMaterialIndex;
                 MaterialModifier materialModifier = Race.Current.ConfigFile.MaterialModifiers[materialIndex];
                 materialModifier.UpdateWheelShape(_chassis, this);
+
+                LatSlip = Math.Abs(wcd.LateralSlip);
 
                 if (_chassis.Speed > 10 && (_handbrake == 1 || Math.Abs(wcd.LateralSlip) > 0.23f))
                 {
