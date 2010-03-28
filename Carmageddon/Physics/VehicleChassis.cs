@@ -55,9 +55,6 @@ namespace Carmageddon.Physics
             boxDesc.Name = PhysXConsts.VehicleBody;
             actorDesc.Shapes.Add(boxDesc);
 
-            //boxDesc = new BoxShapeDescription(carFile.Size);
-            //boxDesc.LocalPosition = car
-
             foreach (Vector3 extraPoint in carFile.ExtraBoundingBoxPoints)
             {
                 boxDesc = new BoxShapeDescription(0.2f, 0.2f, 0.2f);
@@ -66,9 +63,11 @@ namespace Carmageddon.Physics
                 actorDesc.Shapes.Add(boxDesc);
             }
 
-            UtilitiesLibrary lib = new UtilitiesLibrary();
-            Vector3 inertiaTensor = lib.ComputeBoxInteriaTensor(Vector3.Zero, carFile.Mass, carFile.Size);
-            actorDesc.BodyDescription.MassSpaceInertia = inertiaTensor;
+            using (UtilitiesLibrary lib = new UtilitiesLibrary())
+            {
+                Vector3 inertiaTensor = lib.ComputeBoxInteriaTensor(Vector3.Zero, carFile.Mass, carFile.Size);
+                actorDesc.BodyDescription.MassSpaceInertia = inertiaTensor;
+            }
             
             actorDesc.GlobalPose = pose;
             _physXActor = PhysX.Instance.Scene.CreateActor(actorDesc);
@@ -78,8 +77,8 @@ namespace Carmageddon.Physics
             _physXActor.Group = PhysXConsts.VehicleId;
             
             _physXActor.UserData = vehicle;
-            _physXActor.MaximumAngularVelocity = 3.3f;
-            _physXActor.AngularDamping = 0.1f;
+            _physXActor.MaximumAngularVelocity = 1.5f;
+            
             
 
             TireFunctionDescription lngTFD = new TireFunctionDescription();
@@ -156,7 +155,7 @@ namespace Carmageddon.Physics
             //set center of mass
             //Vector3 massPos = _physXActor.CenterOfMassLocalPosition;
             Vector3 massPos = carFile.CenterOfMass;
-            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.37f;
+            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.36f;
 
             _physXActor.SetCenterOfMassOffsetLocalPosition(massPos);
         }
@@ -211,7 +210,7 @@ namespace Carmageddon.Physics
                         wheel.Shape.SteeringAngle = _steerAngle;
                 }
             }
-            
+
             if (_physXActor.GlobalOrientation.Up.Y < 0 && Speed < 1f)
             {
                 Reset();
@@ -246,10 +245,14 @@ namespace Carmageddon.Physics
 
             if (isSkiddingTooMuch || _physXActor.GlobalOrientation.Up.Y < 0)
             {
-                Actor.LinearDamping = 0.7f;  //stop insane sliding
+                _physXActor.LinearDamping = 0.7f;  //stop insane sliding
+                _physXActor.AngularDamping = 0.5f;
             }
             else
-                Actor.LinearDamping = 0.0f;
+            {
+                _physXActor.LinearDamping = 0.0f;
+                _physXActor.AngularDamping = 0.05f;
+            }
         }
 
 

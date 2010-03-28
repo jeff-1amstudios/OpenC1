@@ -18,10 +18,10 @@ namespace Carmageddon
         public int TextureMapCount { get; set; }
         public int VertexBaseIndex { get; set; }
         public int IndexBufferStart { get; set; }
+        public bool HardEdgesInserted;
 
         public void Render(CMaterial actorMaterial)
         {
-            
             GraphicsDevice device = Engine.Device;
             
             CMaterial currentMaterial = null;
@@ -35,10 +35,10 @@ namespace Carmageddon
 
                 if (GameVariables.CullingDisabled != poly.DoubleSided)
                 {
-                    device.RenderState.CullMode =  (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
+                    device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
                     GameVariables.CullingDisabled = poly.DoubleSided;
                 }
-                
+
 
                 if (poly.Material != null)
                 {
@@ -61,17 +61,15 @@ namespace Carmageddon
                     device.Textures[0] = null; currentMaterial = null;
                 }
 
-                if (currentMaterial != null && currentMaterial.Name == "DRSKY.MAT")
-                {
-                }
-
                 if (currentMaterial != null && currentMaterial.Funk != null)
                 {
                     currentMaterial.Funk.BeforeRender();
                 }
                 GameVariables.NbrDrawCalls++;
-                //Engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3*poly.NbrPrims, indexBufferStart, poly.NbrPrims);
-                Engine.Device.DrawPrimitives(PrimitiveType.TriangleList, indexBufferStart, poly.NbrPrims);
+                if (!HardEdgesInserted)
+                    Engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3 * poly.NbrPrims, indexBufferStart, poly.NbrPrims);
+                else
+                    Engine.Device.DrawPrimitives(PrimitiveType.TriangleList, indexBufferStart, poly.NbrPrims);
                 indexBufferStart += poly.NbrPrims * 3;
 
                 if (currentMaterial != null && currentMaterial.Funk != null)

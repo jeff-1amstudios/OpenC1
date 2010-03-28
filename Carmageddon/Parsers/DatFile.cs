@@ -22,19 +22,19 @@ namespace Carmageddon.Parsers
         Faces = 53
     }
 
-    
+
     class DatFile : BaseDataFile
     {
         private VertexBuffer _vertexBuffer;
         private IndexBuffer _indexBuffer;
         private VertexDeclaration _vertexDeclaration;
-        
+
         List<CModel> _models = new List<CModel>();
         public List<Vector3> _vertexPositions = new List<Vector3>();
         List<Vector2> _vertexTextureMap = new List<Vector2>();
         List<VertexPositionNormalTexture> _vertices;
         public List<ushort> _indices;
-        
+
         public DatFile(string filename)
         {
 
@@ -94,15 +94,15 @@ namespace Carmageddon.Parsers
 
             reader.Close();
 
-            Resolve();
-            
+            Resolve(true);
+
         }
 
         private void ReadVertexBlock(EndianBinaryReader reader, CModel currentModel)
         {
             currentModel.VertexBaseIndex = _vertexPositions.Count;
             currentModel.VertexCount = reader.ReadInt32();
-            
+
             for (int i = 0; i < currentModel.VertexCount; i++)
             {
                 Vector3 vertex = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
@@ -171,15 +171,16 @@ namespace Carmageddon.Parsers
         }
 
 
-        private void Resolve()
+        private void Resolve(bool injectHardEdges)
         {
             _vertices = new List<VertexPositionNormalTexture>();
-            ushort indIdx = 0;
-            
+            //ushort indIdx = 0;
+
             List<UInt16> indices = new List<UInt16>(_vertexPositions.Count);
-            
+
             foreach (CModel model in _models)
             {
+                model.HardEdgesInserted = injectHardEdges;
                 model.IndexBufferStart = indices.Count;
                 model.Polygons.Sort(delegate(Polygon p1, Polygon p2) { return p1.MaterialIndex.CompareTo(p2.MaterialIndex); });
 
@@ -188,26 +189,25 @@ namespace Carmageddon.Parsers
                 foreach (Polygon poly in model.Polygons)
                 {
                     poly.NbrPrims = 1;
-                    //indices.Add(poly.Vertex1); indices.Add(poly.Vertex2); indices.Add(poly.Vertex3);
-                    indices.Add(indIdx++); indices.Add(indIdx++); indices.Add(indIdx++);
+                    indices.Add(poly.Vertex1); indices.Add(poly.Vertex2); indices.Add(poly.Vertex3);
+                    //indices.Add(indIdx++); indices.Add(indIdx++); indices.Add(indIdx++);
 
-                    if (model.TextureMapCount > 0)
+                    if (injectHardEdges)
                     {
-                        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[poly.Vertex1 + model.VertexBaseIndex], poly.Normal, _vertexTextureMap[poly.Vertex1 + model.VertexBaseIndex]));
-                        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[poly.Vertex2 + model.VertexBaseIndex], poly.Normal, _vertexTextureMap[poly.Vertex2 + model.VertexBaseIndex]));
-                        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[poly.Vertex3 + model.VertexBaseIndex], poly.Normal, _vertexTextureMap[poly.Vertex3 + model.VertexBaseIndex]));
+                        Vector2 uv = Vector2.Zero;
+                        if (model.TextureMapCount > 0) uv = _vertexTextureMap[poly.Vertex1 + model.VertexBaseIndex];
+                        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[poly.Vertex1 + model.VertexBaseIndex], poly.Normal, uv));
+                        if (model.TextureMapCount > 0) uv = _vertexTextureMap[poly.Vertex2 + model.VertexBaseIndex];
+                        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[poly.Vertex2 + model.VertexBaseIndex], poly.Normal, uv));
+                        if (model.TextureMapCount > 0) uv = _vertexTextureMap[poly.Vertex3 + model.VertexBaseIndex];
+                        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[poly.Vertex3 + model.VertexBaseIndex], poly.Normal, uv));
                     }
-                    else
-                    {
-                        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[poly.Vertex1 + model.VertexBaseIndex], poly.Normal, Vector2.Zero));
-                        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[poly.Vertex2 + model.VertexBaseIndex], poly.Normal, Vector2.Zero));
-                        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[poly.Vertex3 + model.VertexBaseIndex], poly.Normal, Vector2.Zero));
-                    }
+
 
                     if (poly.MaterialIndex >= 0 && model.MaterialNames != null)
                     {
                         CMaterial material = ResourceCache.GetMaterial(model.MaterialNames[poly.MaterialIndex]);
-                        
+
                         if (material != null)
                         {
                             poly.DoubleSided = material.DoubleSided;
@@ -225,37 +225,51 @@ namespace Carmageddon.Parsers
                         }
                     }
                 }
-                //for (int i = 0; i < model.VertexCount; i++)
-                //{
-                //    Vector3 normal = model.Polygons[i / 3].Normal;
-                //    if (model.TextureMapCount > 0)
-                //        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], normal, _vertexTextureMap[i + model.VertexBaseIndex]));
-                //    else
-                //        _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], normal, Vector2.Zero));
-                //}
+                if (!injectHardEdges)
+                {
+                    for (int i = 0; i < model.VertexCount; i++)
+                    {
+                        Vector3 normal = model.Polygons[i / 3].Normal;
+                        if (model.TextureMapCount > 0)
+                            _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], normal, _vertexTextureMap[i + model.VertexBaseIndex]));
+                        else
+                            _vertices.Add(new VertexPositionNormalTexture(_vertexPositions[i + model.VertexBaseIndex], normal, Vector2.Zero));
+                    }
+                }
 
-                //for (int i = 0; i < indices.Count / 3; i++)
-                //{
-                //    Vector3 firstvec = _vertices[indices[i * 3 + 1]].Position - _vertices[indices[i * 3]].Position;
-                //    Vector3 secondvec = _vertices[indices[i * 3]].Position - _vertices[indices[i * 3 + 2]].Position;
-                //    Vector3 normal = Vector3.Cross(firstvec, secondvec);
-                //    normal.Normalize();
-                //    _vertices[indices[i * 3]].Normal += normal;
-                //    _vertices[indices[i * 3 + 1]].Normal += normal;
-                //    _vertices[indices[i * 3 + 2]].Normal += normal;
-                //}
+                if (!injectHardEdges)
+                {
+                    for (int i = 0; i < indices.Count / 3; i++)
+                    {
+                        Vector3 firstvec = _vertices[indices[i * 3 + 1]].Position - _vertices[indices[i * 3]].Position;
+                        Vector3 secondvec = _vertices[indices[i * 3]].Position - _vertices[indices[i * 3 + 2]].Position;
+                        Vector3 normal = Vector3.Cross(firstvec, secondvec);
+                        normal.Normalize();
+                        VertexPositionNormalTexture vpnt = _vertices[indices[i * 3]];
+                        vpnt.Normal += normal;
+                        vpnt = _vertices[indices[i * 3 + 1]];
+                        vpnt.Normal += normal;
+                        vpnt = _vertices[indices[i * 3 + 2]];
+                        vpnt.Normal += normal;
+                    }
+                    for (int i = 0; i < _vertices.Count; i++)
+                        _vertices[i].Normal.Normalize();
+                }
+
             }
 
             _vertexBuffer = new VertexBuffer(Engine.Device, VertexPositionNormalTexture.SizeInBytes * _vertices.Count, BufferUsage.WriteOnly);
             _vertexBuffer.SetData<VertexPositionNormalTexture>(_vertices.ToArray());
 
-            _indexBuffer = new IndexBuffer(Engine.Device, typeof(UInt16), indices.Count, BufferUsage.WriteOnly);
-            _indexBuffer.SetData<UInt16>(indices.ToArray());
-            _indices = indices;
+            if (!injectHardEdges)
+            {
+                _indexBuffer = new IndexBuffer(Engine.Device, typeof(UInt16), indices.Count, BufferUsage.WriteOnly);
+                _indexBuffer.SetData<UInt16>(indices.ToArray());
+                _indices = indices;
+            }
 
             _vertexDeclaration = new VertexDeclaration(Engine.Device, VertexPositionNormalTexture.VertexElements);
-            _vertexTextureMap=null; //dont need this data anymore
-            //_vertexPositions = null;
+            _vertexTextureMap = null; //dont need this data anymore
         }
 
 
@@ -269,7 +283,7 @@ namespace Carmageddon.Parsers
 
         public CModel GetModel(string name)
         {
-            return _models.Find(m => m.Name == name); 
+            return _models.Find(m => m.Name == name);
         }
 
         public List<CModel> GetModels()
