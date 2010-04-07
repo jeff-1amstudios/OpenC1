@@ -17,7 +17,7 @@ namespace Carmageddon
         {
             Driver = new CpuDriver();
             Vehicle = new Vehicle(GameVariables.BasePath + @"data\cars\" + carFile, Driver);
-            Vehicle.SetupPhysics(position, direction);
+            Vehicle.PlaceOnGrid(position, direction);
 
             SetupVehicle();
         }

@@ -44,21 +44,21 @@ namespace Carmageddon.Physics
                     indices.Add((ushort)index);
                     if (verts[index] == Vector3.Zero)
                     {
-                        Vector3 transformedVec = Vector3.Transform(actors.ModelsFile._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex1], actor.Matrix);
+                        Vector3 transformedVec = Vector3.Transform(actors.Models._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex1], actor.Matrix);
                         verts[index] = transformedVec;
                     }
                     index = baseIndex + poly.Vertex2;
                     indices.Add((ushort)index);
                     if (verts[index] == Vector3.Zero)
                     {
-                        Vector3 transformedVec = Vector3.Transform(actors.ModelsFile._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex2], actor.Matrix);
+                        Vector3 transformedVec = Vector3.Transform(actors.Models._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex2], actor.Matrix);
                         verts[index] = transformedVec;
                     }
                     index = baseIndex + poly.Vertex3;
                     indices.Add((ushort)index);
                     if (verts[index] == Vector3.Zero)
                     {
-                        Vector3 transformedVec = Vector3.Transform(actors.ModelsFile._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex3], actor.Matrix);
+                        Vector3 transformedVec = Vector3.Transform(actors.Models._vertexPositions[actor.Model.VertexBaseIndex + poly.Vertex3], actor.Matrix);
                         verts[index] = transformedVec;
                     }
 
@@ -124,7 +124,7 @@ namespace Carmageddon.Physics
             environment.Shapes[0].SetFlag(ShapeFlag.Visualization, false);
 
             
-            CreateDefaultWaterSpecVols(file, actorsList, actors.ModelsFile);
+            CreateDefaultWaterSpecVols(file, actorsList, actors.Models);
 
             
             for (int i = 1; i < file.SpecialVolumes.Count; i++)
@@ -166,7 +166,7 @@ namespace Carmageddon.Physics
             return environment;
         }
 
-        private static void CreateDefaultWaterSpecVols(RaceFile file, List<CActor> actors, DatFile modelsFile)
+        private static void CreateDefaultWaterSpecVols(RaceFile file, List<CActor> actors, CModelGroup models)
         {
 
             for (int i = 0; i < actors.Count; i++)
@@ -185,9 +185,9 @@ namespace Carmageddon.Physics
                     if (materialName.StartsWith("!"))
                     {
                         foundWater = true;
-                        waterVerts.Add(Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex1], actor.Matrix));
-                        waterVerts.Add(Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex2], actor.Matrix));
-                        waterVerts.Add(Vector3.Transform(modelsFile._vertexPositions[model.VertexBaseIndex + poly.Vertex3], actor.Matrix));
+                        waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex1], actor.Matrix));
+                        waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex2], actor.Matrix));
+                        waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex3], actor.Matrix));
                     }
                 }
 

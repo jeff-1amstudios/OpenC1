@@ -51,7 +51,7 @@ namespace Carmageddon
             
             _race.Update();
             
-            PhysX.Instance.Update();
+            PhysX.Instance.Simulate();
 
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
                 system.Update();
@@ -82,6 +82,8 @@ namespace Carmageddon
             Engine.Camera.Update();
             
             GameConsole.WriteLine("FPS", Engine.Fps);
+
+            PhysX.Instance.Fetch();
         }
 
         public void Render()

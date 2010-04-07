@@ -20,7 +20,7 @@ namespace Carmageddon
         public BoundingBox BoundingBox;
         public byte[] Flags;
         public bool IsWheel;
-        public StillDesign.PhysX.Actor PhysXActor { get; private set; }
+        public StillDesign.PhysX.Actor PhysXActor { get; set; }
         public bool IsAnimated;
         
 
@@ -45,7 +45,6 @@ namespace Carmageddon
             Quaternion b;
             Matrix.Decompose(out scaleout, out b, out transout);
             Matrix = Matrix.CreateScale(scaleout);
-            //IsDynamic = true;
         }
 
         public Matrix GetDynamicMatrix()

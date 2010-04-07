@@ -36,7 +36,7 @@ namespace Carmageddon.Physics
         TireFunctionDescription _frontLateralTireFn, _rearLateralTireFn;
                 
         
-        public VehicleChassis(Matrix pose, Vehicle vehicle)
+        public VehicleChassis(Vehicle vehicle, CActor bodycactor)
         {
             Vehicle = vehicle;
 
@@ -48,20 +48,20 @@ namespace Carmageddon.Physics
             BodyDescription bodyDesc = new BodyDescription(carFile.Mass);
             
             actorDesc.BodyDescription = bodyDesc;
-                        
-            BoxShapeDescription boxDesc = new BoxShapeDescription();
+
+            var boxDesc = new BoxShapeDescription();
             boxDesc.Size = carFile.BoundingBox.GetSize();
             boxDesc.LocalPosition = carFile.BoundingBox.GetCenter();
             boxDesc.Name = PhysXConsts.VehicleBody;
             actorDesc.Shapes.Add(boxDesc);
 
-            foreach (Vector3 extraPoint in carFile.ExtraBoundingBoxPoints)
-            {
-                boxDesc = new BoxShapeDescription(0.2f, 0.2f, 0.2f);
-                boxDesc.LocalPosition = extraPoint;
-                boxDesc.Mass = 0;
-                actorDesc.Shapes.Add(boxDesc);
-            }
+            //foreach (Vector3 extraPoint in carFile.ExtraBoundingBoxPoints)
+            //{
+            //    boxDesc = new BoxShapeDescription(0.2f, 0.2f, 0.2f);
+            //    boxDesc.LocalPosition = extraPoint;
+            //    boxDesc.Mass = 0;
+            //    actorDesc.Shapes.Add(boxDesc);
+            //}
 
             using (UtilitiesLibrary lib = new UtilitiesLibrary())
             {
@@ -69,17 +69,21 @@ namespace Carmageddon.Physics
                 actorDesc.BodyDescription.MassSpaceInertia = inertiaTensor;
             }
             
-            actorDesc.GlobalPose = pose;
             _physXActor = PhysX.Instance.Scene.CreateActor(actorDesc);
-
-            
+                        
             _physXActor.Name = "Vehicle";
             _physXActor.Group = PhysXConsts.VehicleId;
             
             _physXActor.UserData = vehicle;
             _physXActor.MaximumAngularVelocity = 1.5f;
+
             
+
             
+            //cloth.AttachToShape(_physXActor.Shapes[0], ClothAttachmentFlag.Twoway);
+            //cloth.ValidBounds = new Bounds3(carFile.BoundingBox.Min, carFile.BoundingBox.Max);
+            //cloth.Flags = cloth.Flags | ClothFlag.ValidBounds;
+                                   
 
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 0.1f;
@@ -115,7 +119,7 @@ namespace Carmageddon.Physics
 
             wheelDesc.InverseWheelMass = 0.08f;
             wheelDesc.LongitudalTireForceFunction = lngTFD;
-            wheelDesc.Flags = WheelShapeFlag.ClampedFriction;
+            wheelDesc.Flags = (WheelShapeFlag)64;// WheelShapeFlag.ClampedFriction;
 
             MaterialDescription md = new MaterialDescription();
             md.Flags = MaterialFlag.DisableFriction;
@@ -126,7 +130,7 @@ namespace Carmageddon.Physics
             {
                 wheelDesc.Radius = wheel.IsDriven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
                 wheelDesc.SuspensionTravel = (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear) * 18; // Math.Max(wheelDesc.Radius / 2f, 0.21f);
-                wheelDesc.LocalPosition = wheel.Position + new Vector3(0, wheelDesc.SuspensionTravel * carFile.Mass * 0.00045f, 0);
+                wheelDesc.LocalPosition = wheel.Position - new Vector3(0, 0.3f, 0);// +new Vector3(0, wheelDesc.SuspensionTravel * carFile.Mass * 0.00045f, 0);
                 
                 SpringDescription spring = new SpringDescription();
                 float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
@@ -141,6 +145,8 @@ namespace Carmageddon.Physics
 
                 Wheels.Add(new VehicleWheel(this, wheel, ws, wheel.IsLeft ? 0.17f : -0.17f) { Index = Wheels.Count });
             }
+
+            
 
             _physXActor.WakeUp(60.0f);
 
@@ -360,7 +366,7 @@ namespace Carmageddon.Physics
             Matrix m = _physXActor.GlobalOrientation;
             m.Up = Vector3.Up;
             _physXActor.GlobalOrientation = m;
-            _physXActor.GlobalPosition += new Vector3(0.0f, 2.0f, 0.0f);
+            _physXActor.GlobalPosition += new Vector3(0.0f, 10.0f, 0.0f);
             _physXActor.LinearMomentum = _physXActor.LinearVelocity = Vector3.Zero;
             _physXActor.AngularMomentum = _physXActor.AngularVelocity = Vector3.Zero;
         }

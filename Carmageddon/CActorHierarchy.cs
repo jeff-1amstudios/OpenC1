@@ -12,7 +12,7 @@ namespace Carmageddon
     class CActorHierarchy
     {
         List<CActor> _actors = new List<CActor>();
-        public DatFile ModelsFile { get; set; }
+        public CModelGroup Models { get; set; }
 
         
         public CActor Root
@@ -59,6 +59,8 @@ namespace Carmageddon
 
             ResolveTransformations(Matrix.Identity, Root, grooves);
             ScaleTransformations(GameVariables.Scale, Root);
+
+            
         }
 
         private void ResolveTransformations(Matrix world, CActor actor, List<BaseGroove> grooves)
@@ -103,7 +105,7 @@ namespace Carmageddon
 
         public void Render(Matrix world, BoundingFrustum frustum)
         {
-            ModelsFile.SetupRender();
+            Models.SetupRender();
 
             GameVariables.NbrSectionsRendered = GameVariables.NbrSectionsChecked = 0;
                         

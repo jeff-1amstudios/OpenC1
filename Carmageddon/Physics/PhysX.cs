@@ -47,18 +47,23 @@ namespace Carmageddon.Physics
             }
 
             Core.SetParameter(PhysicsParameter.SkinWidth, (float)0.01f);
-            Core.SetParameter(PhysicsParameter.VisualizationScale, (float)0f);
+            Core.SetParameter(PhysicsParameter.VisualizationScale, (float)1f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
             Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
+            Core.SetParameter(PhysicsParameter.VisualizeActorAxes, true);
+            Core.SetParameter(PhysicsParameter.VisualizeClothMesh, true);
+            Core.SetParameter(PhysicsParameter.VisualizeClothCollision, false);
             
             SceneDescription sceneDescription = new SceneDescription();
             sceneDescription.Gravity = new Vector3(0f, Gravity, 0f);
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
-            
-            sceneDescription.Flags = SceneFlag.EnableMultithread | SceneFlag.SimulateSeparateThread;
+
+            sceneDescription.Flags = SceneFlag.SimulateSeparateThread | SceneFlag.SequentialPrimart;
             //sceneDescription.InternalThreadCount = 1; // HexaChromeGame.ProcessorCount - 1;
             sceneDescription.ThreadMask = 0xfffffffe;
             Scene = Core.CreateScene(sceneDescription);
+
+            //Scene.Core.Parameters.Flags |= SceneFlag.SequentialPrimart;
 
             Scene.UserContactReport = ContactReport.Instance;
             Scene.UserTriggerReport = TriggerReport.Instance;
@@ -135,11 +140,15 @@ namespace Carmageddon.Physics
         {
         }
 
-        public void Update()
+        public void Simulate()
         {
             Scene.Simulate(Engine.ElapsedSeconds);
-            Scene.FlushStream();
-            Scene.FetchResults(SimulationStatus.RigidBodyFinished, true);
+            Scene.FlushStream();            
+        }
+
+        public void Fetch()
+        {
+            Scene.FetchResults(SimulationStatus.AllFinished, true);
         }
     }
 }

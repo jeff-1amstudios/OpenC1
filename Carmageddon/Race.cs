@@ -52,9 +52,9 @@ namespace Carmageddon
 
             ResourceCache.ResolveMaterials();
 
-            DatFile models = new DatFile(GameVariables.BasePath + @"data\models\" + ConfigFile.ModelFile);
+            DatFile modelFile = new DatFile(GameVariables.BasePath + @"data\models\" + ConfigFile.ModelFile);
 
-            ActFile actFile = new ActFile(GameVariables.BasePath + @"data\actors\" + ConfigFile.ActorFile, models);
+            ActFile actFile = new ActFile(GameVariables.BasePath + @"data\actors\" + ConfigFile.ActorFile, modelFile.Models);
             _actors = actFile.Hierarchy;
             _actors.ResolveTransforms(false, ConfigFile.Grooves);
 
@@ -94,7 +94,7 @@ namespace Carmageddon
             OpponentController.Nodes = ConfigFile.OpponentPathNodes;
 
             PlayerVehicle = new Vehicle(GameVariables.BasePath + @"data\cars\" + playerVehicleFile, new PlayerDriver());
-            PlayerVehicle.SetupPhysics(ConfigFile.GridPosition, ConfigFile.GridDirection);
+            PlayerVehicle.PlaceOnGrid(ConfigFile.GridPosition, ConfigFile.GridDirection);
             Drivers.Add(PlayerVehicle.Driver);
 
             Race.Current = this;

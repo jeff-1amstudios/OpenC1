@@ -86,8 +86,10 @@
     <Compile Include="CameraViews\CockpitView.cs" />
     <Compile Include="CameraViews\FlyView.cs" />
     <Compile Include="CameraViews\ICameraView.cs" />
+    <Compile Include="CDeformableModel.cs" />
     <Compile Include="Checkpoint.cs" />
     <Compile Include="CMaterial.cs" />
+    <Compile Include="CModelGroup.cs" />
     <Compile Include="CpuDriver.cs" />
     <Compile Include="EditModes\IEditMode.cs" />
     <Compile Include="EditModes\NoEditMode.cs" />

@@ -37,7 +37,7 @@ namespace Carmageddon.Parsers
             get { return _actors; }
         }
 
-        public ActFile(string filename, DatFile modelFile)
+        public ActFile(string filename, CModelGroup models)
         {
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
 
@@ -112,7 +112,7 @@ namespace Carmageddon.Parsers
                     case ActorBlockType.ModelName:
                         string modelName = ReadNullTerminatedString(reader);
                         currentActor.ModelName = modelName;
-                        currentActor.Model = modelFile.GetModel(modelName);
+                        currentActor.Model = models.GetModel(modelName);
                         break;
 
                     case ActorBlockType.BoundingBox:
@@ -134,7 +134,7 @@ namespace Carmageddon.Parsers
             }
             reader.Close();
 
-            _actors.ModelsFile = modelFile;
+            _actors.Models = models;
             _actors.ResolveMaterials();
         }        
     }
