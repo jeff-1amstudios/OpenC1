@@ -34,6 +34,7 @@ namespace Carmageddon.Physics
         float _motorTorque = 0.0f;
         float _brakeTorque = 0.0f;
         TireFunctionDescription _frontLateralTireFn, _rearLateralTireFn;
+        public Actor _dummy;
                 
         
         public VehicleChassis(Vehicle vehicle, CActor bodycactor)
@@ -77,14 +78,15 @@ namespace Carmageddon.Physics
             _physXActor.UserData = vehicle;
             _physXActor.MaximumAngularVelocity = 1.5f;
 
-            
 
-            
-            //cloth.AttachToShape(_physXActor.Shapes[0], ClothAttachmentFlag.Twoway);
-            //cloth.ValidBounds = new Bounds3(carFile.BoundingBox.Min, carFile.BoundingBox.Max);
-            //cloth.Flags = cloth.Flags | ClothFlag.ValidBounds;
-                                   
+            //actorDesc = new ActorDescription();
+            //actorDesc.BodyDescription = new BodyDescription(0.0001f);
+            //actorDesc.Shapes.Add(new BoxShapeDescription(new Vector3(0.1f)));
+            ////_dummy = PhysX.Instance.Scene.CreateActor(actorDesc);
+            //Cloth cloth = ((CDeformableModel)bodycactor.Model).DeformableBody;
+            //cloth.AttachToCore(_physXActor, 1, 0.2f);
 
+                        
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 0.1f;
             lngTFD.ExtremumValue = 5f;
@@ -108,7 +110,7 @@ namespace Carmageddon.Physics
             _rearLateralTireFn.ExtremumSlip = 0.2f;
             _rearLateralTireFn.ExtremumValue = 2.1f;
             _rearLateralTireFn.AsymptoteSlip = 0.0013f * carFile.Mass;
-            _rearLateralTireFn.AsymptoteValue = 0.016f;
+            _rearLateralTireFn.AsymptoteValue = 0.01f;
 
             _frontLateralTireFn = _rearLateralTireFn;
             //_frontLateralTireFn.AsymptoteSlip = 0.8f;
@@ -130,7 +132,7 @@ namespace Carmageddon.Physics
             {
                 wheelDesc.Radius = wheel.IsDriven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
                 wheelDesc.SuspensionTravel = (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear) * 18; // Math.Max(wheelDesc.Radius / 2f, 0.21f);
-                wheelDesc.LocalPosition = wheel.Position - new Vector3(0, 0.3f, 0);// +new Vector3(0, wheelDesc.SuspensionTravel * carFile.Mass * 0.00045f, 0);
+                wheelDesc.LocalPosition = wheel.Position +new Vector3(0, wheelDesc.SuspensionTravel * carFile.Mass * 0.00045f, 0);
                 
                 SpringDescription spring = new SpringDescription();
                 float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
@@ -144,9 +146,7 @@ namespace Carmageddon.Physics
                 ws.LateralTireForceFunction = wheel.IsFront ? _frontLateralTireFn : _rearLateralTireFn;
 
                 Wheels.Add(new VehicleWheel(this, wheel, ws, wheel.IsLeft ? 0.17f : -0.17f) { Index = Wheels.Count });
-            }
-
-            
+            }            
 
             _physXActor.WakeUp(60.0f);
 
@@ -161,7 +161,7 @@ namespace Carmageddon.Physics
             //set center of mass
             //Vector3 massPos = _physXActor.CenterOfMassLocalPosition;
             Vector3 massPos = carFile.CenterOfMass;
-            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.36f;
+            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.31f;
 
             _physXActor.SetCenterOfMassOffsetLocalPosition(massPos);
         }
@@ -210,10 +210,12 @@ namespace Carmageddon.Physics
                 {
                     _steerAngle -= diff;
                 }
+                
+                GameConsole.WriteLine("steer3: " + Math.Min(Math.Max(0.9f, (1 - Speed / 1200)), 1));
                 foreach (VehicleWheel wheel in Wheels)
                 {
                     if (wheel.CActor.IsSteerable)
-                        wheel.Shape.SteeringAngle = _steerAngle;
+                        wheel.Shape.SteeringAngle = _steerAngle * Math.Min(Math.Max(0.9f, (1 - Speed / 1200)), 1);
                 }
             }
 

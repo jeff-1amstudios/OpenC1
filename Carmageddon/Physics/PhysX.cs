@@ -47,7 +47,7 @@ namespace Carmageddon.Physics
             }
 
             Core.SetParameter(PhysicsParameter.SkinWidth, (float)0.01f);
-            Core.SetParameter(PhysicsParameter.VisualizationScale, (float)1f);
+            Core.SetParameter(PhysicsParameter.VisualizationScale, (float)0f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
             Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
             Core.SetParameter(PhysicsParameter.VisualizeActorAxes, true);
@@ -58,12 +58,10 @@ namespace Carmageddon.Physics
             sceneDescription.Gravity = new Vector3(0f, Gravity, 0f);
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
 
-            sceneDescription.Flags = SceneFlag.SimulateSeparateThread | SceneFlag.SequentialPrimart;
+            sceneDescription.Flags = SceneFlag.SequentialPrimart;
             //sceneDescription.InternalThreadCount = 1; // HexaChromeGame.ProcessorCount - 1;
             sceneDescription.ThreadMask = 0xfffffffe;
             Scene = Core.CreateScene(sceneDescription);
-
-            //Scene.Core.Parameters.Flags |= SceneFlag.SequentialPrimart;
 
             Scene.UserContactReport = ContactReport.Instance;
             Scene.UserTriggerReport = TriggerReport.Instance;

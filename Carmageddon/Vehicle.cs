@@ -75,7 +75,7 @@ namespace Carmageddon
             foreach (BaseGroove g in Config.Grooves)
                 if (!g.IsWheelActor) _grooves.Add(g);
 
-            DatFile modelFile = new DatFile(GameVariables.BasePath + "data\\models\\" + Config.ModelFile, new List<string> { Config.ModelFile });
+            DatFile modelFile = new DatFile(GameVariables.BasePath + "data\\models\\" + Config.ModelFile, new List<string> {  });
             ActFile actFile = new ActFile(GameVariables.BasePath +  "data\\actors\\" + Config.ActorFile, modelFile.Models);
             
             _actors = actFile.Hierarchy;
@@ -124,31 +124,35 @@ namespace Carmageddon
             Matrix pose = GridPlacer.GetGridPosition(position, direction);
             Chassis.Actor.GlobalPose = pose;
 
-            var actorDesc = new ActorDescription();
-            actorDesc.BodyDescription = new BodyDescription(0.0001f);
-            actorDesc.Shapes.Add(new BoxShapeDescription(new Vector3(0.1f)));
-            actorDesc.GlobalPose = Matrix.CreateTranslation(Chassis.Actor.GlobalPosition);
-            Actor dummy = PhysX.Instance.Scene.CreateActor(actorDesc);
+            
 
-            CActor bodycactor = _actors.GetByName(Path.GetFileNameWithoutExtension(Config.ModelFile));
-            Cloth cloth = ((CDeformableModel)bodycactor.Model).DeformableBody;
-            cloth.AttachToCore(dummy, 1, 0.2f);
-            FixedJointDescription jointdesc = new FixedJointDescription() { Actor1 = Chassis.Actor, Actor2 = dummy, };
-            jointdesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
-            FixedJoint joint = PhysX.Instance.Scene.CreateJoint<FixedJoint>(jointdesc);
+            //CActor bodycactor = _actors.GetByName(Path.GetFileNameWithoutExtension(Config.ModelFile));
+            //Cloth cloth = ((CDeformableModel)bodycactor.Model).DeformableBody;
+            //cloth.AttachToCore(Chassis.Actor, 1, 0.2f);
+            //FixedJointDescription jointdesc = new FixedJointDescription() { Actor1 = Chassis.Actor, Actor2 = dummy, };
+            //jointdesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
+            //FixedJoint joint = PhysX.Instance.Scene.CreateJoint<FixedJoint>(jointdesc);
+
+            //FixedJointDescription jointdesc = new FixedJointDescription() { Actor1 = Chassis.Actor, Actor2 = Chassis._dummy };
+            //jointdesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
+            //FixedJoint joint = PhysX.Instance.Scene.CreateJoint<FixedJoint>(jointdesc);
         }
 
-        public void ContactReport_Collision(float force, Vector3 position, Vector3 normal)
+        public void ContactReport_Collision(Vector3 force, Vector3 position, Vector3 normal)
         {
+            //Chassis._dummy.AddForceAtPosition(-normal * force, position, ForceMode.Force);
+
+            float forceSize = force.Length();
+
             if (Chassis.Speed > 7 || Chassis.LastSpeed > 7)
             {
-                if (force > 200 /* 750000*/)
+                if (forceSize > 200 /* 750000*/)
                 {
-                    if (force > 1000)
+                    if (forceSize > 1000)
                     {
                         _vehicleBitsEmitter.DumpParticles(position);
                     }
-                    if (force > 200)
+                    if (forceSize > 200)
                     {
                         GameVariables.SparksEmitter.DumpParticles(position, 6);
                     }
@@ -161,7 +165,7 @@ namespace Carmageddon
                     {
                         SoundCache.PlayScrape(this);
                     }
-                    else if (force > 200)
+                    else if (forceSize > 200)
                         SoundCache.PlayCrash(this);
                 }
             }
@@ -203,7 +207,6 @@ namespace Carmageddon
             ModelShadow.Render(Config.BoundingBox, Chassis);
             SkidMarkBuffer.Render();
 
-            return;
             _actors.Render(Chassis.Actor.GlobalPose, null);
             
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();

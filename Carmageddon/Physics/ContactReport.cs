@@ -28,67 +28,66 @@ namespace Carmageddon.Physics
 
         public override void OnContactNotify(ContactPair contactInfo, ContactPairFlag events)
         {
-            
-            //using (ContactStreamIterator iter = new ContactStreamIterator(contactInfo.ContactStream))
-            //{
-            //    //if we are looking at the player car
-            //    if (contactInfo.ActorB.Group == PhysXConsts.VehicleId)
-            //    {
-            //        while (iter.GoToNextPair())
-            //        {
-            //            while (iter.GoToNextPatch())
-            //            {
-            //                while (iter.GoToNextPoint())
-            //                {
-            //                    Shape shapeB = iter.GetShapeB();
-            //                    if (contactInfo.ActorA.Group == PhysXConsts.TrackId && shapeB is WheelShape)
-            //                        continue; //we dont want to know each time a wheel is touching the ground...
 
-            //                    Vector3 pos = iter.GetPoint();
-            //                    float force = contactInfo.NormalForce.Length();
-            //                    if (force > 0)
-            //                    {
-            //                        GameVariables.SparksEmitter.Update(pos);
-                                                                       
+            using (ContactStreamIterator iter = new ContactStreamIterator(contactInfo.ContactStream))
+            {
+                //if we are looking at the player car
+                if (contactInfo.ActorB.Group == PhysXConsts.VehicleId)
+                {
+                    while (iter.GoToNextPair())
+                    {
+                        while (iter.GoToNextPatch())
+                        {
+                            while (iter.GoToNextPoint())
+                            {
+                                Shape shapeB = iter.GetShapeB();
+                                if (contactInfo.ActorA.Group == PhysXConsts.TrackId && shapeB is WheelShape)
+                                    continue; //we dont want to know each time a wheel is touching the ground...
 
-            //                        if (contactInfo.ActorA.Group == PhysXConsts.VehicleId)
-            //                        {
-            //                            //2 vehicle collision
-            //                            HandleVehicleOnVehicleCollision((Vehicle)contactInfo.ActorA.UserData, (Vehicle)contactInfo.ActorB.UserData, force, pos);
-            //                            return;
-            //                        }
-            //                        else
-            //                        {
-            //                            Vehicle vehicle = (Vehicle)contactInfo.ActorB.UserData;
-            //                            vehicle.ContactReport_Collision(force, pos, iter.GetPatchNormal());
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
+                                Vector3 pos = iter.GetPoint();
+                                float force = contactInfo.NormalForce.Length();
+                                if (force > 0)
+                                {
+                                    GameVariables.SparksEmitter.Update(pos);
 
-            //    // a non-car object sliding along the track
-            //    else if (contactInfo.ActorB.Group == PhysXConsts.NonCarId && contactInfo.ActorA.Group == PhysXConsts.TrackId)
-            //    {
-            //        if (contactInfo.ActorB.LinearVelocity.Length() > 2)
-            //        {
-            //            while (iter.GoToNextPair())
-            //            {
-            //                while (iter.GoToNextPatch())
-            //                {
-            //                    while (iter.GoToNextPoint())
-            //                    {
-            //                        Vector3 pos = iter.GetPoint();
+                                    if (contactInfo.ActorA.Group == PhysXConsts.VehicleId)
+                                    {
+                                        //2 vehicle collision
+                                        HandleVehicleOnVehicleCollision((Vehicle)contactInfo.ActorA.UserData, (Vehicle)contactInfo.ActorB.UserData, force, pos);
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        Vehicle vehicle = (Vehicle)contactInfo.ActorB.UserData;
+                                        vehicle.ContactReport_Collision(contactInfo.NormalForce, pos, iter.GetPatchNormal());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
-            //                        GameVariables.SparksEmitter.Update(pos);
-            //                        //GameConsole.WriteEvent("noncar collision");
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+                // a non-car object sliding along the track
+                else if (contactInfo.ActorB.Group == PhysXConsts.NonCarId && contactInfo.ActorA.Group == PhysXConsts.TrackId)
+                {
+                    if (contactInfo.ActorB.LinearVelocity.Length() > 2)
+                    {
+                        while (iter.GoToNextPair())
+                        {
+                            while (iter.GoToNextPatch())
+                            {
+                                while (iter.GoToNextPoint())
+                                {
+                                    Vector3 pos = iter.GetPoint();
+
+                                    GameVariables.SparksEmitter.Update(pos);
+                                    //GameConsole.WriteEvent("noncar collision");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void HandleVehicleOnVehicleCollision(Vehicle v1, Vehicle v2, float force, Vector3 position)

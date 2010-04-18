@@ -48,10 +48,8 @@ namespace Carmageddon
 
         public void Update()
         {
-            
             _race.Update();
-            
-            PhysX.Instance.Simulate();
+                       
 
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
                 system.Update();
@@ -71,10 +69,6 @@ namespace Carmageddon
                 MessageRenderer.Instance.PostMessage("Lighting: " + (GameVariables.LightingEnabled ? "Enabled" : "Disabled"), 2);
                 _effect = null;
             }
-            //if (Engine.Input.IsKeyDown(Keys.S))
-            //    Engine.TimeScale = 0.2f;
-            //else
-            //    Engine.TimeScale = 1;
                         
             _editModes[_currentEditMode].Update();
             _race.PlayerVehicle.Chassis.OutputDebugInfo();
@@ -83,6 +77,7 @@ namespace Carmageddon
             
             GameConsole.WriteLine("FPS", Engine.Fps);
 
+            PhysX.Instance.Simulate();
             PhysX.Instance.Fetch();
         }
 
