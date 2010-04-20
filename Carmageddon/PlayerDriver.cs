@@ -21,8 +21,9 @@ namespace Carmageddon
             _audioListener = Engine.Audio.GetListener();
             _audioListener.DistanceFactor = 2f;
             _audioListener.RolloffFactor = 1f;
-
         }
+
+        public bool ModerateSteeringAtSpeed { get { return true; } }
 
         public void OnRaceStart()
         {

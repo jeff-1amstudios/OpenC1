@@ -121,7 +121,7 @@ namespace Carmageddon.Physics
 
             wheelDesc.InverseWheelMass = 0.08f;
             wheelDesc.LongitudalTireForceFunction = lngTFD;
-            wheelDesc.Flags = (WheelShapeFlag)64;// WheelShapeFlag.ClampedFriction;
+            wheelDesc.Flags = WheelShapeFlag.ClampedFriction;
 
             MaterialDescription md = new MaterialDescription();
             md.Flags = MaterialFlag.DisableFriction;
@@ -161,7 +161,7 @@ namespace Carmageddon.Physics
             //set center of mass
             //Vector3 massPos = _physXActor.CenterOfMassLocalPosition;
             Vector3 massPos = carFile.CenterOfMass;
-            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.31f;
+            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.36f;
 
             _physXActor.SetCenterOfMassOffsetLocalPosition(massPos);
         }
@@ -210,12 +210,14 @@ namespace Carmageddon.Physics
                 {
                     _steerAngle -= diff;
                 }
+
+
+                float steerFactor = Vehicle.Driver.ModerateSteeringAtSpeed ? Math.Min(Math.Max(0.1f, (1 - Speed / 200)), 1) : 1;
                 
-                GameConsole.WriteLine("steer3: " + Math.Min(Math.Max(0.9f, (1 - Speed / 1200)), 1));
                 foreach (VehicleWheel wheel in Wheels)
                 {
                     if (wheel.CActor.IsSteerable)
-                        wheel.Shape.SteeringAngle = _steerAngle * Math.Min(Math.Max(0.9f, (1 - Speed / 1200)), 1);
+                        wheel.Shape.SteeringAngle = _steerAngle * steerFactor;
                 }
             }
 
@@ -403,17 +405,17 @@ namespace Carmageddon.Physics
             _physXActor.AddLocalForce(Vector3.Forward * 1000, ForceMode.Force);
         }
 
-        internal void SetLateralFrictionMultiplier(float p)
-        {
-            foreach (VehicleWheel wheel in Wheels)
-            {
-                TireFunctionDescription tfd = wheel.Shape.LateralTireForceFunction;
-                tfd.ExtremumValue *= p;
-                tfd.AsymptoteSlip *= p;
-                wheel.Shape.LateralTireForceFunction = tfd;
-            }
-            _lateralFrictionMultiplier = p;
-        }
+        //internal void SetLateralFrictionMultiplier(float p)
+        //{
+        //    foreach (VehicleWheel wheel in Wheels)
+        //    {
+        //        TireFunctionDescription tfd = wheel.Shape.LateralTireForceFunction;
+        //        tfd.ExtremumValue *= p;
+        //        tfd.AsymptoteSlip *= p;
+        //        wheel.Shape.LateralTireForceFunction = tfd;
+        //    }
+        //    _lateralFrictionMultiplier = p;
+        //}
     }
 }
 

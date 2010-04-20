@@ -24,32 +24,22 @@ namespace Carmageddon
 
         public void SetupVehicle()
         {
-            Vehicle.Chassis.Actor.LinearDamping = 0.02f;
-            Vector3 com = Vehicle.Chassis.Actor.CenterOfMassLocalPosition;
-            //com.Y -= 0.3f;
-            //Vehicle.Chassis.Actor.SetCenterOfMassOffsetLocalPosition(com); //help out ai to keep the car stable
-
-
             TireFunctionDescription frontLateralTireFn = new TireFunctionDescription();
             frontLateralTireFn.ExtremumSlip = 0.26f;
-            frontLateralTireFn.ExtremumValue = 1.8f;
-            frontLateralTireFn.AsymptoteSlip = 2;
+            frontLateralTireFn.ExtremumValue = 2.3f;
+            frontLateralTireFn.AsymptoteSlip = 2.222f;
             frontLateralTireFn.AsymptoteValue = 0.001f;
 
             TireFunctionDescription rearLateralTireFn = new TireFunctionDescription();
             rearLateralTireFn.ExtremumSlip = 0.35f;
-            rearLateralTireFn.ExtremumValue = 2.7f;
-            rearLateralTireFn.AsymptoteSlip = 2f;
+            rearLateralTireFn.ExtremumValue = 3f;
+            rearLateralTireFn.AsymptoteSlip = 2.222f;
             rearLateralTireFn.AsymptoteValue = 0.001f;
 
             foreach (VehicleWheel wheel in Vehicle.Chassis.Wheels)
             {
                 wheel.Shape.LateralTireForceFunction = wheel.IsRear ? rearLateralTireFn : frontLateralTireFn;
             }
-
-
-            //give cpu driver a bit more grip
-            Vehicle.Chassis.SetLateralFrictionMultiplier(1.111f);
         }
 
         public BoundingSphere GetBoundingSphere()

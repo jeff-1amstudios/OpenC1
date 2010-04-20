@@ -30,6 +30,7 @@ namespace Carmageddon
         float _reverseTurning;
         int _nbrFails = -1;
         float _lastDistance;
+        float _maxSpeedAtEndOfPath = 0;
         
         bool _raceStarted = false;
 
@@ -37,6 +38,8 @@ namespace Carmageddon
         {
 
         }
+
+        public bool ModerateSteeringAtSpeed { get { return false; } }
 
         public void OnRaceStart()
         {
@@ -58,7 +61,7 @@ namespace Carmageddon
             if (_lastPositionTime + 1.5f < Engine.TotalSeconds)
             {
                 float distFromLastPosition = Vector3.Distance(_lastPosition, pos);
-                if (distFromLastPosition < 2)
+                if (distFromLastPosition < 2 && Vehicle.Chassis.Speed < 4)
                 {
                     Escape(); //were stuck, try and escape
                 }
@@ -91,13 +94,13 @@ namespace Carmageddon
 
                 if (_currentPath != null)
                 {
-                    GameConsole.WriteLine("Limits " + _currentPath.MinSpeedAtEnd + ", " + _currentPath.MaxSpeedAtEnd);
+                    GameConsole.WriteLine("Limits " + _currentPath.MinSpeedAtEnd + ", " + _maxSpeedAtEndOfPath);
                 }
 
 
-                if (_currentPath != null && Vehicle.Chassis.Speed > _currentPath.MaxSpeedAtEnd)
+                if (_currentPath != null && Vehicle.Chassis.Speed > _maxSpeedAtEndOfPath)
                 {
-                    float distToBrake = Vehicle.Chassis.Speed * 0.4f + ((Vehicle.Chassis.Speed - _currentPath.MaxSpeedAtEnd) * 1.4f);
+                    float distToBrake = Vehicle.Chassis.Speed * 0.4f + ((Vehicle.Chassis.Speed - _maxSpeedAtEndOfPath) * 1.4f);
                     //GameConsole.WriteLine("brake: " + (int)distToBrake + ", " + (int)distanceFromNode);
                     Matrix mat = Matrix.CreateTranslation(0, 0, distToBrake) * Vehicle.Chassis.Actor.GlobalPose;
 
@@ -200,7 +203,7 @@ namespace Carmageddon
         private void Escape()
         {
             _state = _state == CpuDriverState.Reversing ? CpuDriverState.Racing : CpuDriverState.Reversing;
-            _nextStateChangeTime = Engine.TotalSeconds + Engine.Random.Next(1f, 3f);
+            _nextStateChangeTime = Engine.TotalSeconds + Engine.Random.Next(1.5f, 3f);
             _reverseTurning = Engine.Random.Next(-1f, 0f);
         }
 
@@ -223,16 +226,15 @@ namespace Carmageddon
             if (_nextPath != null && _currentPath != null)
             {
                 float nextPathAngle = MathHelper.ToDegrees(GetUnsignedAngleBetweenVectors(_currentPath.End.Position - _currentPath.Start.Position, _nextPath.End.Position - _nextPath.Start.Position));
-                //GameConsole.WriteEvent("next path angle " + nextPathAngle);
 
                 if (nextPathAngle > 5)
                 {
-                    float newspeed = (180 - nextPathAngle) * 0.6f;
-                    if (newspeed < _currentPath.MaxSpeedAtEnd)
-                    {
-                        _currentPath.MaxSpeedAtEnd = newspeed;
-                        _currentPath.UserSet = true;
-                    }
+                    float newspeed = (180 - nextPathAngle) * 0.58f;
+                    _maxSpeedAtEndOfPath = newspeed;
+                }
+                else
+                {
+                    _maxSpeedAtEndOfPath = 255;
                 }
             }
         }

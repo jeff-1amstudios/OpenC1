@@ -20,11 +20,9 @@ namespace Carmageddon
 {
     class PlayGameScreen : IGameScreen
     {
-        //Vehicle _playerVehicle;
         Race _race;
 
-        BasicEffect2 _effect;
-        
+        BasicEffect2 _effect;   
         List<IEditMode> _editModes = new List<IEditMode>();
         
         int _currentEditMode = 0;
@@ -39,7 +37,7 @@ namespace Carmageddon
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
             string playerCar = "blkeagle.txt";
-            _race = new Race(GameVariables.BasePath + @"data\races\citya1.TXT", playerCar);
+            _race = new Race(GameVariables.BasePath + @"data\races\coastc3.TXT", playerCar);
             
             _editModes.Add(new NoEditMode());
             _editModes.Add(new OpponentEditMode());
@@ -48,6 +46,10 @@ namespace Carmageddon
 
         public void Update()
         {
+
+            PhysX.Instance.Simulate();
+            PhysX.Instance.Fetch();
+
             _race.Update();
                        
 
@@ -77,8 +79,7 @@ namespace Carmageddon
             
             GameConsole.WriteLine("FPS", Engine.Fps);
 
-            PhysX.Instance.Simulate();
-            PhysX.Instance.Fetch();
+            
         }
 
         public void Render()
