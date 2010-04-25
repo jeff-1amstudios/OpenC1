@@ -37,7 +37,7 @@ namespace Carmageddon
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
             string playerCar = "blkeagle.txt";
-            _race = new Race(GameVariables.BasePath + @"data\races\coastc3.TXT", playerCar);
+            _race = new Race(GameVariables.BasePath + @"data\races\citya1.TXT", playerCar);
             
             _editModes.Add(new NoEditMode());
             _editModes.Add(new OpponentEditMode());

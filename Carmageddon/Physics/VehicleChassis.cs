@@ -79,12 +79,16 @@ namespace Carmageddon.Physics
             _physXActor.MaximumAngularVelocity = 1.5f;
 
 
-            //actorDesc = new ActorDescription();
-            //actorDesc.BodyDescription = new BodyDescription(0.0001f);
-            //actorDesc.Shapes.Add(new BoxShapeDescription(new Vector3(0.1f)));
-            ////_dummy = PhysX.Instance.Scene.CreateActor(actorDesc);
-            //Cloth cloth = ((CDeformableModel)bodycactor.Model).DeformableBody;
-            //cloth.AttachToCore(_physXActor, 1, 0.2f);
+            actorDesc = new ActorDescription();
+            actorDesc.BodyDescription = new BodyDescription(0.0001f);
+            actorDesc.Shapes.Add(new BoxShapeDescription(new Vector3(0.1f)));
+            actorDesc.Group = PhysXConsts.DeformableBody;
+            //actorDesc.GlobalPose = _physXActor.GlobalPose;
+            _dummy = PhysX.Instance.Scene.CreateActor(actorDesc);
+            
+            Cloth cloth = ((CDeformableModel)bodycactor.Model).DeformableBody;
+            cloth.AttachToCore(_dummy, 0.01f, 2f);
+            ((CDeformableModel)bodycactor.Model)._actor = _dummy;
 
                         
             TireFunctionDescription lngTFD = new TireFunctionDescription();
@@ -132,7 +136,7 @@ namespace Carmageddon.Physics
             {
                 wheelDesc.Radius = wheel.IsDriven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
                 wheelDesc.SuspensionTravel = (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear) * 18; // Math.Max(wheelDesc.Radius / 2f, 0.21f);
-                wheelDesc.LocalPosition = wheel.Position +new Vector3(0, wheelDesc.SuspensionTravel * carFile.Mass * 0.00045f, 0);
+                wheelDesc.LocalPosition = wheel.Position - new Vector3(0, 0.7f, 0);// +new Vector3(0, wheelDesc.SuspensionTravel * carFile.Mass * 0.00045f, 0);
                 
                 SpringDescription spring = new SpringDescription();
                 float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
@@ -182,6 +186,8 @@ namespace Carmageddon.Physics
         public void Update()
         {
             LastSpeed = Speed;
+
+            //_dummy.GlobalPose = _physXActor.GlobalPose;
 
             Vector3 vDirection = _physXActor.GlobalOrientation.Forward;
             Vector3 vNormal = _physXActor.LinearVelocity * vDirection;

@@ -11,5 +11,6 @@ namespace Carmageddon.Physics
         public const short VehicleId = 1;
         public const short TrackId = 10;
         public const short NonCarId = 11;
+        public const short DeformableBody = 12;
     }
 }

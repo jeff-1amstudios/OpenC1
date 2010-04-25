@@ -8,14 +8,23 @@ using Carmageddon.Physics;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using PlatformEngine;
+using NFSEngine;
+using Microsoft.Xna.Framework.Input;
 
 namespace Carmageddon
 {
     class CDeformableModel : CModel
     {
         Cloth _deformableBody;
-        List<short> _localIndices = new List<short>();
-        List<VertexPositionNormalTexture> _localVerts = new List<VertexPositionNormalTexture>();
+        Vector3[] _originalPositions;
+        VertexPositionNormalTexture[] _original;
+
+        public Actor _actor;
+        
+        Matrix _old = Matrix.Identity;
+        DynamicVertexBuffer _vertexBuffer;
+        IndexBuffer _indexBuffer;
+        FixedJoint _joint;
 
         public Cloth DeformableBody
         {
@@ -25,6 +34,7 @@ namespace Carmageddon
         public override void Resolve(List<ushort> indices, List<VertexPositionNormalTexture> vertices, List<Vector2> vertexTextureMap, List<Vector3> vertexPositions)
         {
             List<int> indices2 = new List<int>();
+            
             foreach (Polygon poly in Polygons)
             {
                 poly.NbrPrims = 1;
@@ -37,19 +47,16 @@ namespace Carmageddon
             desc.VertexCount = VertexCount;
             desc.TriangleCount = indices2.Count / 3;
 
-            Vector3[] modelVerts = new Vector3[VertexCount];
-            vertexPositions.CopyTo(VertexBaseIndex, modelVerts, 0, VertexCount);
+            _originalPositions = new Vector3[VertexCount];
+            vertexPositions.CopyTo(VertexBaseIndex, _originalPositions, 0, VertexCount);
 
-            for (int i = 0; i < modelVerts.Length; i++)
+            for (int i = 0; i < _originalPositions.Length; i++)
             {
-                modelVerts[i] = Vector3.Transform(modelVerts[i], GameVariables.ScaleMatrix);
+                _originalPositions[i] = Vector3.Transform(_originalPositions[i], GameVariables.ScaleMatrix);
             }
 
             desc.TriangleStream.SetData(indices2.ToArray());
-            desc.VerticesStream.SetData(modelVerts);
-
-
-            //desc.Flags = MeshFlag.Indices16Bit;
+            desc.VerticesStream.SetData(_originalPositions);
 
             MemoryStream ms = new MemoryStream();
             Cooking.InitializeCooking();
@@ -61,17 +68,8 @@ namespace Carmageddon
             ClothDescription clothDesc = new ClothDescription()
             {
                 ClothMesh = mesh,
-                Flags = ClothFlag.Visualization | ClothFlag.Bending | ClothFlag.SelfCollision
+                Flags = ClothFlag.Visualization | ClothFlag.Bending
             };
-
-            /*clothDesc.BendingStiffness = 0.1f,
-                DampingCoefficient = 0.9f,
-                StretchingStiffness=0.1f,*/
-            //clothDesc.SleepLinearVelocity = 50;
-
-            //clothDesc.BendingStiffness = 1f;
-            //clothDesc.DampingCoefficient = 1;
-            //clothDesc.StretchingStiffness = 1;
 
             clothDesc.MeshData.AllocatePositions<Vector3>(VertexCount);
             clothDesc.MeshData.AllocateIndices<int>(indices2.Count);
@@ -87,10 +85,7 @@ namespace Carmageddon
 
             foreach (Polygon poly in Polygons)
             {
-                poly.NbrPrims = 1;
-                _localIndices.Add((short)poly.Vertex1); _localIndices.Add((short)poly.Vertex2); _localIndices.Add((short)poly.Vertex3);
-
-
+                poly.NbrPrims = 1;                
                 if (poly.MaterialIndex >= 0 && MaterialNames != null)
                 {
                     CMaterial material = ResourceCache.GetMaterial(MaterialNames[poly.MaterialIndex]);
@@ -108,19 +103,29 @@ namespace Carmageddon
                     }
                     else
                     {
-                        //currentPoly = poly;
+                        currentPoly = poly;
                     }
                 }
             }
 
+            _original = new VertexPositionNormalTexture[VertexCount];
             for (int i = 0; i < VertexCount; i++)
             {
                 Vector3 normal = Polygons[i / 3].Normal;
                 if (TextureMapCount > 0)
-                    _localVerts.Add(new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], normal, vertexTextureMap[i + VertexBaseIndex]));
+                    _original[i] = new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], normal, vertexTextureMap[i + VertexBaseIndex]);
                 else
-                    _localVerts.Add(new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], normal, Vector2.Zero));
+                    _original[i] = new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], normal, Vector2.Zero);
+
+                _originalPositions[i] = _original[i].Position;
             }
+
+            int size = VertexPositionNormalTexture.SizeInBytes * _original.Length;
+            _vertexBuffer = new DynamicVertexBuffer(Engine.Device, size, BufferUsage.WriteOnly);
+            _vertexBuffer.SetData(_original);
+
+            _indexBuffer = new IndexBuffer(Engine.Device, typeof(int), indices2.Count, BufferUsage.WriteOnly);
+            _indexBuffer.SetData(indices2.ToArray());
 
             //for (int i = 0; i < _localIndices.Count / 3; i++)
             //{
@@ -141,13 +146,56 @@ namespace Carmageddon
 
         }
 
-        
+
 
         public override void Render(CMaterial actorMaterial)
         {
-            Render2();
+            if (_actor == null) return; 
 
-            return;
+
+            //if (_old == Matrix.Identity) _old = _actor.GlobalPose;
+            var positions = _deformableBody.MeshData.PositionsStream.GetData<Vector3>();
+            bool changed = false;
+            for (int i = 0; i < positions.Length; i++)
+            {
+                Vector3 calc = Vector3.Transform(_original[i].Position, _old);
+                float distance = Vector3.Distance(calc, positions[i]);
+                //if (distance > 10 && distance < 50)
+                //{
+                    _original[i].Position = positions[i]; // calc;// += ((calc - positions[i]) * 0.1f);
+                    changed = true;
+                //}
+            } 
+            if (changed)
+                _vertexBuffer.SetData(_original);
+
+            var pos = _deformableBody.GetVertexPosition(0);
+
+            //Vector3 calc = Vector3.Transform(_vec0, _old);
+            //GameConsole.WriteLine("crush", Vector3.Distance(calc, pos));
+             
+            _old = _actor.Shapes[0].GlobalPose;
+
+            if (Engine.Input.WasPressed(Keys.N))
+            {
+                for (int i = 0; i < _originalPositions.Length; i++)
+                    _original[i].Position = _originalPositions[i];
+                
+                _deformableBody.MeshData.PositionsStream.SetData(_originalPositions);
+                _vertexBuffer.SetData(_original);
+            }
+
+            if (Engine.Input.WasPressed(Keys.U))
+            {
+                if (_joint == null)
+                {
+                    FixedJointDescription jointdesc = new FixedJointDescription() { Actor1 = _actor, Actor2 = null };
+                    jointdesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
+                    _joint = PhysX.Instance.Scene.CreateJoint<FixedJoint>(jointdesc);
+                }
+                _deformableBody.AddDirectedForceAtPosition(pos, Vector3.Backward * 20, 2);
+            }
+
 
             GraphicsDevice device = Engine.Device;
 
@@ -155,46 +203,14 @@ namespace Carmageddon
             GameVariables.CurrentEffect.World = Matrix.Identity;
             GameVariables.CurrentEffect.CommitChanges();
 
-
-            var pos = _deformableBody.GetVertexPosition(0);
-            
-            int n = _deformableBody.MeshData.NumberOfVertices.Value;
-
-            
-
-            var positions = _deformableBody.MeshData.PositionsStream.GetData<Vector3>();
-            var indicies = _deformableBody.MeshData.IndicesStream.GetData<int>();
-
-            VertexPositionTexture[] vertices = new VertexPositionTexture[n];
-
-            for (int x = 0; x < n; x++)
-            {
-                vertices[x].Position = positions[x];
-            }
-            //device.RenderState.FillMode = FillMode.WireFrame;
             VertexBuffer verts = device.Vertices[0].VertexBuffer;
-            
-            //GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
-            //GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
-            
-            device.DrawUserIndexedPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, vertices, 0, n, indicies, 0, indicies.Length / 3);
-            device.Vertices[0].SetSource(verts, 0, VertexPositionNormalTexture.SizeInBytes);
 
-            //GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
-            //GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
-
-            GameVariables.CurrentEffect.World = world;
-            GameVariables.CurrentEffect.CommitChanges();
-
-        }
-
-        private void Render2()
-        {
-            GraphicsDevice device = Engine.Device;
+            device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionNormalTexture.SizeInBytes);
+            device.Indices = _indexBuffer;
 
             CMaterial currentMaterial = null;
-            int baseVert = 0;
-            int indexBufferStart = 0;
+            int baseVert = 0; // VertexBaseIndex;
+            int indexBufferStart = 0; // IndexBufferStart;
 
             for (int i = 0; i < Polygons.Count; i++)
             {
@@ -206,7 +222,6 @@ namespace Carmageddon
                     device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
                     GameVariables.CullingDisabled = poly.DoubleSided;
                 }
-
 
                 if (poly.Material != null)
                 {
@@ -227,8 +242,7 @@ namespace Carmageddon
                 }
                 GameVariables.NbrDrawCalls++;
 
-                Engine.Device.DrawUserIndexedPrimitives < VertexPositionNormalTexture>(PrimitiveType.TriangleList, _localVerts.ToArray(), 0, 3 * poly.NbrPrims, _localIndices.ToArray(), indexBufferStart, poly.NbrPrims);
-                
+                Engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3 * poly.NbrPrims, indexBufferStart, poly.NbrPrims);
                 indexBufferStart += poly.NbrPrims * 3;
 
                 if (currentMaterial != null && currentMaterial.Funk != null)
@@ -236,6 +250,10 @@ namespace Carmageddon
                     currentMaterial.Funk.AfterRender();
                 }
             }
+
+            device.Vertices[0].SetSource(verts, 0, VertexPositionNormalTexture.SizeInBytes);
+            GameVariables.CurrentEffect.World = world;
+            GameVariables.CurrentEffect.CommitChanges();
         }
     }
 }

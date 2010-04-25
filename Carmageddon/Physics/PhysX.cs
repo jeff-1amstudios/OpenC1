@@ -47,10 +47,10 @@ namespace Carmageddon.Physics
             }
 
             Core.SetParameter(PhysicsParameter.SkinWidth, (float)0.01f);
-            Core.SetParameter(PhysicsParameter.VisualizationScale, (float)0f);
+            Core.SetParameter(PhysicsParameter.VisualizationScale, (float)1f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
             Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
-            Core.SetParameter(PhysicsParameter.VisualizeActorAxes, true);
+            Core.SetParameter(PhysicsParameter.VisualizeActorAxes, false);
             Core.SetParameter(PhysicsParameter.VisualizeClothMesh, true);
             Core.SetParameter(PhysicsParameter.VisualizeClothCollision, false);
             

@@ -75,7 +75,7 @@ namespace Carmageddon
             foreach (BaseGroove g in Config.Grooves)
                 if (!g.IsWheelActor) _grooves.Add(g);
 
-            DatFile modelFile = new DatFile(GameVariables.BasePath + "data\\models\\" + Config.ModelFile, new List<string> {  });
+            DatFile modelFile = new DatFile(GameVariables.BasePath + "data\\models\\" + Config.ModelFile, new List<string> { Config.ModelFile });
             ActFile actFile = new ActFile(GameVariables.BasePath +  "data\\actors\\" + Config.ActorFile, modelFile.Models);
             
             _actors = actFile.Hierarchy;
@@ -123,7 +123,7 @@ namespace Carmageddon
         {
             Matrix pose = GridPlacer.GetGridPosition(position, direction);
             Chassis.Actor.GlobalPose = pose;
-
+            Chassis._dummy.GlobalPose  = pose * Matrix.CreateTranslation(new Vector3(0, 0, 5));
             
 
             //CActor bodycactor = _actors.GetByName(Path.GetFileNameWithoutExtension(Config.ModelFile));
@@ -133,9 +133,7 @@ namespace Carmageddon
             //jointdesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
             //FixedJoint joint = PhysX.Instance.Scene.CreateJoint<FixedJoint>(jointdesc);
 
-            //FixedJointDescription jointdesc = new FixedJointDescription() { Actor1 = Chassis.Actor, Actor2 = Chassis._dummy };
-            //jointdesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
-            //FixedJoint joint = PhysX.Instance.Scene.CreateJoint<FixedJoint>(jointdesc);
+            
         }
 
         public void ContactReport_Collision(Vector3 force, Vector3 position, Vector3 normal)
