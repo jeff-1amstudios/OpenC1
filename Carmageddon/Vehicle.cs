@@ -31,6 +31,7 @@ namespace Carmageddon
         public Stack<SpecialVolume> CurrentSpecialVolume = new Stack<SpecialVolume>();
         public IDriver Driver { get; private set; }
         public VehicleAudio Audio;
+        CDeformableModel _deformableModel;
 
         public Vehicle(string filename, IDriver driver)
         {
@@ -114,6 +115,7 @@ namespace Carmageddon
             Audio = new VehicleAudio(this);
 
             CActor actor2 = _actors.GetByName(Path.GetFileNameWithoutExtension(Config.ModelFile));
+            _deformableModel = (CDeformableModel)actor2.Model;
 
             Chassis = new VehicleChassis(this, actor2);
         }
@@ -123,23 +125,12 @@ namespace Carmageddon
         {
             Matrix pose = GridPlacer.GetGridPosition(position, direction);
             Chassis.Actor.GlobalPose = pose;
-            Chassis._dummy.GlobalPose  = pose * Matrix.CreateTranslation(new Vector3(0, 0, 5));
             
-
-            //CActor bodycactor = _actors.GetByName(Path.GetFileNameWithoutExtension(Config.ModelFile));
-            //Cloth cloth = ((CDeformableModel)bodycactor.Model).DeformableBody;
-            //cloth.AttachToCore(Chassis.Actor, 1, 0.2f);
-            //FixedJointDescription jointdesc = new FixedJointDescription() { Actor1 = Chassis.Actor, Actor2 = dummy, };
-            //jointdesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
-            //FixedJoint joint = PhysX.Instance.Scene.CreateJoint<FixedJoint>(jointdesc);
-
             
         }
 
         public void ContactReport_Collision(Vector3 force, Vector3 position, Vector3 normal)
         {
-            //Chassis._dummy.AddForceAtPosition(-normal * force, position, ForceMode.Force);
-
             float forceSize = force.Length();
 
             if (Chassis.Speed > 7 || Chassis.LastSpeed > 7)
@@ -166,6 +157,8 @@ namespace Carmageddon
                     else if (forceSize > 200)
                         SoundCache.PlayCrash(this);
                 }
+
+                _deformableModel.OnContact(position, force, normal);
             }
         }
 
@@ -215,41 +208,9 @@ namespace Carmageddon
                 _actors.RenderSingle(Config.WheelActors[i].Actor);
             }
 
-            Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 5);
+            //Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 5);
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
-
-            return;
-
-            //for (int i = 0; i < _crushSection.Data.Count; i++)
-            //{
-            //    CrushData d = _crushSection.Data[i];
-            //    //Vector3 center = ((d.V2 + d.V1) / 2) + new Vector3(0, 1.0f, 0);
-            //    //Vector3 size = d.V2 - d.V1;
-            //    float dx = MathHelper.Distance(d.V1.X, d.V2.X);
-            //    float dy = MathHelper.Distance(d.V1.Y, d.V2.Y);
-            //    float dz = MathHelper.Distance(d.V1.Z, d.V2.Z);
-            //    //dx=dy=dz=0.03f;
-            //    Vector3 ride = new Vector3(0, 0.11f, 0);
-            //    //Engine.GraphicsUtils.AddLine(d.V1 + ride, d.V2 + ride, Color.Yellow);
-            //    int baseIdx = _models.GetModels()[0].VertexBaseIndex;
-            //    foreach (CrushPoint pt in d.Points)
-            //    {
-            //        Vector3 pos2 = _models._vertices[baseIdx + pt.VertexIndex].Position + ride;
-            //        Engine.DebugRenderer.AddCube(Matrix.CreateScale(0.01f) * Matrix.CreateTranslation(pos2), Color.Yellow);
-            //    }
-            //    //Engine.GraphicsUtils.AddWireframeCube(
-            //      //  Matrix.CreateScale(new Vector3(dx,dy,dz)) * Matrix.CreateTranslation(d.V1+new Vector3(0, 0.11f, 0)), Color.Yellow);
-            //}
-            //Engine.GraphicsUtils.AddWireframeCube(Matrix.CreateScale(0.03f) * Matrix.CreateTranslation(0.050065f, 0.011696f + 0.11f, 0.383752f), Color.Yellow);
-            //_models.Crush(_crushSection);
-        }
-
-        
-
-        internal void Crush()
-        {
-            _actors.Models.Crush(_crushSection);
         }
 
         public Vector3 Position

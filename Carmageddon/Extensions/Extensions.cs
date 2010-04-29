@@ -46,5 +46,10 @@ namespace Carmageddon
             BoundingBox bb = BoundingBox.CreateFromPoints(points);
             return bb;
         }
+
+        public static string ToShortString(this Vector3 vec)
+        {
+            return vec.X.ToString("0.00") + ", " + vec.Y.ToString("0.00") + ", " + vec.Z.ToString("0.00");
+        }
     }
 }

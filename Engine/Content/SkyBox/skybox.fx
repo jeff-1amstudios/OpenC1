@@ -63,7 +63,6 @@ technique Simple
         LIGHTING = FALSE;
         ZENABLE = FALSE;
         ZWRITEENABLE = FALSE;
-        ALPHATESTENABLE = FALSE;
         ALPHABLENDENABLE = FALSE;
 
         CULLMODE = CCW;

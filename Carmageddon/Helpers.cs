@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using System.Text;
 using Carmageddon.Parsers;
+using Microsoft.Xna.Framework;
 
 namespace Carmageddon
 {
@@ -36,18 +37,48 @@ namespace Carmageddon
             return imgData;
         }
 
-        public static T TryParse<T>(string value, bool ignoreCase)
-      where T : struct
+        public static float GetSignedAngleBetweenVectors(Vector3 from, Vector3 to)
         {
-            T result = default(T);
-            try
-            {
-                result = (T)Enum.Parse(typeof(T), value, ignoreCase);
-                return result;
-            }
-            catch { }
 
-            return result;
+            from.Y = to.Y = 0;
+            from.Normalize();
+            to.Normalize();
+            Vector3 toRight = Vector3.Cross(to, Vector3.Up);
+            toRight.Normalize();
+
+            float forwardDot = Vector3.Dot(from, to);
+            float rightDot = Vector3.Dot(from, toRight);
+
+            // Keep dot in range to prevent rounding errors
+            forwardDot = MathHelper.Clamp(forwardDot, -1.0f, 1.0f);
+
+            double angleBetween = Math.Acos(forwardDot);
+
+            if (rightDot < 0.0f)
+                angleBetween *= -1.0f;
+
+            return (float)angleBetween;
+        }
+
+        public static float GetUnsignedAngleBetweenVectors(Vector3 from, Vector3 to)
+        {
+            from.Y = to.Y = 0;
+            from.Normalize();
+            to.Normalize();
+
+            Vector2 a = new Vector2(from.X, from.Z);
+            a.Normalize();
+            Vector2 b = new Vector2(to.X, to.Z);
+            b.Normalize();
+            return (float)Math.Acos(Vector2.Dot(a, b));
+        }
+
+        public static float UnsignedAngleBetweenTwoV3(Vector3 v1, Vector3 v2)
+        {
+            //v1.Normalize();
+            //v2.Normalize();
+            double Angle = (float)Math.Acos(Vector3.Dot(v1, v2));
+            return (float)Angle;
         }
     }
 }

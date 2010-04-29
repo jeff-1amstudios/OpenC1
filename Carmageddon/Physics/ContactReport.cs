@@ -5,6 +5,7 @@ using Carmageddon.Gfx;
 using Microsoft.Xna.Framework;
 using PlatformEngine;
 using NFSEngine;
+using Carmageddon.Parsers;
 
 namespace Carmageddon.Physics
 {
@@ -28,23 +29,32 @@ namespace Carmageddon.Physics
 
         public override void OnContactNotify(ContactPair contactInfo, ContactPairFlag events)
         {
-
+            
             using (ContactStreamIterator iter = new ContactStreamIterator(contactInfo.ContactStream))
             {
+                
                 //if we are looking at the player car
                 if (contactInfo.ActorB.Group == PhysXConsts.VehicleId)
                 {
+                    Vehicle vehicle = (Vehicle)contactInfo.ActorB.UserData;
+
                     while (iter.GoToNextPair())
                     {
                         while (iter.GoToNextPatch())
                         {
                             while (iter.GoToNextPoint())
                             {
-                                Shape shapeB = iter.GetShapeB();
-                                if (contactInfo.ActorA.Group == PhysXConsts.TrackId && shapeB is WheelShape)
-                                    continue; //we dont want to know each time a wheel is touching the ground...
-
                                 Vector3 pos = iter.GetPoint();
+
+                                if (contactInfo.ActorA.Group == PhysXConsts.TrackId && iter.GetShapeB() is WheelShape)
+                                    continue; //we dont want to know each time a wheel is touching the ground
+
+                                if (contactInfo.ActorA.UserData is NonCar)
+                                {
+                                    HandleNonCarCollision(vehicle, (NonCar)contactInfo.ActorA.UserData, pos, contactInfo.NormalForce, iter.GetPatchNormal());
+                                }
+
+                                
                                 float force = contactInfo.NormalForce.Length();
                                 if (force > 0)
                                 {
@@ -53,12 +63,11 @@ namespace Carmageddon.Physics
                                     if (contactInfo.ActorA.Group == PhysXConsts.VehicleId)
                                     {
                                         //2 vehicle collision
-                                        HandleVehicleOnVehicleCollision((Vehicle)contactInfo.ActorA.UserData, (Vehicle)contactInfo.ActorB.UserData, force, pos);
+                                        HandleVehicleOnVehicleCollision((Vehicle)contactInfo.ActorA.UserData, vehicle, force, pos);
                                         return;
                                     }
                                     else
                                     {
-                                        Vehicle vehicle = (Vehicle)contactInfo.ActorB.UserData;
                                         vehicle.ContactReport_Collision(contactInfo.NormalForce, pos, iter.GetPatchNormal());
                                     }
                                 }
@@ -88,6 +97,28 @@ namespace Carmageddon.Physics
                     }
                 }
             }
+        }
+
+        private void HandleNonCarCollision(Vehicle vehicle, NonCar nonCar, Vector3 pos, Vector3 force, Vector3 normal)
+        {
+            if (nonCar.IsAttached)
+            {
+                if (force == Vector3.Zero) return;
+
+                if (nonCar.LastTouchTime + 0.3f > Engine.TotalSeconds)
+                    return;
+
+                float factor = (1 / (nonCar.Config.TorqueRequiredToMove * nonCar.Config.MassWhenAttached)) * 0.0005f;
+
+                nonCar.Rotation.X += -force.X * factor;
+                nonCar.Rotation.Z += force.Z * factor;
+                                
+                Matrix orientation = Matrix.CreateRotationX(nonCar.Rotation.Z) * Matrix.CreateRotationZ(nonCar.Rotation.X);
+                nonCar.NewOrientation = orientation;
+                nonCar.Hit = true;
+                nonCar.LastTouchTime = Engine.TotalSeconds;
+            }
+            //vehicle.ContactReport_Collision(force, pos, normal);
         }
 
         private void HandleVehicleOnVehicleCollision(Vehicle v1, Vehicle v2, float force, Vector3 position)

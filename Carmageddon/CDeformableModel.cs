@@ -15,77 +15,42 @@ namespace Carmageddon
 {
     class CDeformableModel : CModel
     {
-        Cloth _deformableBody;
+        Vector3[] _repairPoisitons;
         Vector3[] _originalPositions;
-        VertexPositionNormalTexture[] _original;
+        VertexPositionNormalTexture[] _localVertices;
 
         public Actor _actor;
-        
-        Matrix _old = Matrix.Identity;
+
         DynamicVertexBuffer _vertexBuffer;
         IndexBuffer _indexBuffer;
-        FixedJoint _joint;
 
-        public Cloth DeformableBody
-        {
-            get { return _deformableBody; }
-        }
+        bool _repairing;
+        float _repairingFactor;
+        bool _changed;
+        float _lastCrushTime = 0;
+
+        public CarFile _carFile;
 
         public override void Resolve(List<ushort> indices, List<VertexPositionNormalTexture> vertices, List<Vector2> vertexTextureMap, List<Vector3> vertexPositions)
         {
             List<int> indices2 = new List<int>();
-            
+
             foreach (Polygon poly in Polygons)
             {
                 poly.NbrPrims = 1;
                 indices2.Add(poly.Vertex1); indices2.Add(poly.Vertex2); indices2.Add(poly.Vertex3);
             }
 
-            ClothMeshDescription desc = new ClothMeshDescription();
-            desc.AllocateVertices<Vector3>(VertexCount);
-            desc.AllocateTriangles<int>(indices2.Count / 3);
-            desc.VertexCount = VertexCount;
-            desc.TriangleCount = indices2.Count / 3;
 
             _originalPositions = new Vector3[VertexCount];
+            _repairPoisitons = new Vector3[VertexCount];
             vertexPositions.CopyTo(VertexBaseIndex, _originalPositions, 0, VertexCount);
-
-            for (int i = 0; i < _originalPositions.Length; i++)
-            {
-                _originalPositions[i] = Vector3.Transform(_originalPositions[i], GameVariables.ScaleMatrix);
-            }
-
-            desc.TriangleStream.SetData(indices2.ToArray());
-            desc.VerticesStream.SetData(_originalPositions);
-
-            MemoryStream ms = new MemoryStream();
-            Cooking.InitializeCooking();
-            Cooking.CookClothMesh(desc, ms);
-            Cooking.CloseCooking();
-            ms.Position = 0;
-            ClothMesh mesh = PhysX.Instance.Core.CreateClothMesh(ms);
-
-            ClothDescription clothDesc = new ClothDescription()
-            {
-                ClothMesh = mesh,
-                Flags = ClothFlag.Visualization | ClothFlag.Bending
-            };
-
-            clothDesc.MeshData.AllocatePositions<Vector3>(VertexCount);
-            clothDesc.MeshData.AllocateIndices<int>(indices2.Count);
-
-            clothDesc.MeshData.MaximumIndices = indices2.Count;
-            clothDesc.MeshData.MaximumVertices = VertexCount;
-            clothDesc.MeshData.NumberOfIndices = indices2.Count;
-            clothDesc.MeshData.NumberOfVertices = VertexCount;
-
-            _deformableBody = PhysX.Instance.Scene.CreateCloth(clothDesc);
 
             Polygon currentPoly = null;
 
             foreach (Polygon poly in Polygons)
             {
-                poly.NbrPrims = 1;                
+                poly.NbrPrims = 1;
                 if (poly.MaterialIndex >= 0 && MaterialNames != null)
                 {
                     CMaterial material = ResourceCache.GetMaterial(MaterialNames[poly.MaterialIndex]);
@@ -108,100 +73,254 @@ namespace Carmageddon
                 }
             }
 
-            _original = new VertexPositionNormalTexture[VertexCount];
+            _localVertices = new VertexPositionNormalTexture[VertexCount];
             for (int i = 0; i < VertexCount; i++)
             {
-                Vector3 normal = Polygons[i / 3].Normal;
+                //Vector3 normal = Polygons[i / 3].Normal;
                 if (TextureMapCount > 0)
-                    _original[i] = new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], normal, vertexTextureMap[i + VertexBaseIndex]);
+                    _localVertices[i] = new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], Vector3.Zero, vertexTextureMap[i + VertexBaseIndex]);
                 else
-                    _original[i] = new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], normal, Vector2.Zero);
+                    _localVertices[i] = new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], Vector3.Zero, Vector2.Zero);
 
-                _originalPositions[i] = _original[i].Position;
+                _originalPositions[i] = _localVertices[i].Position;
             }
 
-            int size = VertexPositionNormalTexture.SizeInBytes * _original.Length;
+            int size = VertexPositionNormalTexture.SizeInBytes * _localVertices.Length;
             _vertexBuffer = new DynamicVertexBuffer(Engine.Device, size, BufferUsage.WriteOnly);
-            _vertexBuffer.SetData(_original);
+            _vertexBuffer.SetData(_localVertices);
 
             _indexBuffer = new IndexBuffer(Engine.Device, typeof(int), indices2.Count, BufferUsage.WriteOnly);
             _indexBuffer.SetData(indices2.ToArray());
 
-            //for (int i = 0; i < _localIndices.Count / 3; i++)
-            //{
-            //    Vector3 firstvec = _localVerts[indices[i * 3 + 1]].Position - _localVerts[indices[i * 3]].Position;
-            //    Vector3 secondvec = _localVerts[indices[i * 3]].Position - _localVerts[indices[i * 3 + 2]].Position;
-            //    Vector3 normal = Vector3.Cross(firstvec, secondvec);
-            //    normal.Normalize();
-            //    VertexPositionNormalTexture vpnt = vertices[indices[i * 3]];
-            //    vpnt.Normal += normal;
-            //    vpnt = vertices[indices[i * 3 + 1]];
-            //    vpnt.Normal += normal;
-            //    vpnt = vertices[indices[i * 3 + 2]];
-            //    vpnt.Normal += normal;
-            //}
-            //for (int i = 0; i < vertices.Count; i++)
-            //    vertices[i].Normal.Normalize();
-
+            for (int i = 0; i < indices2.Count / 3; i++)
+            {
+                Vector3 firstvec = _localVertices[indices2[i * 3 + 1]].Position - _localVertices[indices2[i * 3]].Position;
+                Vector3 secondvec = _localVertices[indices2[i * 3]].Position - _localVertices[indices2[i * 3 + 2]].Position;
+                Vector3 normal = Vector3.Cross(firstvec, secondvec);
+                normal.Normalize();
+                VertexPositionNormalTexture vpnt = _localVertices[indices2[i * 3]];
+                vpnt.Normal += normal;
+                vpnt = _localVertices[indices2[i * 3 + 1]];
+                vpnt.Normal += normal;
+                vpnt = _localVertices[indices2[i * 3 + 2]];
+                vpnt.Normal += normal;
+            }
+            for (int i = 0; i < vertices.Count; i++)
+                vertices[i].Normal.Normalize();
 
         }
 
-
-
-        public override void Render(CMaterial actorMaterial)
+        private Vector3 KeepCrushPositionInBounds(Vector3 pos, BoundingBox box)
         {
-            if (_actor == null) return; 
+            if (pos.Z < box.Min.Z)
+                pos.Z = box.Min.Z;
+            else if (pos.Z > box.Max.Z)
+                pos.Z = box.Max.Z;
+
+            if (pos.X < box.Min.X)
+                pos.X = box.Min.X;
+            else if (pos.X > box.Max.X)
+                pos.X = box.Max.X;
+
+            if (pos.Y < box.Min.Y)
+                pos.Y = box.Min.Y;
+            else if (pos.Y > box.Max.Y)
+                pos.Y = box.Max.Y;
+
+            return pos;
+        }
+
+        public void OnContact(Vector3 contactPoint, Vector3 force, Vector3 normal)
+        {
+            
+            //GameConsole.WriteEvent("nrml: " + normal.ToShortString());
+            //GameConsole.WriteEvent("force: " + force.ToShortString());
+
+            force = Vector3.Transform(force, _actor.GlobalOrientation);
+
+            force *= 0.000000006f; //scale it down to a managable number
+            float forceSize = force.Length();
+            
+            //if (forceSize < 0.007f)
+              //  return;
+
+            if (forceSize > 0.04f)
+                force *= 0.04f / forceSize; //cap max force so things dont get loco
+
+            if (forceSize < 0.004f)
+                return;
+
+            if (_lastCrushTime + 0.1f > Engine.TotalSeconds) return;
+            _lastCrushTime = Engine.TotalSeconds;
+
+                        
+            force.X = Math.Abs(force.X);
+            force.Y = Math.Abs(force.Y);
+            force.Z = Math.Abs(force.Z);
 
 
-            //if (_old == Matrix.Identity) _old = _actor.GlobalPose;
-            var positions = _deformableBody.MeshData.PositionsStream.GetData<Vector3>();
-            bool changed = false;
-            for (int i = 0; i < positions.Length; i++)
+            if (float.IsNaN(Vector3.Normalize(force).X)) return;
+
+            int hitpoints = 0;
+
+            foreach (CrushData data in _carFile.CrushSections[1].Data)
             {
-                Vector3 calc = Vector3.Transform(_original[i].Position, _old);
-                float distance = Vector3.Distance(calc, positions[i]);
-                //if (distance > 10 && distance < 50)
-                //{
-                    _original[i].Position = positions[i]; // calc;// += ((calc - positions[i]) * 0.1f);
-                    changed = true;
-                //}
-            } 
-            if (changed)
-                _vertexBuffer.SetData(_original);
+                Vector3 crushPoint = Vector3.Transform(_originalPositions[data.RefVertex], GameVariables.ScaleMatrix * _actor.GlobalPose);
+                //Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(crushPoint), Color.Yellow);
 
-            var pos = _deformableBody.GetVertexPosition(0);
+                if (Vector3.Distance(crushPoint, contactPoint) < 0.6f)
+                {
 
-            //Vector3 calc = Vector3.Transform(_vec0, _old);
-            //GameConsole.WriteLine("crush", Vector3.Distance(calc, pos));
-             
-            _old = _actor.Shapes[0].GlobalPose;
+                    hitpoints++;
+                    Vector3 curPos = _localVertices[data.RefVertex].Position;
 
-            if (Engine.Input.WasPressed(Keys.N))
-            {
-                for (int i = 0; i < _originalPositions.Length; i++)
-                    _original[i].Position = _originalPositions[i];
-                
-                _deformableBody.MeshData.PositionsStream.SetData(_originalPositions);
-                _vertexBuffer.SetData(_original);
+                    Vector3 directedForce = new Vector3();
+                    directedForce.X = curPos.X < 0 ? force.X : -force.X;
+                    directedForce.Y = curPos.Y < 0 ? force.Y : -force.Y;
+                    directedForce.Z = curPos.Z < 0 ? force.Z : -force.Z;
+                    Vector3 oldPos = _localVertices[data.RefVertex].Position;
+                    curPos = KeepCrushPositionInBounds(curPos + directedForce, data.Box);
+                    float distanceMoved = Vector3.Distance(oldPos, curPos);
+                    _localVertices[data.RefVertex].Position = curPos;
+
+                    //GameConsole.WriteEvent("moved: " + distanceMoved);
+
+                    Vector3 rnd = Engine.Random.Next(data.MinScale, data.MaxScale);
+                    if (Engine.Random.Next() % 2 == 0) rnd.Y *= 1;
+
+                    Vector3 normalforce = Vector3.Normalize(force);
+
+
+                    foreach (CrushPoint point in data.Points)
+                    {
+                        if (float.IsNaN(normalforce.X) || float.IsNaN(normalforce.Y) || float.IsNaN(normalforce.Z))
+                        {
+                            break;
+                        }
+
+                        force = normalforce * distanceMoved * MathHelper.Lerp(0.8f, 0.5f, point.DistanceFromParent);
+                        curPos = _localVertices[point.VertexIndex].Position;
+                        directedForce.X = curPos.X < 0 ? force.X : -force.X;
+                        directedForce.Y = curPos.Y < 0 ? force.Y : -force.Y;
+                        directedForce.Z = curPos.Z < 0 ? force.Z : -force.Z;
+
+                        directedForce *= Vector3.Lerp(Vector3.One, rnd * 1.5f, point.DistanceFromParent); //as we get further away from parent, more random
+
+                        _localVertices[point.VertexIndex].Position = curPos + directedForce;
+                    }
+                    _changed = true;
+                }
             }
 
-            if (Engine.Input.WasPressed(Keys.U))
+            if (_changed)
             {
-                if (_joint == null)
+                bool tidied = false;
+                foreach (CrushData data in _carFile.CrushSections[1].Data)
                 {
-                    FixedJointDescription jointdesc = new FixedJointDescription() { Actor1 = _actor, Actor2 = null };
-                    jointdesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
-                    _joint = PhysX.Instance.Scene.CreateJoint<FixedJoint>(jointdesc);
+                    Vector3 oldpos = _localVertices[data.RefVertex].Position;
+                    _localVertices[data.RefVertex].Position = KeepCrushPositionInBounds(_localVertices[data.RefVertex].Position, data.Box);
+                    if (oldpos != _localVertices[data.RefVertex].Position) tidied = true;
                 }
-                _deformableBody.AddDirectedForceAtPosition(pos, Vector3.Backward * 20, 2);
+
+                if (tidied) GameConsole.WriteEvent("tidied up");
+
+                for (int i = 0; i < _localVertices.Length; i++)
+                {
+                    if (float.IsNaN(_localVertices[i].Position.X) || float.IsNaN(_localVertices[i].Position.Y) || float.IsNaN(_localVertices[i].Position.Z))
+                    {
+                    }
+                }
+            }
+
+            if (hitpoints > 0) GameConsole.WriteEvent("f: " + Math.Round(forceSize, 4) + ", pts: " + hitpoints);
+        }
+
+        int _nbr = 0;
+        public override void Render(CMaterial actorMaterial)
+        {
+            if (_actor == null) return;
+
+            for (int i = _nbr; i < _carFile.CrushSections[1].Data.Count; i++)
+            {
+                CrushData data = _carFile.CrushSections[1].Data[i];
+                //if (data.RefVertex != 170) continue;
+
+                Vector3 crushPoint = Vector3.Transform(_originalPositions[data.RefVertex], GameVariables.ScaleMatrix * _actor.GlobalPose);
+
+                Engine.DebugRenderer.AddWireframeCube(
+                    Matrix.CreateScale(0.09f)
+                    * Matrix.CreateTranslation(crushPoint)
+                    , Color.White);
+
+                //Engine.DebugRenderer.AddAxis(
+                //    Matrix.CreateTranslation(Vector3.Transform(data.Box.Max, GameVariables.ScaleMatrix * _actor.GlobalPose))
+                //    , 10);
+
+                //Engine.DebugRenderer.AddAxis(
+                //    Matrix.CreateTranslation(Vector3.Transform(data.Box.Min, GameVariables.ScaleMatrix * _actor.GlobalPose))
+                //    , 10);
+
+                //Engine.DebugRenderer.AddAxis(
+                //  Matrix.CreateTranslation(Vector3.Transform(data.V2, GameVariables.ScaleMatrix * _actor.GlobalPose))
+                //, 10);
+
+                //foreach (CrushPoint point in data.Points)
+                //{
+                //    Engine.DebugRenderer.AddWireframeCube(
+                //    Matrix.CreateScale(0.05f)
+                //    * Matrix.CreateTranslation(Vector3.Transform(_originalPositions[point.VertexIndex], GameVariables.ScaleMatrix * _actor.GlobalPose))
+
+                //    , Color.Yellow);
+                //}
+                //break;
+            }
+
+            if (Engine.Input.WasPressed(Keys.Back))
+            {
+                if (!_repairing)
+                {
+                    _repairing = true;
+                    _repairingFactor = 0;
+                    for (int i = 0; i < _localVertices.Length; i++)
+                    {
+                        _repairPoisitons[i] = _localVertices[i].Position;
+                    }
+
+                    MessageRenderer.Instance.PostMessage("Repair Cost: 0", 2);
+                }
+            }
+
+            if (Engine.Input.WasPressed(Keys.T))
+            {
+                for (int i = 0; i < _carFile.CrushSections[1].Data.Count; i++)
+                {
+                    CrushData data = _carFile.CrushSections[1].Data[i];
+                    _localVertices[data.RefVertex].Position = data.Box.Max;
+                }
+                _changed = true;
+            }
+
+            if (_repairing)
+            {
+                if (_repairingFactor > 1) _repairingFactor = 1;
+                for (int i = 0; i < _localVertices.Length; i++)
+                {
+                    _localVertices[i].Position = Vector3.Lerp(_repairPoisitons[i], _originalPositions[i], _repairingFactor);
+                }
+                _repairingFactor += Engine.ElapsedSeconds;
+                _changed = true;
+
+                if (_repairingFactor >= 1) _repairing = false;
+            }
+
+            if (_changed)
+            {
+                _vertexBuffer.SetData(_localVertices);
+                _changed = false;
             }
 
 
             GraphicsDevice device = Engine.Device;
-
-            Matrix world = GameVariables.CurrentEffect.World;
-            GameVariables.CurrentEffect.World = Matrix.Identity;
-            GameVariables.CurrentEffect.CommitChanges();
 
             VertexBuffer verts = device.Vertices[0].VertexBuffer;
 
@@ -243,7 +362,9 @@ namespace Carmageddon
                 GameVariables.NbrDrawCalls++;
 
                 Engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3 * poly.NbrPrims, indexBufferStart, poly.NbrPrims);
+
                 indexBufferStart += poly.NbrPrims * 3;
+
 
                 if (currentMaterial != null && currentMaterial.Funk != null)
                 {
@@ -252,8 +373,6 @@ namespace Carmageddon
             }
 
             device.Vertices[0].SetSource(verts, 0, VertexPositionNormalTexture.SizeInBytes);
-            GameVariables.CurrentEffect.World = world;
-            GameVariables.CurrentEffect.CommitChanges();
         }
     }
 }

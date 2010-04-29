@@ -14,8 +14,7 @@ namespace Carmageddon.Parsers
         public UInt16 Vertex3 { get; private set; }
         public Vector3 Normal { get; private set; }
 
-        public Vector3 V1, V2, V3;
-
+        
         public int MaterialIndex;
         public bool DoubleSided;
         public CMaterial Material {get; set; }
@@ -33,11 +32,7 @@ namespace Carmageddon.Parsers
             Vertex3 = v3;
         }
 
-        public void CalculateNormal2()
-        {
-            Normal = Vector3.Cross(V1-V3, V1-V2);
-            Normal.Normalize();
-        }
+        
 
         public void CalculateNormal(List<Vector3> vertices, int baseIndex)
         {

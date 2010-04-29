@@ -207,10 +207,10 @@ namespace Carmageddon.Physics
             }
         }
 
-        
-        public static List<CActor> GenerateNonCars(CActorHierarchy actors, List<NoncarFile> nonCars)
+
+        public static List<NonCar> GenerateNonCars(CActorHierarchy actors, List<NoncarFile> nonCars)
         {
-            List<CActor> nonCarActors = new List<CActor>();
+            List<NonCar> nonCarInstances = new List<NonCar>();
             List<CActor> actorsList = actors.All();
 
             for (int i = 0; i < actorsList.Count; i++)
@@ -222,28 +222,28 @@ namespace Carmageddon.Physics
                     if (Char.IsDigit(actor.Name[1]) && Char.IsDigit(actor.Name[2]))
                     {
                         int index = int.Parse(actor.Name.Substring(1, 2));
-                        NoncarFile nonCar = nonCars.Find(a => a.IndexNumber == index);
+                        NoncarFile nonCarFile = nonCars.Find(a => a.IndexNumber == index);
 
-                        if (nonCar == null)
+                        if (nonCarFile == null)
                         {
                             Debug.WriteLine("No noncar matching " + actor.Name);
                             continue;
                         }
 
                         ActorDescription actorDesc = new ActorDescription();
-                        actorDesc.BodyDescription = new BodyDescription() { Mass = nonCar.Mass };
-
+                        actorDesc.BodyDescription = new BodyDescription() { Mass = nonCarFile.Mass };
+                        
                         BoxShapeDescription boxDesc = new BoxShapeDescription();
-                        boxDesc.Size = nonCar.BoundingBox.GetSize();
-                        boxDesc.LocalPosition = nonCar.BoundingBox.GetCenter();
+                        boxDesc.Size = nonCarFile.BoundingBox.GetSize();
+                        boxDesc.LocalPosition = nonCarFile.BoundingBox.GetCenter();
                         actorDesc.Shapes.Add(boxDesc);
 
-                        foreach (Vector3 extraPoint in nonCar.ExtraBoundingBoxPoints)
+                        foreach (Vector3 extraPoint in nonCarFile.ExtraBoundingBoxPoints)
                         {
-                            boxDesc = new BoxShapeDescription(0.2f, 0.2f, 0.2f);
-                            boxDesc.LocalPosition = extraPoint;
-                            boxDesc.Mass = 0;
-                            actorDesc.Shapes.Add(boxDesc);
+                            SphereShapeDescription extra = new SphereShapeDescription(0.2f);
+                            extra.LocalPosition = extraPoint;
+                            extra.Mass = 0;
+                            actorDesc.Shapes.Add(extra);
                         }
 
                         Vector3 scaleout, transout;
@@ -257,35 +257,26 @@ namespace Carmageddon.Physics
 
                         StillDesign.PhysX.Actor instance = PhysX.Instance.Scene.CreateActor(actorDesc);
                         instance.GlobalPose = m;
-                        instance.SetCenterOfMassOffsetLocalPosition(nonCar.CenterOfMass);
+                        instance.SetCenterOfMassOffsetLocalPosition(nonCarFile.CenterOfMass);
                         instance.Group = PhysXConsts.NonCarId;
-                        instance.UserData = nonCar;
-                        
-                        if (nonCar.BendAngleBeforeSnapping > 0)
-                        {;
-                            FixedJointDescription jointDesc = new FixedJointDescription()
-                            {
-                                Actor1 = instance,
-                                Actor2 = null
-                            };
-                            Vector3 anchorPos = instance.Shapes[0].GlobalPosition;
-                            anchorPos.Y = instance.GlobalPosition.Y;
-                            jointDesc.SetGlobalAnchor(anchorPos);
-                            jointDesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
-                            jointDesc.MaxForce = nonCar.BendAngleBeforeSnapping * nonCar.Mass * nonCar.TorqueRequiredToMove * 1.8f;
-                            FixedJoint joint = (FixedJoint)PhysX.Instance.Scene.CreateJoint(jointDesc);
+
+                        NonCar noncar = new NonCar { Config = nonCarFile, CActor = actor };
+                        instance.UserData = noncar;
+                        actor.AttachToPhysX(instance);
+
+                        if (nonCarFile.BendAngleBeforeSnapping > 0)
+                        {
                             
-                            //instance.SolverIterationCount = 128;
+                            noncar.WeldToGround();
                         }
                         instance.Sleep();
-                        actor.AttachToPhysX(instance);
-                        nonCarActors.Add(actor);
+                        nonCarInstances.Add(noncar);
                     }
                 }
             }
 
-            Debug.WriteLine("NonCars: " + nonCarActors.Count);
-            return nonCarActors;
+            Debug.WriteLine("NonCars: " + nonCarInstances.Count);
+            return nonCarInstances;
         }
     }
 }

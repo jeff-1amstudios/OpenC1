@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace OneamEngine
 {
@@ -19,6 +20,15 @@ namespace OneamEngine
         public float Next(float minValue, float maxValue)
         {
             return (float)(minValue + (float)_random.NextDouble() * (maxValue - minValue));
+        }
+
+        public Vector3 Next(Vector3 minValue, Vector3 maxValue)
+        {
+            Vector3 vec = new Vector3();
+            vec.X = (float)(minValue.X + (float)_random.NextDouble() * (maxValue.X - minValue.X));
+            vec.Y = (float)(minValue.Y + (float)_random.NextDouble() * (maxValue.Y - minValue.Y));
+            vec.Z = (float)(minValue.Z + (float)_random.NextDouble() * (maxValue.Z - minValue.Z));
+            return vec;
         }
 
         public int Next(int maxValue)

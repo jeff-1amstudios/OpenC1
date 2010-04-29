@@ -15,13 +15,14 @@ namespace Carmageddon.Parsers
     class CrushPoint
     {
         public int VertexIndex;
-        public int Direction;
+        public float DistanceFromParent;
     }
     class CrushData
     {
         public int RefVertex;
-        public Matrix Matrix;
-        public Vector3 V1, V2;
+        public BoundingBox Box;
+        public Vector3 MinScale, MaxScale;
+
         public List<CrushPoint> Points;
 
         public CrushData()
@@ -214,21 +215,19 @@ namespace Carmageddon.Parsers
                     section.Data.Add(crushData);
 
                     crushData.RefVertex = ReadLineAsInt();
-                    //crushData.Matrix = ReadMatrix();
-                    crushData.V1 = ReadLineAsVector3();
-                    crushData.V2 = ReadLineAsVector3();
-
-                    SkipLines(2);
+                    crushData.Box = new BoundingBox(ReadLineAsVector3(false), ReadLineAsVector3(false));
+                    crushData.MinScale = ReadLineAsVector3(false);
+                    crushData.MaxScale = ReadLineAsVector3(false);
 
                     int nbrPoints = ReadLineAsInt();
-                    int curVertex = 0; // crushData.RefVertex;
+                    int curVertex = -1; // 0;// crushData.RefVertex;
 
                     for (int p = 0; p < nbrPoints; p++)
                     {
                         CrushPoint point = new CrushPoint();
                         curVertex += ReadLineAsInt();
                         point.VertexIndex = curVertex;
-                        point.Direction = ReadLineAsInt();
+                        point.DistanceFromParent = ReadLineAsFloat(false) / 255f; //values are 0-255 so convert to 0-1
                         crushData.Points.Add(point);
                     }
                 }

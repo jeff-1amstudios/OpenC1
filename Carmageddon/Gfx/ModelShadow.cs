@@ -77,6 +77,15 @@ namespace Carmageddon
             //device.RenderState.DepthBufferEnable = true;
             device.RenderState.DepthBufferWriteEnable = true;
             device.VertexDeclaration = oldVertDecl;
+
+
+            //device.RenderState.SourceBlend = Blend.One;
+            //device.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
+            //device.RenderState.AlphaBlendEnable = true;
+
+            //Engine.Device.RenderState.AlphaTestEnable = true;
+            Engine.Device.RenderState.ReferenceAlpha = 200;
+            
         }
     }
 }

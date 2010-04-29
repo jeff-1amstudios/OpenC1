@@ -78,18 +78,5 @@ namespace Carmageddon
         {
             return _models;
         }
-
-        public void Crush(CrushSection crush)
-        {
-            foreach (CrushData data in crush.Data)
-            {
-                Vector3 pos = _vertices[data.RefVertex].Position;
-                //Engine.GraphicsUtils.AddSolidShape(ShapeType.Cube, Matrix.CreateTranslation(pos), Color.White, null);
-                Vector3 v = Vector3.Lerp(data.V1, data.V2, (float)new Random().NextDouble());
-                //_vertices[data.RefVertex].Position = v;// = Vector3.Transform(pos, data.Matrix);
-            }
-
-            _vertexBuffer.SetData<VertexPositionNormalTexture>(_vertices.ToArray());
-        }
     }
 }

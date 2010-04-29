@@ -19,7 +19,7 @@ namespace Carmageddon
     class Race
     {
         CActorHierarchy _actors;
-        List<CActor> _nonCars;
+        List<NonCar> _nonCars;
         public RaceTimeController RaceTime = new RaceTimeController();
         SkyBox _skybox;
         public int NextCheckpoint = 0, CurrentLap;
@@ -76,13 +76,7 @@ namespace Carmageddon
             }
 
             Physics.TrackProcessor.GenerateTrackActor(ConfigFile, _actors);
-            _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);
-
-            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.TrackId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
-            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.NonCarId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
-            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.TrackId, PhysXConsts.NonCarId, ContactPairFlag.OnTouch);
-            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.VehicleId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
-            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.VehicleId, PhysXConsts.DeformableBody, ContactPairFlag.IgnorePair);
+            _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);            
 
             //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
@@ -99,6 +93,11 @@ namespace Carmageddon
             Drivers.Add(PlayerVehicle.Driver);
 
             Race.Current = this;
+
+            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.TrackId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.VehicleId, PhysXConsts.NonCarId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.TrackId, PhysXConsts.NonCarId, ContactPairFlag.OnTouch);
+            PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.VehicleId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnTouch);
         }
 
 
@@ -129,11 +128,15 @@ namespace Carmageddon
                 funk.Update();
             }
 
-            foreach (CActor nonCar in _nonCars)
+            foreach (NonCar nonCar in _nonCars)
             {
-                if (!nonCar.PhysXActor.IsSleeping && nonCar.PhysXActor.LinearVelocity.Length() > 1)
+                if (!nonCar.CActor.PhysXActor.IsSleeping && nonCar.CActor.PhysXActor.LinearVelocity.Length() > 1)
                 {
-                    _actors.RecalculateActorParent(nonCar);
+                    _actors.RecalculateActorParent(nonCar.CActor);
+                }
+                if (nonCar.Hit)
+                {
+                    nonCar.OnHit();
                 }
             }
 

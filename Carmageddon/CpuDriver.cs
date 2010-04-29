@@ -145,7 +145,7 @@ namespace Carmageddon
 
                 Vector3 towardsNode = _targetNode.Position - pos;
 
-                float angle = GetSignedAngleBetweenVectors(Vehicle.Chassis.Actor.GlobalOrientation.Forward, towardsNode);
+                float angle = Helpers.GetSignedAngleBetweenVectors(Vehicle.Chassis.Actor.GlobalOrientation.Forward, towardsNode);
                 angle *= 2;
                 if (angle > 1) angle = 1;
                 else if (angle < -1) angle = -1;
@@ -225,7 +225,7 @@ namespace Carmageddon
 
             if (_nextPath != null && _currentPath != null)
             {
-                float nextPathAngle = MathHelper.ToDegrees(GetUnsignedAngleBetweenVectors(_currentPath.End.Position - _currentPath.Start.Position, _nextPath.End.Position - _nextPath.Start.Position));
+                float nextPathAngle = MathHelper.ToDegrees(Helpers.GetUnsignedAngleBetweenVectors(_currentPath.End.Position - _currentPath.Start.Position, _nextPath.End.Position - _nextPath.Start.Position));
 
                 if (nextPathAngle > 5)
                 {
@@ -237,44 +237,6 @@ namespace Carmageddon
                     _maxSpeedAtEndOfPath = 255;
                 }
             }
-        }
-
-
-        public static float GetSignedAngleBetweenVectors(Vector3 from, Vector3 to)
-        {
-
-            from.Y = to.Y = 0;
-            from.Normalize();
-            to.Normalize();
-            Vector3 toRight = Vector3.Cross(to, Vector3.Up);
-            toRight.Normalize();
-
-            float forwardDot = Vector3.Dot(from, to);
-            float rightDot = Vector3.Dot(from, toRight);
-
-            // Keep dot in range to prevent rounding errors
-            forwardDot = MathHelper.Clamp(forwardDot, -1.0f, 1.0f);
-
-            double angleBetween = Math.Acos(forwardDot);
-
-            if (rightDot < 0.0f)
-                angleBetween *= -1.0f;
-
-            return (float)angleBetween;
-        }
-
-        public float GetUnsignedAngleBetweenVectors(Vector3 from, Vector3 to)
-        {
-            from.Y = to.Y = 0;
-            from.Normalize();
-            to.Normalize();
-
-            Vector2 a = new Vector2(from.X, from.Z);
-            a.Normalize();
-            Vector2 b = new Vector2(to.X, to.Z);
-            b.Normalize();
-            return (float)Math.Acos(Vector2.Dot(a, b));
-            //return (float)Math.Acos(Vector3.Dot(from, to));
         }
     }
 }

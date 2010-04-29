@@ -57,7 +57,7 @@ using NFSEngine.Audio;
 
                 //enable per-pixel transparency
                 Engine.Device.RenderState.AlphaTestEnable = true;
-                Engine.Device.RenderState.ReferenceAlpha = 50;
+                Engine.Device.RenderState.ReferenceAlpha = 200;
                 Engine.Device.RenderState.AlphaFunction = CompareFunction.Greater;
 
                 //IsFixedTimeStep = false;

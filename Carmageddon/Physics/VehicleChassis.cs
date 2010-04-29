@@ -34,7 +34,6 @@ namespace Carmageddon.Physics
         float _motorTorque = 0.0f;
         float _brakeTorque = 0.0f;
         TireFunctionDescription _frontLateralTireFn, _rearLateralTireFn;
-        public Actor _dummy;
                 
         
         public VehicleChassis(Vehicle vehicle, CActor bodycactor)
@@ -46,9 +45,8 @@ namespace Carmageddon.Physics
             CarFile carFile = vehicle.Config;
             
             ActorDescription actorDesc = new ActorDescription();
-            BodyDescription bodyDesc = new BodyDescription(carFile.Mass);
             
-            actorDesc.BodyDescription = bodyDesc;
+            actorDesc.BodyDescription = new BodyDescription(carFile.Mass);
 
             var boxDesc = new BoxShapeDescription();
             boxDesc.Size = carFile.BoundingBox.GetSize();
@@ -56,13 +54,13 @@ namespace Carmageddon.Physics
             boxDesc.Name = PhysXConsts.VehicleBody;
             actorDesc.Shapes.Add(boxDesc);
 
-            //foreach (Vector3 extraPoint in carFile.ExtraBoundingBoxPoints)
-            //{
-            //    boxDesc = new BoxShapeDescription(0.2f, 0.2f, 0.2f);
-            //    boxDesc.LocalPosition = extraPoint;
-            //    boxDesc.Mass = 0;
-            //    actorDesc.Shapes.Add(boxDesc);
-            //}
+            foreach (Vector3 extraPoint in carFile.ExtraBoundingBoxPoints)
+            {
+                var extraDesc = new SphereShapeDescription(0.2f);
+                extraDesc.LocalPosition = extraPoint;
+                extraDesc.Mass = 0;
+                actorDesc.Shapes.Add(extraDesc);
+            }
 
             using (UtilitiesLibrary lib = new UtilitiesLibrary())
             {
@@ -72,24 +70,17 @@ namespace Carmageddon.Physics
             
             _physXActor = PhysX.Instance.Scene.CreateActor(actorDesc);
                         
-            _physXActor.Name = "Vehicle";
+            //_physXActor.Name = "Vehicle";
             _physXActor.Group = PhysXConsts.VehicleId;
             
             _physXActor.UserData = vehicle;
             _physXActor.MaximumAngularVelocity = 1.5f;
 
-
-            actorDesc = new ActorDescription();
-            actorDesc.BodyDescription = new BodyDescription(0.0001f);
-            actorDesc.Shapes.Add(new BoxShapeDescription(new Vector3(0.1f)));
-            actorDesc.Group = PhysXConsts.DeformableBody;
-            //actorDesc.GlobalPose = _physXActor.GlobalPose;
-            _dummy = PhysX.Instance.Scene.CreateActor(actorDesc);
+                        
+                        
+            ((CDeformableModel)bodycactor.Model)._actor = _physXActor;
+            ((CDeformableModel)bodycactor.Model)._carFile = carFile;
             
-            Cloth cloth = ((CDeformableModel)bodycactor.Model).DeformableBody;
-            cloth.AttachToCore(_dummy, 0.01f, 2f);
-            ((CDeformableModel)bodycactor.Model)._actor = _dummy;
-
                         
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 0.1f;
@@ -136,7 +127,7 @@ namespace Carmageddon.Physics
             {
                 wheelDesc.Radius = wheel.IsDriven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
                 wheelDesc.SuspensionTravel = (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear) * 18; // Math.Max(wheelDesc.Radius / 2f, 0.21f);
-                wheelDesc.LocalPosition = wheel.Position - new Vector3(0, 0.7f, 0);// +new Vector3(0, wheelDesc.SuspensionTravel * carFile.Mass * 0.00045f, 0);
+                wheelDesc.LocalPosition = wheel.Position + new Vector3(0, wheelDesc.SuspensionTravel * carFile.Mass * 0.00045f, 0);
                 
                 SpringDescription spring = new SpringDescription();
                 float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
@@ -186,8 +177,6 @@ namespace Carmageddon.Physics
         public void Update()
         {
             LastSpeed = Speed;
-
-            //_dummy.GlobalPose = _physXActor.GlobalPose;
 
             Vector3 vDirection = _physXActor.GlobalOrientation.Forward;
             Vector3 vNormal = _physXActor.LinearVelocity * vDirection;

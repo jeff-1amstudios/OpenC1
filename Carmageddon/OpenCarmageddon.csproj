@@ -101,6 +101,7 @@
     <Compile Include="Gfx\SkidMarkBuffer.cs" />
     <Compile Include="HUD\StandardHudItem.cs" />
     <Compile Include="MessageRenderer.cs" />
+    <Compile Include="NonCar.cs" />
     <Compile Include="Opponent.cs" />
     <Compile Include="OpponentController.cs" />
     <Compile Include="OpponentPathNode.cs" />
