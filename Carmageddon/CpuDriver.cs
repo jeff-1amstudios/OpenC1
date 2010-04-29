@@ -20,7 +20,7 @@ namespace Carmageddon
         public Vehicle Vehicle { get; set; }
         public bool InPlayersView;
 
-        CpuDriverState _state = CpuDriverState.Racing;
+        public CpuDriverState State = CpuDriverState.Racing;
         OpponentPathNode _targetNode;
         OpponentPath _currentPath, _nextPath;
         Vector3 _lastPosition;
@@ -71,16 +71,18 @@ namespace Carmageddon
             // check for state change
             if (_nextStateChangeTime < Engine.TotalSeconds)
             {
-                if (_state == CpuDriverState.Reversing)
+                if (State == CpuDriverState.Reversing)
                 {
-                    _state = CpuDriverState.Racing;
+                    State = CpuDriverState.Racing;
                     LogPosition(pos);
                 }
             }
 
-            if (_state == CpuDriverState.Racing)
+            float distanceFromNode=0;
+
+            if (State == CpuDriverState.Racing)
             {
-                float distanceFromNode = Vector3.Distance(pos, _targetNode.Position);
+                distanceFromNode = Vector3.Distance(pos, _targetNode.Position);
 
                 // if we've been trying to get to the same target for 20 seconds, get a new one
                 if (_lastTargetChangeTime + 20 < Engine.TotalSeconds)
@@ -102,7 +104,7 @@ namespace Carmageddon
                 {
                     float distToBrake = Vehicle.Chassis.Speed * 0.4f + ((Vehicle.Chassis.Speed - _maxSpeedAtEndOfPath) * 1.4f);
                     //GameConsole.WriteLine("brake: " + (int)distToBrake + ", " + (int)distanceFromNode);
-                    Matrix mat = Matrix.CreateTranslation(0, 0, distToBrake) * Vehicle.Chassis.Actor.GlobalPose;
+                    //Matrix mat = Matrix.CreateTranslation(0, 0, distToBrake) * Vehicle.Chassis.Actor.GlobalPose;
 
                     if (distToBrake >= distanceFromNode)
                     {
@@ -142,27 +144,36 @@ namespace Carmageddon
                         Teleport(); //if the node we've just got to doesnt have any outgoing paths, teleport randomly
                     }
                 }
-
-                Vector3 towardsNode = _targetNode.Position - pos;
-
-                float angle = Helpers.GetSignedAngleBetweenVectors(Vehicle.Chassis.Actor.GlobalOrientation.Forward, towardsNode);
-                angle *= 2;
-                if (angle > 1) angle = 1;
-                else if (angle < -1) angle = -1;
-
-                if (Math.Abs(angle) > 0.003f) Vehicle.Chassis.Steer(angle);
-
-                if (!isBraking)
-                {
-                    if (Math.Abs(angle) > 0.7f)
-                        Vehicle.Chassis.Accelerate(0.5f); //if were turning hard, go easy on the gas pedal
-                    else
-                        Vehicle.Chassis.Accelerate(1.0f);
-                }
-
-                _lastDistance = distanceFromNode;
             }
-            else if (_state == CpuDriverState.Reversing)
+
+            Vector3 towardsNode = Vector3.Zero;
+            if (State == CpuDriverState.Racing)
+            {
+                towardsNode = _targetNode.Position - pos;
+            }
+            else if (State == CpuDriverState.Attacking)
+            {
+                towardsNode = Race.Current.PlayerVehicle.Position - pos;
+            }
+
+            float angle = GetSignedAngleBetweenVectors(Vehicle.Chassis.Actor.GlobalOrientation.Forward, towardsNode);
+            angle *= 1.5f;
+            if (angle > 1) angle = 1;
+            else if (angle < -1) angle = -1;
+
+            if (Math.Abs(angle) > 0.003f) Vehicle.Chassis.Steer(angle);
+
+            if (!isBraking)
+            {
+                if (Math.Abs(angle) > 0.7f)
+                    Vehicle.Chassis.Accelerate(0.5f); //if were turning hard, go easy on the gas pedal
+                else
+                    Vehicle.Chassis.Accelerate(1.0f);
+            }
+
+            _lastDistance = distanceFromNode;
+            
+            if (State == CpuDriverState.Reversing)
             {
                 Vehicle.Chassis.Brake(0.5f);
                 Vehicle.Chassis.Steer(_reverseTurning);
@@ -202,7 +213,7 @@ namespace Carmageddon
 
         private void Escape()
         {
-            _state = _state == CpuDriverState.Reversing ? CpuDriverState.Racing : CpuDriverState.Reversing;
+            State = State == CpuDriverState.Reversing ? CpuDriverState.Racing : CpuDriverState.Reversing;
             _nextStateChangeTime = Engine.TotalSeconds + Engine.Random.Next(1.5f, 3f);
             _reverseTurning = Engine.Random.Next(-1f, 0f);
         }
@@ -225,7 +236,7 @@ namespace Carmageddon
 
             if (_nextPath != null && _currentPath != null)
             {
-                float nextPathAngle = MathHelper.ToDegrees(Helpers.GetUnsignedAngleBetweenVectors(_currentPath.End.Position - _currentPath.Start.Position, _nextPath.End.Position - _nextPath.Start.Position));
+                float nextPathAngle = MathHelper.ToDegrees(GetUnsignedAngleBetweenVectors(_currentPath.End.Position - _currentPath.Start.Position, _nextPath.End.Position - _nextPath.Start.Position));
 
                 if (nextPathAngle > 5)
                 {
@@ -237,6 +248,44 @@ namespace Carmageddon
                     _maxSpeedAtEndOfPath = 255;
                 }
             }
+        }
+
+
+        public static float GetSignedAngleBetweenVectors(Vector3 from, Vector3 to)
+        {
+
+            from.Y = to.Y = 0;
+            from.Normalize();
+            to.Normalize();
+            Vector3 toRight = Vector3.Cross(to, Vector3.Up);
+            toRight.Normalize();
+
+            float forwardDot = Vector3.Dot(from, to);
+            float rightDot = Vector3.Dot(from, toRight);
+
+            // Keep dot in range to prevent rounding errors
+            forwardDot = MathHelper.Clamp(forwardDot, -1.0f, 1.0f);
+
+            double angleBetween = Math.Acos(forwardDot);
+
+            if (rightDot < 0.0f)
+                angleBetween *= -1.0f;
+
+            return (float)angleBetween;
+        }
+
+        public float GetUnsignedAngleBetweenVectors(Vector3 from, Vector3 to)
+        {
+            from.Y = to.Y = 0;
+            from.Normalize();
+            to.Normalize();
+
+            Vector2 a = new Vector2(from.X, from.Z);
+            a.Normalize();
+            Vector2 b = new Vector2(to.X, to.Z);
+            b.Normalize();
+            return (float)Math.Acos(Vector2.Dot(a, b));
+            //return (float)Math.Acos(Vector3.Dot(from, to));
         }
     }
 }

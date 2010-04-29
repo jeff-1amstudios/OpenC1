@@ -123,6 +123,11 @@ namespace Carmageddon.Physics
 
         private void HandleVehicleOnVehicleCollision(Vehicle v1, Vehicle v2, float force, Vector3 position)
         {
+            if (v1.Driver is CpuDriver && v2.Driver is PlayerDriver)
+                ((CpuDriver)v1.Driver).State = CpuDriverState.Attacking;
+            else if (v2.Driver is CpuDriver && v1.Driver is PlayerDriver)
+                ((CpuDriver)v2.Driver).State = CpuDriverState.Attacking;
+
             //GameConsole.WriteEvent("caroncar");
             //if (v1.Chassis.Speed > 3 || v2.Chassis.Speed > 3)
             //{

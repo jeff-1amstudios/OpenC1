@@ -32,14 +32,18 @@ namespace Carmageddon
 
             TireFunctionDescription rearLateralTireFn = new TireFunctionDescription();
             rearLateralTireFn.ExtremumSlip = 0.35f;
-            rearLateralTireFn.ExtremumValue = 3f;
-            rearLateralTireFn.AsymptoteSlip = 2.222f;
+            rearLateralTireFn.ExtremumValue = 2.3f;
+            rearLateralTireFn.AsymptoteSlip = 2.4f;
             rearLateralTireFn.AsymptoteValue = 0.001f;
 
             foreach (VehicleWheel wheel in Vehicle.Chassis.Wheels)
             {
                 wheel.Shape.LateralTireForceFunction = wheel.IsRear ? rearLateralTireFn : frontLateralTireFn;
             }
+
+            Vector3 massPos = Vehicle.Config.CenterOfMass;
+            massPos.Y = Vehicle.Config.WheelActors[0].Position.Y - Vehicle.Config.NonDrivenWheelRadius + 0.31f;
+            Vehicle.Chassis.Actor.SetCenterOfMassOffsetLocalPosition(massPos);
         }
 
         public BoundingSphere GetBoundingSphere()
