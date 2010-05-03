@@ -15,6 +15,7 @@ using Particle3DSample;
 using NFSEngine;
 using System.IO;
 using StillDesign.PhysX;
+using Microsoft.Xna.Framework.Input;
 
 namespace Carmageddon
 {
@@ -135,13 +136,13 @@ namespace Carmageddon
 
             if (Chassis.Speed > 7 || Chassis.LastSpeed > 7)
             {
-                if (forceSize > 200 /* 750000*/)
+                if (forceSize > 400)
                 {
-                    if (forceSize > 1000)
+                    if (forceSize > 1500)
                     {
                         _vehicleBitsEmitter.DumpParticles(position);
                     }
-                    if (forceSize > 200)
+                    if (forceSize > 400)
                     {
                         GameVariables.SparksEmitter.DumpParticles(position, 6);
                     }
@@ -155,7 +156,7 @@ namespace Carmageddon
                         SoundCache.PlayScrape(this);
                     }
                     else if (forceSize > 200)
-                        SoundCache.PlayCrash(this);
+                        SoundCache.PlayCrash(this, forceSize);
                 }
 
                 _deformableModel.OnContact(position, force, normal);
@@ -190,6 +191,8 @@ namespace Carmageddon
                     break;
                 }
             }
+            if (Engine.Input.WasPressed(Keys.N))
+                SoundCache.PlayCrash(this, 0);
         }
 
 

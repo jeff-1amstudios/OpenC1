@@ -50,7 +50,7 @@ namespace Carmageddon
                 Vehicle.Reset();
 
             _audioListener.BeginUpdate();
-            _audioListener.Position = Vehicle.Position;
+            _audioListener.Position = Vehicle.Chassis.Actor.GlobalPosition;
             _audioListener.Orientation = Vehicle.Chassis.Actor.GlobalOrientation;
             _audioListener.Velocity = Vector3.Zero;
             _audioListener.CommitChanges();

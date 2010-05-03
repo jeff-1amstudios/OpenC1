@@ -28,11 +28,19 @@ namespace NFSEngine.Audio
 			set
 			{
 				Listener3DOrientation orientation = _listener.Orientation;
-				orientation.Front = MdxHelpers.ToMdx(value.Forward);
-				orientation.Top = MdxHelpers.ToMdx(value.Up);
+				orientation.Front = MdxHelpers.ToMdx(Vector3.Normalize(value.Forward));
+				orientation.Top = MdxHelpers.ToMdx(Vector3.Normalize(value.Up));
 				_listener.Orientation = orientation;
 			}
 		}
+
+        public void SetOrientation(Vector3 forward)
+        {
+            Listener3DOrientation orientation = _listener.Orientation;
+            orientation.Front = MdxHelpers.ToMdx(forward);
+            orientation.Top = MdxHelpers.ToMdx(Vector3.Up);
+            _listener.Orientation = orientation;
+        }
 
 		public Vector3 Position
 		{

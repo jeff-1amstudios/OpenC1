@@ -5,6 +5,7 @@ using Carmageddon.Parsers;
 using NFSEngine.Audio;
 using PlatformEngine;
 using NFSEngine;
+using Microsoft.Xna.Framework;
 
 namespace Carmageddon
 {
@@ -24,10 +25,11 @@ namespace Carmageddon
 
     static class SoundCache
     {
-        static bool _enabled = false;
+        static bool _enabled = true;
         static List<SoundDesc> _soundDescriptions;
         public static bool IsInitialized;
-        static List<ISound> _instances = new List<ISound>();
+        static List<ISound> _playerInstances = new List<ISound>();
+        static List<ISound> _aiInstances = new List<ISound>();
         static ISound _currentSkid, _currentCrash, _currentScrape;
 
         public static void Initialize()
@@ -51,7 +53,7 @@ namespace Carmageddon
             instance.MinimumDistance = 10;
             instance.MaximumDistance = 200;
             instance.Id = csound.Id;
-            _instances.Add(instance);
+            _playerInstances.Add(instance);
             return instance;
         }
 
@@ -63,7 +65,7 @@ namespace Carmageddon
                 || (vehicle.Driver is CpuDriver && ((CpuDriver)vehicle.Driver).InPlayersView)
                 || vehicle.Driver is PlayerDriver)
             {
-                ISound instance = _instances.Find(a => a.Id == id);
+                ISound instance = _playerInstances.Find(a => a.Id == id);
                 if (instance == null)
                 {
                     instance = CreateInstance(id, is3d);
@@ -81,9 +83,10 @@ namespace Carmageddon
                 return null;
         }
 
-        public static void PlayCrash(Vehicle vehicle)
+        public static void PlayCrash(Vehicle vehicle, float force)
         {
             PlayGroup(SoundIds.CrashStart, SoundIds.CrashEnd, ref _currentCrash, vehicle);
+            
         }
 
         public static void PlayScrape(Vehicle vehicle)
@@ -110,7 +113,7 @@ namespace Carmageddon
 
             if (instance == null || !instance.IsPlaying)
             {
-                int id = Engine.Random.Next(startId, endId);
+                int id = Engine.Random.Next(startId, endId+1);
                 instance = Play(id, vehicle, true);
             }
         }

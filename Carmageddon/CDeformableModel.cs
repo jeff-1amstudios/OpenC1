@@ -76,11 +76,11 @@ namespace Carmageddon
             _localVertices = new VertexPositionNormalTexture[VertexCount];
             for (int i = 0; i < VertexCount; i++)
             {
-                //Vector3 normal = Polygons[i / 3].Normal;
+                Vector3 normal = Polygons[i / 3].Normal;
                 if (TextureMapCount > 0)
-                    _localVertices[i] = new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], Vector3.Zero, vertexTextureMap[i + VertexBaseIndex]);
+                    _localVertices[i] = new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], normal, vertexTextureMap[i + VertexBaseIndex]);
                 else
-                    _localVertices[i] = new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], Vector3.Zero, Vector2.Zero);
+                    _localVertices[i] = new VertexPositionNormalTexture(vertexPositions[i + VertexBaseIndex], normal, Vector2.Zero);
 
                 _originalPositions[i] = _localVertices[i].Position;
             }
@@ -138,7 +138,7 @@ namespace Carmageddon
 
             force = Vector3.Transform(force, _actor.GlobalOrientation);
 
-            force *= 0.000000006f; //scale it down to a managable number
+            force *= 0.000000009f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
             float forceSize = force.Length();
             
             //if (forceSize < 0.007f)
@@ -245,12 +245,12 @@ namespace Carmageddon
                 CrushData data = _carFile.CrushSections[1].Data[i];
                 //if (data.RefVertex != 170) continue;
 
-                Vector3 crushPoint = Vector3.Transform(_originalPositions[data.RefVertex], GameVariables.ScaleMatrix * _actor.GlobalPose);
+                //Vector3 crushPoint = Vector3.Transform(_originalPositions[data.RefVertex], GameVariables.ScaleMatrix * _actor.GlobalPose);
 
-                Engine.DebugRenderer.AddWireframeCube(
-                    Matrix.CreateScale(0.09f)
-                    * Matrix.CreateTranslation(crushPoint)
-                    , Color.White);
+                //Engine.DebugRenderer.AddWireframeCube(
+                //    Matrix.CreateScale(0.09f)
+                //    * Matrix.CreateTranslation(crushPoint)
+                //    , Color.White);
 
                 //Engine.DebugRenderer.AddAxis(
                 //    Matrix.CreateTranslation(Vector3.Transform(data.Box.Max, GameVariables.ScaleMatrix * _actor.GlobalPose))

@@ -23,6 +23,7 @@ namespace NFSEngine
             AspectRatio = Engine.AspectRatio;
             FieldOfView = MathHelper.ToRadians(45f);
             NearPlaneDistance = 1.0f;
+            View = Matrix.CreateLookAt(Vector3.One, Vector3.UnitZ, Vector3.Up);
 		}
 
         AverageValueVector3 _lookAt = new AverageValueVector3(45);

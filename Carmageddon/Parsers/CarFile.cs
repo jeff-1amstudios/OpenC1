@@ -33,6 +33,7 @@ namespace Carmageddon.Parsers
 
     class CrushSection
     {
+        public float DamageMultiplier;
         public List<CrushData> Data;
 
         public CrushSection()
@@ -200,13 +201,16 @@ namespace Carmageddon.Parsers
 
         private void ReadCrushDataSection()
         {
+            //3 sections: unused, car model, bonnet model
+
             for (int i = 0; i < 3; i++)
             {
                 CrushSection section = new CrushSection();
                 CrushSections.Add(section);
 
                 Debug.WriteLine("CRUSH " + i);
-                SkipLines(6); //unk1
+                section.DamageMultiplier = ReadLineAsFloat(false);
+                SkipLines(5); //unk1
                 int nbrData = ReadLineAsInt();
 
                 for (int m = 0; m < nbrData; m++)

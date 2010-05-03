@@ -7,6 +7,7 @@ namespace NFSEngine.Audio
 {
     public interface IListener
     {
+        void SetOrientation(Vector3 forward);
         Matrix Orientation { set; }
         Vector3 Position { get;  set; }
         Vector3 Velocity { set; }
