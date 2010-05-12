@@ -302,7 +302,7 @@ namespace Carmageddon.Parsers
         {
             Texture2D texture = new Texture2D(Engine.Device, _width, _height, 1, TextureUsage.None, SurfaceFormat.Color);
             texture.SetData<byte>(Helpers.GetBytesForImage(pixels, _width, _height, _palette));
-            texture.Save("c:\\temp\\fli" + _frames.Count + ".png", ImageFileFormat.Png);
+            //texture.Save("c:\\temp\\fli" + _frames.Count + ".png", ImageFileFormat.Png);
             _frames.Add(texture);
             _lastFramePixels = pixels;
         }
