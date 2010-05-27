@@ -16,7 +16,9 @@ namespace Carmageddon
         public const int ScrapeStart = 5010;
         public const int ScrapeEnd = 5012;
         public const int SkidStart = 9000;
-        public const int SkidEnd = 9004;
+        public const int SkidEnd = 9002;
+        public const int ScrubStart = 9003;
+        public const int ScrubEnd = 9004;
         public const int OutOfTime = 8010;
         public const int RaceCompleted = 8011;
         public const int Checkpoint = 8012;
@@ -30,13 +32,24 @@ namespace Carmageddon
         public static bool IsInitialized;
         static List<ISound> _playerInstances = new List<ISound>();
         static List<ISound> _aiInstances = new List<ISound>();
-        static ISound _currentSkid, _currentCrash, _currentScrape;
+        static ISound _currentSkid, _currentScrub, _currentCrash;
 
         public static void Initialize()
         {
             SoundsFile soundFile = new SoundsFile(GameVariables.BasePath + "data\\sound\\sound.txt");
             _soundDescriptions = soundFile.Sounds;
             IsInitialized = true;
+
+            if (!_enabled) return;
+
+            foreach (SoundDesc desc in _soundDescriptions)
+                CreateInstance(desc.Id, true);
+
+            CreateInstance(5000, true);
+            CreateInstance(5001, true);
+            CreateInstance(5002, true);
+            CreateInstance(5003, true);
+            CreateInstance(5004, true);
         }
 
         public static ISound CreateInstance(int id)
@@ -91,12 +104,14 @@ namespace Carmageddon
 
         public static void PlayScrape(Vehicle vehicle)
         {
-            PlayGroup(SoundIds.ScrapeStart, SoundIds.ScrapeEnd, ref _currentScrape, vehicle);
+            PlayGroup(SoundIds.ScrapeStart, SoundIds.ScrapeEnd, ref _currentCrash, vehicle);
         }
 
-        public static void PlaySkid(Vehicle vehicle)
+        public static void PlaySkid(Vehicle vehicle, float factor)
         {
-            PlayGroup(SoundIds.SkidStart, SoundIds.SkidEnd, ref _currentSkid, vehicle);
+            if (factor > 0.35f)
+                PlayGroup(SoundIds.SkidStart, SoundIds.SkidEnd, ref _currentSkid, vehicle);
+            PlayGroup(SoundIds.ScrubStart, SoundIds.ScrubEnd, ref _currentScrub, vehicle);
         }
 
         private static void PlayGroup(int startId, int endId, ref ISound instance, Vehicle vehicle)

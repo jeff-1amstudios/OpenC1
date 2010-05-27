@@ -183,16 +183,17 @@ namespace Carmageddon
 
             Chassis.Update();
 
+            float maxlat = 0;
             foreach (VehicleWheel wheel in Chassis.Wheels)
             {
+                if (wheel.LatSlip > maxlat) maxlat = wheel.LatSlip;
                 if (wheel.ShouldPlaySkidSound)
                 {
-                    SoundCache.PlaySkid(this);
+                    SoundCache.PlaySkid(this, wheel.LatSlip);
                     break;
                 }
             }
-            if (Engine.Input.WasPressed(Keys.N))
-                SoundCache.PlayCrash(this, 0);
+            GameConsole.WriteLine("maxlat", maxlat);
         }
 
 
