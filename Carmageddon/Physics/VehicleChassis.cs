@@ -74,9 +74,8 @@ namespace Carmageddon.Physics
             _physXActor.Group = PhysXConsts.VehicleId;
             
             _physXActor.UserData = vehicle;
-            _physXActor.MaximumAngularVelocity = 1.5f;
-
-                        
+            _physXActor.MaximumAngularVelocity = 3f;
+                                    
                         
             ((CDeformableModel)bodycactor.Model)._actor = _physXActor;
             ((CDeformableModel)bodycactor.Model)._carFile = carFile;
@@ -89,27 +88,26 @@ namespace Carmageddon.Physics
             lngTFD.AsymptoteValue = 4.9f;
             
 
-            _frontLateralTireFn = new TireFunctionDescription();
-            _frontLateralTireFn.ExtremumSlip = 0.26f;
-            _frontLateralTireFn.ExtremumValue = 1.8f;
-            _frontLateralTireFn.AsymptoteSlip = 20;
-            _frontLateralTireFn.AsymptoteValue = 0.001f;
+            //_frontLateralTireFn = new TireFunctionDescription();
+            //_frontLateralTireFn.ExtremumSlip = 0.26f;
+            //_frontLateralTireFn.ExtremumValue = 1.8f;
+            //_frontLateralTireFn.AsymptoteSlip = 20;
+            //_frontLateralTireFn.AsymptoteValue = 0.001f;
 
             _rearLateralTireFn = new TireFunctionDescription();            
-            _rearLateralTireFn.ExtremumSlip = 0.35f;
+            //_rearLateralTireFn.ExtremumSlip = 0.35f;
             
-            _rearLateralTireFn.AsymptoteSlip = 20f;
-            _rearLateralTireFn.AsymptoteValue = 0.001f;
-
-
+            //_rearLateralTireFn.AsymptoteSlip = 20f;
+            //_rearLateralTireFn.AsymptoteValue = 0.001f;
+            
             _rearLateralTireFn.ExtremumSlip = 0.2f;
             _rearLateralTireFn.ExtremumValue = 2.1f;
             _rearLateralTireFn.AsymptoteSlip = 0.0013f * carFile.Mass;
-            _rearLateralTireFn.AsymptoteValue = 0.01f;
+            _rearLateralTireFn.AsymptoteValue = 0.02f;
 
             _frontLateralTireFn = _rearLateralTireFn;
             //_frontLateralTireFn.AsymptoteSlip = 0.8f;
-            _frontLateralTireFn.ExtremumValue = 2.1f;
+            //_frontLateralTireFn.ExtremumValue = 2.1f;
            
             
             WheelShapeDescription wheelDesc = new WheelShapeDescription();
@@ -184,10 +182,12 @@ namespace Carmageddon.Physics
 
             float endLocal = _desiredSteerAngle; // / (1 + _speed * 0.02f);
 
+            //if (_handbrake > 0) endLocal *= 0.5f;
+
             float diff = Math.Abs(endLocal - _steerAngle);
-            float max = 0.0007f;
-            if (_desiredSteerAngle == 0) max = 0.0005f;
-            if (_desiredSteerAngle < -0.1f && _steerAngle > 0.1f || _desiredSteerAngle > 0.1f && _steerAngle < -0.1f) max = 0.002f;
+            float max = 0.001f;
+            //if (_desiredSteerAngle == 0) max = 0.0045f;
+            //if (_desiredSteerAngle < -0.1f && _steerAngle > 0.1f || _desiredSteerAngle > 0.1f && _steerAngle < -0.1f) max = 0.002f;
             if (diff > 0.0025f) // Is the current steering angle ~= desired steering angle?
             { // If not, adjust carefully
 
@@ -207,7 +207,7 @@ namespace Carmageddon.Physics
                 }
 
 
-                float steerFactor = Vehicle.Driver.ModerateSteeringAtSpeed ? Math.Min(Math.Max(0.1f, (1 - Speed / 200)), 1) : 1;
+                float steerFactor = Vehicle.Driver.ModerateSteeringAtSpeed ? Math.Min(Math.Max(0.1f, (1 - Speed / 140)), 1) : 1;
                 
                 foreach (VehicleWheel wheel in Wheels)
                 {
@@ -238,6 +238,7 @@ namespace Carmageddon.Physics
 
             bool isSkiddingTooMuch = false;
             Motor.WheelsSpinning = false;
+            float maxlat = 0;
             foreach (VehicleWheel wheel in Wheels)
             {
                 wheel.Update();
@@ -245,18 +246,37 @@ namespace Carmageddon.Physics
                 {
                     Motor.WheelsSpinning = true;
                 }
-                if (wheel.LatSlip > 1) isSkiddingTooMuch = true;
+                if (maxlat < Math.Abs(wheel.LatSlip)) maxlat = Math.Abs(wheel.LatSlip);
+                if (Math.Abs(wheel.LatSlip) > 0.5f && !wheel.InAir) isSkiddingTooMuch = true;
             }
 
-            if (isSkiddingTooMuch || _physXActor.GlobalOrientation.Up.Y < 0)
+            if (!InAir)
             {
-                _physXActor.LinearDamping = 0.7f;  //stop insane sliding
-                _physXActor.AngularDamping = 0.5f;
+                if (_steerAngle < -0.1f && Wheels[0].LatSlip > 0.4f || _steerAngle > 0.1f && Wheels[0].LatSlip < 0.4f)
+                {
+                    _physXActor.AngularDamping = maxlat * 3f;
+                    _physXActor.LinearDamping = maxlat * 0.4f;  //stop insane sliding
+                }
+                else if (isSkiddingTooMuch)
+                {
+                    _physXActor.LinearDamping = 0.5f;  //stop insane sliding
+                    _physXActor.AngularDamping = 0.5f;
+                }
+                else
+                {
+                    _physXActor.LinearDamping = Speed > 30 ? 0 : 0.5f;
+                    _physXActor.AngularDamping = 0.1f;
+                }
+
+                if (_physXActor.GlobalOrientation.Up.Y < 0) //car sliding along on the roof
+                {
+                    _physXActor.LinearDamping = 1f;  //stop insane sliding
+                    _physXActor.AngularDamping = 0.4f;
+                }
             }
             else
             {
-                _physXActor.LinearDamping = 0.0f;
-                _physXActor.AngularDamping = 0.05f;
+                _physXActor.AngularDamping = 0.00f;
             }
         }
 
@@ -328,13 +348,16 @@ namespace Carmageddon.Physics
 
         public void PullHandbrake()
         {
+            //_handbrake += Engine.ElapsedSeconds * 1.5f; // *0.5f;
+            //if (_handbrake > 1) _handbrake = 1;
             _handbrake = 1;
         }
 
         public void ReleaseHandbrake()
         {
+            //_handbrake = 0;
             if (_handbrake == 0) return;
-            _handbrake -= Engine.ElapsedSeconds*0.5f;
+            _handbrake -= Engine.ElapsedSeconds*1.5f;
             if (_handbrake < 0) _handbrake = 0;
         }
 
@@ -343,10 +366,12 @@ namespace Carmageddon.Physics
         {
             foreach (VehicleWheel wheel in Wheels)
             {
-                if (wheel.IsRear)
-                    wheel.ApplyHandbrake(_handbrake);
                 if (wheel.CActor.IsDriven)
                     wheel.Shape.MotorTorque = -_motorTorque;
+                //else
+                  //  wheel.Shape.MotorTorque = -_motorTorque * 1f;
+                if (wheel.IsRear)
+                    wheel.ApplyHandbrake(_handbrake);
             }
 
             if (_handbrake == 1) return;

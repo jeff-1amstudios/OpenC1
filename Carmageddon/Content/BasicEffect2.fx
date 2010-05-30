@@ -75,6 +75,9 @@ uniform const float4x4	World		: register(vs, c20);	// 20 - 23
 uniform const float4x4	View		: register(vs, c24);	// 24 - 27
 uniform const float4x4	Projection	: register(vs, c28);	// 28 - 31
 
+// Jeff
+uniform const float2 TexCoordsOffset : register(vs, c32);
+uniform const float TexCoordsMultiplier : register(c36);
 
 //-----------------------------------------------------------------------------
 // Structure definitions
@@ -112,9 +115,7 @@ struct CommonVSOutput
 //  1  1  0 VSInputNmTx
 //  1  1  1 VSInputNmTxVc
 
-// Jeff
 
-uniform const float2 TexCoordsOffset : register(vs, c32);
 
 
 //-----------------------------------------------------------------------------
@@ -451,7 +452,7 @@ VertexLightingVSOutputTx VSBasicTx(VSInputTx vin)
 	vout.Diffuse	= cout.Diffuse;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
 	//vout.TexCoord	= vin.TexCoord;
-	vout.TexCoord = vin.TexCoord + TexCoordsOffset;
+	vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
 
 	return vout;
 }
@@ -467,7 +468,7 @@ VertexLightingVSOutputTx VSBasicTxVc(VSInputTxVc vin)
 	vout.Diffuse	= cout.Diffuse * vin.Color;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
 	//vout.TexCoord	= vin.TexCoord;
-	vout.TexCoord = vin.TexCoord + TexCoordsOffset;
+	vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
 	return vout;
 }
 
@@ -482,7 +483,7 @@ VertexLightingVSOutputTx VSBasicNmTx(VSInputNmTx vin)
 	vout.Diffuse	= cout.Diffuse;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
 	//vout.TexCoord	= vin.TexCoord;
-	vout.TexCoord = vin.TexCoord + TexCoordsOffset;
+	vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
 	return vout;
 }
 
@@ -497,7 +498,7 @@ VertexLightingVSOutputTx VSBasicNmTxVc(VSInputNmTxVc vin)
 	vout.Diffuse	= cout.Diffuse * vin.Color;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
 	//vout.TexCoord	= vin.TexCoord;
-	vout.TexCoord = vin.TexCoord + TexCoordsOffset;
+	vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
 	return vout;
 }
 

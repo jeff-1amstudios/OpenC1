@@ -28,7 +28,7 @@ namespace Carmageddon.Physics
 
         public float Gravity
         {
-            get { return -9.81f * 1.35f; }  //gravity + a bit extra
+            get { return -9.81f * 1.1f; }  //gravity + a bit extra
         }
 
         private PhysX()

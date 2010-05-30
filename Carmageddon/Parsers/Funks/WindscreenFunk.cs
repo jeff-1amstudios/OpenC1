@@ -35,6 +35,7 @@ namespace Carmageddon.Parsers.Funks
                 Engine.Device.SamplerStates[0].AddressU = Engine.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
 
             GameVariables.CurrentEffect.TexCoordsOffset = _uvOffset;
+            GameVariables.CurrentEffect.TexCoordsMultiplier = 0.1f;
             GameVariables.CurrentEffect.CommitChanges();
         }
 
@@ -44,6 +45,7 @@ namespace Carmageddon.Parsers.Funks
                 Engine.Device.SamplerStates[0].AddressU = Engine.Device.SamplerStates[0].AddressV = _lastMode;
 
             GameVariables.CurrentEffect.TexCoordsOffset = Vector2.Zero;
+            GameVariables.CurrentEffect.TexCoordsMultiplier = 1;
             GameVariables.CurrentEffect.CommitChanges();
         }
 
@@ -53,8 +55,8 @@ namespace Carmageddon.Parsers.Funks
             Speed.X = y;
             Speed.Y = Math.Min(1, _vehicle.Chassis.Actor.LinearVelocity.Length() / 10); 
             _uvOffset += Speed * Engine.ElapsedSeconds;
-            if (_uvOffset.X > 1) _uvOffset.X = 1 - _uvOffset.X;
-            if (_uvOffset.Y > 1) _uvOffset.Y = 1 - _uvOffset.Y;
+            if (_uvOffset.X > 10) _uvOffset.X = 10 - _uvOffset.X;
+            if (_uvOffset.Y > 10) _uvOffset.Y = 10 - _uvOffset.Y;
 
             if (_vehicle.CurrentSpecialVolume.Count > 0)
             {

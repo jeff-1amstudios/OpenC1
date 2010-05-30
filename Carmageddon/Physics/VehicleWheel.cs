@@ -63,7 +63,7 @@ namespace Carmageddon.Physics
             ContactPoint = wcd.ContactPoint;
 
             SmokeEmitter.Enabled = false;
-            IsSkiddingLat = IsSkiddingLng = false;
+            IsSkiddingLat = IsSkiddingLng = ShouldPlaySkidSound = false;
 
             if (wcd.ContactForce != 0)
             {
@@ -71,14 +71,14 @@ namespace Carmageddon.Physics
                 MaterialModifier materialModifier = Race.Current.ConfigFile.MaterialModifiers[materialIndex];
                 materialModifier.UpdateWheelShape(_chassis, this);
 
-                LatSlip = Math.Abs(wcd.LateralSlip);
+                LatSlip = wcd.LateralSlip;
 
                 if (_chassis.Speed > 10 && (_handbrake == 1 || Math.Abs(wcd.LateralSlip) > 0.23f))
                 {
                     IsSkiddingLat = true;
                     SmokeEmitter.Enabled = true;
                 }
-                else if (_chassis.Speed > 3 && CActor.IsDriven && wcd.LongitudalSlip > 0.04f)
+                else if (_chassis.Speed > 3 && Shape.MotorTorque != 0 && CActor.IsDriven && wcd.LongitudalSlip > 0.04f)
                 {
                     IsSkiddingLng = true;
                     SmokeEmitter.Enabled = true;
@@ -86,15 +86,15 @@ namespace Carmageddon.Physics
 
                 // Setup tire functions taking into account handbrake and terrain
                 float latExtremum = _defaultLatExtremum;
-                if (IsRear)
-                    latExtremum = MathHelper.Lerp(2.7f, 1.6f, _handbrake);
+                //if (IsRear)
+                    latExtremum = MathHelper.Lerp(2.1f, 1.4f, _handbrake);
                 latExtremum *= materialModifier.TyreRoadFriction;
                 latExtremum *= _chassis._lateralFrictionMultiplier;
                 _latTireFn.ExtremumValue = latExtremum;
 
                 _lngTireFn.ExtremumValue = _defaultLngExtremum * materialModifier.TyreRoadFriction;
-                //Shape.LateralTireForceFunction = _latTireFn;
-                //Shape.LongitudalTireForceFunction = _lngTireFn;
+                Shape.LateralTireForceFunction = _latTireFn;
+                Shape.LongitudalTireForceFunction = _lngTireFn;
 
                 ShouldPlaySkidSound = IsSkiddingLat | IsSkiddingLng && materialIndex == 0;
                 SmokeEmitter.Update(wcd.ContactPoint);

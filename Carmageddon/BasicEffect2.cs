@@ -37,6 +37,7 @@ namespace Carmageddon
         private EffectParameter viewParam;
         private EffectParameter worldParam;
         private EffectParameter texCoordsOffsetParam;
+        private EffectParameter texCoordsMultiplierParam;
 
         Effect _effect;
 
@@ -71,6 +72,7 @@ namespace Carmageddon
             this.eyePositionParam = _effect.Parameters["EyePosition"];
             this.shaderIndexParam = _effect.Parameters["ShaderIndex"];
             texCoordsOffsetParam = _effect.Parameters["TexCoordsOffset"];
+            texCoordsMultiplierParam = _effect.Parameters["TexCoordsMultiplier"];
             this.light0 = new BasicDirectionalLight2(_effect.Parameters["DirLight0Direction"], _effect.Parameters["DirLight0DiffuseColor"], _effect.Parameters["DirLight0SpecularColor"]);
             this.light1 = new BasicDirectionalLight2(_effect.Parameters["DirLight1Direction"], _effect.Parameters["DirLight1DiffuseColor"], _effect.Parameters["DirLight1SpecularColor"]);
             this.light2 = new BasicDirectionalLight2(_effect.Parameters["DirLight2Direction"], _effect.Parameters["DirLight2DiffuseColor"], _effect.Parameters["DirLight2SpecularColor"]);
@@ -407,6 +409,11 @@ namespace Carmageddon
         public Vector2 TexCoordsOffset
         {
             set { texCoordsOffsetParam.SetValue(value); }
+        }
+
+        public float TexCoordsMultiplier
+        {
+            set { texCoordsMultiplierParam.SetValue(value); }
         }
     }
 }

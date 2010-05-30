@@ -36,8 +36,8 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            string playerCar = "blkeagle.txt";
-            _race = new Race(GameVariables.BasePath + @"data\races\citya1.TXT", playerCar);
+            string playerCar = "otis.txt";
+            _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT", playerCar);
             
             _editModes.Add(new NoEditMode());
             _editModes.Add(new OpponentEditMode());
@@ -46,7 +46,6 @@ namespace Carmageddon
 
         public void Update()
         {
-
             PhysX.Instance.Simulate();
             PhysX.Instance.Fetch();
 
@@ -148,6 +147,7 @@ namespace Carmageddon
                 _effect.FogEnd = Engine.DrawDistance;
                 _effect.FogEnabled = true;
                 _effect.TextureEnabled = true;
+                _effect.TexCoordsMultiplier = 1;
 
                 if (GameVariables.LightingEnabled)
                 {
