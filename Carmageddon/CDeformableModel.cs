@@ -130,15 +130,16 @@ namespace Carmageddon
             return pos;
         }
 
-        public void OnContact(Vector3 contactPoint, Vector3 force, Vector3 normal)
+        public void OnContact(Vector3 contactPoint, float force2, Vector3 normal)
         {
-            
+
+            Vector3 force = force2 * normal;
             //GameConsole.WriteEvent("nrml: " + normal.ToShortString());
             //GameConsole.WriteEvent("force: " + force.ToShortString());
 
             force = Vector3.Transform(force, _actor.GlobalOrientation);
 
-            force *= 0.000000009f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
+            force *= 0.000000006f; // 0.000000009f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
             float forceSize = force.Length();
             
             //if (forceSize < 0.007f)
@@ -203,10 +204,13 @@ namespace Carmageddon
                         directedForce.X = curPos.X < 0 ? force.X : -force.X;
                         directedForce.Y = curPos.Y < 0 ? force.Y : -force.Y;
                         directedForce.Z = curPos.Z < 0 ? force.Z : -force.Z;
+                        rnd.Y = (_localVertices[data.RefVertex].Position.Y - curPos.Y) * 80;
+                        rnd.Y *= curPos.Y > 0 ? 1 : -1;
+                        
 
-                        directedForce *= Vector3.Lerp(Vector3.One, rnd * 1.5f, point.DistanceFromParent); //as we get further away from parent, more random
+                        Vector3 forceToUse = directedForce * Vector3.Lerp(Vector3.One, rnd * 1.5f, point.DistanceFromParent); //as we get further away from parent, more random
 
-                        _localVertices[point.VertexIndex].Position = curPos + directedForce;
+                        _localVertices[point.VertexIndex].Position = curPos + forceToUse;
                     }
                     _changed = true;
                 }

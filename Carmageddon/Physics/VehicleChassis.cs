@@ -25,6 +25,7 @@ namespace Carmageddon.Physics
         public bool Backwards {get; private set; }
         public float Speed { get; private set; }
         public float LastSpeed { get; private set; }
+        //public Vector3 LastLinearMomentum;
 
         private Actor _physXActor;
         float _currentTorque;
@@ -52,6 +53,7 @@ namespace Carmageddon.Physics
             boxDesc.Size = carFile.BoundingBox.GetSize();
             boxDesc.LocalPosition = carFile.BoundingBox.GetCenter();
             boxDesc.Name = PhysXConsts.VehicleBody;
+            boxDesc.Flags |= ShapeFlag.PointContactForce;
             actorDesc.Shapes.Add(boxDesc);
 
             foreach (Vector3 extraPoint in carFile.ExtraBoundingBoxPoints)
@@ -74,9 +76,7 @@ namespace Carmageddon.Physics
             _physXActor.Group = PhysXConsts.VehicleId;
             
             _physXActor.UserData = vehicle;
-            _physXActor.MaximumAngularVelocity = 3f;
                                     
-                        
             ((CDeformableModel)bodycactor.Model)._actor = _physXActor;
             ((CDeformableModel)bodycactor.Model)._carFile = carFile;
             
@@ -107,7 +107,7 @@ namespace Carmageddon.Physics
 
             _frontLateralTireFn = _rearLateralTireFn;
             //_frontLateralTireFn.AsymptoteSlip = 0.8f;
-            //_frontLateralTireFn.ExtremumValue = 2.1f;
+            _frontLateralTireFn.ExtremumValue = 1.9f;
            
             
             WheelShapeDescription wheelDesc = new WheelShapeDescription();
@@ -175,6 +175,12 @@ namespace Carmageddon.Physics
         public void Update()
         {
             LastSpeed = Speed;
+            //LastLinearMomentum = Actor.LinearMomentum;
+
+            //Vector3 lin = Actor.LinearVelocity;
+            //float dot2 = Vector3.Dot(Actor.GlobalPose.Forward, lin);
+            //dot2 /= lin.Length();
+            //GameConsole.WriteEvent("nrml " + Math.Round(dot2, 3));
 
             Vector3 vDirection = _physXActor.GlobalOrientation.Forward;
             Vector3 vNormal = _physXActor.LinearVelocity * vDirection;
@@ -207,7 +213,7 @@ namespace Carmageddon.Physics
                 }
 
 
-                float steerFactor = Vehicle.Driver.ModerateSteeringAtSpeed ? Math.Min(Math.Max(0.1f, (1 - Speed / 140)), 1) : 1;
+                float steerFactor = Vehicle.Driver.ModerateSteeringAtSpeed ? Math.Min(Math.Max(0.1f, (1 - Speed / 160)), 1) : 1;
                 
                 foreach (VehicleWheel wheel in Wheels)
                 {
@@ -239,9 +245,11 @@ namespace Carmageddon.Physics
             bool isSkiddingTooMuch = false;
             Motor.WheelsSpinning = false;
             float maxlat = 0;
+            bool allWheelsInAir = true;
             foreach (VehicleWheel wheel in Wheels)
             {
                 wheel.Update();
+                if (!wheel.InAir) allWheelsInAir = false;
                 if (wheel.CActor.IsDriven && (wheel.IsSkiddingLng || wheel.InAir))
                 {
                     Motor.WheelsSpinning = true;
@@ -252,7 +260,8 @@ namespace Carmageddon.Physics
 
             if (!InAir)
             {
-                if (_steerAngle < -0.1f && Wheels[0].LatSlip > 0.4f || _steerAngle > 0.1f && Wheels[0].LatSlip < 0.4f)
+                _physXActor.MaximumAngularVelocity = 3f;
+                if (_steerAngle < -0.1f && Wheels[0].LatSlip > 0.4f || _steerAngle > 0.1f && Wheels[0].LatSlip < -0.4f)
                 {
                     _physXActor.AngularDamping = maxlat * 3f;
                     _physXActor.LinearDamping = maxlat * 0.4f;  //stop insane sliding
@@ -260,23 +269,24 @@ namespace Carmageddon.Physics
                 else if (isSkiddingTooMuch)
                 {
                     _physXActor.LinearDamping = 0.5f;  //stop insane sliding
-                    _physXActor.AngularDamping = 0.5f;
+                    _physXActor.AngularDamping = 0.25f;
                 }
                 else
                 {
                     _physXActor.LinearDamping = Speed > 30 ? 0 : 0.5f;
-                    _physXActor.AngularDamping = 0.1f;
+                    _physXActor.AngularDamping = 0.001f;
                 }
 
                 if (_physXActor.GlobalOrientation.Up.Y < 0) //car sliding along on the roof
                 {
-                    _physXActor.LinearDamping = 1f;  //stop insane sliding
-                    _physXActor.AngularDamping = 0.4f;
+                    _physXActor.LinearDamping = 2f;  //stop insane sliding
+                    _physXActor.AngularDamping = 0.8f;
                 }
             }
-            else
+            if (allWheelsInAir)
             {
                 _physXActor.AngularDamping = 0.00f;
+                _physXActor.MaximumAngularVelocity = 10f;
             }
         }
 

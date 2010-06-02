@@ -130,7 +130,7 @@ namespace Carmageddon
 
             foreach (NonCar nonCar in _nonCars)
             {
-                if (!nonCar.CActor.PhysXActor.IsSleeping && nonCar.CActor.PhysXActor.LinearVelocity.Length() > 1)
+                if (nonCar.CActor.PhysXActor != null && !nonCar.CActor.PhysXActor.IsSleeping && nonCar.CActor.PhysXActor.LinearVelocity.Length() > 1)
                 {
                     _actors.RecalculateActorParent(nonCar.CActor);
                 }

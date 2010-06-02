@@ -49,10 +49,11 @@ namespace Carmageddon.Physics
             //Core.SetParameter(PhysicsParameter.SkinWidth, (float)0.01f);
             Core.SetParameter(PhysicsParameter.VisualizationScale, (float)0f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
-            Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
+            Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, false);
             Core.SetParameter(PhysicsParameter.VisualizeContactNormal, true);
             Core.SetParameter(PhysicsParameter.VisualizeContactForce, true);
             Core.SetParameter(PhysicsParameter.VisualizeActorAxes, false);
+            
             
             SceneDescription sceneDescription = new SceneDescription();
             sceneDescription.Gravity = new Vector3(0f, Gravity, 0f);

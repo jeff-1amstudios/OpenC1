@@ -32,11 +32,14 @@ namespace Carmageddon
         public PlayGameScreen()
         {
             if (!SoundCache.IsInitialized)
+            {
+                Engine.Audio.SetDefaultVolume(-300);
                 SoundCache.Initialize();
+            }
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            string playerCar = "otis.txt";
+            string playerCar = "blkeagle.txt";
             _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT", playerCar);
             
             _editModes.Add(new NoEditMode());

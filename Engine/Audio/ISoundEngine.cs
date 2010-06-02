@@ -6,6 +6,7 @@ namespace NFSEngine.Audio
 {
     public interface ISoundEngine
     {
+        void SetDefaultVolume(int volume);
         IListener GetListener();
         ISound Load(string name, bool is3d);
         //void Play(ISound sound, float duration);

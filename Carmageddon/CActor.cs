@@ -20,7 +20,7 @@ namespace Carmageddon
         public BoundingBox BoundingBox;
         public byte[] Flags;
         public bool IsWheel;
-        public StillDesign.PhysX.Actor PhysXActor { get; set; }
+        public StillDesign.PhysX.Actor PhysXActor { get; private set; }
         public bool IsAnimated;
         
 

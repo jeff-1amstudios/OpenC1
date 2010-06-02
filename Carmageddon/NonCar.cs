@@ -20,7 +20,7 @@ namespace Carmageddon
         public Matrix NewOrientation;
         public Vector3 Rotation;
         public Joint Joint;
-
+        private Matrix _origOrientation;
 
         public void OnHit()
         {
@@ -28,7 +28,7 @@ namespace Carmageddon
 
             Joint.Dispose();
 
-            CActor.PhysXActor.GlobalOrientation = NewOrientation;            
+            CActor.PhysXActor.GlobalOrientation = _origOrientation * NewOrientation;            
             float angle = MathHelper.ToDegrees(Helpers.UnsignedAngleBetweenTwoV3(Vector3.Up, NewOrientation.Up));
             GameConsole.WriteEvent("ang " + angle);
 
@@ -55,6 +55,7 @@ namespace Carmageddon
             // if this is the first time we weld to ground, initialize
             if (Anchor == Vector3.Zero)
             {
+                _origOrientation = CActor.PhysXActor.GlobalOrientation;
                 Anchor = CActor.PhysXActor.Shapes[0].GlobalPosition;
                 Anchor.Y = CActor.PhysXActor.GlobalPosition.Y;
                 Position = CActor.PhysXActor.GlobalPosition;
@@ -68,7 +69,7 @@ namespace Carmageddon
                     Vector3 inertiaTensor = lib.ComputeBoxInteriaTensor(Vector3.Zero, Config.Mass, size);
                     CActor.PhysXActor.MassSpaceInertiaTensor = inertiaTensor;
                 }
-                //CActor.PhysXActor.SolverIterationCount = 6;
+                CActor.PhysXActor.SolverIterationCount = 1;
             }
 
             CActor.PhysXActor.GlobalPosition = Position;

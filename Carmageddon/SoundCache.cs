@@ -42,8 +42,8 @@ namespace Carmageddon
 
             if (!_enabled) return;
 
-            foreach (SoundDesc desc in _soundDescriptions)
-                CreateInstance(desc.Id, true);
+            //foreach (SoundDesc desc in _soundDescriptions)
+            //    CreateInstance(desc.Id, true);
 
             CreateInstance(5000, true);
             CreateInstance(5001, true);
@@ -62,6 +62,10 @@ namespace Carmageddon
             if (!_enabled) return null;
             SoundDesc csound = _soundDescriptions.Find(a => a.Id == id);
             ISound instance = Engine.Audio.Load(GameVariables.BasePath + "data\\sound\\" + csound.FileName, is3d);
+
+            if (_playerInstances.Exists(a => a.Id == id))
+            {
+            }
            
             instance.MinimumDistance = 10;
             instance.MaximumDistance = 200;

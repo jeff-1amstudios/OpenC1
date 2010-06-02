@@ -11,6 +11,7 @@ namespace NFSEngine.Audio
 	public class MdxSoundEngine : ISoundEngine
 	{
 		Device _audioDevice;
+        int _defaultVolume;
         private List<ISound> _sounds = new List<ISound>();
         IListener _listener;
 
@@ -19,6 +20,11 @@ namespace NFSEngine.Audio
 			_audioDevice = new Device();
 			_audioDevice.SetCooperativeLevel(Engine.Game.Window.Handle, CooperativeLevel.Priority);
 		}
+
+        public void SetDefaultVolume(int volume)
+        {
+            _defaultVolume = volume;
+        }
 
 		public IListener GetListener()
 		{
@@ -30,6 +36,7 @@ namespace NFSEngine.Audio
 		public ISound Load(string name, bool is3d)
 		{
 			ISound sound = new MdxSound(_audioDevice, name, is3d);
+            sound.Volume = _defaultVolume;
 			return sound;
 		}
 

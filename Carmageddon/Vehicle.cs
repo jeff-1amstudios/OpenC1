@@ -130,19 +130,17 @@ namespace Carmageddon
             
         }
 
-        public void ContactReport_Collision(Vector3 force, Vector3 position, Vector3 normal)
+        public void ContactReport_Collision(float force, Vector3 position, Vector3 normal)
         {
-            float forceSize = force.Length();
-
             if (Chassis.Speed > 7 || Chassis.LastSpeed > 7)
             {
-                if (forceSize > 400)
+                if (force > 400)
                 {
-                    if (forceSize > 1500)
+                    if (force > 1500)
                     {
                         _vehicleBitsEmitter.DumpParticles(position);
                     }
-                    if (forceSize > 400)
+                    if (force > 400)
                     {
                         GameVariables.SparksEmitter.DumpParticles(position, 6);
                     }
@@ -155,8 +153,8 @@ namespace Carmageddon
                     {
                         SoundCache.PlayScrape(this);
                     }
-                    else if (forceSize > 200)
-                        SoundCache.PlayCrash(this, forceSize);
+                    else if (force > 200)
+                        SoundCache.PlayCrash(this, force);
                 }
 
                 _deformableModel.OnContact(position, force, normal);

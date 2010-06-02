@@ -44,18 +44,22 @@ namespace Carmageddon.Physics
                         {
                             while (iter.GoToNextPoint())
                             {
-                                Vector3 pos = iter.GetPoint();
-
                                 if (contactInfo.ActorA.Group == PhysXConsts.TrackId && iter.GetShapeB() is WheelShape)
                                     continue; //we dont want to know each time a wheel is touching the ground
 
+                                Vector3 pos = iter.GetPoint();                                
+                                
                                 if (contactInfo.ActorA.UserData is NonCar)
                                 {
-                                    HandleNonCarCollision(vehicle, (NonCar)contactInfo.ActorA.UserData, pos, contactInfo.NormalForce, iter.GetPatchNormal());
+                                    HandleNonCarCollision(vehicle, (NonCar)contactInfo.ActorA.UserData, pos, iter.GetPatchNormal(), contactInfo.NormalForce);
+                                    return;
                                 }
 
+                                float force = iter.GetPointNormalForce();
+                                if (force == 0) continue;
+
+                                //GameConsole.WriteEvent(force.ToString());   
                                 
-                                float force = contactInfo.NormalForce.Length();
                                 if (force > 0)
                                 {
                                     if (contactInfo.ActorA.Group == PhysXConsts.VehicleId)
@@ -66,7 +70,7 @@ namespace Carmageddon.Physics
                                     }
                                     else
                                     {
-                                        vehicle.ContactReport_Collision(contactInfo.NormalForce, pos, iter.GetPatchNormal());
+                                        vehicle.ContactReport_Collision(force, pos, iter.GetPatchNormal());
                                     }
                                 }
                             }
@@ -96,21 +100,49 @@ namespace Carmageddon.Physics
             }
         }
 
-        private void HandleNonCarCollision(Vehicle vehicle, NonCar nonCar, Vector3 pos, Vector3 force, Vector3 normal)
+        private void HandleNonCarCollision(Vehicle vehicle, NonCar nonCar, Vector3 pos, Vector3 patchnormal, Vector3 normalforce)
         {
             if (nonCar.IsAttached)
             {
-                if (force == Vector3.Zero) return;
 
-                //if (vehicle.Chassis.Speed < 3) return;
+                if (normalforce == Vector3.Zero) return;
+
+
+                float forcelen = normalforce.Length();
+
+                if (vehicle.Chassis.Speed < 2) return;
 
                 //if (nonCar.LastTouchTime + 0.3f > Engine.TotalSeconds)
                 //    return;
+                //Vector3 directedForce = normalforce;
+                //float factor = 0;
+                //if (vehicle.Chassis.Speed > 10) directedForce *= vehicle.Chassis.LastSpeed; // force* normal;
 
-                float factor = (1 / (nonCar.Config.TorqueRequiredToMove * nonCar.Config.MassWhenAttached)) * 0.00008f;
+                float product = Math.Abs(Vector3.Dot(vehicle.Chassis.Actor.GlobalPose.Forward, patchnormal));
+                if (product < 0.1f)
+                {
+                    //return;
+                }
+                
+                //Vector3 lin = vehicle.Chassis.Actor.LinearMomentum;
+                //float dot2 = Vector3.Dot(vehicle.Chassis.Actor.GlobalPose.Forward, lin);
+                //if (dot2 
+                //normalforce.Normalize();
+                //if (dot2 < 0 || product < 0.5f)
 
-                nonCar.Rotation.X += -force.X * factor;
-                nonCar.Rotation.Z += force.Z * factor;
+                Vector3 directedForce = normalforce; // *vehicle.Chassis.LastSpeed * vehicle.Config.Mass;
+                    //float factor = (1 / (nonCar.Config.TorqueRequiredToMove * nonCar.Config.MassWhenAttached)) * 0.004f;
+
+                    float factor = (1 / (nonCar.Config.TorqueRequiredToMove * nonCar.Config.MassWhenAttached)) * 0.0003f;
+                //else
+                //{
+                //    directedForce = vehicle.Chassis.LastLinearMomentum * product;
+                //    factor = (1 / (nonCar.Config.TorqueRequiredToMove * nonCar.Config.MassWhenAttached)) * 0.09f;
+                //}
+                GameConsole.WriteEvent("spd: " + Math.Round(forcelen,2));
+
+                nonCar.Rotation.X += -directedForce.X * factor;
+                nonCar.Rotation.Z += directedForce.Z * factor;
                                 
                 Matrix orientation = Matrix.CreateRotationX(nonCar.Rotation.Z) * Matrix.CreateRotationZ(nonCar.Rotation.X);
                 nonCar.NewOrientation = orientation;
@@ -119,7 +151,7 @@ namespace Carmageddon.Physics
             }
 
             // multiply force by 8.5 to match the force generated by hitting a solid wall/barrier etc
-            vehicle.ContactReport_Collision(force * 5, pos, normal);
+            //vehicle.ContactReport_Collision(force, pos, normal);
         }
 
         private void HandleVehicleOnVehicleCollision(Vehicle v1, Vehicle v2, float force, Vector3 position)
