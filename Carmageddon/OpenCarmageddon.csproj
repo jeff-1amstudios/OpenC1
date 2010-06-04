@@ -88,6 +88,7 @@
     <Compile Include="CameraViews\ICameraView.cs" />
     <Compile Include="CDeformableModel.cs" />
     <Compile Include="Checkpoint.cs" />
+    <Compile Include="CircularList.cs" />
     <Compile Include="CMaterial.cs" />
     <Compile Include="CModelGroup.cs" />
     <Compile Include="CpuDriver.cs" />

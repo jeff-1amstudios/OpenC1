@@ -132,7 +132,7 @@ namespace Carmageddon
 
         public void ContactReport_Collision(float force, Vector3 position, Vector3 normal)
         {
-            if (Chassis.Speed > 7 || Chassis.LastSpeed > 7)
+            if (Chassis.LastSpeeds.GetMax() > 7)
             {
                 if (force > 400)
                 {

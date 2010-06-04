@@ -24,7 +24,8 @@ namespace Carmageddon.Physics
         
         public bool Backwards {get; private set; }
         public float Speed { get; private set; }
-        public float LastSpeed { get; private set; }
+        
+        public CircularList LastSpeeds = new CircularList(5);
         //public Vector3 LastLinearMomentum;
 
         private Actor _physXActor;
@@ -174,7 +175,7 @@ namespace Carmageddon.Physics
 
         public void Update()
         {
-            LastSpeed = Speed;
+            LastSpeeds.Add(Speed);
             //LastLinearMomentum = Actor.LinearMomentum;
 
             //Vector3 lin = Actor.LinearVelocity;

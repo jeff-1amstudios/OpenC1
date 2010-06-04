@@ -69,7 +69,7 @@ namespace Carmageddon
                     Vector3 inertiaTensor = lib.ComputeBoxInteriaTensor(Vector3.Zero, Config.Mass, size);
                     CActor.PhysXActor.MassSpaceInertiaTensor = inertiaTensor;
                 }
-                CActor.PhysXActor.SolverIterationCount = 1;
+                //CActor.PhysXActor.SolverIterationCount = 1;
             }
 
             CActor.PhysXActor.GlobalPosition = Position;
