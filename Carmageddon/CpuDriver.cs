@@ -226,7 +226,7 @@ namespace Carmageddon
         {
             SetTarget(node);
             Vehicle.Chassis.Actor.GlobalPosition = _targetNode.Position;
-            Vehicle.Reset();
+            Vehicle.Chassis.Reset();
         }
 
         private void GetNextPath()

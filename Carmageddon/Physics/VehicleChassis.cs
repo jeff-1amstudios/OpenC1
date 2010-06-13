@@ -223,12 +223,6 @@ namespace Carmageddon.Physics
                 }
             }
 
-            if (_physXActor.GlobalOrientation.Up.Y < 0 && Speed < 1f)
-            {
-                Reset();
-                return;
-            }
-
             if (Speed < 1f) // Change between braking and accelerating;
             {
                 if (Backwards && _currentTorque > 0.01f)
@@ -262,7 +256,7 @@ namespace Carmageddon.Physics
             if (!InAir)
             {
                 _physXActor.MaximumAngularVelocity = 3f;
-                if (_steerAngle < -0.1f && Wheels[0].LatSlip > 0.4f || _steerAngle > 0.1f && Wheels[0].LatSlip < -0.4f)
+                if ((_steerAngle < -0.1f && Wheels[0].LatSlip > 0.4f) || (_steerAngle > 0.1f && Wheels[0].LatSlip < -0.4f))
                 {
                     _physXActor.AngularDamping = maxlat * 3f;
                     _physXActor.LinearDamping = maxlat * 0.4f;  //stop insane sliding
@@ -270,12 +264,12 @@ namespace Carmageddon.Physics
                 else if (isSkiddingTooMuch)
                 {
                     _physXActor.LinearDamping = 0.5f;  //stop insane sliding
-                    _physXActor.AngularDamping = 0.25f;
+                    _physXActor.AngularDamping = 0.01f;
                 }
                 else
                 {
-                    _physXActor.LinearDamping = Speed > 30 ? 0 : 0.5f;
-                    _physXActor.AngularDamping = 0.001f;
+                    _physXActor.LinearDamping = Speed > 10 ? 0 : 0.5f;
+                    _physXActor.AngularDamping = 0.0001f;
                 }
 
                 if (_physXActor.GlobalOrientation.Up.Y < 0) //car sliding along on the roof
@@ -289,6 +283,8 @@ namespace Carmageddon.Physics
                 _physXActor.AngularDamping = 0.00f;
                 _physXActor.MaximumAngularVelocity = 10f;
             }
+
+            GameConsole.WriteLine("and damp", _physXActor.AngularDamping);
         }
 
 
@@ -400,8 +396,9 @@ namespace Carmageddon.Physics
         {
             Matrix m = _physXActor.GlobalOrientation;
             m.Up = Vector3.Up;
-            _physXActor.GlobalOrientation = m;
-            _physXActor.GlobalPosition += new Vector3(0.0f, 10.0f, 0.0f);
+            m.Right = Vector3.Right;
+            //_physXActor.GlobalOrientation = m;
+            _physXActor.GlobalPosition += new Vector3(0.0f, 2.0f, 0.0f);
             _physXActor.LinearMomentum = _physXActor.LinearVelocity = Vector3.Zero;
             _physXActor.AngularMomentum = _physXActor.AngularVelocity = Vector3.Zero;
         }

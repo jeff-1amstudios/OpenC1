@@ -11,7 +11,8 @@ namespace Carmageddon
 {
     class PlayerDriver : IDriver
     {
-        
+        List<Matrix> _recoverPositions = new List<Matrix>();
+        public float _lastRecoverTime = 0;
         public Vehicle Vehicle {get; set; }
 
         IListener _audioListener;
@@ -47,13 +48,31 @@ namespace Carmageddon
                 chassis.ReleaseHandbrake();
 
             if (Engine.Input.WasPressed(Keys.R))
-                Vehicle.Reset();
+            {
+                if (_recoverPositions.Count > 0)
+                {
+                    Vehicle.Recover(_recoverPositions[_recoverPositions.Count - 1]);
+                    _recoverPositions.RemoveAt(_recoverPositions.Count - 1);
+                }
+                else
+                    Vehicle.Chassis.Reset();//.Recover(Matrix.Identity);
+            }
 
             _audioListener.BeginUpdate();
             _audioListener.Position = Vehicle.Chassis.Actor.GlobalPosition;
             _audioListener.Orientation = Vehicle.Chassis.Actor.GlobalOrientation;
             _audioListener.Velocity = Vector3.Zero;
             _audioListener.CommitChanges();
+
+            if (Engine.TotalSeconds > _lastRecoverTime + 5)
+            {
+                _recoverPositions.Add(Vehicle.Chassis.Actor.GlobalPose);
+                if (_recoverPositions.Count > 10)
+                    _recoverPositions.RemoveAt(0);
+
+
+                _lastRecoverTime = Engine.TotalSeconds;
+            }
         }
     }
 }

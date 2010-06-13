@@ -132,8 +132,8 @@ namespace Carmageddon
 
         public void ContactReport_Collision(float force, Vector3 position, Vector3 normal)
         {
-            if (Chassis.LastSpeeds.GetMax() > 7)
-            {
+            //if (Chassis.LastSpeeds.GetMax() > 7)
+            //{
                 if (force > 400)
                 {
                     if (force > 1500)
@@ -153,12 +153,12 @@ namespace Carmageddon
                     {
                         SoundCache.PlayScrape(this);
                     }
-                    else if (force > 200)
+                    else if (force > 50)
                         SoundCache.PlayCrash(this, force);
                 }
 
                 _deformableModel.OnContact(position, force, normal);
-            }
+            //}
         }
 
         public void Update()
@@ -220,8 +220,10 @@ namespace Carmageddon
             get { return Chassis.Actor.GlobalPosition; }
         }
 
-        public void Reset()
+        public void Recover(Matrix pose)
         {
+            if (pose != Matrix.Identity)
+                Chassis.Actor.GlobalPose = pose;
             Chassis.Reset();
         }
 
