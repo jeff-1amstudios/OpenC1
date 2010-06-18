@@ -40,13 +40,13 @@ namespace Carmageddon
             Driver.Vehicle = this;
 
             LoadModel(filename);
-            
+
             _crushSection = Config.CrushSections[1];
-            
+
             CMaterial crashMat = ResourceCache.GetMaterial(Config.CrashMaterialFiles[0]);
             _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMat), 6, Vector3.Zero);
 
-            Audio.Play();                  
+            Audio.Play();
         }
 
         private void LoadModel(string filename)
@@ -78,19 +78,19 @@ namespace Carmageddon
                 if (!g.IsWheelActor) _grooves.Add(g);
 
             DatFile modelFile = new DatFile(GameVariables.BasePath + "data\\models\\" + Config.ModelFile, new List<string> { Config.ModelFile });
-            ActFile actFile = new ActFile(GameVariables.BasePath +  "data\\actors\\" + Config.ActorFile, modelFile.Models);
-            
+            ActFile actFile = new ActFile(GameVariables.BasePath + "data\\actors\\" + Config.ActorFile, modelFile.Models);
+
             _actors = actFile.Hierarchy;
             _actors.ResolveTransforms(true, _grooves);
 
             if (Config.WindscreenMaterial != "none")
                 Config.Funks.Add(new WindscreenFunk(Config.WindscreenMaterial, this));
-            
+
             foreach (BaseGroove g in _grooves)
                 g.SetActor(_actors.GetByName(g.ActorName));
-            
+
             // link the funks and materials
-            foreach (BaseFunk f in Config.Funks) 
+            foreach (BaseFunk f in Config.Funks)
                 f.Resolve();
 
             Vector3 tireWidth = new Vector3(0.034f, 0, 0) * GameVariables.Scale;
@@ -121,29 +121,27 @@ namespace Carmageddon
             Chassis = new VehicleChassis(this, actor2);
         }
 
-        
+
         public void PlaceOnGrid(Vector3 position, float direction)
         {
             Matrix pose = GridPlacer.GetGridPosition(position, direction);
             Chassis.Actor.GlobalPose = pose;
-            
-            
+
+
         }
 
         public void ContactReport_Collision(float force, Vector3 position, Vector3 normal)
         {
-            //if (Chassis.LastSpeeds.GetMax() > 7)
-            //{
+            if (Chassis.LastSpeeds.GetMax() > 7)
+            {
+
+                if (force > 1500)
+                {
+                    _vehicleBitsEmitter.DumpParticles(position);
+                }
                 if (force > 400)
                 {
-                    if (force > 1500)
-                    {
-                        _vehicleBitsEmitter.DumpParticles(position);
-                    }
-                    if (force > 400)
-                    {
-                        GameVariables.SparksEmitter.DumpParticles(position, 6);
-                    }
+                    GameVariables.SparksEmitter.DumpParticles(position, 6);
                 }
 
                 if (Driver is PlayerDriver)
@@ -158,12 +156,12 @@ namespace Carmageddon
                 }
 
                 _deformableModel.OnContact(position, force, normal);
-            //}
+            }
         }
 
         public void Update()
         {
-           
+
             foreach (BaseGroove groove in _grooves)
             {
                 groove.Update();
@@ -201,7 +199,7 @@ namespace Carmageddon
             SkidMarkBuffer.Render();
 
             _actors.Render(Chassis.Actor.GlobalPose, null);
-            
+
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
             for (int i = 0; i < Config.WheelActors.Count; i++)

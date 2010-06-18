@@ -66,13 +66,16 @@ namespace Carmageddon.Physics
                                     if (contactInfo.ActorA.Group == PhysXConsts.VehicleId)
                                     {
                                         //2 vehicle collision
-                                        HandleVehicleOnVehicleCollision((Vehicle)contactInfo.ActorA.UserData, vehicle, force, pos);
-                                        return;
+                                        force = iter.GetPointNormalForce();
+                                        Vector3 normal = contactInfo.NormalForce;
+                                        normal.Normalize();
+                                        HandleVehicleOnVehicleCollision((Vehicle)contactInfo.ActorA.UserData, vehicle, force, pos, normal);
                                     }
                                     else
                                     {
                                         Vector3 normal = contactInfo.NormalForce;
                                         normal.Normalize();
+                                        force = iter.GetPointNormalForce();
                                         vehicle.ContactReport_Collision(force, pos, iter.GetPatchNormal());
                                         //return;
                                     }
@@ -143,18 +146,21 @@ namespace Carmageddon.Physics
             vehicle.ContactReport_Collision(normalforce.Length(), pos, normalforce);
         }
 
-        private void HandleVehicleOnVehicleCollision(Vehicle v1, Vehicle v2, float force, Vector3 position)
+        private void HandleVehicleOnVehicleCollision(Vehicle v1, Vehicle v2, float force, Vector3 position, Vector3 normal)
         {
             if (v1.Driver is CpuDriver && v2.Driver is PlayerDriver)
                 ((CpuDriver)v1.Driver).State = CpuDriverState.Attacking;
             else if (v2.Driver is CpuDriver && v1.Driver is PlayerDriver)
                 ((CpuDriver)v2.Driver).State = CpuDriverState.Attacking;
 
+            v1.ContactReport_Collision(force * 2, position, normal);
+            v2.ContactReport_Collision(force * 2, position, normal);
+
             //GameConsole.WriteEvent("caroncar");
             //if (v1.Chassis.Speed > 3 || v2.Chassis.Speed > 3)
             //{
-                GameVariables.SparksEmitter.DumpParticles(position, 6);
-                SoundCache.PlayCrash(v1, force);
+              //  GameVariables.SparksEmitter.DumpParticles(position, 6);
+              //  SoundCache.PlayCrash(v1, force);
             //}
 
             //float product = Math.Abs(Vector3.Dot(Chassis.Actor.GlobalPose.Forward, normal));

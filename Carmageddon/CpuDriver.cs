@@ -52,6 +52,7 @@ namespace Carmageddon
 
         public void Update()
         {
+            return;
             if (!_raceStarted) return;
 
             Vector3 pos = Vehicle.Position;

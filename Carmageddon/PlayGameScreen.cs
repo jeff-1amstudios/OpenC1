@@ -33,7 +33,7 @@ namespace Carmageddon
         {
             if (!SoundCache.IsInitialized)
             {
-                Engine.Audio.SetDefaultVolume(-500);
+                Engine.Audio.SetDefaultVolume(-5000);
                 SoundCache.Initialize();
             }
 

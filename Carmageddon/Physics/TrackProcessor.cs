@@ -263,6 +263,7 @@ namespace Carmageddon.Physics
                         NonCar noncar = new NonCar { Config = nonCarFile, CActor = actor };
                         instance.UserData = noncar;
                         actor.AttachToPhysX(instance);
+                        instance.RaiseBodyFlag(BodyFlag.Kinematic);
 
                         if (nonCarFile.BendAngleBeforeSnapping > 0)
                         {

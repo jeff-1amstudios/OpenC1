@@ -13,10 +13,6 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Carmageddon
 {
-    class Movement
-    {
-        public Vector3 A, B;
-    }
     class CDeformableModel : CModel
     {
         Vector3[] _repairPoisitons;
@@ -28,12 +24,13 @@ namespace Carmageddon
         DynamicVertexBuffer _vertexBuffer;
         IndexBuffer _indexBuffer;
 
+        List<int>[] _vertexLinks;
+
         bool _repairing;
         float _repairingFactor;
         bool _changed;
-        float _lastCrushTime = 0;
+        
         List<int> _lastHitPts = new List<int>();
-        List<Movement> _movements = new List<Movement>();
 
         public CarFile _carFile;
 
@@ -91,6 +88,22 @@ namespace Carmageddon
                 _originalPositions[i] = _localVertices[i].Position;
             }
 
+            // link up vertices which share the same position so when we crush we avoid gaps
+            _vertexLinks = new List<int>[_originalPositions.Length];
+            for (int i = 0; i < _originalPositions.Length; i++)
+            {
+                for (int j = 0; j < _originalPositions.Length; j++)
+                {
+                    if (i == j) continue;
+
+                    if (_originalPositions[i] == _originalPositions[j])
+                    {
+                        if (_vertexLinks[i] == null) _vertexLinks[i] = new List<int>();
+                        _vertexLinks[i].Add(j);
+                    }
+                }
+            }
+
             int size = VertexPositionNormalTexture.SizeInBytes * _localVertices.Length;
             _vertexBuffer = new DynamicVertexBuffer(Engine.Device, size, BufferUsage.WriteOnly);
             _vertexBuffer.SetData(_localVertices);
@@ -139,27 +152,26 @@ namespace Carmageddon
         public void OnContact(Vector3 contactPoint, float force2, Vector3 normal)
         {
             List<int> hitPoints = new List<int>();
-            _movements.Clear();
 
             Vector3 force = force2 * normal;
-            
+
             force = Vector3.Transform(force, _actor.GlobalOrientation);
 
-            force.X *= 0.25f;
+            force.X *= 0.5f;  //limit sideways crush
 
-            force *= 0.00000001f; // 0.000000009f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
+            force *= 0.00000013f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
             float forceSize = force.Length();
-            
-            if (forceSize > 0.04f)
-                force *= 0.04f / forceSize; //cap max force so things dont get loco
+
+            //if (forceSize > 0.04f)
+            //{
+                //force *= 0.04f / forceSize; //cap max force so things dont get loco
+            //}
 
             if (forceSize < 0.004f)
                 return;
 
-            //if (_lastCrushTime + 0.1f > Engine.TotalSeconds) return;
-            //_lastCrushTime = Engine.TotalSeconds;
+            Vector3 force3 = force;
 
-                        
             force.X = Math.Abs(force.X);
             force.Y = Math.Abs(force.Y);
             force.Z = Math.Abs(force.Z);
@@ -169,11 +181,12 @@ namespace Carmageddon
 
             int hitpoints = 0;
 
-            foreach (CrushData data in _carFile.CrushSections[1].Data)
+            CrushData data = GetClosestCrushData(contactPoint);
+            //foreach (CrushData data in _carFile.CrushSections[1].Data)
             {
-                Vector3 crushPoint = Vector3.Transform(_originalPositions[data.RefVertex], GameVariables.ScaleMatrix * _actor.GlobalPose);
+                Vector3 crushPoint = Vector3.Transform(_localVertices[data.RefVertex].Position, GameVariables.ScaleMatrix * _actor.GlobalPose);
 
-                if (Vector3.Distance(crushPoint, contactPoint) < 0.4f)
+               // if (Vector3.Distance(crushPoint, contactPoint) < 0.5f)
                 {
                     hitPoints.Add(data.RefVertex);
                     hitpoints++;
@@ -183,43 +196,88 @@ namespace Carmageddon
                     directedForce.X = curPos.X < 0 ? force.X : -force.X;
                     directedForce.Y = curPos.Y < 0 ? force.Y : -force.Y;
                     directedForce.Z = curPos.Z < 0 ? force.Z : -force.Z;
+                    
+                    Vector3 parentScale = new Vector3();
+                    parentScale.X = directedForce.X > 0 ? data.Left : data.Right;
+                    parentScale.Y = directedForce.Y > 0 ? data.Bottom : data.Top;
+                    parentScale.Z = directedForce.Z > 0 ? data.Front : data.Back;
+                    directedForce *= parentScale;
+
+
                     Vector3 oldPos = _localVertices[data.RefVertex].Position;
                     curPos = KeepCrushPositionInBounds(curPos + directedForce, data.Box);
                     float distanceMoved = Vector3.Distance(oldPos, curPos);
                     _localVertices[data.RefVertex].Position = curPos;
 
-                    _movements.Add(new Movement { A = oldPos, B = curPos });
+                    Vector3 parentDir = curPos - oldPos;
 
-                    //GameConsole.WriteEvent("moved: " + distanceMoved);
-
-                    Vector3 rnd = Engine.Random.Next(data.MinScale, data.MaxScale);
-                    if (Engine.Random.Next() % 2 == 0) rnd.Y *= 1;
+                    if (distanceMoved < 0.0002f)
+                    {
+                        return;
+                    }
 
                     Vector3 normalforce = Vector3.Normalize(force);
 
                     foreach (CrushPoint point in data.Points)
                     {
-                        //break;
                         if (float.IsNaN(normalforce.X) || float.IsNaN(normalforce.Y) || float.IsNaN(normalforce.Z))
                         {
                             break;
                         }
 
-                        force = normalforce * distanceMoved * MathHelper.Lerp(1f, 0.1f, point.DistanceFromParent);
-                        
                         curPos = _localVertices[point.VertexIndex].Position;
-                        if (Math.Abs(force.Y) < 0.0001f)
-                            force.Y *= (_localVertices[data.RefVertex].Position.Y - curPos.Y) * 1000;
-                        directedForce.X = curPos.X < 0 ? force.X : -force.X;
-                        directedForce.Y = curPos.Y < 0 ? force.Y : -force.Y;
-                        directedForce.Z = curPos.Z < 0 ? force.Z : -force.Z;
-                        //rnd.Y = (_localVertices[data.RefVertex].Position.Y - curPos.Y) * 80;
-                        rnd.Y *= curPos.Y > 0 ? 1 : -1;
+
+                        //float distanceFromParent = Vector3.Distance(curPos, _localVertices[data.RefVertex].Position);
+                        //float originalDistanceFromParent = Vector3.Distance(curPos, _originalPositions[data.RefVertex]);
+
+                        //if (distanceFromParent < originalDistanceFromParent)
+                        //    return;
+
+                        //directedForce = force * parentScale;
+                        
+                        Vector3 vdir = _localVertices[data.RefVertex].Position - _localVertices[point.VertexIndex].Position;
+                        vdir.Normalize();
+
+                        Vector3 newpos = _localVertices[point.VertexIndex].Position + (vdir * distanceMoved * parentScale * 4f * (1 - point.DistanceFromParent));
+                        if (point.DistanceFromParent == 0 || Engine.Random.Next(10) % 2 == 0)
+                        {
+                            newpos = _localVertices[point.VertexIndex].Position + (parentDir * 0.8f * (1 - point.DistanceFromParent));
+                        }
+                        else
+                        {
+                        }
+
+                        float dist3 = Vector3.Distance(_originalPositions[point.VertexIndex], newpos);
+                        // if were not too far away from orig position and this will move us closer to our parent, move this vert
+                            if (dist3 < 0.07f)
+                            {
+                                _localVertices[point.VertexIndex].Position = newpos;
+                                if (_vertexLinks[point.VertexIndex] != null)
+                                {
+                                    foreach (int idx in _vertexLinks[point.VertexIndex])
+                                        _localVertices[idx].Position = newpos;
+                                }
+                            }
+                            else
+                            {
+                                //GameConsole.WriteEvent("not moving child");
+                            }
 
 
-                        //Vector3 forceToUse = directedForce * Vector3.Lerp(Vector3.One, rnd * 1.5f, point.DistanceFromParent); //as we get further away from parent, more random
-                        if (Vector3.Distance(_originalPositions[point.VertexIndex], curPos + directedForce) < 0.04f)
-                            _localVertices[point.VertexIndex].Position = curPos + directedForce;
+                        //force = normalforce * distanceMoved * MathHelper.Lerp(1f, 0.1f, point.DistanceFromParent);
+
+                        //curPos = _localVertices[point.VertexIndex].Position;
+                        //if (Math.Abs(force.Y) < 0.0001f)
+                        //    force.Y *= (_localVertices[data.RefVertex].Position.Y - curPos.Y) * 1000;
+                        //directedForce.X = curPos.X < 0 ? force.X : -force.X;
+                        //directedForce.Y = curPos.Y < 0 ? force.Y : -force.Y;
+                        //directedForce.Z = curPos.Z < 0 ? force.Z : -force.Z;
+                        ////rnd.Y = (_localVertices[data.RefVertex].Position.Y - curPos.Y) * 80;
+                        //rnd.Y *= curPos.Y > 0 ? 1 : -1;
+
+                        ////Vector3 forceToUse = directedForce * Vector3.Lerp(Vector3.One, rnd * 1.5f, point.DistanceFromParent); //as we get further away from parent, more random
+                        //if (Vector3.Distance(_originalPositions[point.VertexIndex], curPos + directedForce) < 0.04f)
+                        //    _localVertices[point.VertexIndex].Position = curPos + directedForce;
                     }
                     _changed = true;
                 }
@@ -228,11 +286,11 @@ namespace Carmageddon
             if (_changed)
             {
                 bool tidied = false;
-                foreach (CrushData data in _carFile.CrushSections[1].Data)
+                foreach (CrushData data2 in _carFile.CrushSections[1].Data)
                 {
-                    Vector3 oldpos = _localVertices[data.RefVertex].Position;
-                    _localVertices[data.RefVertex].Position = KeepCrushPositionInBounds(_localVertices[data.RefVertex].Position, data.Box);
-                    if (oldpos != _localVertices[data.RefVertex].Position) tidied = true;
+                    Vector3 oldpos = _localVertices[data2.RefVertex].Position;
+                    _localVertices[data2.RefVertex].Position = KeepCrushPositionInBounds(_localVertices[data2.RefVertex].Position, data2.Box);
+                    if (oldpos != _localVertices[data2.RefVertex].Position) tidied = true;
                 }
 
                 if (tidied) GameConsole.WriteEvent("tidied up");
@@ -252,17 +310,29 @@ namespace Carmageddon
             }
         }
 
+        private CrushData GetClosestCrushData(Vector3 contactPoint)
+        {
+            float minDist = 9999;
+            CrushData minData = null;
+            foreach (CrushData data in _carFile.CrushSections[1].Data)
+            {
+                Vector3 crushPoint = Vector3.Transform(_localVertices[data.RefVertex].Position, GameVariables.ScaleMatrix * _actor.GlobalPose);
+                float dist = Vector3.Distance(crushPoint, contactPoint);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    minData = data;
+                }
+            }
+
+            return minData;
+        }
+
 
         int _nbr = 0;
         public override void Render(CMaterial actorMaterial)
         {
             if (_actor == null) return;
-
-            Matrix trans = Matrix.CreateTranslation(_actor.GlobalPosition);
-            foreach (Movement m in _movements)
-            {
-                Engine.DebugRenderer.AddLine(Vector3.Transform(m.A, trans), Vector3.Transform(m.B, trans), Color.Yellow);
-            }
 
             for (int i = _nbr; i < _carFile.CrushSections[1].Data.Count; i++)
             {
@@ -284,13 +354,13 @@ namespace Carmageddon
                     * Matrix.CreateTranslation(crushPoint)
                     , Color.Yellow);
 
-                Engine.DebugRenderer.AddAxis(
-                    Matrix.CreateTranslation(Vector3.Transform(data.Box.Max, GameVariables.ScaleMatrix * _actor.GlobalPose))
-                    , 10);
+                //Engine.DebugRenderer.AddAxis(
+                //    Matrix.CreateTranslation(Vector3.Transform(data.Box.Max, GameVariables.ScaleMatrix * _actor.GlobalPose))
+                //    , 10);
 
-                Engine.DebugRenderer.AddAxis(
-                    Matrix.CreateTranslation(Vector3.Transform(data.Box.Min, GameVariables.ScaleMatrix * _actor.GlobalPose))
-                    , 10);
+                //Engine.DebugRenderer.AddAxis(
+                //    Matrix.CreateTranslation(Vector3.Transform(data.Box.Min, GameVariables.ScaleMatrix * _actor.GlobalPose))
+                //    , 10);
 
 
 
@@ -298,14 +368,14 @@ namespace Carmageddon
                 {
                     Engine.DebugRenderer.AddWireframeCube(
                     Matrix.CreateScale(0.05f)
-                    * Matrix.CreateTranslation(Vector3.Transform(_originalPositions[point.VertexIndex], GameVariables.ScaleMatrix * _actor.GlobalPose))
+                    * Matrix.CreateTranslation(Vector3.Transform(_localVertices[point.VertexIndex].Position, GameVariables.ScaleMatrix * _actor.GlobalPose))
 
                     , Color.Blue);
                 }
                 break;
             }
 
-            
+
 
             if (Engine.Input.WasPressed(Keys.Back))
             {
