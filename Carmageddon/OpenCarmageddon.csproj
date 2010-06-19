@@ -95,6 +95,7 @@
     <Compile Include="EditModes\IEditMode.cs" />
     <Compile Include="EditModes\NoEditMode.cs" />
     <Compile Include="EditModes\OpponentEditMode.cs" />
+    <Compile Include="Gfx\DamageSmokeParticleSystem.cs" />
     <Compile Include="GridPlacer.cs" />
     <Compile Include="IDriver.cs" />
     <Compile Include="MaterialModifier.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Parsers\TextFileDecryptor.cs" />
     <Compile Include="Physics\TriggerReport.cs" />
     <Compile Include="Physics\PhysXConsts.cs" />
+    <Compile Include="PixmapBillboard.cs" />
     <Compile Include="PlayerDriver.cs" />
     <Compile Include="RaceTimeController.cs" />
     <Compile Include="SoundDesc.cs" />
@@ -119,7 +121,7 @@
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Gfx\ModelShadow.cs" />
     <Compile Include="Gfx\SparksParticleSystem.cs" />
-    <Compile Include="Gfx\TireSmokeParticleSystem.cs" />
+    <Compile Include="Gfx\TyreSmokeParticleSystem.cs" />
     <Compile Include="Gfx\VehicleBitsParticleSystem.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="HUD\BaseHUDItem.cs" />

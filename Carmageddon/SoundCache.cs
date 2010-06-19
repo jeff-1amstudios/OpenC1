@@ -11,6 +11,7 @@ namespace Carmageddon
 {
     static class SoundIds
     {
+        public const int Repair = 5200;
         public const int CrashStart = 5000;
         public const int CrashEnd = 5004;
         public const int ScrapeStart = 5010;

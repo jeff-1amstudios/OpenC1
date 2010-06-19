@@ -158,8 +158,9 @@ namespace Carmageddon
             force = Vector3.Transform(force, _actor.GlobalOrientation);
 
             force.X *= 0.5f;  //limit sideways crush
+            force.Y *= 0.7f;
 
-            force *= 0.00000013f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
+            force *= 0.00000005f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
             float forceSize = force.Length();
 
             //if (forceSize > 0.04f)
@@ -198,9 +199,9 @@ namespace Carmageddon
                     directedForce.Z = curPos.Z < 0 ? force.Z : -force.Z;
                     
                     Vector3 parentScale = new Vector3();
-                    parentScale.X = directedForce.X > 0 ? data.Left : data.Right;
-                    parentScale.Y = directedForce.Y > 0 ? data.Bottom : data.Top;
-                    parentScale.Z = directedForce.Z > 0 ? data.Front : data.Back;
+                    parentScale.X = directedForce.X > 0 ? data.LeftScale : data.RightScale;
+                    parentScale.Y = directedForce.Y > 0 ? data.BottomScale : data.TopScale;
+                    parentScale.Z = directedForce.Z > 0 ? data.FrontScale : data.RearScale;
                     directedForce *= parentScale;
 
 
@@ -238,14 +239,14 @@ namespace Carmageddon
                         Vector3 vdir = _localVertices[data.RefVertex].Position - _localVertices[point.VertexIndex].Position;
                         vdir.Normalize();
 
-                        Vector3 newpos = _localVertices[point.VertexIndex].Position + (vdir * distanceMoved * parentScale * 4f * (1 - point.DistanceFromParent));
-                        if (point.DistanceFromParent == 0 || Engine.Random.Next(10) % 2 == 0)
+                        Vector3 newpos = _localVertices[point.VertexIndex].Position + (vdir * distanceMoved * parentScale * 2f * (1 - point.DistanceFromParent));
+                        if (point.DistanceFromParent < 0.1f || Engine.Random.Next(10) % 2 == 0)
                         {
-                            newpos = _localVertices[point.VertexIndex].Position + (parentDir * 0.8f * (1 - point.DistanceFromParent));
+                            newpos = _localVertices[point.VertexIndex].Position + (parentDir * 0.6f * (1 - point.DistanceFromParent));
                         }
-                        else
-                        {
-                        }
+                        //else
+                        //{
+                        //}
 
                         float dist3 = Vector3.Distance(_originalPositions[point.VertexIndex], newpos);
                         // if were not too far away from orig position and this will move us closer to our parent, move this vert
@@ -328,6 +329,19 @@ namespace Carmageddon
             return minData;
         }
 
+        public void Repair()
+        {
+            if (!_repairing)
+            {
+                _repairing = true;
+                _repairingFactor = 0;
+                for (int i = 0; i < _localVertices.Length; i++)
+                {
+                    _repairPoisitons[i] = _localVertices[i].Position;
+                }
+            }
+        }
+
 
         int _nbr = 0;
         public override void Render(CMaterial actorMaterial)
@@ -373,23 +387,6 @@ namespace Carmageddon
                     , Color.Blue);
                 }
                 break;
-            }
-
-
-
-            if (Engine.Input.WasPressed(Keys.Back))
-            {
-                if (!_repairing)
-                {
-                    _repairing = true;
-                    _repairingFactor = 0;
-                    for (int i = 0; i < _localVertices.Length; i++)
-                    {
-                        _repairPoisitons[i] = _localVertices[i].Position;
-                    }
-
-                    MessageRenderer.Instance.PostMessage("Repair Cost: 0", 2);
-                }
             }
 
             if (_repairing)
@@ -465,6 +462,23 @@ namespace Carmageddon
             }
 
             device.Vertices[0].SetSource(verts, 0, VertexPositionNormalTexture.SizeInBytes);
+        }
+
+        internal Vector3 GetMostDamagedPosition()
+        {
+            float maxdist = 0;
+            Vector3 pos = Vector3.Zero;
+            for (int i = 0; i < _localVertices.Length; i++)
+            {
+                float dist = Vector3.Distance(_localVertices[i].Position, _originalPositions[i]);
+                if (dist > maxdist)
+                {
+                    maxdist = dist;
+                    pos = _localVertices[i].Position;
+                }
+            }
+
+            return pos;
         }
     }
 }

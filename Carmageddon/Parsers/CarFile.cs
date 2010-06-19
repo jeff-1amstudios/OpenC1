@@ -21,7 +21,7 @@ namespace Carmageddon.Parsers
     {
         public int RefVertex;
         public BoundingBox Box;
-        public float Left, Right, Top, Bottom, Front, Back;
+        public float LeftScale, RightScale, TopScale, BottomScale, FrontScale, RearScale;
         
 
         public List<CrushPoint> Points;
@@ -222,13 +222,13 @@ namespace Carmageddon.Parsers
                     crushData.RefVertex = ReadLineAsInt();
                     crushData.Box = new BoundingBox(ReadLineAsVector3(false), ReadLineAsVector3(false));
                     Vector3 v = ReadLineAsVector3(false);
-                    crushData.Right = v.X;
-                    crushData.Top = v.Y;
-                    crushData.Back = v.Z;
+                    crushData.RightScale = v.X;
+                    crushData.TopScale = v.Y;
+                    crushData.RearScale = v.Z;
                     v = ReadLineAsVector3(false);
-                    crushData.Left = v.X;
-                    crushData.Bottom = v.Y;
-                    crushData.Front = v.Z;
+                    crushData.LeftScale = v.X;
+                    crushData.BottomScale = v.Y;
+                    crushData.FrontScale = v.Z;
                     //crushData.MinScale = ReadLineAsVector3(false);
                     //crushData.MaxScale = ReadLineAsVector3(false);
 

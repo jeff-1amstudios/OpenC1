@@ -19,6 +19,8 @@ namespace Carmageddon.Physics
         private float _currentPowerOutput;
         private float _rpmLimiter;
         private float _lastCarSpeed;
+        public float Damage = 0;
+        public float _lastBlip;
 
         public float CurrentPowerOutput
         {
@@ -111,7 +113,17 @@ namespace Carmageddon.Physics
                 _rpmLimiter -= Engine.ElapsedSeconds;
             }
             else
+            {
+                if (Damage > 30 && _lastBlip + 1.2f < Engine.TotalSeconds)
+                {
+                    if (Engine.Random.Next() % 2 == 0)
+                    {
+                        _rpmLimiter = (Damage / 100) * 1.1f;
+                        _lastBlip = Engine.TotalSeconds;
+                    }
+                }
                 _currentPowerOutput = _maxPower * MathHelper.Lerp(_powerCurve[(int)_rpm], _powerCurve[(int)_rpm + 1], _rpm - (int)_rpm);
+            }
 
             if (_gearbox.GearEngaged)
             {

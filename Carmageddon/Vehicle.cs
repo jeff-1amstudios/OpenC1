@@ -33,6 +33,11 @@ namespace Carmageddon
         public IDriver Driver { get; private set; }
         public VehicleAudio Audio;
         CDeformableModel _deformableModel;
+        float _damage = 0;
+        public ParticleEmitter DamageSmokeEmitter;
+        Vector3 _damagePosition;
+        //PixmapBillboard _flames;
+
 
         public Vehicle(string filename, IDriver driver)
         {
@@ -47,6 +52,11 @@ namespace Carmageddon
             _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMat), 6, Vector3.Zero);
 
             Audio.Play();
+
+            DamageSmokeEmitter = new ParticleEmitter(new DamageSmokeParticleSystem(Color.Gray), 5, Vector3.Zero);
+            DamageSmokeEmitter.Enabled = false;
+
+            
         }
 
         private void LoadModel(string filename)
@@ -130,11 +140,12 @@ namespace Carmageddon
 
         }
 
-        public void ContactReport_Collision(float force, Vector3 position, Vector3 normal)
+        public void ContactReport_Collision(float force, Vector3 position, Vector3 normal, ContactPairFlag events)
         {
+            float product = Math.Abs(Vector3.Dot(Chassis.Actor.GlobalPose.Forward, normal));
+
             if (Chassis.LastSpeeds.GetMax() > 7)
             {
-
                 if (force > 1500)
                 {
                     _vehicleBitsEmitter.DumpParticles(position);
@@ -146,7 +157,7 @@ namespace Carmageddon
 
                 if (Driver is PlayerDriver)
                 {
-                    float product = Math.Abs(Vector3.Dot(Chassis.Actor.GlobalPose.Forward, normal));
+                    
                     if (product < 0.3f)
                     {
                         SoundCache.PlayScrape(this);
@@ -155,8 +166,14 @@ namespace Carmageddon
                         SoundCache.PlayCrash(this, force);
                 }
 
-                _deformableModel.OnContact(position, force, normal);
             }
+            _deformableModel.OnContact(position, force, normal);
+
+            if (product > 0.3f)
+            {
+                Damage(force);
+            }
+            
         }
 
         public void Update()
@@ -190,6 +207,9 @@ namespace Carmageddon
                 }
             }
             GameConsole.WriteLine("maxlat", maxlat);
+            
+            Vector3 pos = Vector3.Transform(_damagePosition, GameVariables.ScaleMatrix * Chassis.Actor.GlobalPose);
+            DamageSmokeEmitter.Update(pos);
         }
 
 
@@ -200,7 +220,7 @@ namespace Carmageddon
 
             _actors.Render(Chassis.Actor.GlobalPose, null);
 
-            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
+            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();            
 
             for (int i = 0; i < Config.WheelActors.Count; i++)
             {
@@ -208,7 +228,7 @@ namespace Carmageddon
                 _actors.RenderSingle(Config.WheelActors[i].Actor);
             }
 
-            //Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 5);
+            
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
         }
@@ -228,6 +248,50 @@ namespace Carmageddon
         public Vector3 GetBodyBottom()
         {
             return Position + new Vector3(0, Chassis.Wheels[0].Shape.LocalPosition.Y - Config.DrivenWheelRadius, 0);
+        }
+
+        private void Damage(float force)
+        {
+            float olddamage = _damage;
+            _damage += force * Config.CrushSections[1].DamageMultiplier * 0.000002f;
+            Chassis.Motor.Damage = _damage;
+            GameConsole.WriteEvent("Damage " + _damage);
+
+            if (_damage > 15 && olddamage < 15)
+            {
+                DamageSmokeEmitter.Enabled = true;
+                DamageSmokeEmitter.ParticleSystem = new DamageSmokeParticleSystem(Color.White);
+                DamageSmokeEmitter.ParticlesPerSecond = 8;
+                _damagePosition = _deformableModel.GetMostDamagedPosition();
+            }
+            else if (_damage > 30 && olddamage < 30)
+            {
+                _damagePosition = _deformableModel.GetMostDamagedPosition();
+                DamageSmokeEmitter.ParticleSystem = new DamageSmokeParticleSystem(Color.Gray);
+                DamageSmokeEmitter.ParticlesPerSecond = 15;
+            }
+            else if (_damage > 60 && olddamage < 60)
+            {
+                _damagePosition = _deformableModel.GetMostDamagedPosition();
+                DamageSmokeEmitter.ParticleSystem = new DamageSmokeParticleSystem(Color.Black);
+                DamageSmokeEmitter.ParticlesPerSecond = 20;
+            }
+            if (_damage > 50 && olddamage < 50)
+            {
+
+            }
+        }
+
+        internal void Repair()
+        {
+            if (_damage > 0)
+            {
+                MessageRenderer.Instance.PostMessage("Repair Cost: " + _damage * 20, 2);
+                SoundCache.Play(SoundIds.Repair, this, false);
+                _deformableModel.Repair();
+                _damage = Chassis.Motor.Damage = 0;
+                DamageSmokeEmitter.Enabled = false;
+            }
         }
     }
 }

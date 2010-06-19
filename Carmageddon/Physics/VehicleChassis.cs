@@ -138,7 +138,7 @@ namespace Carmageddon.Physics
                 WheelShape ws = (WheelShape)_physXActor.CreateShape(wheelDesc);
                 ws.Name = wheel.Actor.Name;
                 ws.LateralTireForceFunction = wheel.IsFront ? _frontLateralTireFn : _rearLateralTireFn;
-
+                //ws.LocalOrientation *= Matrix.CreateRotationZ(0.1f);
                 Wheels.Add(new VehicleWheel(this, wheel, ws, wheel.IsLeft ? 0.17f : -0.17f) { Index = Wheels.Count });
             }            
 
@@ -274,8 +274,8 @@ namespace Carmageddon.Physics
 
                 if (_physXActor.GlobalOrientation.Up.Y < 0) //car sliding along on the roof
                 {
-                    _physXActor.LinearDamping = 2f;  //stop insane sliding
-                    _physXActor.AngularDamping = 0.8f;
+                    _physXActor.LinearDamping = 4f;  //stop insane sliding
+                    _physXActor.AngularDamping = 2f;
                 }
             }
             if (allWheelsInAir)

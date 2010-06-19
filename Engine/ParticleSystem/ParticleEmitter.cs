@@ -45,7 +45,7 @@ namespace Particle3DSample
         float _timeBetweenParticles;
         Vector3 _previousPosition;
         float _timeLeftOver;
-        float _particlesPerSecond;
+        public float ParticlesPerSecond;
 
         #endregion
 
@@ -63,7 +63,7 @@ namespace Particle3DSample
             ParticleSystem = particleSystem;
 
             _timeBetweenParticles = 1.0f / particlesPerSecond;
-            _particlesPerSecond = particlesPerSecond;
+            ParticlesPerSecond = particlesPerSecond;
             _previousPosition = initialPosition;
             
             AllEmitters.Add(this);
@@ -122,7 +122,7 @@ namespace Particle3DSample
 
         public void DumpParticles(Vector3 newPosition)
         {
-            DumpParticles(newPosition, _particlesPerSecond);
+            DumpParticles(newPosition, ParticlesPerSecond);
         }
 
         public void DumpParticles(Vector3 newPosition, float nbr)

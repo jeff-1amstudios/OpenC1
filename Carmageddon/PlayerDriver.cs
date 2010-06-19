@@ -58,6 +58,11 @@ namespace Carmageddon
                     Vehicle.Chassis.Reset();//.Recover(Matrix.Identity);
             }
 
+            if (Engine.Input.WasPressed(Keys.Back))
+            {
+                Vehicle.Repair();
+            }
+
             _audioListener.BeginUpdate();
             _audioListener.Position = Vehicle.Chassis.Actor.GlobalPosition;
             _audioListener.Orientation = Vehicle.Chassis.Actor.GlobalOrientation;
