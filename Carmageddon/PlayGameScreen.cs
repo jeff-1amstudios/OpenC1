@@ -45,7 +45,7 @@ namespace Carmageddon
             _editModes.Add(new NoEditMode());
             _editModes.Add(new OpponentEditMode());
 
-            _flames = new PixmapBillboard();
+                
         }
 
 
@@ -89,37 +89,37 @@ namespace Carmageddon
         public void Render()
         {
             Engine.Device.Clear(GameVariables.FogColor);
-            //GameVariables.NbrDrawCalls = 0;
-            //if (GameVariables.CullingDisabled)
-            //    Engine.Device.RenderState.CullMode = CullMode.None;
-            //else
-            //    Engine.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
+            GameVariables.NbrDrawCalls = 0;
+            if (GameVariables.CullingDisabled)
+                Engine.Device.RenderState.CullMode = CullMode.None;
+            else
+                Engine.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
 
-            //GameVariables.CurrentEffect = SetupRenderEffect();
+            GameVariables.CurrentEffect = SetupRenderEffect();
 
-            //GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
+            GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
 
-            //Engine.SpriteBatch.Begin();
+            Engine.SpriteBatch.Begin();
 
-            //_race.Render();
-            //_editModes[_currentEditMode].Render();
+            _race.Render();
+            _editModes[_currentEditMode].Render();
+
+            foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
+            {
+                system.Render();
+            }
+
+
+
+            Engine.SpriteBatch.End();
+            Engine.Device.RenderState.DepthBufferEnable = true;
+            Engine.Device.RenderState.AlphaBlendEnable = false;
+            Engine.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
+            Engine.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
+
+            GameVariables.CurrentEffect.End();
             
-            //foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
-            //{
-            //    system.Render();
-            //}
-
             
-            
-            //Engine.SpriteBatch.End();
-            //Engine.Device.RenderState.DepthBufferEnable = true;
-            //Engine.Device.RenderState.AlphaBlendEnable = false;
-            //Engine.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
-            //Engine.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
-
-            //GameVariables.CurrentEffect.End();
-            
-            _flames.DrawBillboards(Matrix.CreateScale(10) * Matrix.CreateTranslation(_race.PlayerVehicle.Position));
 
             GameConsole.WriteLine("Draw Calls", GameVariables.NbrDrawCalls);
 

@@ -36,7 +36,7 @@ namespace Carmageddon
         float _damage = 0;
         public ParticleEmitter DamageSmokeEmitter;
         Vector3 _damagePosition;
-        //PixmapBillboard _flames;
+        PixmapBillboard _flames;
 
 
         public Vehicle(string filename, IDriver driver)
@@ -56,7 +56,7 @@ namespace Carmageddon
             DamageSmokeEmitter = new ParticleEmitter(new DamageSmokeParticleSystem(Color.Gray), 5, Vector3.Zero);
             DamageSmokeEmitter.Enabled = false;
 
-            
+            _flames = new PixmapBillboard(0.3f, GameVariables.BasePath + "data\\pixelmap\\flames.pix");            
         }
 
         private void LoadModel(string filename)
@@ -228,7 +228,12 @@ namespace Carmageddon
                 _actors.RenderSingle(Config.WheelActors[i].Actor);
             }
 
-            
+            if (_damage > 15)
+            {
+                Vector3 pos = Vector3.Transform(_damagePosition, GameVariables.ScaleMatrix * Chassis.Actor.GlobalPose);
+                Matrix BillboardTransformation = Matrix.CreateBillboard(pos, Engine.Camera.Position, Vector3.Up, Vector3.Forward);
+                _flames.Render(Matrix.CreateScale(0.03f) * BillboardTransformation);
+            }
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
         }
@@ -275,6 +280,7 @@ namespace Carmageddon
                 _damagePosition = _deformableModel.GetMostDamagedPosition();
                 DamageSmokeEmitter.ParticleSystem = new DamageSmokeParticleSystem(Color.Black);
                 DamageSmokeEmitter.ParticlesPerSecond = 20;
+                MessageRenderer.Instance.PostMessagePix("destroy.pix", 10, 0.7f, 0.003f, 1.4f);
             }
             if (_damage > 50 && olddamage < 50)
             {

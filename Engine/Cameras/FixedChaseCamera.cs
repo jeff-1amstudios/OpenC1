@@ -11,7 +11,7 @@ namespace NFSEngine
     /// </summary>
     public class FixedChaseCamera : ICamera
     {
-        private Vector3 _chaseDistance;
+        private Vector3 _chaseDistance, _actualPosition;
         float _currentRotation;
         public float HeightOverride;
         float _height;
@@ -90,7 +90,7 @@ namespace NFSEngine
             _lookAt.AddValue(pos);
             Vector3 avgLookAt = _lookAt.GetAveragedValue();
             Vector3 cameraPosition = Position + Vector3.Transform(avgLookAt, Matrix.CreateRotationY(_currentRotation));
-            
+           // Position = cameraPosition;
             View = Matrix.CreateLookAt(cameraPosition, Position + new Vector3(0, 1.3f, 0), Vector3.Up);
             Projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlaneDistance, DrawDistance);
 		}
