@@ -22,7 +22,7 @@ namespace Carmageddon
         List<NonCar> _nonCars;
         public RaceTimeController RaceTime = new RaceTimeController();
         SkyBox _skybox;
-        public int NextCheckpoint = 0, CurrentLap;
+        public int NextCheckpoint = 0, CurrentLap, NbrDeadOpponents;
         public Vehicle PlayerVehicle;
         public List<Opponent> Opponents = new List<Opponent>();
         public List<IDriver> Drivers = new List<IDriver>(); //opponent + player drivers
@@ -79,10 +79,10 @@ namespace Carmageddon
             _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);            
 
             Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 
             foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
                         
@@ -222,6 +222,28 @@ namespace Carmageddon
             {
                 nextVol.Enter(vehicle);
                 exitedVolume.Exit(vehicle);
+            }
+        }
+
+        internal void OnCarKilled(Vehicle vehicle)
+        {
+            foreach (Opponent opponent in Opponents)
+            {
+                if (opponent.Vehicle == vehicle)
+                {
+                    opponent.Kill();
+                    NbrDeadOpponents++;
+                    break;
+                }
+            }
+
+            if (NbrDeadOpponents == Opponents.Count)
+            {
+                MessageRenderer.Instance.PostMessage("Every opponent wasted", 30);
+            }
+            else
+            {
+                MessageRenderer.Instance.PostMessagePix("destroy.pix", 10, 0.7f, 0.003f, 1.4f);
             }
         }
     }

@@ -51,8 +51,8 @@ namespace Carmageddon
             }
 
             GraphicsDevice device = Engine.Device;
+            CullMode oldCullMode = Engine.Device.RenderState.CullMode;
             Engine.Device.RenderState.CullMode = CullMode.None;
-            GameVariables.CullingDisabled = true;
             
             GameVariables.CurrentEffect.World = Matrix.Identity;
             GameVariables.CurrentEffect.Texture = null; //.TextureEnabled = false;
@@ -71,19 +71,13 @@ namespace Carmageddon
             device.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleStrip, verts, 0, 2);
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
 
-            //GameVariables.CurrentEffect.TextureEnabled = true;
             GameVariables.CurrentEffect.VertexColorEnabled = false;
             device.RenderState.AlphaBlendEnable = false;
             //device.RenderState.DepthBufferEnable = true;
             device.RenderState.DepthBufferWriteEnable = true;
             device.VertexDeclaration = oldVertDecl;
+            Engine.Device.RenderState.CullMode = oldCullMode;
 
-
-            //device.RenderState.SourceBlend = Blend.One;
-            //device.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
-            //device.RenderState.AlphaBlendEnable = true;
-
-            //Engine.Device.RenderState.AlphaTestEnable = true;
             Engine.Device.RenderState.ReferenceAlpha = 200;
             
         }

@@ -17,12 +17,12 @@ namespace Carmageddon
         List<PixMap> _pixmaps;
         float _currentFrameTime;
         int _currentFrame;
-        float _scale;
+        Vector3 _scale;
         Matrix _scaleMatrix;
 
-        public PixmapBillboard(float scale, string filename)
+        public PixmapBillboard(Vector2 scale, string filename)
         {
-            _scale = scale;
+            _scale = new Vector3(scale, 1);
             CreateGeometry();
             _vertexDeclaration = new VertexDeclaration(Engine.Device, VertexPositionTexture.VertexElements);
 
@@ -42,17 +42,21 @@ namespace Carmageddon
             //Engine.CurrentEffect.CurrentTechnique.Passes[0].End();
         }
 
-        public void Render(Matrix world)
+        public void Render(Vector3 position)
         {
             Update();
             BeginBatch();
 
+            Matrix world = Matrix.CreateScale(0.03f) * Matrix.CreateBillboard(position, Engine.Camera.Position, Vector3.Up, Vector3.Forward);
+
             BasicEffect2 effect = GameVariables.CurrentEffect;
             effect.World = _scaleMatrix * world;
             effect.Texture = _pixmaps[_currentFrame].Texture;
+            effect.LightingEnabled = false;
             effect.CommitChanges(); 
             Engine.Device.RenderState.CullMode = CullMode.None;
             Engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+            effect.LightingEnabled = true;
             EndBatch();
         }
 

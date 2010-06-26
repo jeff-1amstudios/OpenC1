@@ -26,8 +26,6 @@ namespace Carmageddon
         List<IEditMode> _editModes = new List<IEditMode>();
         
         int _currentEditMode = 0;
-        PixmapBillboard _flames;
-
 
         public PlayGameScreen()
         {
@@ -43,9 +41,7 @@ namespace Carmageddon
             _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT", playerCar);
             
             _editModes.Add(new NoEditMode());
-            _editModes.Add(new OpponentEditMode());
-
-                
+            _editModes.Add(new OpponentEditMode());                
         }
 
 
@@ -108,8 +104,6 @@ namespace Carmageddon
             {
                 system.Render();
             }
-
-
 
             Engine.SpriteBatch.End();
             Engine.Device.RenderState.DepthBufferEnable = true;

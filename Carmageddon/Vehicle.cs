@@ -56,7 +56,7 @@ namespace Carmageddon
             DamageSmokeEmitter = new ParticleEmitter(new DamageSmokeParticleSystem(Color.Gray), 5, Vector3.Zero);
             DamageSmokeEmitter.Enabled = false;
 
-            _flames = new PixmapBillboard(0.3f, GameVariables.BasePath + "data\\pixelmap\\flames.pix");            
+            _flames = new PixmapBillboard(new Vector2(0.7f, 0.25f), GameVariables.BasePath + "data\\pixelmap\\flames.pix");            
         }
 
         private void LoadModel(string filename)
@@ -228,11 +228,10 @@ namespace Carmageddon
                 _actors.RenderSingle(Config.WheelActors[i].Actor);
             }
 
-            if (_damage > 15)
+            if (_damage > 50)
             {
                 Vector3 pos = Vector3.Transform(_damagePosition, GameVariables.ScaleMatrix * Chassis.Actor.GlobalPose);
-                Matrix BillboardTransformation = Matrix.CreateBillboard(pos, Engine.Camera.Position, Vector3.Up, Vector3.Forward);
-                _flames.Render(Matrix.CreateScale(0.03f) * BillboardTransformation);
+                _flames.Render(pos);
             }
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
@@ -246,7 +245,10 @@ namespace Carmageddon
         public void Recover(Matrix pose)
         {
             if (pose != Matrix.Identity)
+            {
+                pose.Up = Vector3.Up;
                 Chassis.Actor.GlobalPose = pose;
+            }
             Chassis.Reset();
         }
 
@@ -269,22 +271,21 @@ namespace Carmageddon
                 DamageSmokeEmitter.ParticlesPerSecond = 8;
                 _damagePosition = _deformableModel.GetMostDamagedPosition();
             }
-            else if (_damage > 30 && olddamage < 30)
+            else if (_damage > 40 && olddamage < 40)
             {
                 _damagePosition = _deformableModel.GetMostDamagedPosition();
                 DamageSmokeEmitter.ParticleSystem = new DamageSmokeParticleSystem(Color.Gray);
                 DamageSmokeEmitter.ParticlesPerSecond = 15;
             }
-            else if (_damage > 60 && olddamage < 60)
+            else if (_damage > 70 && olddamage < 70)
             {
                 _damagePosition = _deformableModel.GetMostDamagedPosition();
                 DamageSmokeEmitter.ParticleSystem = new DamageSmokeParticleSystem(Color.Black);
                 DamageSmokeEmitter.ParticlesPerSecond = 20;
-                MessageRenderer.Instance.PostMessagePix("destroy.pix", 10, 0.7f, 0.003f, 1.4f);
-            }
-            if (_damage > 50 && olddamage < 50)
-            {
-
+                if (Driver is CpuDriver)
+                {
+                    Race.Current.OnCarKilled(this);
+                }
             }
         }
 

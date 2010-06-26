@@ -11,26 +11,27 @@ namespace Carmageddon
     enum CpuDriverState
     {
         Racing,
-        Attacking,
-        Reversing
+        Attacking
     }
 
     class CpuDriver : IDriver
     {
         public Vehicle Vehicle { get; set; }
         public bool InPlayersView;
+        public bool IsDead;
 
-        public CpuDriverState State = CpuDriverState.Racing;
+        CpuDriverState _state;
         OpponentPathNode _targetNode;
         OpponentPath _currentPath, _nextPath;
         Vector3 _lastPosition;
-        float _lastPositionTime;
-        float _nextStateChangeTime;
+        float _lastPositionTime, _lastStateChangeTime;
+        float _nextDirectionChangeTime;
         float _lastTargetChangeTime;
         float _reverseTurning;
         int _nbrFails = -1;
         float _lastDistance;
         float _maxSpeedAtEndOfPath = 0;
+        bool _isReversing;
         
         bool _raceStarted = false;
 
@@ -52,7 +53,14 @@ namespace Carmageddon
 
         public void Update()
         {
-            return;
+            if (IsDead)
+            {
+                Vehicle.Chassis.Accelerate(0);
+                Vehicle.Chassis.Brake(0);
+                Vehicle.Chassis.Steer(0);
+                return;
+            }
+
             if (!_raceStarted) return;
 
             Vector3 pos = Vehicle.Position;
@@ -70,18 +78,23 @@ namespace Carmageddon
             }
 
             // check for state change
-            if (_nextStateChangeTime < Engine.TotalSeconds)
+            if (_nextDirectionChangeTime < Engine.TotalSeconds)
             {
-                if (State == CpuDriverState.Reversing)
+                if (_isReversing)
                 {
-                    State = CpuDriverState.Racing;
+                    _isReversing = false;
                     LogPosition(pos);
                 }
             }
 
+            if (_lastStateChangeTime + 30 < Engine.TotalSeconds)
+            {
+                SetState(Engine.Random.Next() % 2 == 0 ? CpuDriverState.Attacking : CpuDriverState.Racing);
+            }
+
             float distanceFromNode=0;
 
-            if (State == CpuDriverState.Racing)
+            if (_state == CpuDriverState.Racing)
             {
                 distanceFromNode = Vector3.Distance(pos, _targetNode.Position);
 
@@ -103,7 +116,7 @@ namespace Carmageddon
 
                 if (_currentPath != null && Vehicle.Chassis.Speed > _maxSpeedAtEndOfPath)
                 {
-                    float distToBrake = Vehicle.Chassis.Speed * 0.4f + ((Vehicle.Chassis.Speed - _maxSpeedAtEndOfPath) * 1.4f);
+                    float distToBrake = Vehicle.Chassis.Speed * 0.45f + ((Vehicle.Chassis.Speed - _maxSpeedAtEndOfPath) * 1.4f);
                     //GameConsole.WriteLine("brake: " + (int)distToBrake + ", " + (int)distanceFromNode);
                     //Matrix mat = Matrix.CreateTranslation(0, 0, distToBrake) * Vehicle.Chassis.Actor.GlobalPose;
 
@@ -148,11 +161,11 @@ namespace Carmageddon
             }
 
             Vector3 towardsNode = Vector3.Zero;
-            if (State == CpuDriverState.Racing)
+            if (_state == CpuDriverState.Racing)
             {
                 towardsNode = _targetNode.Position - pos;
             }
-            else if (State == CpuDriverState.Attacking)
+            else if (_state == CpuDriverState.Attacking)
             {
                 towardsNode = Race.Current.PlayerVehicle.Position - pos;
             }
@@ -173,14 +186,21 @@ namespace Carmageddon
             }
 
             _lastDistance = distanceFromNode;
-            
-            if (State == CpuDriverState.Reversing)
+
+            if (_isReversing)
             {
                 Vehicle.Chassis.Brake(0.5f);
                 Vehicle.Chassis.Steer(_reverseTurning);
             }            
 
             Engine.DebugRenderer.AddWireframeCube(Matrix.CreateScale(2) * Matrix.CreateTranslation(_targetNode.Position), Color.Green);
+        }
+
+        public void SetState(CpuDriverState state)
+        {
+            _state = state;
+            GameConsole.WriteEvent(state.ToString());
+            _lastStateChangeTime = Engine.TotalSeconds;
         }
 
         private void LogPosition(Vector3 pos)
@@ -214,8 +234,8 @@ namespace Carmageddon
 
         private void Escape()
         {
-            State = State == CpuDriverState.Reversing ? CpuDriverState.Racing : CpuDriverState.Reversing;
-            _nextStateChangeTime = Engine.TotalSeconds + Engine.Random.Next(1.5f, 3f);
+            _isReversing = !_isReversing;
+            _nextDirectionChangeTime = Engine.TotalSeconds + Engine.Random.Next(1.5f, 3f);
             _reverseTurning = Engine.Random.Next(-1f, 0f);
         }
 

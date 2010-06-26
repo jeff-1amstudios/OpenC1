@@ -12,6 +12,7 @@ namespace Carmageddon
         public Vehicle Vehicle;
         public CpuDriver Driver;
         BoundingSphere _boundingSphere;
+        public bool IsDead { get { return Driver.IsDead; } }
 
         public Opponent(string carFile, Vector3 position, float direction)
         {
@@ -54,6 +55,11 @@ namespace Carmageddon
             }
             _boundingSphere.Center = Vehicle.Position;
             return _boundingSphere;
+        }
+
+        public void Kill()
+        {
+            Driver.IsDead = true;
         }
     }
 }

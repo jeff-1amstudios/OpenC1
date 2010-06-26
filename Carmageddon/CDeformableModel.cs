@@ -348,46 +348,45 @@ namespace Carmageddon
         {
             if (_actor == null) return;
 
-            for (int i = _nbr; i < _carFile.CrushSections[1].Data.Count; i++)
-            {
-                CrushData data = _carFile.CrushSections[1].Data[i];
-                if (!_lastHitPts.Exists(a => a == data.RefVertex)) continue;
-                //if (data.RefVertex != 170) continue;
+            //for (int i = _nbr; i < _carFile.CrushSections[1].Data.Count; i++)
+            //{
+            //    CrushData data = _carFile.CrushSections[1].Data[i];
+            //    if (!_lastHitPts.Exists(a => a == data.RefVertex)) continue;
 
-                Vector3 crushPoint = Vector3.Transform(_originalPositions[data.RefVertex], GameVariables.ScaleMatrix * _actor.GlobalPose);
+            //    Vector3 crushPoint = Vector3.Transform(_originalPositions[data.RefVertex], GameVariables.ScaleMatrix * _actor.GlobalPose);
 
-                Engine.DebugRenderer.AddWireframeCube(
-                    Matrix.CreateScale(0.09f)
-                    * Matrix.CreateTranslation(crushPoint)
-                    , Color.White);
+            //    Engine.DebugRenderer.AddWireframeCube(
+            //        Matrix.CreateScale(0.09f)
+            //        * Matrix.CreateTranslation(crushPoint)
+            //        , Color.White);
 
-                crushPoint = Vector3.Transform(_localVertices[data.RefVertex].Position, GameVariables.ScaleMatrix * _actor.GlobalPose);
+            //    crushPoint = Vector3.Transform(_localVertices[data.RefVertex].Position, GameVariables.ScaleMatrix * _actor.GlobalPose);
 
-                Engine.DebugRenderer.AddWireframeCube(
-                    Matrix.CreateScale(0.09f)
-                    * Matrix.CreateTranslation(crushPoint)
-                    , Color.Yellow);
+            //    Engine.DebugRenderer.AddWireframeCube(
+            //        Matrix.CreateScale(0.09f)
+            //        * Matrix.CreateTranslation(crushPoint)
+            //        , Color.Yellow);
 
-                //Engine.DebugRenderer.AddAxis(
-                //    Matrix.CreateTranslation(Vector3.Transform(data.Box.Max, GameVariables.ScaleMatrix * _actor.GlobalPose))
-                //    , 10);
+            //    //Engine.DebugRenderer.AddAxis(
+            //    //    Matrix.CreateTranslation(Vector3.Transform(data.Box.Max, GameVariables.ScaleMatrix * _actor.GlobalPose))
+            //    //    , 10);
 
-                //Engine.DebugRenderer.AddAxis(
-                //    Matrix.CreateTranslation(Vector3.Transform(data.Box.Min, GameVariables.ScaleMatrix * _actor.GlobalPose))
-                //    , 10);
-
+            //    //Engine.DebugRenderer.AddAxis(
+            //    //    Matrix.CreateTranslation(Vector3.Transform(data.Box.Min, GameVariables.ScaleMatrix * _actor.GlobalPose))
+            //    //    , 10);
 
 
-                foreach (CrushPoint point in data.Points)
-                {
-                    Engine.DebugRenderer.AddWireframeCube(
-                    Matrix.CreateScale(0.05f)
-                    * Matrix.CreateTranslation(Vector3.Transform(_localVertices[point.VertexIndex].Position, GameVariables.ScaleMatrix * _actor.GlobalPose))
 
-                    , Color.Blue);
-                }
-                break;
-            }
+            //    foreach (CrushPoint point in data.Points)
+            //    {
+            //        Engine.DebugRenderer.AddWireframeCube(
+            //        Matrix.CreateScale(0.05f)
+            //        * Matrix.CreateTranslation(Vector3.Transform(_localVertices[point.VertexIndex].Position, GameVariables.ScaleMatrix * _actor.GlobalPose))
+
+            //        , Color.Blue);
+            //    }
+            //    break;
+            //}
 
             if (_repairing)
             {

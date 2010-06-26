@@ -70,9 +70,9 @@ namespace Carmageddon.Physics
                                         Vector3 normal = contactInfo.NormalForce;
                                         normal.Normalize();
                                         if (vehicle.Driver is CpuDriver && vehicle2.Driver is PlayerDriver)
-                                            ((CpuDriver)vehicle.Driver).State = CpuDriverState.Attacking;
+                                            ((CpuDriver)vehicle.Driver).SetState(CpuDriverState.Attacking);
                                         else if (vehicle2.Driver is CpuDriver && vehicle.Driver is PlayerDriver)
-                                            ((CpuDriver)vehicle2.Driver).State = CpuDriverState.Attacking;
+                                            ((CpuDriver)vehicle2.Driver).SetState(CpuDriverState.Attacking);
 
                                         vehicle.ContactReport_Collision(force * 2, pos, normal, events);
                                         vehicle2.ContactReport_Collision(force * 2, pos, normal, events);
@@ -154,31 +154,31 @@ namespace Carmageddon.Physics
             vehicle.ContactReport_Collision(normalforce.Length(), pos, normalforce, events);
         }
 
-        private void HandleVehicleOnVehicleCollision(Vehicle v1, Vehicle v2, float force, Vector3 position, Vector3 normal, ContactPairFlag events)
-        {
-            if (v1.Driver is CpuDriver && v2.Driver is PlayerDriver)
-                ((CpuDriver)v1.Driver).State = CpuDriverState.Attacking;
-            else if (v2.Driver is CpuDriver && v1.Driver is PlayerDriver)
-                ((CpuDriver)v2.Driver).State = CpuDriverState.Attacking;
+        //private void HandleVehicleOnVehicleCollision(Vehicle v1, Vehicle v2, float force, Vector3 position, Vector3 normal, ContactPairFlag events)
+        //{
+        //    if (v1.Driver is CpuDriver && v2.Driver is PlayerDriver)
+        //        ((CpuDriver)v1.Driver)._state = CpuDriverState.Attacking;
+        //    else if (v2.Driver is CpuDriver && v1.Driver is PlayerDriver)
+        //        ((CpuDriver)v2.Driver)._state = CpuDriverState.Attacking;
 
-            v1.ContactReport_Collision(force * 2, position, normal, events);
-            v2.ContactReport_Collision(force * 2, position, normal, events);
+        //    v1.ContactReport_Collision(force * 2, position, normal, events);
+        //    v2.ContactReport_Collision(force * 2, position, normal, events);
 
-            //GameConsole.WriteEvent("caroncar");
-            //if (v1.Chassis.Speed > 3 || v2.Chassis.Speed > 3)
-            //{
-              //  GameVariables.SparksEmitter.DumpParticles(position, 6);
-              //  SoundCache.PlayCrash(v1, force);
-            //}
+        //    //GameConsole.WriteEvent("caroncar");
+        //    //if (v1.Chassis.Speed > 3 || v2.Chassis.Speed > 3)
+        //    //{
+        //      //  GameVariables.SparksEmitter.DumpParticles(position, 6);
+        //      //  SoundCache.PlayCrash(v1, force);
+        //    //}
 
-            //float product = Math.Abs(Vector3.Dot(Chassis.Actor.GlobalPose.Forward, normal));
-            //if (product < 0.3f)
-            //{
-            //    SoundCache.PlayScrape(this);
-            //}
-            //else if (force > 200)
-            //    SoundCache.PlayCrash(this);
-        }
+        //    //float product = Math.Abs(Vector3.Dot(Chassis.Actor.GlobalPose.Forward, normal));
+        //    //if (product < 0.3f)
+        //    //{
+        //    //    SoundCache.PlayScrape(this);
+        //    //}
+        //    //else if (force > 200)
+        //    //    SoundCache.PlayCrash(this);
+        //}
     }
 }
 

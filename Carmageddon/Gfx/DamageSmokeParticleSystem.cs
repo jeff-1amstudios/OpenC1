@@ -28,6 +28,7 @@ namespace Carmageddon.Gfx
 
             settings.MinColor = _color;
             settings.MaxColor = _color;
+            
             settings.MinHorizontalVelocity = 0;
             settings.MaxHorizontalVelocity = 1;
 

@@ -33,8 +33,7 @@ namespace Carmageddon.HUD
             
             Engine.SpriteBatch.DrawString(_whiteFont, "WASTED", pos, Color.White);
             pos.X += 65f;
-            Engine.SpriteBatch.DrawString(_whiteFont, "0/0", pos, Color.White);
-           
+            Engine.SpriteBatch.DrawString(_whiteFont, Race.Current.NbrDeadOpponents + "/" + Race.Current.Opponents.Count, pos, Color.White);           
         }
     }
 }
