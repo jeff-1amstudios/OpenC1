@@ -54,18 +54,31 @@ namespace Carmageddon
             return Nodes[Engine.Random.Next(Nodes.Count)];
         }
 
+        /// <summary>
+        /// Choose a random path. More likely to choose a race path than a general path
+        /// </summary>
+        /// <param name="currentNode"></param>
+        /// <returns></returns>
         public static OpponentPath GetNextPath(OpponentPathNode currentNode)
         {
             if (currentNode.Paths.Count == 0) return null;
 
-            //return currentNode.Paths[Engine.RandomNumber.Next(currentNode.Paths.Count)];
-            
-            foreach (OpponentPath path in currentNode.Paths)
+            int choosenPath = Engine.Random.Next(currentNode.Paths.Count);
+            if (currentNode.Paths[choosenPath].Type == PathType.Race)
+                return currentNode.Paths[choosenPath];
+
+            // 1/3 times, we re-choose the race path
+            if (Engine.Random.Next() % 3 == 0)
             {
-                if (path.Type == PathType.Race)
-                    return path;
+                foreach (OpponentPath path in currentNode.Paths)
+                {
+                    if (path.Type == PathType.Race)
+                        return path;
+                }
             }
-            return currentNode.Paths[0];
+
+            // if we cant find a race path, go with our first choice
+            return currentNode.Paths[choosenPath];
         }
     }
 }

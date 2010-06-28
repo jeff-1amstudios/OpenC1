@@ -78,11 +78,11 @@ namespace Carmageddon
             Physics.TrackProcessor.GenerateTrackActor(ConfigFile, _actors);
             _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);            
 
-            Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 
             foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
                         

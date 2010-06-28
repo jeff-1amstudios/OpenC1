@@ -140,7 +140,7 @@ namespace Carmageddon
 
         }
 
-        public void ContactReport_Collision(float force, Vector3 position, Vector3 normal, ContactPairFlag events)
+        public void OnCollision(float force, Vector3 position, Vector3 normal, ContactPairFlag events)
         {
             float product = Math.Abs(Vector3.Dot(Chassis.Actor.GlobalPose.Forward, normal));
 
@@ -156,8 +156,7 @@ namespace Carmageddon
                 }
 
                 if (Driver is PlayerDriver)
-                {
-                    
+                {   
                     if (product < 0.3f)
                     {
                         SoundCache.PlayScrape(this);
@@ -165,7 +164,6 @@ namespace Carmageddon
                     else if (force > 50)
                         SoundCache.PlayCrash(this, force);
                 }
-
             }
             _deformableModel.OnContact(position, force, normal);
 
@@ -259,10 +257,12 @@ namespace Carmageddon
 
         private void Damage(float force)
         {
+            if (force < 170000) return;
+
             float olddamage = _damage;
             _damage += force * Config.CrushSections[1].DamageMultiplier * 0.000002f;
             Chassis.Motor.Damage = _damage;
-            GameConsole.WriteEvent("Damage " + _damage);
+            GameConsole.WriteEvent("Damage " + force + ", "  + _damage);
 
             if (_damage > 15 && olddamage < 15)
             {

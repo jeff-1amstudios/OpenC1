@@ -33,7 +33,12 @@ namespace Carmageddon.HUD
             
             Engine.SpriteBatch.DrawString(_whiteFont, "WASTED", pos, Color.White);
             pos.X += 65f;
-            Engine.SpriteBatch.DrawString(_whiteFont, Race.Current.NbrDeadOpponents + "/" + Race.Current.Opponents.Count, pos, Color.White);           
+            Engine.SpriteBatch.DrawString(_whiteFont, Race.Current.NbrDeadOpponents + "/" + Race.Current.Opponents.Count, pos, Color.White);
+
+            pos.Y += 65f;
+
+            Rectangle rect = CenterRectX(0.09f, 0.09f, 0.075f);
+            Engine.SpriteBatch.DrawString(_blueFont, "+3:48", new Vector2(rect.X, rect.Y), Color.White);
         }
     }
 }

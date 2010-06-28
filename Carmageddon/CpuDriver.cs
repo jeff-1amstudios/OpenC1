@@ -55,7 +55,6 @@ namespace Carmageddon
         {
             if (IsDead)
             {
-                Vehicle.Chassis.Accelerate(0);
                 Vehicle.Chassis.Brake(0);
                 Vehicle.Chassis.Steer(0);
                 return;
@@ -76,6 +75,11 @@ namespace Carmageddon
                 }
                 LogPosition(pos);
             }
+            if (Vehicle.Chassis.Actor.GlobalPose.Up.Y < 0 && Vehicle.Chassis.Speed < 5)
+            {
+                //Vehicle.Chassis.Reset();
+                //return;
+            }
 
             // check for state change
             if (_nextDirectionChangeTime < Engine.TotalSeconds)
@@ -89,7 +93,7 @@ namespace Carmageddon
 
             if (_lastStateChangeTime + 30 < Engine.TotalSeconds)
             {
-                SetState(Engine.Random.Next() % 2 == 0 ? CpuDriverState.Attacking : CpuDriverState.Racing);
+                //SetState(Engine.Random.Next() % 3 == 0 ? CpuDriverState.Attacking : CpuDriverState.Racing);
             }
 
             float distanceFromNode=0;
@@ -129,7 +133,7 @@ namespace Carmageddon
 
                 // now see if we're at the target ignoring height (if we jump over it for example)
                 distanceFromNode = Vector2.Distance(new Vector2(pos.X, pos.Z), new Vector2(_targetNode.Position.X, _targetNode.Position.Z));
-                if (distanceFromNode < 17)
+                if (distanceFromNode < 10)
                 {
                     _nbrFails = 0; //reset fail counter
 

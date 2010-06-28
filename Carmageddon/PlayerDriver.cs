@@ -55,7 +55,7 @@ namespace Carmageddon
                     _recoverPositions.RemoveAt(_recoverPositions.Count - 1);
                 }
                 else
-                    Vehicle.Chassis.Reset();//.Recover(Matrix.Identity);
+                    Vehicle.Chassis.Reset();
             }
 
             if (Engine.Input.WasPressed(Keys.Back))

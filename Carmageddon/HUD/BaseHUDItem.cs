@@ -15,8 +15,7 @@ namespace Carmageddon.HUD
         public abstract void Render();
         private static Rectangle _window;
         protected static float FontScale = 1f;
-        protected static SpriteFont _whiteFont;
-        protected static SpriteFont _textFont;
+        protected static SpriteFont _whiteFont, _textFont, _blueFont;
 
         static BaseHUDItem()
         {
@@ -25,6 +24,7 @@ namespace Carmageddon.HUD
             FontScale = _window.Width / 800f;
             _whiteFont = Engine.ContentManager.Load<SpriteFont>("content/white-font");
             _textFont = Engine.ContentManager.Load<SpriteFont>("content/text-font");
+            _blueFont = Engine.ContentManager.Load<SpriteFont>("content/blue-font");
         }
 
         protected static Rectangle ScaleRect(float x, float y, float width, float height)
