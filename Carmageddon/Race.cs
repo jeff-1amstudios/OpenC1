@@ -80,8 +80,8 @@ namespace Carmageddon
 
             //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 
             foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
@@ -186,7 +186,7 @@ namespace Carmageddon
                     CurrentLap++;
                     NextCheckpoint = 0;
                 }
-                MessageRenderer.Instance.PostMessagePix("checkpnt.pix", 10, 0.7f, 0.003f, 1.4f);
+                MessageRenderer.Instance.PostMainMessage("checkpnt.pix", 10, 0.7f, 0.003f, 1.4f);
             }
             else
             {
@@ -239,11 +239,19 @@ namespace Carmageddon
 
             if (NbrDeadOpponents == Opponents.Count)
             {
-                MessageRenderer.Instance.PostMessage("Every opponent wasted", 30);
+                MessageRenderer.Instance.PostHeaderMessage("Every opponent wasted", 10);
             }
-            else
+            MessageRenderer.Instance.PostMainMessage("destroy.pix", 3, 0.7f, 0.003f, 1.4f);
+        }
+
+        internal void OnPlayerCpuCarHit(float damage)
+        {
+            int time = (int)damage * 3;
+            if (time > 0)
             {
-                MessageRenderer.Instance.PostMessagePix("destroy.pix", 10, 0.7f, 0.003f, 1.4f);
+                RaceTime.TimeRemaining += time;
+                MessageRenderer.Instance.PostTimerMessage(time);
+                MessageRenderer.Instance.PostHeaderMessage("1000 CREDITS", 2);
             }
         }
     }

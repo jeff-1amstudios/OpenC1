@@ -37,7 +37,7 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            string playerCar = "blkeagle.txt";
+            string playerCar = "dump.txt";
             _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT", playerCar);
             
             _editModes.Add(new NoEditMode());
@@ -64,11 +64,12 @@ namespace Carmageddon
             if (Engine.Input.WasPressed(Keys.P))
             {
                 TakeScreenshot();
+                //MessageRenderer.Instance.PostMainMessage("destroy.pix", 50, 0.7f, 0.003f, 1.4f);
             }
             if (Engine.Input.WasPressed(Keys.L))
             {
                 GameVariables.LightingEnabled = !GameVariables.LightingEnabled;
-                MessageRenderer.Instance.PostMessage("Lighting: " + (GameVariables.LightingEnabled ? "Enabled" : "Disabled"), 2);
+                MessageRenderer.Instance.PostHeaderMessage("Lighting: " + (GameVariables.LightingEnabled ? "Enabled" : "Disabled"), 2);
                 _effect = null;
             }
                         
@@ -188,7 +189,7 @@ namespace Carmageddon
                 screenshot.Save(GameVariables.BasePath + "data\\" + name, ImageFileFormat.Jpg);
             }
 
-            MessageRenderer.Instance.PostMessage("Screenshot dumped to " + name, 3);
+            MessageRenderer.Instance.PostHeaderMessage("Screenshot dumped to " + name, 3);
         }
     }
 }

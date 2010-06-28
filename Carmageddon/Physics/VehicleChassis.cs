@@ -250,25 +250,36 @@ namespace Carmageddon.Physics
                     Motor.WheelsSpinning = true;
                 }
                 if (maxlat < Math.Abs(wheel.LatSlip)) maxlat = Math.Abs(wheel.LatSlip);
-                if (Math.Abs(wheel.LatSlip) > 0.5f && !wheel.InAir) isSkiddingTooMuch = true;
+                if (Math.Abs(wheel.LatSlip) > 0.8f && !wheel.InAir) isSkiddingTooMuch = true;
             }
 
             if (!InAir)
             {
-                _physXActor.MaximumAngularVelocity = 3f;
-                if ((_steerAngle < -0.1f && Wheels[0].LatSlip > 0.4f) || (_steerAngle > 0.1f && Wheels[0].LatSlip < -0.4f))
+                _physXActor.MaximumAngularVelocity = 3.5f;
+                if (Speed < 10)
+                {
+                    _physXActor.LinearDamping = Speed > 10 ? 0 : 2f;
+                    _physXActor.AngularDamping = 0.01f;
+                    GameConsole.WriteLine("mode slow");
+                }
+                else if ((_steerAngle < -0.1f && Wheels[0].LatSlip > 0.4f) || (_steerAngle > 0.1f && Wheels[0].LatSlip < -0.4f))
                 {
                     _physXActor.AngularDamping = maxlat * 3f;
                     _physXActor.LinearDamping = maxlat * 0.4f;  //stop insane sliding
+                    GameConsole.WriteLine("mode alt steer");
                 }
                 else if (isSkiddingTooMuch)
                 {
-                    _physXActor.LinearDamping = 0.6f;  //stop insane sliding
-                    _physXActor.AngularDamping = 0.02f;
+                    if (Speed < 80)
+                        _physXActor.LinearDamping = maxlat * 0.8f; 
+                    else
+                        _physXActor.LinearDamping = maxlat * 0.4f;
+                    _physXActor.AngularDamping = 0.01f;
+                    GameConsole.WriteLine("mode overskid");
                 }
                 else
                 {
-                    _physXActor.LinearDamping = Speed > 10 ? 0 : 0.5f;
+                    _physXActor.LinearDamping = 0;
                     _physXActor.AngularDamping = 0.01f;
                 }
 
@@ -276,15 +287,15 @@ namespace Carmageddon.Physics
                 {
                     _physXActor.LinearDamping = 4f;  //stop insane sliding
                     _physXActor.AngularDamping = 2f;
+                    GameConsole.WriteLine("mode on roof");
                 }
             }
             if (allWheelsInAir)
             {
                 _physXActor.AngularDamping = 0.00f;
                 _physXActor.MaximumAngularVelocity = 10f;
+                GameConsole.WriteLine("mode in air");
             }
-
-            GameConsole.WriteLine("and damp", _physXActor.AngularDamping);
         }
 
 
@@ -345,7 +356,7 @@ namespace Carmageddon.Physics
             }
 
             UpdateTorque();
-            //_physXActor.WakeUp();
+            _physXActor.WakeUp();
         }
 
         public void Steer(float angle)
@@ -363,7 +374,7 @@ namespace Carmageddon.Physics
         public void ReleaseHandbrake()
         {
             if (_handbrake == 0) return;
-            _handbrake -= Engine.ElapsedSeconds * 2f;
+            _handbrake -= Engine.ElapsedSeconds * 1.8f;
             if (_handbrake < 0) _handbrake = 0;
         }
 

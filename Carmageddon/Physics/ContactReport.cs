@@ -55,7 +55,7 @@ namespace Carmageddon.Physics
                                     return;
                                 }
 
-                                float force = contactInfo.NormalForce.Length() ; // iter.GetPointNormalForce();
+                                float force = contactInfo.NormalForce.Length(); // iter.GetPointNormalForce();
                                 if (force == 0) continue;
 
                                 //GameConsole.WriteEvent(force.ToString());   
@@ -135,7 +135,7 @@ namespace Carmageddon.Physics
                 Vector3 directedForce = normalforce * speed * vehicle.Config.Mass;
                 float factor = (1 / (nonCar.Config.TorqueRequiredToMove * nonCar.Config.MassWhenAttached)) * 0.003f;
 
-                GameConsole.WriteEvent("spd: " + Math.Round(speed, 2));
+                //GameConsole.WriteEvent("spd: " + Math.Round(speed, 2));
 
                 nonCar.Rotation.X += -directedForce.X * factor;
                 nonCar.Rotation.Z += directedForce.Z * factor;

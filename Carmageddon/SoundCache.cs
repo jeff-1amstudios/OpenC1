@@ -93,7 +93,7 @@ namespace Carmageddon
                     if (is3d) instance.Position = vehicle.Position;
                     instance.Owner = vehicle;
                     instance.Play(false);
-                    GameConsole.WriteEvent("PlaySound " + id.ToString());
+                    //GameConsole.WriteEvent("PlaySound " + id.ToString());
                 }
                 return instance;
             }

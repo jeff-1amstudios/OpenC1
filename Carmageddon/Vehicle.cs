@@ -167,10 +167,10 @@ namespace Carmageddon
             }
             _deformableModel.OnContact(position, force, normal);
 
-            if (product > 0.3f)
-            {
+            //if (product > 0.3f)
+            //{
                 Damage(force);
-            }
+            //}
             
         }
 
@@ -260,7 +260,8 @@ namespace Carmageddon
             if (force < 170000) return;
 
             float olddamage = _damage;
-            _damage += force * Config.CrushSections[1].DamageMultiplier * 0.000002f;
+            float damage = force * Config.CrushSections[1].DamageMultiplier * 0.000006f;
+            _damage += damage;
             Chassis.Motor.Damage = _damage;
             GameConsole.WriteEvent("Damage " + force + ", "  + _damage);
 
@@ -285,7 +286,13 @@ namespace Carmageddon
                 if (Driver is CpuDriver)
                 {
                     Race.Current.OnCarKilled(this);
+                    return;
                 }
+            }
+
+            if (Driver is CpuDriver)
+            {
+                Race.Current.OnPlayerCpuCarHit(damage);
             }
         }
 
@@ -293,7 +300,7 @@ namespace Carmageddon
         {
             if (_damage > 0)
             {
-                MessageRenderer.Instance.PostMessage("Repair Cost: " + _damage * 20, 2);
+                MessageRenderer.Instance.PostHeaderMessage("Repair Cost: " + (int)_damage * 20, 2);
                 SoundCache.Play(SoundIds.Repair, this, false);
                 _deformableModel.Repair();
                 _damage = Chassis.Motor.Damage = 0;

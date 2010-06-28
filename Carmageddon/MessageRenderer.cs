@@ -23,10 +23,11 @@ namespace Carmageddon
         }
 
         Dictionary<string, Texture2D> _textures = new Dictionary<string, Texture2D>();
-        string _messageText;
+        string _headerText;
+        int _timerSeconds;
         Texture2D _messageTexture;
-        float _ttl, _progress, _scale, _y, _x, _startY, _animationSpeed, _pauseTime, _centerX;
-        Rectangle _rect;
+        float _headerTtl, _messageTtl, _timerTtl, _progress, _scale, _y, _messageX, _startY, _animationSpeed, _pauseTime, _centerX;
+        Rectangle _headerRect, _messageRect, _timerRect;
         bool _hasPaused;
         
         int _screenWidth;
@@ -38,19 +39,20 @@ namespace Carmageddon
 
         public override void Update()
         {
-            if (_ttl > 0)
-                _ttl -= Engine.ElapsedSeconds;
+            if (_headerTtl > 0) _headerTtl -= Engine.ElapsedSeconds;
+            if (_animationSpeed == 0 && _messageTtl > 0) _messageTtl -= Engine.ElapsedSeconds;
+            if (_timerTtl > 0) _timerTtl -= Engine.ElapsedSeconds;
 
             if (_animationSpeed > 0)
             {
                 if (_pauseTime <= 0)
                 {
                     _progress += _animationSpeed * Engine.ElapsedSeconds;
-                    _x = MathHelper.Lerp(_screenWidth, -300, _progress);
-                    if (_x < _centerX && !_hasPaused)
+                    _messageX = MathHelper.Lerp(_screenWidth, -300, _progress);
+                    if (_messageX < _centerX && !_hasPaused)
                     {
-                        _x = _centerX;
-                        _pauseTime = 0.5f;
+                        _messageX = _centerX;
+                        _pauseTime = _messageTtl;
                         _hasPaused = true;
                     }
                 }
@@ -61,15 +63,22 @@ namespace Carmageddon
             }
         }
 
-        public void PostMessage(string message, float displayTime)
+        public void PostTimerMessage(int seconds)
         {
-            _messageText = message;
-            _ttl = displayTime;
-             _rect = CenterRectX(0.2f, _messageText.Length * _scale * 7.5f, 50 * _scale);
+            if (_timerTtl <= 0) _timerSeconds = 0;
+            _timerTtl = 2;
+            _timerSeconds += seconds;
+            _timerRect = CenterRectX(0.08f, 0.09f, 0.075f);
         }
 
+        public void PostHeaderMessage(string message, float displayTime)
+        {
+            _headerText = message;
+            _headerTtl = displayTime;
+             _headerRect = CenterRectX(0.13f, _headerText.Length * _scale * 7.5f, 50 * _scale);
+        }
 
-        public void PostMessagePix(string pixname, float displayTime, float y, float scale, float animationSpeed)
+        public void PostMainMessage(string pixname, float displayTime, float y, float scale, float animationSpeed)
         {
             if (!_textures.ContainsKey(pixname))
             {
@@ -82,33 +91,39 @@ namespace Carmageddon
             _messageTexture = _textures[pixname];
             _scale = scale;
             _y = y;
-            _ttl = displayTime;
+            _messageTtl = displayTime;
             _animationSpeed = animationSpeed;
             _progress = 0;
-            _rect = CenterRectX(_y, _messageTexture.Width * _scale, _messageTexture.Height * _scale);
-            _centerX = _rect.X;
-            _x = _screenWidth;
-            _messageText = null;
-
+            _messageRect = CenterRectX(_y, _messageTexture.Width * _scale, _messageTexture.Height * _scale);
+            _centerX = _messageRect.X;
+            _messageX = _screenWidth;
         }
 
 
         public override void Render()
         {
+            if (_headerTtl > 0)
+            {
+                DrawString(_textFont, _headerText, new Vector2(_headerRect.Left, _headerRect.Top), Color.White);
+            }
+
+            if (_timerTtl > 0)
+            {
+                TimeSpan ts = TimeSpan.FromSeconds(_timerSeconds);
+                DrawString(_blueFont, "+" + ts.Minutes + ":" + ts.Seconds.ToString("00"), new Vector2(_timerRect.Left, _timerRect.Top), Color.White);
+            }
+
             if (_animationSpeed == 0)
             {
-                if (_ttl > 0)
-                {
-                    if (_messageText != null) DrawString(_textFont, _messageText, new Vector2(_rect.Left, _rect.Top), Color.White);
-                    else Engine.SpriteBatch.Draw(_messageTexture, _rect, Color.White);
-                }
+                if (_messageTtl > 0)
+                    Engine.SpriteBatch.Draw(_messageTexture, _messageRect, Color.White);
             }
             else
             {
                 if (_progress < 1)
                 {
-                    _rect.X = (int)_x;
-                    Engine.SpriteBatch.Draw(_messageTexture, _rect, Color.White);
+                    _messageRect.X = (int)_messageX;
+                    Engine.SpriteBatch.Draw(_messageTexture, _messageRect, Color.White);
                 }
             }
         }

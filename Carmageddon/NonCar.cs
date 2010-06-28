@@ -31,7 +31,7 @@ namespace Carmageddon
 
             CActor.PhysXActor.GlobalOrientation = _origOrientation * NewOrientation;            
             float angle = MathHelper.ToDegrees(Helpers.UnsignedAngleBetweenTwoV3(Vector3.Up, NewOrientation.Up));
-            GameConsole.WriteEvent("ang " + angle);
+            //GameConsole.WriteEvent("ang " + angle);
 
             if (angle >= Config.BendAngleBeforeSnapping)
             {

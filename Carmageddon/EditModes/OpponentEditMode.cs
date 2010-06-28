@@ -22,7 +22,7 @@ namespace Carmageddon.EditModes
 
         public void Activate()
         {
-            MessageRenderer.Instance.PostMessage("Edit Mode: Opponents", 3);
+            MessageRenderer.Instance.PostHeaderMessage("Edit Mode: Opponents", 3);
         }
 
         public void Update()
