@@ -160,7 +160,7 @@ namespace Carmageddon
             force.X *= 0.5f;  //limit sideways crush
             force.Y *= 0.7f;
 
-            force *= 0.00000005f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
+            force *= 0.00000009f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
             float forceSize = force.Length();
 
             //if (forceSize > 0.04f)

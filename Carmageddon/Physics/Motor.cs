@@ -114,11 +114,11 @@ namespace Carmageddon.Physics
             }
             else
             {
-                if (_rpm > 0.5f && Damage > 30 && _lastBlip + 1.2f < Engine.TotalSeconds)
+                if (_rpm > 0.5f && Damage > 40 && _lastBlip + 1.2f < Engine.TotalSeconds)
                 {
                     if (Engine.Random.Next() % 2 == 0)
                     {
-                        _rpmLimiter = (Damage / 100) * 1.1f;
+                        _rpmLimiter = (Damage / 100) * 0.8f;
                         _lastBlip = Engine.TotalSeconds;
                     }
                 }

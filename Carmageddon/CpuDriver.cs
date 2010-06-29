@@ -93,7 +93,7 @@ namespace Carmageddon
 
             if (_lastStateChangeTime + 30 < Engine.TotalSeconds)
             {
-                //SetState(Engine.Random.Next() % 3 == 0 ? CpuDriverState.Attacking : CpuDriverState.Racing);
+                SetState(Engine.Random.Next() % 3 == 0 ? CpuDriverState.Attacking : CpuDriverState.Racing);
             }
 
             float distanceFromNode=0;

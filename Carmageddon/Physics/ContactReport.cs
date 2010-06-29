@@ -32,7 +32,9 @@ namespace Carmageddon.Physics
             
             using (ContactStreamIterator iter = new ContactStreamIterator(contactInfo.ContactStream))
             {
-                
+                if (events == ContactPairFlag.OnEndTouch)
+                {
+                }
                 //if we are looking at the player car
                 if (contactInfo.ActorB.Group == PhysXConsts.VehicleId)
                 {
@@ -70,9 +72,15 @@ namespace Carmageddon.Physics
                                         Vector3 normal = contactInfo.NormalForce;
                                         normal.Normalize();
                                         if (vehicle.Driver is CpuDriver && vehicle2.Driver is PlayerDriver)
+                                        {
+                                            vehicle.InContactWithPlayer = events != ContactPairFlag.OnEndTouch;
                                             ((CpuDriver)vehicle.Driver).SetState(CpuDriverState.Attacking);
+                                        }
                                         else if (vehicle2.Driver is CpuDriver && vehicle.Driver is PlayerDriver)
+                                        {
+                                            vehicle2.InContactWithPlayer = events != ContactPairFlag.OnEndTouch;
                                             ((CpuDriver)vehicle2.Driver).SetState(CpuDriverState.Attacking);
+                                        }
 
                                         vehicle.OnCollision(force * 2, pos, normal, events);
                                         vehicle2.OnCollision(force * 2, pos, normal, events);
@@ -133,7 +141,7 @@ namespace Carmageddon.Physics
                 normalforce = Vector3.Normalize(normalforce);
 
                 Vector3 directedForce = normalforce * speed * vehicle.Config.Mass;
-                float factor = (1 / (nonCar.Config.TorqueRequiredToMove * nonCar.Config.MassWhenAttached)) * 0.003f;
+                float factor = (1 / (nonCar.Config.TorqueRequiredToMove * nonCar.Config.MassWhenAttached)) * 0.005f;
 
                 //GameConsole.WriteEvent("spd: " + Math.Round(speed, 2));
 

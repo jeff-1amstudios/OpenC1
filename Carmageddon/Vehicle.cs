@@ -37,6 +37,7 @@ namespace Carmageddon
         public ParticleEmitter DamageSmokeEmitter;
         Vector3 _damagePosition;
         PixmapBillboard _flames;
+        public bool InContactWithPlayer;
 
 
         public Vehicle(string filename, IDriver driver)

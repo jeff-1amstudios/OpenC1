@@ -13,13 +13,11 @@ namespace Carmageddon
     {
         public CActor CActor;
         public NoncarFile Config;
-        public Vector3 Position, Anchor;
         public bool IsAttached;
         public float LastTouchTime;
         public bool Hit;
         public Matrix NewOrientation;
         public Vector3 Rotation;
-        public Joint Joint;
         private Matrix _origOrientation;
         bool _initialized;
 
@@ -27,8 +25,7 @@ namespace Carmageddon
         {
             if (!IsAttached) return;  //let physx handle it :)
 
-            //Joint.Dispose();
-
+            
             CActor.PhysXActor.GlobalOrientation = _origOrientation * NewOrientation;            
             float angle = MathHelper.ToDegrees(Helpers.UnsignedAngleBetweenTwoV3(Vector3.Up, NewOrientation.Up));
             //GameConsole.WriteEvent("ang " + angle);
@@ -40,13 +37,13 @@ namespace Carmageddon
             }
             else
             {
-                WeldToGround();
+                AttachToGround();
             }
 
             Hit = false;
         }
 
-        public void WeldToGround()
+        public void AttachToGround()
         {
             //FixedJointDescription jointDesc = new FixedJointDescription()
             //{
@@ -58,8 +55,10 @@ namespace Carmageddon
             if (!_initialized)
             {
                 _origOrientation = CActor.PhysXActor.GlobalOrientation;
+                CActor.PhysXActor.RaiseBodyFlag(BodyFlag.Kinematic);
                 _initialized = true;
             }
+            IsAttached = true;
             //    Anchor = CActor.PhysXActor.Shapes[0].GlobalPosition;
             //    Anchor.Y = CActor.PhysXActor.GlobalPosition.Y;
             //    Position = CActor.PhysXActor.GlobalPosition;
@@ -81,7 +80,7 @@ namespace Carmageddon
             //jointDesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
             //Joint = PhysX.Instance.Scene.CreateJoint(jointDesc);
                         
-            IsAttached = true;
+           
         }
     }
 }
