@@ -158,9 +158,9 @@ namespace Carmageddon
             force = Vector3.Transform(force, _actor.GlobalOrientation);
 
             force.X *= 0.5f;  //limit sideways crush
-            force.Y *= 0.7f;
+            force.Y *= 0.9f;
 
-            force *= 0.00000009f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
+            force *= 0.00000011f * _carFile.CrushSections[1].DamageMultiplier; //scale it down to a managable number
             float forceSize = force.Length();
 
             //if (forceSize > 0.04f)
