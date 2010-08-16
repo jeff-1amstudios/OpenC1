@@ -59,7 +59,7 @@ namespace Carmageddon
         {
             if (Gravity < 1)
             {
-                vehicle.Chassis.Actor.AddForce(new Vector3(0, PhysX.Instance.Gravity * Gravity * 15f, 0), ForceMode.SmoothImpulse);
+                vehicle.Chassis.Actor.AddForce(new Vector3(0, PhysX.Instance.Gravity * Gravity * 30f, 0), ForceMode.SmoothImpulse);
             }
         }
 

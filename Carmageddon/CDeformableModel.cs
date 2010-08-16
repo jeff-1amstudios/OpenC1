@@ -43,8 +43,7 @@ namespace Carmageddon
                 poly.NbrPrims = 1;
                 indices2.Add(poly.Vertex1); indices2.Add(poly.Vertex2); indices2.Add(poly.Vertex3);
             }
-
-
+            
             _originalPositions = new Vector3[VertexCount];
             _repairPoisitons = new Vector3[VertexCount];
             vertexPositions.CopyTo(VertexBaseIndex, _originalPositions, 0, VertexCount);
@@ -104,13 +103,6 @@ namespace Carmageddon
                 }
             }
 
-            int size = VertexPositionNormalTexture.SizeInBytes * _localVertices.Length;
-            _vertexBuffer = new DynamicVertexBuffer(Engine.Device, size, BufferUsage.WriteOnly);
-            _vertexBuffer.SetData(_localVertices);
-
-            _indexBuffer = new IndexBuffer(Engine.Device, typeof(int), indices2.Count, BufferUsage.WriteOnly);
-            _indexBuffer.SetData(indices2.ToArray());
-
             for (int i = 0; i < indices2.Count / 3; i++)
             {
                 Vector3 firstvec = _localVertices[indices2[i * 3 + 1]].Position - _localVertices[indices2[i * 3]].Position;
@@ -124,8 +116,15 @@ namespace Carmageddon
                 vpnt = _localVertices[indices2[i * 3 + 2]];
                 vpnt.Normal += normal;
             }
-            for (int i = 0; i < vertices.Count; i++)
-                vertices[i].Normal.Normalize();
+            for (int i = 0; i < _localVertices.Length; i++)
+                _localVertices[i].Normal.Normalize();
+
+            int size = VertexPositionNormalTexture.SizeInBytes * _localVertices.Length;
+            _vertexBuffer = new DynamicVertexBuffer(Engine.Device, size, BufferUsage.WriteOnly);
+            _vertexBuffer.SetData(_localVertices);
+
+            _indexBuffer = new IndexBuffer(Engine.Device, typeof(int), indices2.Count, BufferUsage.WriteOnly);
+            _indexBuffer.SetData(indices2.ToArray());
 
         }
 

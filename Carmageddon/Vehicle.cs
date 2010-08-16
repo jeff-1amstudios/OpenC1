@@ -205,7 +205,6 @@ namespace Carmageddon
                     break;
                 }
             }
-            GameConsole.WriteLine("maxlat", maxlat);
             
             Vector3 pos = Vector3.Transform(_damagePosition, GameVariables.ScaleMatrix * Chassis.Actor.GlobalPose);
             DamageSmokeEmitter.Update(pos);
@@ -234,6 +233,7 @@ namespace Carmageddon
             }
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
+            Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 5);
         }
 
         public Vector3 Position
@@ -261,7 +261,7 @@ namespace Carmageddon
             if (force < 170000) return;
 
             float olddamage = _damage;
-            float damage = force * Config.CrushSections[1].DamageMultiplier * 0.000006f;
+            float damage = force * Config.CrushSections[1].DamageMultiplier * 0.000005f;
             _damage += damage;
             Chassis.Motor.Damage = _damage;
             GameConsole.WriteEvent("Damage " + force + ", "  + _damage);

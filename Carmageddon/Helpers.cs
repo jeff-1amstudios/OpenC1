@@ -80,6 +80,47 @@ namespace Carmageddon
             double Angle = (float)Math.Acos(Vector3.Dot(v1, v2));
             return (float)Angle;
         }
+
+        public static Vector3 RotateAroundPoint(Vector3 point, Vector3 originPoint, Vector3 rotationAxis, float radiansToRotate)
+        {
+            Vector3 diffVect = point - originPoint;
+
+            Vector3 rotatedVect = Vector3.Transform(diffVect, Matrix.CreateFromAxisAngle(rotationAxis, radiansToRotate));
+
+            rotatedVect += originPoint;
+
+            return rotatedVect;
+        }
+
+        /// <summary>
+        /// 2d only
+        /// </summary>
+        /// <param name="line1"></param>
+        /// <param name="line2"></param>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static Vector3 GetClosestPointOnLine(Vector3 line1, Vector3 line2, Vector3 pos)
+        {
+            float xDelta = line2.X - line1.X;
+            float yDelta = line2.Z - line1.Z;
+
+            float u = ((pos.X - line1.X) * xDelta + (pos.Z - line1.Z) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
+
+            Vector3 closestPoint;
+            if (u < 0)
+            {
+                closestPoint = line1;
+            }
+            else if (u > 1)
+            {
+                closestPoint = line2;
+            }
+            else
+            {
+                closestPoint = new Vector3(line1.X + u * xDelta, 0, line1.Z + u * yDelta);
+            }
+            return closestPoint;
+        }
     }
 }
 

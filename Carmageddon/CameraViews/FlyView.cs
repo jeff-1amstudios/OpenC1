@@ -8,9 +8,11 @@ namespace Carmageddon.CameraViews
     class FlyView : ICameraView
     {
         FPSCamera _camera;
+        Vehicle _vehicle;
 
-        public FlyView()
+        public FlyView(Vehicle vehicle)
         {
+            _vehicle = vehicle;
             _camera = new FPSCamera();
             _camera.SetPerspective(55.55f, Engine.AspectRatio, 1, 500);
         }
@@ -29,14 +31,14 @@ namespace Carmageddon.CameraViews
 
         public void Render()
         {
-            Race.Current.PlayerVehicle.Render();
+            _vehicle.Render();
             Engine.Camera = _camera;
         }
 
         public void Activate()
         {
             Engine.Camera = _camera;
-            _camera.Position = Race.Current.PlayerVehicle.Position;
+            _camera.Position = _vehicle.Position;
         }
 
         public void Deactivate()

@@ -11,13 +11,15 @@ namespace Carmageddon
     enum CpuDriverState
     {
         Racing,
-        Attacking
+        Attacking,
+        ReturningToTrack
     }
 
     class CpuDriver : IDriver
     {
         public Vehicle Vehicle { get; set; }
         public bool InPlayersView;
+        public float DistanceFromPlayer;
         public bool IsDead;
 
         CpuDriverState _state;
@@ -32,6 +34,7 @@ namespace Carmageddon
         float _lastDistance;
         float _maxSpeedAtEndOfPath = 0;
         bool _isReversing;
+        Vector3 _closestPointOnPath;
         
         bool _raceStarted = false;
 
@@ -44,6 +47,7 @@ namespace Carmageddon
 
         public void OnRaceStart()
         {
+            _lastStateChangeTime = Engine.TotalSeconds;
             Vehicle.Chassis.Motor.Gearbox.CurrentGear = 1;
             LogPosition(Vehicle.Position);
             SetTarget(OpponentController.GetClosestNode(_lastPosition));
@@ -75,10 +79,10 @@ namespace Carmageddon
                 }
                 LogPosition(pos);
             }
-            if (Vehicle.Chassis.Actor.GlobalPose.Up.Y < 0 && Vehicle.Chassis.Speed < 5)
+            if (Vehicle.Chassis.Actor.GlobalPose.Up.Y < 0.002f && Vehicle.Chassis.Speed < 5)
             {
-                //Vehicle.Chassis.Reset();
-                //return;
+                Vehicle.Chassis.Reset();
+                return;
             }
 
             // check for state change
@@ -93,7 +97,7 @@ namespace Carmageddon
 
             if (_lastStateChangeTime + 30 < Engine.TotalSeconds)
             {
-                SetState(Engine.Random.Next() % 3 == 0 ? CpuDriverState.Attacking : CpuDriverState.Racing);
+                //SetState(Engine.Random.Next() % 3 == 0 ? CpuDriverState.Attacking : CpuDriverState.Racing);
             }
 
             float distanceFromNode=0;
@@ -114,7 +118,7 @@ namespace Carmageddon
 
                 if (_currentPath != null)
                 {
-                    GameConsole.WriteLine("Limits " + _currentPath.MinSpeedAtEnd + ", " + _maxSpeedAtEndOfPath);
+                    GameConsole.WriteLine("Limits " + _currentPath.Number + ", " + _currentPath.MinSpeedAtEnd + ", " + _maxSpeedAtEndOfPath);
                 }
 
 
@@ -128,6 +132,15 @@ namespace Carmageddon
                     {
                         Vehicle.Chassis.Brake(1);
                         isBraking = true;
+                    }
+                }
+                if (_currentPath != null)
+                {
+                    _closestPointOnPath = Helpers.GetClosestPointOnLine(_currentPath.Start.Position, _currentPath.End.Position, pos);
+                    _closestPointOnPath.Y = pos.Y; //ignore Y
+                    if (Vector3.Distance(_closestPointOnPath, pos) > _currentPath.Width)
+                    {
+                        _state = CpuDriverState.ReturningToTrack;
                     }
                 }
 
@@ -153,16 +166,26 @@ namespace Carmageddon
                     else
                     {
                         SetTarget(_currentPath.End);
-                        //GameConsole.WriteEvent("NextPath " + _currentPath.End.Number);
                     }
 
-                    //GetNextPath();
                     if (_currentPath == null && _nextPath == null)
                     {
                         Teleport(); //if the node we've just got to doesnt have any outgoing paths, teleport randomly
                     }
                 }
             }
+            else if (_state == CpuDriverState.ReturningToTrack)
+            {
+                _closestPointOnPath = Helpers.GetClosestPointOnLine(_currentPath.Start.Position, _currentPath.End.Position, pos);
+                _closestPointOnPath.Y = pos.Y; //ignore Y
+                Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(_closestPointOnPath), Color.Blue);
+                if (Vector3.Distance(_closestPointOnPath, pos) < _currentPath.Width)
+                {
+                    _state = CpuDriverState.Racing;
+                }
+            }
+
+            GameConsole.WriteLine("Dist", Vector3.Distance(_closestPointOnPath, pos));
 
             Vector3 towardsNode = Vector3.Zero;
             if (_state == CpuDriverState.Racing)
@@ -173,6 +196,12 @@ namespace Carmageddon
             {
                 towardsNode = Race.Current.PlayerVehicle.Position - pos;
             }
+            else if (_state == CpuDriverState.ReturningToTrack)
+            {
+                towardsNode = _closestPointOnPath - pos;
+            }
+
+            GameConsole.WriteLine("state: " + _state);
 
             float angle = GetSignedAngleBetweenVectors(Vehicle.Chassis.Actor.GlobalOrientation.Forward, towardsNode);
             angle *= 1.5f;
@@ -183,10 +212,15 @@ namespace Carmageddon
 
             if (!isBraking)
             {
-                if (Math.Abs(angle) > 0.7f)
-                    Vehicle.Chassis.Accelerate(0.5f); //if were turning hard, go easy on the gas pedal
+                if (_state == CpuDriverState.ReturningToTrack)
+                    Vehicle.Chassis.Accelerate(0.2f);
                 else
-                    Vehicle.Chassis.Accelerate(1.0f);
+                {
+                    if (Math.Abs(angle) > 0.7f)
+                        Vehicle.Chassis.Accelerate(0.5f); //if were turning hard, go easy on the gas pedal
+                    else
+                        Vehicle.Chassis.Accelerate(1.0f);
+                }
             }
 
             _lastDistance = distanceFromNode;
@@ -301,7 +335,7 @@ namespace Carmageddon
 
         public float GetUnsignedAngleBetweenVectors(Vector3 from, Vector3 to)
         {
-            from.Y = to.Y = 0;
+            //from.Y = to.Y = 0;
             from.Normalize();
             to.Normalize();
 
@@ -309,8 +343,8 @@ namespace Carmageddon
             a.Normalize();
             Vector2 b = new Vector2(to.X, to.Z);
             b.Normalize();
-            return (float)Math.Acos(Vector2.Dot(a, b));
-            //return (float)Math.Acos(Vector3.Dot(from, to));
+            //return (float)Math.Acos(Vector2.Dot(a, b));
+            return (float)Math.Acos(Vector3.Dot(from, to));
         }
     }
 }

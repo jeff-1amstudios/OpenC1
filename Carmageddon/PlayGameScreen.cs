@@ -24,7 +24,7 @@ namespace Carmageddon
 
         BasicEffect2 _effect;   
         List<IEditMode> _editModes = new List<IEditMode>();
-        
+       
         int _currentEditMode = 0;
 
         public PlayGameScreen()
@@ -37,8 +37,8 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            string playerCar = "blkeagle.txt";
-            _race = new Race(GameVariables.BasePath + @"data\races\ice3.TXT", playerCar);
+            string playerCar = "anniecar.txt";
+            _race = new Race(GameVariables.BasePath + @"data\races\cityc2.TXT", playerCar);
             
             _editModes.Add(new NoEditMode());
             _editModes.Add(new OpponentEditMode());                
@@ -155,15 +155,30 @@ namespace Carmageddon
                 {
                     //_effect.EnableDefaultLighting();
                     _effect.LightingEnabled = true;
-                    _effect.DiffuseColor = new Vector3(1);
+                    //_effect.DiffuseColor = new Vector3(1);
+                    _effect.AmbientLightColor = new Vector3(0.8f);
                     _effect.DirectionalLight0.DiffuseColor = new Vector3(1);
-                    Vector3 dir = new Vector3(-1f, 1, -1f);
+                    
+                    Vector3 dir = new Vector3(-1f, 0.9f, -1f);
                     dir.Normalize();
                     _effect.DirectionalLight0.Direction = dir;
                     _effect.DirectionalLight0.Enabled = true;
-                    _effect.SpecularColor = new Vector3(0.3f);
-                    _effect.SpecularPower = 16;
-                    _effect.AmbientLightColor = new Vector3(0.65f);
+
+                    //_effect.DirectionalLight1.DiffuseColor = new Vector3(0.8f);
+                    //dir = new Vector3(1f, 1, 1f);
+                    //dir.Normalize();
+                    //_effect.DirectionalLight1.Direction = dir;
+                    //_effect.DirectionalLight1.Enabled = true;
+
+
+                    //_effect.SpecularColor = new Vector3(0.3f);
+                    //_effect.SpecularPower = 100;
+                    //_effect.AmbientLightColor = new Vector3(0.65f);
+                    //_effect.DirectionalLight1.Enabled = false;
+                    //_effect.DirectionalLight2.Enabled = false;
+                    //_effect.TextureEnabled = false;
+                    //_effect.DirectionalLight0.Enabled = true;
+
                     //_effect.PreferPerPixelLighting = true;
                 }
             }

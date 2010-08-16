@@ -264,7 +264,7 @@ namespace Carmageddon.Parsers
                 path.End = OpponentPathNodes[int.Parse(tokens[1])];
                 path.MinSpeedAtEnd = float.Parse(tokens[4]) * 2.2f; //speeds are in BRU (BRender units). Convert to game speed
                 path.MaxSpeedAtEnd = float.Parse(tokens[5]) * 2.2f;
-                path.Width = float.Parse(tokens[6]);
+                path.Width = float.Parse(tokens[6]) * 6.5f;
                 path.Type = (PathType)int.Parse(tokens[7]);
 
                 startNode.Paths.Add(path);
@@ -304,6 +304,10 @@ namespace Carmageddon.Parsers
                 string matName = ReadLine();
                 if (matName != "none")
                 {
+                    if (!File.Exists(GameVariables.BasePath + "data\\material\\" + matName))
+                    {
+                        matName = "SKIDMARK.MAT"; //default skidmark if invalid (in indust maps, this is "1" and skidmarks aren't shown)
+                    }
                     MatFile matFile = new MatFile(GameVariables.BasePath + "data\\material\\" + matName);
                     modifier.SkidMaterial = matFile.Materials[0];
                     modifier.SkidMaterial.ResolveTexture();

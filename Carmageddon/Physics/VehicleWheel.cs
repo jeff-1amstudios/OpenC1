@@ -28,6 +28,7 @@ namespace Carmageddon.Physics
         private TireFunctionDescription _latTireFn, _lngTireFn;
         private float _defaultLatExtremum, _defaultLngExtremum;
         public float LatSlip;
+        public float CurrentSuspensionTravel;
 
         public bool InAir
         {
@@ -119,12 +120,10 @@ namespace Carmageddon.Physics
 
         private void UpdateMatrices(WheelContactData wcd)
         {
-            float suspensionLength = 0;
-
             if (wcd.ContactShape == null)
-                suspensionLength = Shape.SuspensionTravel;
+                CurrentSuspensionTravel = Shape.SuspensionTravel;
             else
-                suspensionLength = wcd.ContactPosition - Shape.Radius;
+                CurrentSuspensionTravel = wcd.ContactPosition - Shape.Radius;
 
             if (_handbrake != 1)
             {
@@ -138,8 +137,8 @@ namespace Carmageddon.Physics
             else
             {
             }
-            
-            Matrix translation = Matrix.CreateTranslation(_axleOffset, -suspensionLength, 0.0f);
+
+            Matrix translation = Matrix.CreateTranslation(_axleOffset, -CurrentSuspensionTravel, 0.0f);
             _renderMatrix = _rotationMatrix * Matrix.CreateRotationY(Shape.SteeringAngle) * translation;
         }
 

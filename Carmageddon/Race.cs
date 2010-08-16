@@ -80,7 +80,7 @@ namespace Carmageddon
 
             //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("harry.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 
@@ -108,7 +108,11 @@ namespace Carmageddon
             if (!RaceTime.IsStarted)
             {
                 if ((int)RaceTime.TotalTime == 2 && !RaceTime.CountingDown)
+                {
                     RaceTime.StartCountdown();
+                    foreach (IDriver driver in Drivers)
+                        driver.Vehicle.Chassis.FixSuspension();
+                }
                 if (Engine.Camera is FixedChaseCamera)
                 {
                     float height = 55 - (RaceTime.CountdownTime * 35f);
@@ -167,8 +171,9 @@ namespace Carmageddon
                  }
                  else
                  {
-                     opponent.Driver.InPlayersView = true;
+                     opponent.Driver.InPlayersView = false;
                  }
+                 opponent.Driver.DistanceFromPlayer = Vector3.Distance(PlayerVehicle.Position, opponent.Vehicle.Position);
              }
             
             RaceTime.Render();

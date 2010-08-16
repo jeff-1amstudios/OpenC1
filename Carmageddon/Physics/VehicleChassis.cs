@@ -54,7 +54,7 @@ namespace Carmageddon.Physics
             boxDesc.Size = carFile.BoundingBox.GetSize();
             boxDesc.LocalPosition = carFile.BoundingBox.GetCenter();
             boxDesc.Name = PhysXConsts.VehicleBody;
-            boxDesc.Flags |= ShapeFlag.PointContactForce;
+            //boxDesc.Flags |= ShapeFlag.PointContactForce;
             actorDesc.Shapes.Add(boxDesc);
 
             foreach (Vector3 extraPoint in carFile.ExtraBoundingBoxPoints)
@@ -125,15 +125,15 @@ namespace Carmageddon.Physics
             foreach (CWheelActor wheel in carFile.WheelActors)
             {
                 wheelDesc.Radius = wheel.IsDriven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
-                wheelDesc.SuspensionTravel = (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear) * 18; // Math.Max(wheelDesc.Radius / 2f, 0.21f);
-                wheelDesc.LocalPosition = wheel.Position + new Vector3(0, wheelDesc.SuspensionTravel * carFile.Mass * 0.00045f, 0);
-                
-                SpringDescription spring = new SpringDescription();
+                wheelDesc.SuspensionTravel = (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear) * 18;
                 float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
-                spring.SpringCoefficient = 3.6f * heightModifier * Math.Max(1000, carFile.Mass); // *(1 - (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear));
-                spring.DamperCoefficient = carFile.SuspensionDamping * 4f;
+
+                SpringDescription spring = new SpringDescription();
+                spring.SpringCoefficient = 4.5f * heightModifier * Math.Min(1000, carFile.Mass);
+                spring.DamperCoefficient = carFile.SuspensionDamping * 4.5f;
                 
                 wheelDesc.Suspension = spring;
+                wheelDesc.LocalPosition = wheel.Position;
 
                 WheelShape ws = (WheelShape)_physXActor.CreateShape(wheelDesc);
                 ws.Name = wheel.Actor.Name;
@@ -155,9 +155,23 @@ namespace Carmageddon.Physics
             //set center of mass
             //Vector3 massPos = _physXActor.CenterOfMassLocalPosition;
             Vector3 massPos = carFile.CenterOfMass;
-            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.36f;
+            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.30f;
 
             _physXActor.SetCenterOfMassOffsetLocalPosition(massPos);
+        }
+
+        /// <summary>
+        /// We know where the wheel should be from car .txt file, and we know where it is now after PhysX 
+        /// has taken over.  Move the wheel to where it should be.
+        /// </summary>
+        public void FixSuspension()
+        {
+            foreach (VehicleWheel wheel in this.Wheels)
+            {
+                Vector3 localPos = wheel.Shape.LocalPosition;
+                localPos.Y += wheel.CurrentSuspensionTravel;
+                wheel.Shape.LocalPosition = localPos;
+            }
         }
 
         public void Delete()
@@ -303,8 +317,6 @@ namespace Carmageddon.Physics
         {
             GameConsole.WriteLine("Speed", Speed);
             GameConsole.WriteLine("Brake", _brakeTorque);
-            //GameConsole.WriteLine("ang vel", Actor.AngularVelocity.Length());
-            GameConsole.WriteLine("slip", Wheels[0].LatSlip);
         }
     
 
@@ -323,7 +335,7 @@ namespace Carmageddon.Physics
             else
             {
                 _motorTorque = 0.0f;
-                _brakeTorque = Math.Max(700, _brakeTorque + 0.7f);
+                _brakeTorque = Math.Max(750, _brakeTorque + 0.8f);
             }
             UpdateTorque();
             //_physXActor.WakeUp();
@@ -404,6 +416,7 @@ namespace Carmageddon.Physics
             Matrix m = _physXActor.GlobalOrientation;
             m.Up = Vector3.Up;
             m.Right = Vector3.Right;
+            _physXActor.GlobalOrientation = m;
             _physXActor.GlobalPosition += new Vector3(0.0f, 2.0f, 0.0f);
             _physXActor.LinearMomentum = _physXActor.LinearVelocity = Vector3.Zero;
             _physXActor.AngularMomentum = _physXActor.AngularVelocity = Vector3.Zero;
