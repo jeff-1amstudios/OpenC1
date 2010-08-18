@@ -37,7 +37,6 @@ namespace Carmageddon
         public ParticleEmitter DamageSmokeEmitter;
         Vector3 _damagePosition;
         PixmapBillboard _flames;
-        public bool InContactWithPlayer;
 
 
         public Vehicle(string filename, IDriver driver)
@@ -168,11 +167,15 @@ namespace Carmageddon
             }
             _deformableModel.OnContact(position, force, normal);
 
-            //if (product > 0.3f)
-            //{
+            // if this is a CPU driven car, only damage if the player has something to do with it.  Stops cars killing themselves
+            if (Driver is CpuDriver && ((CpuDriver)Driver).LastPlayerTouchTime + 0.3f > Engine.TotalSeconds)
+            {
                 Damage(force);
-            //}
-            
+            }
+            else if (Driver is PlayerDriver)
+            {
+                Damage(force);
+            }
         }
 
         public void Update()
@@ -213,10 +216,19 @@ namespace Carmageddon
 
         public void Render()
         {
+            //Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 1);
+            //return;
             ModelShadow.Render(Config.BoundingBox, Chassis);
             SkidMarkBuffer.Render();
 
-            _actors.Render(Chassis.Actor.GlobalPose, null);
+            //Vector3 pos2 = Chassis.Actor.GlobalPosition;
+            Vector3 pos2 = Vector3.Transform(new Vector3(0,1,0), Chassis.Actor.GlobalOrientation);
+            Matrix pose = Matrix.CreateFromQuaternion(Chassis.Actor.GlobalOrientationQuat) * Matrix.CreateTranslation(Chassis.Actor.GlobalPosition) * Matrix.CreateTranslation(pos2);
+            Engine.DebugRenderer.AddAxis(pose, 5);
+            //pos2 *= 4;
+            //pose = Matrix.CreateFromQuaternion(Chassis.Actor.GlobalOrientationQuat) * Matrix.CreateTranslation(Chassis.Actor.GlobalPosition) * Matrix.CreateTranslation(pos2);
+            //Engine.DebugRenderer.AddAxis(pose, 5);
+            _actors.Render(pose, null);
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();            
 
@@ -233,7 +245,7 @@ namespace Carmageddon
             }
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
-            Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 5);
+            //Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 5);
         }
 
         public Vector3 Position

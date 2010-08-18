@@ -126,6 +126,10 @@ namespace Carmageddon.Physics
                         if (_currentGear > -1)
                             _currentGear--;
                     }
+                    if (_currentGear == 1)
+                    {
+                    }
+
                     _clutch = 1.0f;
                     _gearChange = null;
                     if (GearChangeCompleted != null) GearChangeCompleted(this, null);

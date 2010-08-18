@@ -80,7 +80,7 @@ namespace Carmageddon
 
             //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("harry.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 
@@ -118,6 +118,13 @@ namespace Carmageddon
                     float height = 55 - (RaceTime.CountdownTime * 35f);
                     ((FixedChaseCamera)Engine.Camera).HeightOverride = Math.Max(0, height);
                 }
+
+                var node = OpponentController.GetClosestRaceNode(ConfigFile.GridPosition);
+                foreach (IDriver driver in Drivers)
+                    if (driver is CpuDriver)
+                    {
+                        ((CpuDriver)driver).SetTarget(node);
+                    }
             }
 
             foreach (IDriver driver in Drivers)
@@ -157,6 +164,8 @@ namespace Carmageddon
         public void Render()
         {
             if (_skybox != null) _skybox.Draw();
+
+            Engine.DebugRenderer.AddAxis(Matrix.CreateTranslation(ConfigFile.GridPosition), 5);
 
             BoundingFrustum frustum = new BoundingFrustum(Engine.Camera.View * Engine.Camera.Projection);
 

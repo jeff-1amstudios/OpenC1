@@ -16,7 +16,6 @@ namespace Carmageddon.Physics
 
         public override void Update(float motorRpmPercent)
         {
-
             if (_motor.Rpm < 2 && _currentGear == GEAR_NEUTRAL || _currentGear == GEAR_1)
             {
                 if (PlayerVehicleController.GearDown)
@@ -35,10 +34,12 @@ namespace Carmageddon.Physics
 
             if (!_motor.WheelsSpinning)
             {
-
-                if (_currentGear == GEAR_REVERSE || _currentGear == GEAR_NEUTRAL)
+                if (_currentGear == GEAR_REVERSE)
                 {
-
+                }
+                else if (_currentGear == GEAR_NEUTRAL)
+                {
+                    GearUp();
                 }
                 else
                 {

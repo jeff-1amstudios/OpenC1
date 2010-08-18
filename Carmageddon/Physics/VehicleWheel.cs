@@ -90,7 +90,6 @@ namespace Carmageddon.Physics
                 if (IsRear)
                     latExtremum = MathHelper.Lerp(2.1f, 1.2f, _handbrake);
                 latExtremum *= materialModifier.TyreRoadFriction;
-                latExtremum *= _chassis._lateralFrictionMultiplier;
                 _latTireFn.ExtremumValue = latExtremum;
 
                 _lngTireFn.ExtremumValue = _defaultLngExtremum * materialModifier.TyreRoadFriction;

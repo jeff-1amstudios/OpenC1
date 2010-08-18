@@ -19,7 +19,6 @@ namespace Carmageddon.Physics
         public Vehicle Vehicle { get; set; }
         public Actor Actor { get { return _physXActor; } }
         public List<VehicleWheel> Wheels {get; private set; }
-        public float _lateralFrictionMultiplier = 1;
         public Motor Motor { get; private set; }
         
         public bool Backwards {get; private set; }
@@ -47,59 +46,40 @@ namespace Carmageddon.Physics
             CarFile carFile = vehicle.Config;
             
             ActorDescription actorDesc = new ActorDescription();
-            
-            actorDesc.BodyDescription = new BodyDescription(carFile.Mass);
 
+            Vector3 offset = new Vector3(0, 1f, 0);
+            
+            actorDesc.BodyDescription = new BodyDescription();
+            actorDesc.BodyDescription.Mass = carFile.Mass;
             var boxDesc = new BoxShapeDescription();
             boxDesc.Size = carFile.BoundingBox.GetSize();
-            boxDesc.LocalPosition = carFile.BoundingBox.GetCenter();
+            boxDesc.LocalPosition = carFile.BoundingBox.GetCenter() +offset;
             boxDesc.Name = PhysXConsts.VehicleBody;
-            //boxDesc.Flags |= ShapeFlag.PointContactForce;
             actorDesc.Shapes.Add(boxDesc);
 
             foreach (Vector3 extraPoint in carFile.ExtraBoundingBoxPoints)
             {
                 var extraDesc = new SphereShapeDescription(0.2f);
-                extraDesc.LocalPosition = extraPoint;
+                extraDesc.LocalPosition = extraPoint +offset;
                 extraDesc.Mass = 0;
                 actorDesc.Shapes.Add(extraDesc);
             }
 
             using (UtilitiesLibrary lib = new UtilitiesLibrary())
             {
-                Vector3 inertiaTensor = lib.ComputeBoxInteriaTensor(Vector3.Zero, carFile.Mass, carFile.Size);
+                Vector3 size = carFile.Size;
+                Vector3 inertiaTensor = lib.ComputeBoxInteriaTensor(Vector3.Zero, carFile.Mass, size);
                 actorDesc.BodyDescription.MassSpaceInertia = inertiaTensor;
             }
-            
-            _physXActor = PhysX.Instance.Scene.CreateActor(actorDesc);
-                        
-            //_physXActor.Name = "Vehicle";
-            _physXActor.Group = PhysXConsts.VehicleId;
-            
-            _physXActor.UserData = vehicle;
-                                    
-            ((CDeformableModel)bodycactor.Model)._actor = _physXActor;
-            ((CDeformableModel)bodycactor.Model)._carFile = carFile;
-            
+
                         
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 0.1f;
             lngTFD.ExtremumValue = 5f;
             lngTFD.AsymptoteSlip = 2.0f;
-            lngTFD.AsymptoteValue = 4.9f;
+            lngTFD.AsymptoteValue = 2.9f;
             
-
-            //_frontLateralTireFn = new TireFunctionDescription();
-            //_frontLateralTireFn.ExtremumSlip = 0.26f;
-            //_frontLateralTireFn.ExtremumValue = 1.8f;
-            //_frontLateralTireFn.AsymptoteSlip = 20;
-            //_frontLateralTireFn.AsymptoteValue = 0.001f;
-
             _rearLateralTireFn = new TireFunctionDescription();            
-            //_rearLateralTireFn.ExtremumSlip = 0.35f;
-            
-            //_rearLateralTireFn.AsymptoteSlip = 20f;
-            //_rearLateralTireFn.AsymptoteValue = 0.001f;
             
             _rearLateralTireFn.ExtremumSlip = 0.2f;
             _rearLateralTireFn.ExtremumValue = 2.1f;
@@ -107,25 +87,25 @@ namespace Carmageddon.Physics
             _rearLateralTireFn.AsymptoteValue = 0.02f;
 
             _frontLateralTireFn = _rearLateralTireFn;
-            //_frontLateralTireFn.AsymptoteSlip = 0.8f;
-            _frontLateralTireFn.ExtremumValue = 1.9f;
-           
+            _frontLateralTireFn.ExtremumValue = 1.9f;           
             
-            WheelShapeDescription wheelDesc = new WheelShapeDescription();
-
-            wheelDesc.InverseWheelMass = 0.08f;
-            wheelDesc.LongitudalTireForceFunction = lngTFD;
-            wheelDesc.Flags = WheelShapeFlag.ClampedFriction;
-
             MaterialDescription md = new MaterialDescription();
             md.Flags = MaterialFlag.DisableFriction;
             Material m = PhysX.Instance.Scene.CreateMaterial(md);
-            wheelDesc.Material = m;
+
+            int wheelIndex = 0;
 
             foreach (CWheelActor wheel in carFile.WheelActors)
             {
+                WheelShapeDescription wheelDesc = new WheelShapeDescription();
+                wheelDesc.InverseWheelMass = 0.08f;
+                wheelDesc.LongitudalTireForceFunction = lngTFD;
+                wheelDesc.Flags = WheelShapeFlag.ClampedFriction;
+                wheelDesc.Material = m;
+
                 wheelDesc.Radius = wheel.IsDriven ? carFile.DrivenWheelRadius : carFile.NonDrivenWheelRadius;
                 wheelDesc.SuspensionTravel = (wheel.IsFront ? carFile.SuspensionGiveFront : carFile.SuspensionGiveRear) * 18;
+                
                 float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
 
                 SpringDescription spring = new SpringDescription();
@@ -133,16 +113,42 @@ namespace Carmageddon.Physics
                 spring.DamperCoefficient = carFile.SuspensionDamping * 4.5f;
                 
                 wheelDesc.Suspension = spring;
-                wheelDesc.LocalPosition = wheel.Position;
+                wheelDesc.LocalPosition = wheel.Position +offset;
+                wheelDesc.Name = (wheelIndex).ToString();
+                wheelIndex++;
 
-                WheelShape ws = (WheelShape)_physXActor.CreateShape(wheelDesc);
-                ws.Name = wheel.Actor.Name;
-                ws.LateralTireForceFunction = wheel.IsFront ? _frontLateralTireFn : _rearLateralTireFn;
-                //ws.LocalOrientation *= Matrix.CreateRotationZ(0.1f);
-                Wheels.Add(new VehicleWheel(this, wheel, ws, wheel.IsLeft ? 0.17f : -0.17f) { Index = Wheels.Count });
-            }            
+                wheelDesc.LateralTireForceFunction = wheel.IsFront ? _frontLateralTireFn : _rearLateralTireFn;
+                actorDesc.Shapes.Add(wheelDesc);    
+            }
+            
+            _physXActor = PhysX.Instance.Scene.CreateActor(actorDesc);
+                                    
+            foreach (Shape shape in _physXActor.Shapes)
+            {
+                if (shape is WheelShape)
+                {
+                    wheelIndex = int.Parse(shape.Name);
+                    Wheels.Add(new VehicleWheel(this, carFile.WheelActors[wheelIndex], (WheelShape)shape, carFile.WheelActors[wheelIndex].IsLeft ? 0.17f : -0.17f) { Index = wheelIndex });
+                }
+            }
 
+            _physXActor.Group = PhysXConsts.VehicleId;
+            _physXActor.UserData = vehicle;
+
+            ((CDeformableModel)bodycactor.Model)._actor = _physXActor;
+            ((CDeformableModel)bodycactor.Model)._carFile = carFile;
+            
             _physXActor.WakeUp(60.0f);
+
+            //_physXActor.RaiseBodyFlag(BodyFlag.DisableGravity);
+
+            //set center of mass
+            Vector3 massPos = carFile.CenterOfMass;
+            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 1.15f;
+            _physXActor.SetCenterOfMassOffsetLocalPosition(massPos);
+            //_physXActor.UpdateMassFromShapes(0, carFile.Mass);
+            
+            
 
             //a real power curve doesnt work too well in carmageddon :)
             List<float> power = new List<float>(new float[] { 0.5f, 0.5f, 0.5f, 1f, 1f, 1.0f, 1.0f, 0 });
@@ -152,12 +158,7 @@ namespace Carmageddon.Physics
             Motor = new Motor(power, carFile.EnginePower, 6f, carFile.TopSpeed, gearbox);
             Motor.Gearbox.CurrentGear = 0;
 
-            //set center of mass
-            //Vector3 massPos = _physXActor.CenterOfMassLocalPosition;
-            Vector3 massPos = carFile.CenterOfMass;
-            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 0.30f;
-
-            _physXActor.SetCenterOfMassOffsetLocalPosition(massPos);
+           
         }
 
         /// <summary>
@@ -166,6 +167,7 @@ namespace Carmageddon.Physics
         /// </summary>
         public void FixSuspension()
         {
+            
             foreach (VehicleWheel wheel in this.Wheels)
             {
                 Vector3 localPos = wheel.Shape.LocalPosition;
@@ -190,6 +192,8 @@ namespace Carmageddon.Physics
         public void Update()
         {
             LastSpeeds.Add(Speed);
+            //Actor.GlobalOrientation *= Matrix.CreateRotationZ(Engine.ElapsedSeconds);
+            GameConsole.WriteLine("Height", Actor.GlobalPosition.Y);
             //LastLinearMomentum = Actor.LinearMomentum;
 
             //Vector3 lin = Actor.LinearVelocity;

@@ -47,12 +47,14 @@ namespace Carmageddon.Physics
             }
 
             //Core.SetParameter(PhysicsParameter.SkinWidth, (float)0.01f);
-            Core.SetParameter(PhysicsParameter.VisualizationScale, (float)0f);
+            Core.SetParameter(PhysicsParameter.VisualizationScale, (float)1f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
-            Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, false);
-            Core.SetParameter(PhysicsParameter.VisualizeContactNormal, true);
-            Core.SetParameter(PhysicsParameter.VisualizeContactForce, true);
-            Core.SetParameter(PhysicsParameter.VisualizeActorAxes, false);
+            Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
+            Core.SetParameter(PhysicsParameter.VisualizeCollisionAxes, false);
+            Core.SetParameter(PhysicsParameter.VisualizeBodyAxes, false);
+            Core.SetParameter(PhysicsParameter.VisualizeContactNormal, false);
+            Core.SetParameter(PhysicsParameter.VisualizeContactForce, false);
+            Core.SetParameter(PhysicsParameter.VisualizeActorAxes, true);
             
             
             SceneDescription sceneDescription = new SceneDescription();

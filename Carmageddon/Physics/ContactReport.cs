@@ -73,12 +73,12 @@ namespace Carmageddon.Physics
                                         normal.Normalize();
                                         if (vehicle.Driver is CpuDriver && vehicle2.Driver is PlayerDriver)
                                         {
-                                            vehicle.InContactWithPlayer = events != ContactPairFlag.OnEndTouch;
+                                            ((CpuDriver)vehicle.Driver).LastPlayerTouchTime = Engine.TotalSeconds;
                                             ((CpuDriver)vehicle.Driver).SetState(CpuDriverState.Attacking);
                                         }
                                         else if (vehicle2.Driver is CpuDriver && vehicle.Driver is PlayerDriver)
                                         {
-                                            vehicle2.InContactWithPlayer = events != ContactPairFlag.OnEndTouch;
+                                            ((CpuDriver)vehicle2.Driver).LastPlayerTouchTime = Engine.TotalSeconds;
                                             ((CpuDriver)vehicle2.Driver).SetState(CpuDriverState.Attacking);
                                         }
 

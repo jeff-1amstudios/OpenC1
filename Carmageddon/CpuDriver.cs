@@ -21,6 +21,7 @@ namespace Carmageddon
         public bool InPlayersView;
         public float DistanceFromPlayer;
         public bool IsDead;
+        public float LastPlayerTouchTime;
 
         CpuDriverState _state;
         OpponentPathNode _targetNode;
@@ -50,8 +51,7 @@ namespace Carmageddon
             _lastStateChangeTime = Engine.TotalSeconds;
             Vehicle.Chassis.Motor.Gearbox.CurrentGear = 1;
             LogPosition(Vehicle.Position);
-            SetTarget(OpponentController.GetClosestNode(_lastPosition));
-            
+            //SetTarget(OpponentController.GetClosestRaceNode(_lastPosition));
             _raceStarted = true;
         }
 
@@ -101,26 +101,25 @@ namespace Carmageddon
             }
 
             float distanceFromNode=0;
+            if (_state == CpuDriverState.Racing) distanceFromNode = Vector3.Distance(pos, _targetNode.Position);
+            else if (_state == CpuDriverState.ReturningToTrack) distanceFromNode = Vector3.Distance(pos, _closestPointOnPath);
+
+            // if we've been trying to get to the same target for 20 seconds, get a new one
+            if (_lastTargetChangeTime + 20 < Engine.TotalSeconds)
+            {
+                if (_lastDistance < distanceFromNode) //only get another node if were not getting closer
+                {
+                    GotoClosestNode(pos);
+                    return;
+                }
+            }
 
             if (_state == CpuDriverState.Racing)
             {
-                distanceFromNode = Vector3.Distance(pos, _targetNode.Position);
-
-                // if we've been trying to get to the same target for 20 seconds, get a new one
-                if (_lastTargetChangeTime + 20 < Engine.TotalSeconds)
-                {
-                    if (_lastDistance < distanceFromNode) //only get another node if were not getting closer
-                    {
-                        GotoClosestNode(pos);
-                        distanceFromNode = Vector3.Distance(pos, _targetNode.Position);
-                    }
-                }
-
                 if (_currentPath != null)
                 {
                     GameConsole.WriteLine("Limits " + _currentPath.Number + ", " + _currentPath.MinSpeedAtEnd + ", " + _maxSpeedAtEndOfPath);
                 }
-
 
                 if (_currentPath != null && Vehicle.Chassis.Speed > _maxSpeedAtEndOfPath)
                 {
@@ -146,7 +145,7 @@ namespace Carmageddon
 
                 // now see if we're at the target ignoring height (if we jump over it for example)
                 distanceFromNode = Vector2.Distance(new Vector2(pos.X, pos.Z), new Vector2(_targetNode.Position.X, _targetNode.Position.Z));
-                if (distanceFromNode < 10)
+                if (distanceFromNode < 10 && pos.Y >= _targetNode.Position.Y)
                 {
                     _nbrFails = 0; //reset fail counter
 
@@ -158,6 +157,14 @@ namespace Carmageddon
                         }
                     }
                     _currentPath = _nextPath;
+
+                    if (_currentPath != null && _currentPath.Type == PathType.Cheat)
+                    {
+                        Vehicle.Chassis.Actor.GlobalPosition = _currentPath.End.Position;
+                        Vehicle.Chassis.Reset();
+                        _state = CpuDriverState.Racing;
+                        return;
+                    }
 
                     if (_nextPath == null)  // the node didnt have any start paths
                     {
@@ -213,7 +220,12 @@ namespace Carmageddon
             if (!isBraking)
             {
                 if (_state == CpuDriverState.ReturningToTrack)
-                    Vehicle.Chassis.Accelerate(0.2f);
+                {
+                    if (Vehicle.Chassis.Speed < 20)
+                        Vehicle.Chassis.Accelerate(0.2f);
+                    else
+                        if (Math.Abs(angle) > 0.5f) Vehicle.Chassis.Brake(1);
+                }
                 else
                 {
                     if (Math.Abs(angle) > 0.7f)
@@ -251,6 +263,7 @@ namespace Carmageddon
         {
             OpponentPathNode curNode = _targetNode;
             SetTarget(OpponentController.GetClosestNode(pos));
+            _currentPath = null;
 
             if (curNode == _targetNode) //if the closest node is the one we've failed to get to
             {
@@ -263,9 +276,10 @@ namespace Carmageddon
             //_currentPath = _nextPath = null;
         }
 
-        private void SetTarget(OpponentPathNode node)
+        public void SetTarget(OpponentPathNode node)
         {
             _targetNode = node;
+            _state = CpuDriverState.Racing;
             _lastTargetChangeTime = Engine.TotalSeconds;
             GetNextPath();
         }
@@ -292,6 +306,7 @@ namespace Carmageddon
         {
             // for the next node, look at direction we will be turning and decide if we will need to slow down before we get there
             _nextPath = OpponentController.GetNextPath(_targetNode);
+            
 
             if (_nextPath != null && _currentPath != null)
             {
@@ -299,7 +314,7 @@ namespace Carmageddon
 
                 if (nextPathAngle > 5)
                 {
-                    float newspeed = (180 - nextPathAngle) * 0.58f;
+                    float newspeed = (180 - nextPathAngle) * 0.55f;
                     _maxSpeedAtEndOfPath = newspeed;
                 }
                 else

@@ -28,7 +28,7 @@ namespace Carmageddon
             TireFunctionDescription frontLateralTireFn = new TireFunctionDescription();
             frontLateralTireFn.ExtremumSlip = 0.26f;
             frontLateralTireFn.ExtremumValue = 2.3f;
-            frontLateralTireFn.AsymptoteSlip = 2.222f;
+            frontLateralTireFn.AsymptoteSlip = 2.21f;
             frontLateralTireFn.AsymptoteValue = 0.001f;
 
             TireFunctionDescription rearLateralTireFn = new TireFunctionDescription();
@@ -51,7 +51,7 @@ namespace Carmageddon
         {
             if (_boundingSphere == null)
             {
-                _boundingSphere = new BoundingSphere(Vector3.Zero, Vehicle.Config.BoundingBox.GetSize().Length() * 1.1f);
+                _boundingSphere = new BoundingSphere(Vector3.Zero, Vehicle.Config.BoundingBox.GetSize().Length() * 1.5f);
             }
             _boundingSphere.Center = Vehicle.Position;
             return _boundingSphere;

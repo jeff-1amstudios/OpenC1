@@ -259,6 +259,9 @@ namespace Carmageddon.Physics
                         instance.GlobalPose = m;
                         instance.SetCenterOfMassOffsetLocalPosition(nonCarFile.CenterOfMass);
                         instance.Group = PhysXConsts.NonCarId;
+                        
+                        foreach (Shape s in instance.Shapes)
+                            s.SetFlag(ShapeFlag.Visualization, false);
 
                         NonCar noncar = new NonCar { Config = nonCarFile, CActor = actor };
                         instance.UserData = noncar;

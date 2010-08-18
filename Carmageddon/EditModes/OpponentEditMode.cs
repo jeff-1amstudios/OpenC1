@@ -66,13 +66,11 @@ namespace Carmageddon.EditModes
                 Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(node.Position), Color.White);
                 foreach (OpponentPath path in node.Paths)
                 {
-                    if (path.Number > 130)
-                    {
-
+                    
                         Color c = Color.Yellow;
                         if (path.Type == PathType.Race) c = Color.Red;
-                        if (path.Type == PathType.CheatOnly) c = Color.Blue;
-                        Engine.DebugRenderer.AddLine(node.Position, path.End.Position, c);
+                        if (path.Type == PathType.Cheat) c = Color.Blue;
+                        //Engine.DebugRenderer.AddLine(node.Position, path.End.Position, c);
 
                         Vector3 offs = new Vector3(0, 0, path.Width);
 
@@ -90,7 +88,7 @@ namespace Carmageddon.EditModes
                         s2 = Vector3.Transform(s3, Matrix.CreateRotationY(-90) * Matrix.CreateTranslation(path.End.Position));
                         s2.Y = path.End.Position.Y;
                         Engine.DebugRenderer.AddLine(s1, s2, c);
-                    }
+                    
                 }
             }
         }

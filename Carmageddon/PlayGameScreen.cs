@@ -37,8 +37,8 @@ namespace Carmageddon
 
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
-            string playerCar = "anniecar.txt";
-            _race = new Race(GameVariables.BasePath + @"data\races\cityc2.TXT", playerCar);
+            string playerCar = "screwie.txt";
+            _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT", playerCar);
             
             _editModes.Add(new NoEditMode());
             _editModes.Add(new OpponentEditMode());                
@@ -118,7 +118,7 @@ namespace Carmageddon
 
             GameConsole.WriteLine("Draw Calls", GameVariables.NbrDrawCalls);
 
-            //Carmageddon.Physics.PhysX.Instance.Draw();
+            Carmageddon.Physics.PhysX.Instance.Draw();
         }
 
 

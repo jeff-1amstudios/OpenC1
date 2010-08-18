@@ -63,6 +63,12 @@ namespace Carmageddon
         {
             if (currentNode.Paths.Count == 0) return null;
 
+            foreach (OpponentPath path in currentNode.Paths)
+            {
+                if (path.Type == PathType.Cheat)
+                    return path;
+            }
+
             int choosenPath = Engine.Random.Next(currentNode.Paths.Count);
             if (currentNode.Paths[choosenPath].Type == PathType.Race)
                 return currentNode.Paths[choosenPath];

@@ -9,7 +9,7 @@ namespace Carmageddon
     {
         General = 0,
         Race = 1,
-        CheatOnly = 1000
+        Cheat = 1000
     }
 
     class OpponentPath
