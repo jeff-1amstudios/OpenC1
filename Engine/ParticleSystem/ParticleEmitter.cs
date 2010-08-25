@@ -46,6 +46,7 @@ namespace Particle3DSample
         Vector3 _previousPosition;
         float _timeLeftOver;
         public float ParticlesPerSecond;
+        public float DumpsPerSecond = 0.2f;
 
         #endregion
 
@@ -128,7 +129,7 @@ namespace Particle3DSample
         public void DumpParticles(Vector3 newPosition, float nbr)
         {
             //only allow dumpparticles every 0.2 of a second
-            if (LastDumpTime + 0.2f > Engine.TotalSeconds)
+            if (LastDumpTime + DumpsPerSecond > Engine.TotalSeconds)
                 return;
 
             for (int i = 0; i < nbr; i++)

@@ -91,6 +91,7 @@
     <Compile Include="CircularList.cs" />
     <Compile Include="CMaterial.cs" />
     <Compile Include="CModelGroup.cs" />
+    <Compile Include="CopDriver.cs" />
     <Compile Include="CpuDriver.cs" />
     <Compile Include="EditModes\IEditMode.cs" />
     <Compile Include="EditModes\NoEditMode.cs" />

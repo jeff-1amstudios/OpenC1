@@ -11,43 +11,68 @@ namespace Carmageddon
         public static List<OpponentPathNode> Nodes;
 
 
-        public static OpponentPathNode GetClosestRaceNode(Vector3 currentPosition)
-        {
-            float leastDistance = int.MaxValue;
-            OpponentPathNode leastDistantNode = null;
+        //public static OpponentPathNode GetClosestRaceNode(Vector3 currentPosition)
+        //{
+        //    float leastDistance = int.MaxValue;
+        //    OpponentPathNode leastDistantNode = null;
 
+        //    foreach (OpponentPathNode node in Nodes)
+        //    {
+        //        float thisDistance = Vector3.Distance(currentPosition, node.Position);
+        //        if (thisDistance < leastDistance)
+        //        {
+        //            if (node.Paths.Exists(a => a.Type == PathType.Race))
+        //            {
+        //                leastDistance = thisDistance;
+        //                leastDistantNode = node;
+        //            }
+        //        }
+        //    }
+
+        //    return leastDistantNode;
+        //}
+
+        public static OpponentPath GetClosestPath(Vector3 point)
+        {
+            float closestDist = float.MaxValue;
+            OpponentPath closestPath = null;
             foreach (OpponentPathNode node in Nodes)
             {
-                float thisDistance = Vector3.Distance(currentPosition, node.Position);
-                if (thisDistance < leastDistance)
+                foreach (OpponentPath path in node.Paths)
                 {
-                    if (node.Paths.Exists(a => a.Type == PathType.Race))
+                    Vector3 closestPoint = Helpers.GetClosestPointOnLine(path.Start.Position, path.End.Position, point);
+                    float dist = Vector3.Distance(point, closestPoint);
+                    if (dist < closestDist)
                     {
-                        leastDistance = thisDistance;
-                        leastDistantNode = node;
+                        closestPath = path;
+                        closestDist = dist;
                     }
                 }
             }
 
-            return leastDistantNode;
+            return closestPath;
         }
+
 
         public static OpponentPathNode GetNodeCloseToPlayer()
         {
-            float leastDistance = int.MaxValue;
-            OpponentPathNode leastDistantNode = null;
             Vector3 playerPos = Race.Current.PlayerVehicle.Position;
 
-            foreach (OpponentPathNode node in Nodes)
+            int j = Engine.Random.Next(Nodes.Count);
+            for (int i = 0; i < Nodes.Count; i++)
             {
-                float thisDistance = Vector3.Distance(playerPos, node.Position);
-                if (thisDistance < leastDistance)
+                float dist = 0;
+                Vector3.Distance(ref playerPos, ref Nodes[j].Position, out dist);
+                if (dist > 100 && dist < 280 && Helpers.HasTimePassed(5, Nodes[j].LastUsedTime))
                 {
-                    leastDistance = thisDistance;
-                    leastDistantNode = node;
+                    Nodes[j].LastUsedTime = Engine.TotalSeconds;
+                    return Nodes[j];
                 }
+                j++;
+                j %= Nodes.Count;
             }
-            return leastDistantNode;
+
+            return Nodes[j];
         }
 
         public static OpponentPathNode GetClosestNode(Vector3 currentPosition)
@@ -57,10 +82,11 @@ namespace Carmageddon
 
             foreach (OpponentPathNode node in Nodes)
             {
-                float thisDistance = Vector3.Distance(currentPosition, node.Position);
-                if (thisDistance < leastDistance)
+                float distance;
+                Vector3.Distance(ref currentPosition, ref node.Position, out distance);
+                if (distance < leastDistance)
                 {
-                    leastDistance = thisDistance;
+                    leastDistance = distance;
                     leastDistantNode = node;
                 }
             }
@@ -81,12 +107,6 @@ namespace Carmageddon
         public static OpponentPath GetNextPath(OpponentPathNode currentNode)
         {
             if (currentNode.Paths.Count == 0) return null;
-
-            foreach (OpponentPath path in currentNode.Paths)
-            {
-                if (path.Type == PathType.Cheat)
-                    return path;
-            }
 
             int choosenPath = Engine.Random.Next(currentNode.Paths.Count);
             if (currentNode.Paths[choosenPath].Type == PathType.Race)

@@ -98,11 +98,6 @@ namespace Carmageddon.Physics
 
                 ShouldPlaySkidSound = IsSkiddingLat | IsSkiddingLng && materialIndex == 0;
                 SmokeEmitter.Update(wcd.ContactPoint);
-
-                if (IsSkiddingLat | IsSkiddingLng)
-                {
-                    _chassis.Vehicle.SkidMarkBuffer.AddSkid(this, wcd.ContactPoint);
-                }
             }
         }
 

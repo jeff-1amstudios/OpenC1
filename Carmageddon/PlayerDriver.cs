@@ -14,6 +14,7 @@ namespace Carmageddon
         List<Matrix> _recoverPositions = new List<Matrix>();
         public float _lastRecoverTime = 0;
         public Vehicle Vehicle {get; set; }
+        
 
         IListener _audioListener;
 

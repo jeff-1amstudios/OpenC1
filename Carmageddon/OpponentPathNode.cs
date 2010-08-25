@@ -10,5 +10,6 @@ namespace Carmageddon
         public int Number;
         public Vector3 Position;
         public List<OpponentPath> Paths = new List<OpponentPath>();
+        public float LastUsedTime;
     }
 }

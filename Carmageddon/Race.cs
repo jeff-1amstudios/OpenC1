@@ -33,7 +33,7 @@ namespace Carmageddon
 
         public Race(string filename, string playerVehicleFile)
         {
-            
+
             ConfigFile = new RaceFile(filename);
 
             foreach (string matFileName in ConfigFile.MaterialFiles)
@@ -67,7 +67,7 @@ namespace Carmageddon
             {
                 f.Resolve();
             }
-            
+
             if (ConfigFile.SkyboxTexture != "none")
             {
                 PixFile horizonPix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\" + ConfigFile.SkyboxTexture);
@@ -76,16 +76,21 @@ namespace Carmageddon
             }
 
             Physics.TrackProcessor.GenerateTrackActor(ConfigFile, _actors);
-            _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);            
+            _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);
 
-            //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            ///Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("harry.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("harry.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+
+            foreach (CopStartPoint point in ConfigFile.CopStartPoints)
+            {
+                Opponents.Add(new Opponent(point.IsSpecialForces ? "bigapc.txt" : "apc.txt", point.Position, 0, new CopDriver()));
+            }
 
             foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
-                        
+
             OpponentController.Nodes = ConfigFile.OpponentPathNodes;
 
             PlayerVehicle = new Vehicle(GameVariables.BasePath + @"data\cars\" + playerVehicleFile, new PlayerDriver());
@@ -118,18 +123,18 @@ namespace Carmageddon
                     float height = 55 - (RaceTime.CountdownTime * 35f);
                     ((FixedChaseCamera)Engine.Camera).HeightOverride = Math.Max(0, height);
                 }
-
-                var node = OpponentController.GetClosestRaceNode(ConfigFile.GridPosition);
+                var closestPath = OpponentController.GetClosestPath(ConfigFile.GridPosition);
+                //var node = OpponentController.GetClosestRaceNode(ConfigFile.GridPosition);
                 foreach (IDriver driver in Drivers)
                     if (driver is CpuDriver)
                     {
-                        ((CpuDriver)driver).TargetNode(node);
+                        ((CpuDriver)driver).TargetNode(closestPath.End);
                     }
             }
 
             foreach (IDriver driver in Drivers)
                 driver.Update();
-            
+
             foreach (BaseGroove groove in ConfigFile.Grooves)
             {
                 groove.Update();
@@ -165,26 +170,27 @@ namespace Carmageddon
         {
             if (_skybox != null) _skybox.Draw();
 
-            Engine.DebugRenderer.AddAxis(Matrix.CreateTranslation(ConfigFile.GridPosition), 5);
+            //Engine.DebugRenderer.AddAxis(Matrix.CreateTranslation(ConfigFile.GridPosition), 5);
 
             BoundingFrustum frustum = new BoundingFrustum(Engine.Camera.View * Engine.Camera.Projection);
 
-             _actors.Render(Matrix.Identity, frustum);
+            _actors.Render(Matrix.Identity, frustum);
 
-             foreach (Opponent opponent in Opponents)
-             {
-                 if (frustum.Intersects(opponent.GetBoundingSphere()))
-                 {
-                     opponent.Driver.InPlayersView = true;
-                     opponent.Vehicle.Render();
-                 }
-                 else
-                 {
-                     opponent.Driver.InPlayersView = false;
-                 }
-                 opponent.Driver.DistanceFromPlayer = Vector3.Distance(PlayerVehicle.Position, opponent.Vehicle.Position);
-             }
-            
+            foreach (Opponent opponent in Opponents)
+            {
+                if (frustum.Intersects(opponent.GetBoundingSphere()))
+                {
+                    opponent.Driver.InPlayersView = true;
+                    opponent.Vehicle.Render();
+                }
+                else
+                {
+                    opponent.Vehicle.SkidMarkBuffer.Render();  //always render skids
+                    opponent.Driver.InPlayersView = false;
+                }
+                opponent.Driver.DistanceFromPlayer = Vector3.Distance(PlayerVehicle.Position, opponent.Vehicle.Position);
+            }
+
             RaceTime.Render();
             MessageRenderer.Instance.Render();
         }

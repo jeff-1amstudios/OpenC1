@@ -17,6 +17,12 @@ namespace Carmageddon.Parsers
         Dark,
         Fog
     }
+
+    class CopStartPoint
+    {
+        public Vector3 Position;
+        public bool IsSpecialForces;
+    }
     
     class RaceFile : BaseTextFile
     {
@@ -31,7 +37,7 @@ namespace Carmageddon.Parsers
         public Vector3 GridPosition;
         public float GridDirection;
         public List<NoncarFile> NonCars { get; set; }
-        public List<Vector3> CopStartPoints { get; set; }
+        public List<CopStartPoint> CopStartPoints { get; set; }
         public List<BaseGroove> Grooves;
         public List<BaseFunk> Funks;
         public List<MaterialModifier> MaterialModifiers;
@@ -273,11 +279,15 @@ namespace Carmageddon.Parsers
 
         private void ReadCopStartPointsSection()
         {
+            CopStartPoints = new List<CopStartPoint>();
             int nbrPoints = ReadLineAsInt();
             for (int i = 0; i < nbrPoints; i++)
             {
-                ReadLine();
-                //CopStartPoints.Add(ReadLineAsVector3());
+                string[] tokens = ReadLine().Split(',');
+                Vector3 pos = new Vector3(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2]));
+                pos *= GameVariables.Scale;
+                pos += new Vector3(0, 2, 0);
+                CopStartPoints.Add(new CopStartPoint { Position = pos, IsSpecialForces = tokens[3].Contains("9") });
             }
             Debug.Assert(ReadLine() == "END OF OPPONENT PATHS");
         }

@@ -12,14 +12,15 @@ namespace Carmageddon
     {
         Racing,
         Attacking,
-        ReturningToTrack
+        ReturningToTrack,
+        Sleeping
     }
 
     class CpuDriver : IDriver
     {
         const int GIVEUP_ATTACK_DISTANCE = 200;
-        const int MIN_CATCHUP_DISTANCE = 500;
-        const int MAX_CATCHUP_DISTANCE = 1000;
+        const int MIN_CATCHUP_DISTANCE = 450;
+        const int MAX_CATCHUP_DISTANCE = 750;
         const int GIVEUP_DISTANCE_FROM_TRACK = 50;
 
         public Vehicle Vehicle { get; set; }
@@ -28,7 +29,7 @@ namespace Carmageddon
         public bool IsDead;
         public float LastPlayerTouchTime;
 
-        CpuDriverState _state;
+        protected CpuDriverState _state;
         OpponentPathNode _targetNode;
         OpponentPath _currentPath, _nextPath;
         Vector3 _lastPosition;
@@ -41,9 +42,8 @@ namespace Carmageddon
         float _maxSpeedAtEndOfPath = 0;
         bool _isReversing;
         Vector3 _closestPointOnPath;
-        float _catchupDistance;
-        
-        bool _raceStarted = false;
+        protected float _catchupDistance;
+        protected bool _raceStarted = false;
 
         public CpuDriver()
         {
@@ -52,23 +52,22 @@ namespace Carmageddon
 
         public bool ModerateSteeringAtSpeed { get { return false; } }
 
-        public void OnRaceStart()
+        public virtual void OnRaceStart()
         {
             _lastStateChangeTime = Engine.TotalSeconds;
             Vehicle.Chassis.Motor.Gearbox.CurrentGear = 1;
             LogPosition(Vehicle.Position);
             _raceStarted = true;
             _catchupDistance = Engine.Random.Next(MIN_CATCHUP_DISTANCE, MAX_CATCHUP_DISTANCE);
-            //IsDead = true;
         }
 
-        public void Update()
+        public virtual void Update()
         {
             if (!_raceStarted) return;
             Vector3 pos = Vehicle.Position;
             bool isBraking = false;
 
-            if (IsDead)
+            if (IsDead || _state == CpuDriverState.Sleeping)
             {
                 Vehicle.Chassis.Brake(0);
                 Vehicle.Chassis.Steer(0);
@@ -146,7 +145,7 @@ namespace Carmageddon
                     _closestPointOnPath.Y = pos.Y; //ignore Y
                     if (Vector3.Distance(_closestPointOnPath, pos) > _currentPath.Width)
                     {
-                        _state = CpuDriverState.ReturningToTrack;
+                        SetState(CpuDriverState.ReturningToTrack);
                     }
                 }
 
@@ -168,7 +167,7 @@ namespace Carmageddon
                     if (_currentPath != null && _currentPath.Type == PathType.Cheat)
                     {
                         Teleport(_currentPath.End);
-                        _state = CpuDriverState.Racing;
+                        SetState(CpuDriverState.Racing);
                         return;
                     }
 
@@ -199,11 +198,17 @@ namespace Carmageddon
                 }
 
                 _closestPointOnPath.Y = pos.Y; //ignore Y
-                Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(_closestPointOnPath), Color.Blue);
-                if (Vector3.Distance(_closestPointOnPath, pos) < _currentPath.Width)
+                
+                float dist = Vector3.Distance(_closestPointOnPath, pos);
+                if (dist < _currentPath.Width)
                 {
                     _state = CpuDriverState.Racing;
                 }
+                else if (dist < _currentPath.Width * 1.5f)
+                {
+                    _closestPointOnPath = Vector3.Lerp(_currentPath.End.Position, _closestPointOnPath, dist / (_currentPath.Width * 1.5f));
+                }
+                Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(_closestPointOnPath), Color.Blue);
             }
             else if (_state == CpuDriverState.Attacking)
             {
@@ -249,6 +254,8 @@ namespace Carmageddon
                         GameConsole.WriteLine("rtt", angle);
                         GameConsole.WriteLine("rttspeed", speed);
                     }
+                    else
+                        Vehicle.Chassis.Accelerate(0.5f);
                 }
                 else
                 {
@@ -273,7 +280,6 @@ namespace Carmageddon
         public void SetState(CpuDriverState state)
         {
             _state = state;
-            //GameConsole.WriteEvent(state.ToString());
             _lastStateChangeTime = Engine.TotalSeconds;
         }
 
@@ -302,7 +308,7 @@ namespace Carmageddon
         public void TargetNode(OpponentPathNode node)
         {
             _targetNode = node;
-            _state = CpuDriverState.Racing;
+            SetState(CpuDriverState.Racing);
             _lastTargetChangeTime = Engine.TotalSeconds;
             GetNextPath();
         }
@@ -310,7 +316,7 @@ namespace Carmageddon
         private void Escape()
         {
             _isReversing = !_isReversing;
-            _nextDirectionChangeTime = Engine.TotalSeconds + Engine.Random.Next(1.5f, 3f);
+            _nextDirectionChangeTime = Engine.TotalSeconds + Engine.Random.Next(1.5f, 5f);
             _reverseTurning = Engine.Random.Next(-1f, 1f);
         }
 
@@ -323,11 +329,15 @@ namespace Carmageddon
         {
             TargetNode(node);
             Vehicle.Teleport(_targetNode.Position);
+            Vehicle.Chassis.Reset();
+
             if (_nextPath != null)
             {
-                Vehicle.Chassis.Actor.GlobalOrientation *= Helpers.GetSignedAngleBetweenVectors(Vehicle.Chassis.Actor.GlobalOrientation.Forward, _nextPath.End.Position - _nextPath.Start.Position, true);
-            }
-            Vehicle.Chassis.Reset();
+                Matrix m = Vehicle.Chassis.Actor.GlobalOrientation;
+                m.Forward = _nextPath.End.Position - _nextPath.Start.Position;
+                m.Forward = Vector3.Normalize(m.Forward);
+                Vehicle.Chassis.Actor.GlobalOrientation *= Matrix.CreateRotationY(Helpers.GetSignedAngleBetweenVectors(Vehicle.Chassis.Actor.GlobalOrientation.Forward, _nextPath.End.Position - _nextPath.Start.Position, true));
+            }            
         }
 
         private void GetNextPath()

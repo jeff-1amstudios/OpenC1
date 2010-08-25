@@ -51,7 +51,6 @@ namespace Carmageddon
             PhysX.Instance.Fetch();
 
             _race.Update();
-                       
 
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
                 system.Update();

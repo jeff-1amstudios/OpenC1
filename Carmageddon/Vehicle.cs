@@ -28,7 +28,7 @@ namespace Carmageddon
 
         public CarFile Config;
         public VehicleChassis Chassis { get; set; }
-        public SkidMarkBuffer SkidMarkBuffer = new SkidMarkBuffer(150);
+        public SkidMarkBuffer SkidMarkBuffer;
         public Stack<SpecialVolume> CurrentSpecialVolume = new Stack<SpecialVolume>();
         public IDriver Driver { get; private set; }
         public VehicleAudio Audio;
@@ -50,13 +50,15 @@ namespace Carmageddon
 
             CMaterial crashMat = ResourceCache.GetMaterial(Config.CrashMaterialFiles[0]);
             _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMat), 3, Vector3.Zero);
+            _vehicleBitsEmitter.DumpsPerSecond = 0.7f;
 
             Audio.Play();
 
             DamageSmokeEmitter = new ParticleEmitter(new DamageSmokeParticleSystem(Color.Gray), 5, Vector3.Zero);
             DamageSmokeEmitter.Enabled = false;
 
-            _flames = new PixmapBillboard(new Vector2(0.7f, 0.25f), GameVariables.BasePath + "data\\pixelmap\\flames.pix");            
+            _flames = new PixmapBillboard(new Vector2(0.7f, 0.25f), GameVariables.BasePath + "data\\pixelmap\\flames.pix");
+            SkidMarkBuffer = new SkidMarkBuffer(this, 150);
         }
 
         private void LoadModel(string filename)
@@ -136,8 +138,6 @@ namespace Carmageddon
         {
             Matrix pose = GridPlacer.GetGridPosition(position, direction);
             Chassis.Actor.GlobalPose = pose;
-
-
         }
 
         public void OnCollision(float force, Vector3 position, Vector3 normal, ContactPairFlag events)
@@ -223,10 +223,8 @@ namespace Carmageddon
 
         public void Render()
         {
-            Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 5);
             ModelShadow.Render(Config.BoundingBox, Chassis);
             SkidMarkBuffer.Render();
-
             
             Vector3 pos2 = Vector3.Transform(new Vector3(0, Chassis._heightOffset, 0), Chassis.Actor.GlobalOrientation);
             Matrix pose = Matrix.CreateFromQuaternion(Chassis.Actor.GlobalOrientationQuat) * Matrix.CreateTranslation(Chassis.Actor.GlobalPosition) * Matrix.CreateTranslation(pos2);

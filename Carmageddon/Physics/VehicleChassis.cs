@@ -430,7 +430,7 @@ namespace Carmageddon.Physics
             m.Up = Vector3.Up;
             //m.Right *= new Vector3(1, 0, 1);
             _physXActor.GlobalOrientation = m;
-            _physXActor.GlobalPosition += new Vector3(0.0f, 2.0f, 0.0f);
+            _physXActor.GlobalPosition += new Vector3(0.0f, 1.5f, 0.0f);
             _physXActor.LinearMomentum = _physXActor.LinearVelocity = Vector3.Zero;
             _physXActor.AngularMomentum = _physXActor.AngularVelocity = Vector3.Zero;
         }

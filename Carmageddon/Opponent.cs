@@ -15,11 +15,24 @@ namespace Carmageddon
         public bool IsDead { get { return Driver.IsDead; } }
 
         public Opponent(string carFile, Vector3 position, float direction)
+            : this(carFile, position, direction, null)
         {
-            Driver = new CpuDriver();
-            Vehicle = new Vehicle(GameVariables.BasePath + @"data\cars\" + carFile, Driver);
-            Vehicle.PlaceOnGrid(position, direction);
+        }
 
+        public Opponent(string carFile, Vector3 position, float direction, CpuDriver driver)
+        {
+            if (driver == null) driver = new CpuDriver();
+            Driver = driver;
+            Vehicle = new Vehicle(GameVariables.BasePath + @"data\cars\" + carFile, Driver);
+            if (driver is CopDriver)
+            {
+                Vehicle.Chassis.Actor.GlobalPosition = position;
+                Vehicle.Chassis.Actor.GlobalOrientation *= Matrix.CreateRotationY(MathHelper.ToRadians(90));
+            }
+            else
+            {
+                Vehicle.PlaceOnGrid(position, direction);
+            }
             SetupVehicle();
         }
 
@@ -44,14 +57,15 @@ namespace Carmageddon
 
             Vector3 massPos = Vehicle.Chassis.Actor.CenterOfMassLocalPosition;
             massPos.Y -= 0.3f;
-            Vehicle.Chassis.Actor.SetCenterOfMassOffsetLocalPosition(massPos);
+            //Vehicle.Chassis.Actor.SetCenterOfMassOffsetLocalPosition(massPos);
         }
 
         public BoundingSphere GetBoundingSphere()
         {
-            if (_boundingSphere == null)
+            if (_boundingSphere.Radius == 0)
             {
-                _boundingSphere = new BoundingSphere(Vector3.Zero, Vehicle.Config.BoundingBox.GetSize().Length() * 1.5f);
+                Bounds3 bounds = Vehicle.Chassis.Actor.Shapes[0].WorldSpaceBounds;
+                _boundingSphere = new BoundingSphere(Vector3.Zero, bounds.Size.Length());
             }
             _boundingSphere.Center = Vehicle.Position;
             return _boundingSphere;

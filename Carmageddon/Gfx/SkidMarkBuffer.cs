@@ -31,14 +31,14 @@ namespace Carmageddon.Gfx
         int _firstNewParticle;
         int _firstFreeParticle;
         Texture2D _texture, _defaultTexture;
+        Vehicle _vehicle;
 
         private List<CurrentSkid> _currentSkids = new List<CurrentSkid>();
 
-
-        public SkidMarkBuffer(int maxSkids)
+        public SkidMarkBuffer(Vehicle vehicle, int maxSkids)
         {
             _maxSkids = maxSkids;
-
+            _vehicle = vehicle;
             _particles = new VertexPositionTexture[_maxSkids * 6];
 
             _vertexDeclaration = new VertexDeclaration(Engine.Device, VertexPositionTexture.VertexElements);
@@ -64,6 +64,15 @@ namespace Carmageddon.Gfx
 
         private void Update()
         {
+            foreach (var wheel in _vehicle.Chassis.Wheels)
+            {
+                if (wheel.IsSkiddingLat || wheel.IsSkiddingLng)
+                {
+                    AddSkid(wheel, wheel.ContactPoint);
+                }
+            }
+        
+
             for (int i = 0; i < _currentSkids.Count; i++)
             {
                 CurrentSkid skid = _currentSkids[i];
@@ -93,11 +102,12 @@ namespace Carmageddon.Gfx
                 }
             }
 
+            AddNewParticlesToVertexBuffer();
+
             _firstFreeParticle -= 6 * nbrTempSkids;
             if (_firstFreeParticle < 0)
                 _firstFreeParticle = _particles.Length - (-_firstFreeParticle);
-
-            AddNewParticlesToVertexBuffer();
+            _firstNewParticle = _firstFreeParticle;
         }
 
 
@@ -208,7 +218,7 @@ namespace Carmageddon.Gfx
             _firstFreeParticle++;
             p1 = _firstFreeParticle;
             _particles[_firstFreeParticle].Position = skid.EndPosition - normal * thickness;
-            _particles[_firstFreeParticle].TextureCoordinate = Vector2.One;
+            _particles[_firstFreeParticle].TextureCoordinate = new Vector2(3, 1);
 
             _firstFreeParticle++;
             p2 = _firstFreeParticle;
@@ -222,7 +232,7 @@ namespace Carmageddon.Gfx
             _particles[_firstFreeParticle] = _particles[p1];
             _firstFreeParticle++;
             _particles[_firstFreeParticle].Position = skid.EndPosition + normal * thickness;
-            _particles[_firstFreeParticle].TextureCoordinate = new Vector2(1, 0);
+            _particles[_firstFreeParticle].TextureCoordinate = new Vector2(3, 0);
 
             _firstFreeParticle = (_firstFreeParticle + 1) % _particles.Length;
         }
@@ -233,7 +243,6 @@ namespace Carmageddon.Gfx
         internal void Reset()
         {
             _currentSkids.Clear();
-            _firstFreeParticle = _firstNewParticle = 0;
         }
     }
 }
