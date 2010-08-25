@@ -17,6 +17,11 @@ namespace Carmageddon
 
     class CpuDriver : IDriver
     {
+        const int GIVEUP_ATTACK_DISTANCE = 200;
+        const int MIN_CATCHUP_DISTANCE = 500;
+        const int MAX_CATCHUP_DISTANCE = 1000;
+        const int GIVEUP_DISTANCE_FROM_TRACK = 50;
+
         public Vehicle Vehicle { get; set; }
         public bool InPlayersView;
         public float DistanceFromPlayer;
@@ -36,6 +41,7 @@ namespace Carmageddon
         float _maxSpeedAtEndOfPath = 0;
         bool _isReversing;
         Vector3 _closestPointOnPath;
+        float _catchupDistance;
         
         bool _raceStarted = false;
 
@@ -51,12 +57,17 @@ namespace Carmageddon
             _lastStateChangeTime = Engine.TotalSeconds;
             Vehicle.Chassis.Motor.Gearbox.CurrentGear = 1;
             LogPosition(Vehicle.Position);
-            //SetTarget(OpponentController.GetClosestRaceNode(_lastPosition));
             _raceStarted = true;
+            _catchupDistance = Engine.Random.Next(MIN_CATCHUP_DISTANCE, MAX_CATCHUP_DISTANCE);
+            //IsDead = true;
         }
 
         public void Update()
         {
+            if (!_raceStarted) return;
+            Vector3 pos = Vehicle.Position;
+            bool isBraking = false;
+
             if (IsDead)
             {
                 Vehicle.Chassis.Brake(0);
@@ -64,16 +75,17 @@ namespace Carmageddon
                 return;
             }
 
-            if (!_raceStarted) return;
-
-            Vector3 pos = Vehicle.Position;
-            bool isBraking = false;
+            if (DistanceFromPlayer > _catchupDistance)
+            {
+                _catchupDistance = Engine.Random.Next(MIN_CATCHUP_DISTANCE, MAX_CATCHUP_DISTANCE);
+                Teleport(OpponentController.GetNodeCloseToPlayer());
+            }
 
             // check position
-            if (_lastPositionTime + 1.5f < Engine.TotalSeconds)
+            if (Helpers.HasTimePassed(1.5f, _lastPositionTime))
             {
                 float distFromLastPosition = Vector3.Distance(_lastPosition, pos);
-                if (distFromLastPosition < 2 && Vehicle.Chassis.Speed < 4)
+                if (distFromLastPosition < 2 && Vehicle.Chassis.Speed < 3)
                 {
                     Escape(); //were stuck, try and escape
                 }
@@ -95,31 +107,26 @@ namespace Carmageddon
                 }
             }
 
-            if (_lastStateChangeTime + 30 < Engine.TotalSeconds)
-            {
-                //SetState(Engine.Random.Next() % 3 == 0 ? CpuDriverState.Attacking : CpuDriverState.Racing);
-            }
-
             float distanceFromNode=0;
             if (_state == CpuDriverState.Racing) distanceFromNode = Vector3.Distance(pos, _targetNode.Position);
             else if (_state == CpuDriverState.ReturningToTrack) distanceFromNode = Vector3.Distance(pos, _closestPointOnPath);
 
             // if we've been trying to get to the same target for 20 seconds, get a new one
-            if (_lastTargetChangeTime + 20 < Engine.TotalSeconds)
+            if (_state != CpuDriverState.Attacking && Helpers.HasTimePassed(20, _lastTargetChangeTime))
             {
-                if (_lastDistance < distanceFromNode) //only get another node if were not getting closer
+                if (_lastDistance <= distanceFromNode) //only get another node if were not getting closer
                 {
-                    GotoClosestNode(pos);
+                    TargetClosestNode(pos);
                     return;
                 }
             }
 
             if (_state == CpuDriverState.Racing)
             {
-                if (_currentPath != null)
-                {
-                    GameConsole.WriteLine("Limits " + _currentPath.Number + ", " + _currentPath.MinSpeedAtEnd + ", " + _maxSpeedAtEndOfPath);
-                }
+                //if (_currentPath != null)
+                //{
+                //    GameConsole.WriteLine("Limits " + _currentPath.Number + ", " + _currentPath.MinSpeedAtEnd + ", " + _maxSpeedAtEndOfPath);
+                //}
 
                 if (_currentPath != null && Vehicle.Chassis.Speed > _maxSpeedAtEndOfPath)
                 {
@@ -145,7 +152,7 @@ namespace Carmageddon
 
                 // now see if we're at the target ignoring height (if we jump over it for example)
                 distanceFromNode = Vector2.Distance(new Vector2(pos.X, pos.Z), new Vector2(_targetNode.Position.X, _targetNode.Position.Z));
-                if (distanceFromNode < 10 && pos.Y >= _targetNode.Position.Y)
+                if (distanceFromNode < 14 && pos.Y >= _targetNode.Position.Y)
                 {
                     _nbrFails = 0; //reset fail counter
 
@@ -160,19 +167,18 @@ namespace Carmageddon
 
                     if (_currentPath != null && _currentPath.Type == PathType.Cheat)
                     {
-                        Vehicle.Chassis.Actor.GlobalPosition = _currentPath.End.Position;
-                        Vehicle.Chassis.Reset();
+                        Teleport(_currentPath.End);
                         _state = CpuDriverState.Racing;
                         return;
                     }
 
                     if (_nextPath == null)  // the node didnt have any start paths
                     {
-                        GotoClosestNode(pos);
+                        TargetClosestNode(pos);
                     }
                     else
                     {
-                        SetTarget(_currentPath.End);
+                        TargetNode(_currentPath.End);
                     }
 
                     if (_currentPath == null && _nextPath == null)
@@ -184,6 +190,14 @@ namespace Carmageddon
             else if (_state == CpuDriverState.ReturningToTrack)
             {
                 _closestPointOnPath = Helpers.GetClosestPointOnLine(_currentPath.Start.Position, _currentPath.End.Position, pos);
+
+                GameConsole.WriteLine("dist from track", Vector3.Distance(_closestPointOnPath, pos));
+                if (Vector3.Distance(_closestPointOnPath, pos) > GIVEUP_DISTANCE_FROM_TRACK)
+                {
+                    TargetClosestNode(pos);
+                    return;
+                }
+
                 _closestPointOnPath.Y = pos.Y; //ignore Y
                 Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(_closestPointOnPath), Color.Blue);
                 if (Vector3.Distance(_closestPointOnPath, pos) < _currentPath.Width)
@@ -191,8 +205,11 @@ namespace Carmageddon
                     _state = CpuDriverState.Racing;
                 }
             }
-
-            GameConsole.WriteLine("Dist", Vector3.Distance(_closestPointOnPath, pos));
+            else if (_state == CpuDriverState.Attacking)
+            {
+                if (DistanceFromPlayer > GIVEUP_ATTACK_DISTANCE)
+                    TargetClosestNode(pos);
+            }
 
             Vector3 towardsNode = Vector3.Zero;
             if (_state == CpuDriverState.Racing)
@@ -210,7 +227,7 @@ namespace Carmageddon
 
             GameConsole.WriteLine("state: " + _state);
 
-            float angle = GetSignedAngleBetweenVectors(Vehicle.Chassis.Actor.GlobalOrientation.Forward, towardsNode);
+            float angle = Helpers.GetSignedAngleBetweenVectors(Vehicle.Chassis.Actor.GlobalOrientation.Forward, towardsNode, true);
             angle *= 1.5f;
             if (angle > 1) angle = 1;
             else if (angle < -1) angle = -1;
@@ -221,10 +238,17 @@ namespace Carmageddon
             {
                 if (_state == CpuDriverState.ReturningToTrack)
                 {
-                    if (Vehicle.Chassis.Speed < 20)
-                        Vehicle.Chassis.Accelerate(0.2f);
-                    else
-                        if (Math.Abs(angle) > 0.5f) Vehicle.Chassis.Brake(1);
+                    if (Math.Abs(angle) > 0.3f)
+                    {
+                        float speed = 20; // 20 + ((1 - Math.Abs(angle)) * 30);
+                        if (Vehicle.Chassis.Speed > speed)
+                            Vehicle.Chassis.Brake(1);
+                        else
+                            Vehicle.Chassis.Accelerate(0.4f);
+
+                        GameConsole.WriteLine("rtt", angle);
+                        GameConsole.WriteLine("rttspeed", speed);
+                    }
                 }
                 else
                 {
@@ -239,9 +263,9 @@ namespace Carmageddon
 
             if (_isReversing)
             {
-                Vehicle.Chassis.Brake(0.5f);
+                Vehicle.Chassis.Brake(0.3f);
                 Vehicle.Chassis.Steer(_reverseTurning);
-            }            
+            }
 
             Engine.DebugRenderer.AddWireframeCube(Matrix.CreateScale(2) * Matrix.CreateTranslation(_targetNode.Position), Color.Green);
         }
@@ -249,7 +273,7 @@ namespace Carmageddon
         public void SetState(CpuDriverState state)
         {
             _state = state;
-            GameConsole.WriteEvent(state.ToString());
+            //GameConsole.WriteEvent(state.ToString());
             _lastStateChangeTime = Engine.TotalSeconds;
         }
 
@@ -259,10 +283,10 @@ namespace Carmageddon
             _lastPositionTime = Engine.TotalSeconds;
         }
 
-        private void GotoClosestNode(Vector3 pos)
+        private void TargetClosestNode(Vector3 pos)
         {
             OpponentPathNode curNode = _targetNode;
-            SetTarget(OpponentController.GetClosestNode(pos));
+            TargetNode(OpponentController.GetClosestNode(pos));
             _currentPath = null;
 
             if (curNode == _targetNode) //if the closest node is the one we've failed to get to
@@ -273,10 +297,9 @@ namespace Carmageddon
             }
             GameConsole.WriteEvent("ClosestNode");
             _nbrFails++;
-            //_currentPath = _nextPath = null;
         }
 
-        public void SetTarget(OpponentPathNode node)
+        public void TargetNode(OpponentPathNode node)
         {
             _targetNode = node;
             _state = CpuDriverState.Racing;
@@ -288,17 +311,22 @@ namespace Carmageddon
         {
             _isReversing = !_isReversing;
             _nextDirectionChangeTime = Engine.TotalSeconds + Engine.Random.Next(1.5f, 3f);
-            _reverseTurning = Engine.Random.Next(-1f, 0f);
+            _reverseTurning = Engine.Random.Next(-1f, 1f);
         }
 
         private void Teleport()
         {
             Teleport(OpponentController.GetRandomNode());
         }
+
         private void Teleport(OpponentPathNode node)
         {
-            SetTarget(node);
-            Vehicle.Chassis.Actor.GlobalPosition = _targetNode.Position;
+            TargetNode(node);
+            Vehicle.Teleport(_targetNode.Position);
+            if (_nextPath != null)
+            {
+                Vehicle.Chassis.Actor.GlobalOrientation *= Helpers.GetSignedAngleBetweenVectors(Vehicle.Chassis.Actor.GlobalOrientation.Forward, _nextPath.End.Position - _nextPath.Start.Position, true);
+            }
             Vehicle.Chassis.Reset();
         }
 
@@ -307,14 +335,13 @@ namespace Carmageddon
             // for the next node, look at direction we will be turning and decide if we will need to slow down before we get there
             _nextPath = OpponentController.GetNextPath(_targetNode);
             
-
             if (_nextPath != null && _currentPath != null)
             {
-                float nextPathAngle = MathHelper.ToDegrees(GetUnsignedAngleBetweenVectors(_currentPath.End.Position - _currentPath.Start.Position, _nextPath.End.Position - _nextPath.Start.Position));
+                float nextPathAngle = MathHelper.ToDegrees(Helpers.GetUnsignedAngleBetweenVectors(_currentPath.End.Position - _currentPath.Start.Position, _nextPath.End.Position - _nextPath.Start.Position, false));
 
                 if (nextPathAngle > 5)
                 {
-                    float newspeed = (180 - nextPathAngle) * 0.55f;
+                    float newspeed = (180 - nextPathAngle) * 0.50f;
                     _maxSpeedAtEndOfPath = newspeed;
                 }
                 else
@@ -322,44 +349,6 @@ namespace Carmageddon
                     _maxSpeedAtEndOfPath = 255;
                 }
             }
-        }
-
-
-        public static float GetSignedAngleBetweenVectors(Vector3 from, Vector3 to)
-        {
-
-            from.Y = to.Y = 0;
-            from.Normalize();
-            to.Normalize();
-            Vector3 toRight = Vector3.Cross(to, Vector3.Up);
-            toRight.Normalize();
-
-            float forwardDot = Vector3.Dot(from, to);
-            float rightDot = Vector3.Dot(from, toRight);
-
-            // Keep dot in range to prevent rounding errors
-            forwardDot = MathHelper.Clamp(forwardDot, -1.0f, 1.0f);
-
-            double angleBetween = Math.Acos(forwardDot);
-
-            if (rightDot < 0.0f)
-                angleBetween *= -1.0f;
-
-            return (float)angleBetween;
-        }
-
-        public float GetUnsignedAngleBetweenVectors(Vector3 from, Vector3 to)
-        {
-            //from.Y = to.Y = 0;
-            from.Normalize();
-            to.Normalize();
-
-            Vector2 a = new Vector2(from.X, from.Z);
-            a.Normalize();
-            Vector2 b = new Vector2(to.X, to.Z);
-            b.Normalize();
-            //return (float)Math.Acos(Vector2.Dot(a, b));
-            return (float)Math.Acos(Vector3.Dot(from, to));
         }
     }
 }

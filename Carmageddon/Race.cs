@@ -80,7 +80,7 @@ namespace Carmageddon
 
             //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            ///Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("harry.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 
@@ -123,7 +123,7 @@ namespace Carmageddon
                 foreach (IDriver driver in Drivers)
                     if (driver is CpuDriver)
                     {
-                        ((CpuDriver)driver).SetTarget(node);
+                        ((CpuDriver)driver).TargetNode(node);
                     }
             }
 

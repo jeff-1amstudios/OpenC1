@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
+using PlatformEngine;
 
 namespace Carmageddon
 {
@@ -37,10 +38,9 @@ namespace Carmageddon
             return imgData;
         }
 
-        public static float GetSignedAngleBetweenVectors(Vector3 from, Vector3 to)
+        public static float GetSignedAngleBetweenVectors(Vector3 from, Vector3 to, bool ignoreY)
         {
-
-            from.Y = to.Y = 0;
+            if (ignoreY) from.Y = to.Y = 0;
             from.Normalize();
             to.Normalize();
             Vector3 toRight = Vector3.Cross(to, Vector3.Up);
@@ -60,17 +60,12 @@ namespace Carmageddon
             return (float)angleBetween;
         }
 
-        public static float GetUnsignedAngleBetweenVectors(Vector3 from, Vector3 to)
+        public static float GetUnsignedAngleBetweenVectors(Vector3 from, Vector3 to, bool ignoreY)
         {
-            from.Y = to.Y = 0;
+            if (ignoreY) from.Y = to.Y = 0;
             from.Normalize();
             to.Normalize();
-
-            Vector2 a = new Vector2(from.X, from.Z);
-            a.Normalize();
-            Vector2 b = new Vector2(to.X, to.Z);
-            b.Normalize();
-            return (float)Math.Acos(Vector2.Dot(a, b));
+            return (float)Math.Acos(Vector3.Dot(from, to));
         }
 
         public static float UnsignedAngleBetweenTwoV3(Vector3 v1, Vector3 v2)
@@ -79,17 +74,6 @@ namespace Carmageddon
             //v2.Normalize();
             double Angle = (float)Math.Acos(Vector3.Dot(v1, v2));
             return (float)Angle;
-        }
-
-        public static Vector3 RotateAroundPoint(Vector3 point, Vector3 originPoint, Vector3 rotationAxis, float radiansToRotate)
-        {
-            Vector3 diffVect = point - originPoint;
-
-            Vector3 rotatedVect = Vector3.Transform(diffVect, Matrix.CreateFromAxisAngle(rotationAxis, radiansToRotate));
-
-            rotatedVect += originPoint;
-
-            return rotatedVect;
         }
 
         /// <summary>
@@ -101,25 +85,48 @@ namespace Carmageddon
         /// <returns></returns>
         public static Vector3 GetClosestPointOnLine(Vector3 line1, Vector3 line2, Vector3 pos)
         {
-            float xDelta = line2.X - line1.X;
-            float yDelta = line2.Z - line1.Z;
+            Vector3 lineDir = line2 - line1;
+            lineDir.Normalize();
 
-            float u = ((pos.X - line1.X) * xDelta + (pos.Z - line1.Z) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
+            float d = Vector3.Distance(line1, line2);
 
-            Vector3 closestPoint;
-            if (u < 0)
-            {
-                closestPoint = line1;
-            }
-            else if (u > 1)
-            {
-                closestPoint = line2;
-            }
-            else
-            {
-                closestPoint = new Vector3(line1.X + u * xDelta, 0, line1.Z + u * yDelta);
-            }
+            Vector3 v1 = pos - line1;
+            float t = Vector3.Dot(lineDir, v1);
+
+            if (t <= 0)
+                return line1;
+            if (t >= d)
+                return line2;
+
+            Vector3 v3 = lineDir * t;
+
+            Vector3 closestPoint = line1 + v3;
+
+
+            //float xDelta = line2.X - line1.X;
+            //float yDelta = line2.Z - line1.Z;
+
+            //float u = ((pos.X - line1.X) * xDelta + (pos.Z - line1.Z) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
+
+            //Vector3 closestPoint;
+            //if (u < 0)
+            //{
+            //    closestPoint = line1;
+            //}
+            //else if (u > 1)
+            //{
+            //    closestPoint = line2;
+            //}
+            //else
+            //{
+            //    closestPoint = new Vector3(line1.X + u * xDelta, 0, line1.Z + u * yDelta);
+            //}
             return closestPoint;
+        }
+
+        public static bool HasTimePassed(float seconds, float eventTime)
+        {
+            return eventTime + seconds < Engine.TotalSeconds;
         }
     }
 }

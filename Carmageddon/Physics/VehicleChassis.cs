@@ -25,16 +25,17 @@ namespace Carmageddon.Physics
         public float Speed { get; private set; }
         
         public CircularList LastSpeeds = new CircularList(5);
-        //public Vector3 LastLinearMomentum;
-
+        
         private Actor _physXActor;
         float _currentTorque;
         float _desiredSteerAngle = 0f; // Desired 
         float _handbrake;
-        float _steerAngle = 0.0f;
+        public float _steerAngle = 0.0f;
         float _motorTorque = 0.0f;
         float _brakeTorque = 0.0f;
         TireFunctionDescription _frontLateralTireFn, _rearLateralTireFn;
+        public float _heightOffset;
+        private Vector3 _massPos;
                 
         
         public VehicleChassis(Vehicle vehicle, CActor bodycactor)
@@ -47,20 +48,19 @@ namespace Carmageddon.Physics
             
             ActorDescription actorDesc = new ActorDescription();
 
-            Vector3 offset = new Vector3(0, 1f, 0);
-            
             actorDesc.BodyDescription = new BodyDescription();
             actorDesc.BodyDescription.Mass = carFile.Mass;
             var boxDesc = new BoxShapeDescription();
             boxDesc.Size = carFile.BoundingBox.GetSize();
-            boxDesc.LocalPosition = carFile.BoundingBox.GetCenter() +offset;
+            boxDesc.LocalPosition = carFile.BoundingBox.GetCenter();
             boxDesc.Name = PhysXConsts.VehicleBody;
+            boxDesc.Flags |= ShapeFlag.PointContactForce;
             actorDesc.Shapes.Add(boxDesc);
 
             foreach (Vector3 extraPoint in carFile.ExtraBoundingBoxPoints)
             {
                 var extraDesc = new SphereShapeDescription(0.2f);
-                extraDesc.LocalPosition = extraPoint +offset;
+                extraDesc.LocalPosition = extraPoint;
                 extraDesc.Mass = 0;
                 actorDesc.Shapes.Add(extraDesc);
             }
@@ -69,15 +69,15 @@ namespace Carmageddon.Physics
             {
                 Vector3 size = carFile.Size;
                 Vector3 inertiaTensor = lib.ComputeBoxInteriaTensor(Vector3.Zero, carFile.Mass, size);
-                actorDesc.BodyDescription.MassSpaceInertia = inertiaTensor;
+                //actorDesc.BodyDescription.MassSpaceInertia = inertiaTensor;
             }
 
                         
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 0.1f;
-            lngTFD.ExtremumValue = 5f;
+            lngTFD.ExtremumValue = 7f;
             lngTFD.AsymptoteSlip = 2.0f;
-            lngTFD.AsymptoteValue = 2.9f;
+            lngTFD.AsymptoteValue = 5.9f;
             
             _rearLateralTireFn = new TireFunctionDescription();            
             
@@ -109,11 +109,11 @@ namespace Carmageddon.Physics
                 float heightModifier = (wheelDesc.SuspensionTravel + wheelDesc.Radius) / wheelDesc.SuspensionTravel;
 
                 SpringDescription spring = new SpringDescription();
-                spring.SpringCoefficient = 4.5f * heightModifier * Math.Min(1000, carFile.Mass);
-                spring.DamperCoefficient = carFile.SuspensionDamping * 4.5f;
+                spring.SpringCoefficient = 5.5f * heightModifier * Math.Min(1000, carFile.Mass);
+                spring.DamperCoefficient = carFile.SuspensionDamping * 5.5f;
                 
                 wheelDesc.Suspension = spring;
-                wheelDesc.LocalPosition = wheel.Position +offset;
+                wheelDesc.LocalPosition = wheel.Position;
                 wheelDesc.Name = (wheelIndex).ToString();
                 wheelIndex++;
 
@@ -122,9 +122,14 @@ namespace Carmageddon.Physics
             }
             
             _physXActor = PhysX.Instance.Scene.CreateActor(actorDesc);
+
+            
+            _heightOffset = _physXActor.Shapes[0].LocalPosition.Y * -2;
+            if (_heightOffset < 0) _heightOffset = 0;
                                     
             foreach (Shape shape in _physXActor.Shapes)
             {
+                shape.LocalPosition += new Vector3(0, _heightOffset, 0);
                 if (shape is WheelShape)
                 {
                     wheelIndex = int.Parse(shape.Name);
@@ -144,12 +149,10 @@ namespace Carmageddon.Physics
 
             //set center of mass
             Vector3 massPos = carFile.CenterOfMass;
-            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + 1.15f;
+            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + _heightOffset + 0.17f;
+            _massPos = massPos;
             _physXActor.SetCenterOfMassOffsetLocalPosition(massPos);
-            //_physXActor.UpdateMassFromShapes(0, carFile.Mass);
             
-            
-
             //a real power curve doesnt work too well in carmageddon :)
             List<float> power = new List<float>(new float[] { 0.5f, 0.5f, 0.5f, 1f, 1f, 1.0f, 1.0f, 0 });
             List<float> ratios = new List<float>(new float[] { 3.227f, 2.360f, 1.685f, 1.312f, 1.000f, 0.793f });
@@ -158,7 +161,6 @@ namespace Carmageddon.Physics
             Motor = new Motor(power, carFile.EnginePower, 6f, carFile.TopSpeed, gearbox);
             Motor.Gearbox.CurrentGear = 0;
 
-           
         }
 
         /// <summary>
@@ -167,12 +169,14 @@ namespace Carmageddon.Physics
         /// </summary>
         public void FixSuspension()
         {
-            
+            bool doneBumper = false;
+
             foreach (VehicleWheel wheel in this.Wheels)
             {
                 Vector3 localPos = wheel.Shape.LocalPosition;
                 localPos.Y += wheel.CurrentSuspensionTravel;
                 wheel.Shape.LocalPosition = localPos;
+               
             }
         }
 
@@ -205,14 +209,10 @@ namespace Carmageddon.Physics
             Vector3 vNormal = _physXActor.LinearVelocity * vDirection;
             Speed = vNormal.Length() * 2.9f;
 
-            float endLocal = _desiredSteerAngle; // / (1 + _speed * 0.02f);
-
-            //if (_handbrake > 0) endLocal *= 0.5f;
+            float endLocal = _desiredSteerAngle;
 
             float diff = Math.Abs(endLocal - _steerAngle);
             float max = 0.001f;
-            //if (_desiredSteerAngle == 0) max = 0.0045f;
-            //if (_desiredSteerAngle < -0.1f && _steerAngle > 0.1f || _desiredSteerAngle > 0.1f && _steerAngle < -0.1f) max = 0.002f;
             if (diff > 0.0025f) // Is the current steering angle ~= desired steering angle?
             { // If not, adjust carefully
 
@@ -232,7 +232,7 @@ namespace Carmageddon.Physics
                 }
 
 
-                float steerFactor = Vehicle.Driver.ModerateSteeringAtSpeed ? Math.Min(Math.Max(0.1f, (1 - Speed / 160)), 1) : 1;
+                float steerFactor = Vehicle.Driver.ModerateSteeringAtSpeed ? Math.Min(Math.Max(0.1f, (1 - Speed / 175)), 1) : 1;
                 
                 foreach (VehicleWheel wheel in Wheels)
                 {
@@ -274,22 +274,30 @@ namespace Carmageddon.Physics
             if (!InAir)
             {
                 _physXActor.MaximumAngularVelocity = 3.5f;
+
                 if (Speed < 10)
                 {
-                    _physXActor.LinearDamping = Speed > 10 ? 0 : 2f;
-                    _physXActor.AngularDamping = 0.01f;
+                    _physXActor.LinearDamping = Motor.IsAccelerating ? 1 : 4f;
+                    _physXActor.AngularDamping = 0.02f;
                     GameConsole.WriteLine("mode slow");
                 }
-                else if ((_steerAngle < -0.1f && Wheels[0].LatSlip > 0.4f) || (_steerAngle > 0.1f && Wheels[0].LatSlip < -0.4f))
+                else if ((_steerAngle < -0.1f && Wheels[0].LatSlip > 0.35f) || (_steerAngle > 0.1f && Wheels[0].LatSlip < -0.35f))
                 {
-                    _physXActor.AngularDamping = maxlat * 3f;
-                    _physXActor.LinearDamping = maxlat * 0.4f;  //stop insane sliding
+                    _physXActor.AngularDamping = maxlat * 3.6f;
+                    _physXActor.LinearDamping = maxlat * 0.5f;  //stop insane sliding
+                    Motor.WheelsSpinning = true;
                     GameConsole.WriteLine("mode alt steer");
+                }
+                else if ((_steerAngle <= 0f && Wheels[0].LatSlip > 0.4f) || (_steerAngle >= 0f && Wheels[0].LatSlip < -0.4f))
+                {
+                    _physXActor.AngularDamping = maxlat * 1.4f;
+                    _physXActor.LinearDamping = Speed > 20 ? maxlat * 0.5f : maxlat * 0.8f;  //stop insane sliding
+                    GameConsole.WriteLine("mode no steer");
                 }
                 else if (isSkiddingTooMuch)
                 {
-                    if (Speed < 80)
-                        _physXActor.LinearDamping = maxlat * 0.8f; 
+                    if (Speed < 40)
+                        _physXActor.LinearDamping = maxlat * 0.8f;
                     else
                         _physXActor.LinearDamping = maxlat * 0.4f;
                     _physXActor.AngularDamping = 0.01f;
@@ -312,6 +320,7 @@ namespace Carmageddon.Physics
             {
                 _physXActor.AngularDamping = 0.00f;
                 _physXActor.MaximumAngularVelocity = 10f;
+                _physXActor.LinearDamping = 0;
                 GameConsole.WriteLine("mode in air");
             }
         }
@@ -419,7 +428,7 @@ namespace Carmageddon.Physics
         {
             Matrix m = _physXActor.GlobalOrientation;
             m.Up = Vector3.Up;
-            m.Right = Vector3.Right;
+            //m.Right *= new Vector3(1, 0, 1);
             _physXActor.GlobalOrientation = m;
             _physXActor.GlobalPosition += new Vector3(0.0f, 2.0f, 0.0f);
             _physXActor.LinearMomentum = _physXActor.LinearVelocity = Vector3.Zero;
@@ -438,7 +447,7 @@ namespace Carmageddon.Physics
 
         internal void Boost()
         {
-            _physXActor.AddLocalForce(Vector3.Forward * 1000, ForceMode.Force);
+            _physXActor.AddForce(_physXActor.GlobalOrientation.Forward * 1000, ForceMode.Force);
         }
     }
 }

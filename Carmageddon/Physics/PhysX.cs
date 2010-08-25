@@ -28,7 +28,7 @@ namespace Carmageddon.Physics
 
         public float Gravity
         {
-            get { return -9.81f * 1.1f; }  //gravity + a bit extra
+            get { return -9.81f * 1.3f; }  //gravity + a bit extra
         }
 
         private PhysX()
@@ -47,7 +47,7 @@ namespace Carmageddon.Physics
             }
 
             //Core.SetParameter(PhysicsParameter.SkinWidth, (float)0.01f);
-            Core.SetParameter(PhysicsParameter.VisualizationScale, (float)1f);
+            Core.SetParameter(PhysicsParameter.VisualizationScale, (float)0f);
             Core.SetParameter(PhysicsParameter.ContinuousCollisionDetection, false);
             Core.SetParameter(PhysicsParameter.VisualizeCollisionShapes, true);
             Core.SetParameter(PhysicsParameter.VisualizeCollisionAxes, false);
@@ -56,13 +56,11 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.VisualizeContactForce, false);
             Core.SetParameter(PhysicsParameter.VisualizeActorAxes, true);
             
-            
             SceneDescription sceneDescription = new SceneDescription();
             sceneDescription.Gravity = new Vector3(0f, Gravity, 0f);
             sceneDescription.TimestepMethod = TimestepMethod.Fixed;
 
-            sceneDescription.Flags = SceneFlag.SimulateSeparateThread; // SceneFlag.SequentialPrimart;
-            //sceneDescription.InternalThreadCount = 1; // HexaChromeGame.ProcessorCount - 1;
+            sceneDescription.Flags = SceneFlag.SimulateSeparateThread;
             sceneDescription.ThreadMask = 0xfffffffe;
             Scene = Core.CreateScene(sceneDescription);
 

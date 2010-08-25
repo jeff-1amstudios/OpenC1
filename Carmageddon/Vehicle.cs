@@ -28,7 +28,7 @@ namespace Carmageddon
 
         public CarFile Config;
         public VehicleChassis Chassis { get; set; }
-        public SkidMarkBuffer SkidMarkBuffer = new SkidMarkBuffer(200);
+        public SkidMarkBuffer SkidMarkBuffer = new SkidMarkBuffer(150);
         public Stack<SpecialVolume> CurrentSpecialVolume = new Stack<SpecialVolume>();
         public IDriver Driver { get; private set; }
         public VehicleAudio Audio;
@@ -49,7 +49,7 @@ namespace Carmageddon
             _crushSection = Config.CrushSections[1];
 
             CMaterial crashMat = ResourceCache.GetMaterial(Config.CrashMaterialFiles[0]);
-            _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMat), 6, Vector3.Zero);
+            _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMat), 3, Vector3.Zero);
 
             Audio.Play();
 
@@ -146,10 +146,17 @@ namespace Carmageddon
 
             if (Chassis.LastSpeeds.GetMax() > 7)
             {
-                if (force > 1500)
+                int particles = Math.Max(6, (int)force / 150000);
+                
+                if (force > 50000)
                 {
-                    _vehicleBitsEmitter.DumpParticles(position);
+
+                    _vehicleBitsEmitter.DumpParticles(position, particles);
+                    GameConsole.WriteEvent("dump particles " + particles);
                 }
+                //else
+                //    _vehicleBitsEmitter.Update(position);
+
                 if (force > 400)
                 {
                     GameVariables.SparksEmitter.DumpParticles(position, 6);
@@ -216,18 +223,13 @@ namespace Carmageddon
 
         public void Render()
         {
-            //Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 1);
-            //return;
+            Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 5);
             ModelShadow.Render(Config.BoundingBox, Chassis);
             SkidMarkBuffer.Render();
 
-            //Vector3 pos2 = Chassis.Actor.GlobalPosition;
-            Vector3 pos2 = Vector3.Transform(new Vector3(0,1,0), Chassis.Actor.GlobalOrientation);
+            
+            Vector3 pos2 = Vector3.Transform(new Vector3(0, Chassis._heightOffset, 0), Chassis.Actor.GlobalOrientation);
             Matrix pose = Matrix.CreateFromQuaternion(Chassis.Actor.GlobalOrientationQuat) * Matrix.CreateTranslation(Chassis.Actor.GlobalPosition) * Matrix.CreateTranslation(pos2);
-            Engine.DebugRenderer.AddAxis(pose, 5);
-            //pos2 *= 4;
-            //pose = Matrix.CreateFromQuaternion(Chassis.Actor.GlobalOrientationQuat) * Matrix.CreateTranslation(Chassis.Actor.GlobalPosition) * Matrix.CreateTranslation(pos2);
-            //Engine.DebugRenderer.AddAxis(pose, 5);
             _actors.Render(pose, null);
 
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();            
@@ -319,6 +321,12 @@ namespace Carmageddon
                 _damage = Chassis.Motor.Damage = 0;
                 DamageSmokeEmitter.Enabled = false;
             }
+        }
+
+        public void Teleport(Vector3 position)
+        {
+            SkidMarkBuffer.Reset();
+            Chassis.Actor.GlobalPosition = position;
         }
     }
 }

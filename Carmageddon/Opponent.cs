@@ -42,9 +42,9 @@ namespace Carmageddon
                 wheel.Shape.LateralTireForceFunction = wheel.IsRear ? rearLateralTireFn : frontLateralTireFn;
             }
 
-            //Vector3 massPos = Vehicle.Config.CenterOfMass;
-            //massPos.Y = Vehicle.Config.WheelActors[0].Position.Y - Vehicle.Config.NonDrivenWheelRadius + 0.31f;
-            //Vehicle.Chassis.Actor.SetCenterOfMassOffsetLocalPosition(massPos);
+            Vector3 massPos = Vehicle.Chassis.Actor.CenterOfMassLocalPosition;
+            massPos.Y -= 0.3f;
+            Vehicle.Chassis.Actor.SetCenterOfMassOffsetLocalPosition(massPos);
         }
 
         public BoundingSphere GetBoundingSphere()

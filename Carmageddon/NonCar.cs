@@ -16,28 +16,37 @@ namespace Carmageddon
         public bool IsAttached;
         public float LastTouchTime;
         public bool Hit;
-        public Matrix NewOrientation;
         public Vector3 Rotation;
         private Matrix _origOrientation;
         bool _initialized;
 
         public void OnHit()
         {
-            if (!IsAttached) return;  //let physx handle it :)
+            if (!IsAttached) return;  //let physx handle it
 
+            Matrix orientation = Matrix.CreateRotationX(Rotation.Z) * Matrix.CreateRotationZ(Rotation.X);
+            float angle = MathHelper.ToDegrees(Helpers.UnsignedAngleBetweenTwoV3(Vector3.Up, orientation.Up));
             
-            CActor.PhysXActor.GlobalOrientation = _origOrientation * NewOrientation;            
-            float angle = MathHelper.ToDegrees(Helpers.UnsignedAngleBetweenTwoV3(Vector3.Up, NewOrientation.Up));
-            //GameConsole.WriteEvent("ang " + angle);
-
             if (angle >= Config.BendAngleBeforeSnapping)
             {
+                // reduce the impact until the object is within normal bounds, then make dynamic
+                while (true)
+                {
+                    Rotation *= 0.8f;
+                    orientation = Matrix.CreateRotationX(Rotation.Z) * Matrix.CreateRotationZ(Rotation.X);
+                    angle = MathHelper.ToDegrees(Helpers.UnsignedAngleBetweenTwoV3(Vector3.Up, orientation.Up));
+                    if (angle <= Config.BendAngleBeforeSnapping)
+                    {
+                        break;
+                    }
+                }
+                CActor.PhysXActor.GlobalOrientation = _origOrientation * orientation;
                 IsAttached = false;
                 CActor.PhysXActor.ClearBodyFlag(BodyFlag.Kinematic);
             }
             else
             {
-                AttachToGround();
+                CActor.PhysXActor.GlobalOrientation = _origOrientation * orientation;
             }
 
             Hit = false;
@@ -45,12 +54,6 @@ namespace Carmageddon
 
         public void AttachToGround()
         {
-            //FixedJointDescription jointDesc = new FixedJointDescription()
-            //{
-            //    Actor1 = CActor.PhysXActor,
-            //    Actor2 = null
-            //};
-
             // if this is the first time we weld to ground, initialize
             if (!_initialized)
             {
@@ -59,28 +62,7 @@ namespace Carmageddon
                 _initialized = true;
             }
             IsAttached = true;
-            //    Anchor = CActor.PhysXActor.Shapes[0].GlobalPosition;
-            //    Anchor.Y = CActor.PhysXActor.GlobalPosition.Y;
-            //    Position = CActor.PhysXActor.GlobalPosition;
-
-            //    // physx joints can be unstable with long thin objects like lamposts so we widen them out
-            //    using (UtilitiesLibrary lib = new UtilitiesLibrary())
-            //    {
-            //        Vector3 size = Config.BoundingBox.GetSize();
-            //        if (size.X < size.Y / 4) size.X = size.Y / 4;
-            //        if (size.Z < size.Y / 4) size.Z = size.Y / 4;
-            //        Vector3 inertiaTensor = lib.ComputeBoxInteriaTensor(Vector3.Zero, Config.Mass, size);
-            //        CActor.PhysXActor.MassSpaceInertiaTensor = inertiaTensor;
-            //    }
-            //    //CActor.PhysXActor.SolverIterationCount = 1;
-            //}
-
-            //CActor.PhysXActor.GlobalPosition = Position;
-            //jointDesc.SetGlobalAnchor(Anchor);
-            //jointDesc.SetGlobalAxis(new Vector3(0.0f, 1.0f, 0.0f));
-            //Joint = PhysX.Instance.Scene.CreateJoint(jointDesc);
-                        
-           
+            
         }
     }
 }

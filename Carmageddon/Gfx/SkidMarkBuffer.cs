@@ -21,7 +21,7 @@ namespace Carmageddon.Gfx
 
     class SkidMarkBuffer
     {
-
+        const float SKID_TIME = 0.2f;
         private int _maxSkids;
 
         VertexPositionTexture[] _particles;
@@ -62,16 +62,8 @@ namespace Carmageddon.Gfx
             }
         }
 
-        public void Render()
+        private void Update()
         {
-            GraphicsDevice device = Engine.Device;
-
-            // Restore the vertex buffer contents if the graphics device was lost.
-            if (_vertexBuffer.IsContentLost)
-            {
-                _vertexBuffer.SetData(_particles);
-            }
-
             for (int i = 0; i < _currentSkids.Count; i++)
             {
                 CurrentSkid skid = _currentSkids[i];
@@ -79,17 +71,40 @@ namespace Carmageddon.Gfx
                 {
                     _currentSkids.RemoveAt(i);
                     i--;
-                    AddCurrentSkid(skid);
+                    AddSkidToBuffer(skid);
                 }
-                else if (Engine.TotalSeconds - skid.StartTime > 0.03f)
+                else if (Helpers.HasTimePassed(SKID_TIME, _currentSkids[i].StartTime))
                 {
-                    AddCurrentSkid(skid);
+                    AddSkidToBuffer(skid);
                     skid.StartPosition = skid.EndPosition;
                     skid.StartTime = Engine.TotalSeconds;
                 }
             }
 
+            int nbrTempSkids = 0;
+            for (int i = 0; i < _currentSkids.Count; i++)
+            {
+                if (_currentSkids[i].IsActive && !Helpers.HasTimePassed(SKID_TIME, _currentSkids[i].StartTime))
+                {
+                    //temp
+                    _currentSkids[i].EndPosition = _currentSkids[i].Wheel.ContactPoint;
+                    AddSkidToBuffer(_currentSkids[i]);
+                    nbrTempSkids++;
+                }
+            }
+
+            _firstFreeParticle -= 6 * nbrTempSkids;
+            if (_firstFreeParticle < 0)
+                _firstFreeParticle = _particles.Length - (-_firstFreeParticle);
+
             AddNewParticlesToVertexBuffer();
+        }
+
+
+        public void Render()
+        {
+            Update();
+            GraphicsDevice device = Engine.Device;
 
             device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionTexture.SizeInBytes);
             device.VertexDeclaration = _vertexDeclaration;
@@ -97,10 +112,14 @@ namespace Carmageddon.Gfx
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
             device.Textures[0] = _texture ?? _defaultTexture;
-            device.RenderState.DepthBias = -0.00001f;
+            device.RenderState.DepthBias = -0.00002f;
+            CullMode oldCullMode = Engine.Device.RenderState.CullMode;
+            device.RenderState.CullMode = CullMode.None;
            
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, _maxSkids * 2);
             GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
+
+            device.RenderState.CullMode = oldCullMode;
 
             //de-activate all skids before next update
             foreach (CurrentSkid skid in _currentSkids)
@@ -170,7 +189,7 @@ namespace Carmageddon.Gfx
             }
         }
 
-        private void AddCurrentSkid(CurrentSkid skid)
+        private void AddSkidToBuffer(CurrentSkid skid)
         {
             int p1, p2;
             
@@ -210,5 +229,11 @@ namespace Carmageddon.Gfx
 
         
         #endregion
+
+        internal void Reset()
+        {
+            _currentSkids.Clear();
+            _firstFreeParticle = _firstNewParticle = 0;
+        }
     }
 }

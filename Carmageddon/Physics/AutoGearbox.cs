@@ -31,6 +31,10 @@ namespace Carmageddon.Physics
                 }
             }
 
+            if (_currentGear == GEAR_NEUTRAL)
+            {
+                GearUp();
+            }
 
             if (!_motor.WheelsSpinning)
             {
@@ -39,7 +43,7 @@ namespace Carmageddon.Physics
                 }
                 else if (_currentGear == GEAR_NEUTRAL)
                 {
-                    GearUp();
+                    
                 }
                 else
                 {

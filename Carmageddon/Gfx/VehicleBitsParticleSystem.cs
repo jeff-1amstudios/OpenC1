@@ -42,11 +42,11 @@ namespace Carmageddon.Gfx
 
             settings.EndVelocity = 1f;
 
-            settings.MinStartSize = 0.3f;
-            settings.MaxStartSize = 0.9f;
+            settings.MinStartSize = 0.2f;
+            settings.MaxStartSize = 0.6f;
 
-            settings.MinEndSize = 0.5f;
-            settings.MaxEndSize = 0.9f;
+            settings.MinEndSize = 0.3f;
+            settings.MaxEndSize = 0.6f;
 
             settings.MinRotateSpeed = 6f;
             settings.MaxRotateSpeed = 8f;

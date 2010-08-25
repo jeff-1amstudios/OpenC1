@@ -31,6 +31,25 @@ namespace Carmageddon
 
             return leastDistantNode;
         }
+
+        public static OpponentPathNode GetNodeCloseToPlayer()
+        {
+            float leastDistance = int.MaxValue;
+            OpponentPathNode leastDistantNode = null;
+            Vector3 playerPos = Race.Current.PlayerVehicle.Position;
+
+            foreach (OpponentPathNode node in Nodes)
+            {
+                float thisDistance = Vector3.Distance(playerPos, node.Position);
+                if (thisDistance < leastDistance)
+                {
+                    leastDistance = thisDistance;
+                    leastDistantNode = node;
+                }
+            }
+            return leastDistantNode;
+        }
+
         public static OpponentPathNode GetClosestNode(Vector3 currentPosition)
         {
             float leastDistance = int.MaxValue;
