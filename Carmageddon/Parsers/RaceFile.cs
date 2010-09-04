@@ -46,6 +46,8 @@ namespace Carmageddon.Parsers
         public int LapCount;
         public List<SpecialVolume> SpecialVolumes;
         public List<OpponentPathNode> OpponentPathNodes;
+        public string MapTexture;
+        public Matrix MapTranslation;
 
         int _fileVersion;
         
@@ -119,7 +121,9 @@ namespace Carmageddon.Parsers
             SkipLines(3);  //reflective windscreen stuff
             int nbrAlternativeReflections = ReadLineAsInt();
             SkipLines(nbrAlternativeReflections * 2);
-            SkipLines(5); // map name, map matrix
+
+            MapTexture = ReadLine();
+            MapTranslation = ReadMatrix();
 
             ReadFunkSection();
 

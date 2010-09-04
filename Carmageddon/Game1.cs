@@ -11,6 +11,7 @@
     using PlatformEngine;
     using NFSEngine;
 using NFSEngine.Audio;
+using Carmageddon.Screens;
 
     namespace Carmageddon
     {
@@ -31,8 +32,8 @@ using NFSEngine.Audio;
                 _graphics.PreferMultiSampling = true;
 
                 Engine.ScreenSize = new Vector2(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
-                
-                //_graphics.IsFullScreen = true;
+
+                _graphics.IsFullScreen = false;
                 //_graphics.SynchronizeWithVerticalRetrace = false;
 
                 _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;
@@ -61,8 +62,14 @@ using NFSEngine.Audio;
                 Engine.Device.RenderState.AlphaFunction = CompareFunction.Greater;
 
                 //IsFixedTimeStep = false;
-                
-                Engine.Screen = new PlayGameScreen();
+
+                if (!SoundCache.IsInitialized)
+                {
+                    Engine.Audio.SetDefaultVolume(-500);
+                    SoundCache.Initialize();
+                }
+
+                Engine.Screen = new MainMenuScreen(); // new PlayGameScreen();
             }
 
             /// <summary>

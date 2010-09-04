@@ -27,7 +27,7 @@ namespace Carmageddon.HUD
             _blueFont = Engine.ContentManager.Load<SpriteFont>("content/blue-font");
         }
 
-        protected static Rectangle ScaleRect(float x, float y, float width, float height)
+        public static Rectangle ScaleRect(float x, float y, float width, float height)
         {
             return new Rectangle((int)(x * _window.Width), (int)(y * _window.Height), (int)(width * _window.Width), (int)(height * _window.Height));
         }
@@ -39,7 +39,7 @@ namespace Carmageddon.HUD
             return rect;
         }
 
-        protected static Vector2 ScaleVec2(float x, float y)
+        public static Vector2 ScaleVec2(float x, float y)
         {
             return new Vector2(x * _window.Width, y * _window.Height);
         }

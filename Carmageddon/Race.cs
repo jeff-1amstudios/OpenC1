@@ -13,6 +13,8 @@ using Carmageddon.Parsers.Funks;
 using NFSEngine;
 using Carmageddon.Gfx;
 using Microsoft.Xna.Framework.Input;
+using Carmageddon.EditModes;
+using Carmageddon.GameModes;
 
 namespace Carmageddon
 {
@@ -26,6 +28,7 @@ namespace Carmageddon
         public Vehicle PlayerVehicle;
         public List<Opponent> Opponents = new List<Opponent>();
         public List<IDriver> Drivers = new List<IDriver>(); //opponent + player drivers
+        private RaceMap _map;
 
         public static Race Current;
 
@@ -49,7 +52,7 @@ namespace Carmageddon
             }
 
             ResourceCache.Add(new MatFile(GameVariables.BasePath + @"data\material\" + "drkcurb.mat"));
-
+                        
             ResourceCache.ResolveMaterials();
 
             DatFile modelFile = new DatFile(GameVariables.BasePath + @"data\models\" + ConfigFile.ModelFile);
@@ -86,7 +89,7 @@ namespace Carmageddon
 
             foreach (CopStartPoint point in ConfigFile.CopStartPoints)
             {
-                Opponents.Add(new Opponent(point.IsSpecialForces ? "bigapc.txt" : "apc.txt", point.Position, 0, new CopDriver()));
+              //  Opponents.Add(new Opponent(point.IsSpecialForces ? "bigapc.txt" : "apc.txt", point.Position, 0, new CopDriver()));
             }
 
             foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
@@ -98,6 +101,8 @@ namespace Carmageddon
             Drivers.Add(PlayerVehicle.Driver);
 
             Race.Current = this;
+
+            _map = new RaceMap(this);
 
             PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.TrackId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnStartTouch | ContactPairFlag.OnTouch);
             PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.VehicleId, PhysXConsts.NonCarId, ContactPairFlag.Forces | ContactPairFlag.OnStartTouch | ContactPairFlag.OnTouch);
@@ -124,7 +129,7 @@ namespace Carmageddon
                     ((FixedChaseCamera)Engine.Camera).HeightOverride = Math.Max(0, height);
                 }
                 var closestPath = OpponentController.GetClosestPath(ConfigFile.GridPosition);
-                //var node = OpponentController.GetClosestRaceNode(ConfigFile.GridPosition);
+                
                 foreach (IDriver driver in Drivers)
                     if (driver is CpuDriver)
                     {
@@ -164,13 +169,15 @@ namespace Carmageddon
             }
 
             MessageRenderer.Instance.Update();
+
+            if (Engine.Input.WasPressed(Keys.Tab))
+                _map.Show = !_map.Show;
         }
 
         public void Render()
         {
+           
             if (_skybox != null) _skybox.Draw();
-
-            //Engine.DebugRenderer.AddAxis(Matrix.CreateTranslation(ConfigFile.GridPosition), 5);
 
             BoundingFrustum frustum = new BoundingFrustum(Engine.Camera.View * Engine.Camera.Projection);
 
@@ -193,6 +200,12 @@ namespace Carmageddon
 
             RaceTime.Render();
             MessageRenderer.Instance.Render();
+            
+            if (_map.Show)
+            {
+                _map.Render();
+                return;
+            }            
         }
 
         public void OnCheckpointHit(Checkpoint checkpoint)
@@ -206,7 +219,7 @@ namespace Carmageddon
                     CurrentLap++;
                     NextCheckpoint = 0;
                 }
-                MessageRenderer.Instance.PostMainMessage("checkpnt.pix", 10, 0.7f, 0.003f, 1.4f);
+                MessageRenderer.Instance.PostMainMessage("checkpnt.pix", 3, 0.7f, 0.003f, 1.4f);
             }
             else
             {
@@ -259,9 +272,12 @@ namespace Carmageddon
 
             if (NbrDeadOpponents == Opponents.Count)
             {
-                MessageRenderer.Instance.PostHeaderMessage("Every opponent wasted", 10);
+                GameMode.Current = new RaceCompletedMode(CompletionType.Opponents);
             }
-            MessageRenderer.Instance.PostMainMessage("destroy.pix", 3, 0.7f, 0.003f, 1.4f);
+            else
+            {
+                MessageRenderer.Instance.PostMainMessage("destroy.pix", 3, 0.7f, 0.003f, 1.4f);
+            }
         }
 
         internal void OnPlayerCpuCarHit(float damage)

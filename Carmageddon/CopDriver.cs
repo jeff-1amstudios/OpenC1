@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using NFSEngine.Audio;
 
 namespace Carmageddon
 {
@@ -8,9 +9,13 @@ namespace Carmageddon
     {
         const float WAKEUP_DISTANCE = 50f;
 
+        ISound _siren;
+
         public CopDriver()
             : base()
+
         {
+            _siren = SoundCache.CreateInstance(SoundIds.CopSiren, true);
         }
 
         public override void OnRaceStart()
@@ -27,11 +32,18 @@ namespace Carmageddon
                 if (DistanceFromPlayer < WAKEUP_DISTANCE)
                 {
                     SetState(CpuDriverState.Attacking);
+                    _siren.Play(true);
                 }
             }
             else if (_state != CpuDriverState.Attacking)
             {
                 SetState(CpuDriverState.Sleeping);
+                _siren.Stop();
+            }
+            else if (_state == CpuDriverState.Attacking)
+            {
+                _siren.Position = Vehicle.Position;
+                _siren.Velocity = Vehicle.Chassis.Actor.LinearVelocity;
             }
             base.Update();
         }

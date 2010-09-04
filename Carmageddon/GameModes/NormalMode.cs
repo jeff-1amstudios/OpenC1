@@ -7,25 +7,26 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Carmageddon.EditModes
 {
-    class NoEditMode : IEditMode
+    class NormalMode : GameMode
     {
         int _currentView = 0;
         List<ICameraView> _views = new List<ICameraView>();
 
-        public NoEditMode()
+        public NormalMode()
         {
             _views.Add(new ChaseView(Race.Current.PlayerVehicle));
             _views.Add(new CockpitView(Race.Current.PlayerVehicle, GameVariables.BasePath + @"data\64x48x8\cars\" + Race.Current.PlayerVehicle.Config.FileName));
             _views.Add(new FlyView(Race.Current.PlayerVehicle));
+            _views.Add(new RaceCompletedView(Race.Current.PlayerVehicle));
             _views[_currentView].Activate();
         }
 
-        public void Activate()
+        public override void Activate()
         {
             _views[_currentView].Activate();
         }
 
-        public void Update()
+        public override void Update()
         {
             if (Engine.Input.WasPressed(Keys.C))
             {
@@ -37,7 +38,7 @@ namespace Carmageddon.EditModes
             _views[_currentView].Update();
         }
 
-        public void Render()
+        public override void Render()
         {
             _views[_currentView].Render();
         }

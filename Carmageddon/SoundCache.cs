@@ -24,6 +24,10 @@ namespace Carmageddon
         public const int RaceCompleted = 8011;
         public const int Checkpoint = 8012;
         public const int WrongCheckpoint = 8013;
+        public const int Clapping = 8015;
+        public const int CopSiren = 5350;
+        public const int UI_UpDown = 3000;
+        public const int UI_Ok = 3004;
     }
 
     static class SoundCache

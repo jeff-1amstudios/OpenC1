@@ -72,13 +72,11 @@ namespace Carmageddon.Physics
                                         normal.Normalize();
                                         if (vehicle.Driver is CpuDriver && vehicle2.Driver is PlayerDriver)
                                         {
-                                            ((CpuDriver)vehicle.Driver).LastPlayerTouchTime = Engine.TotalSeconds;
-                                            ((CpuDriver)vehicle.Driver).SetState(CpuDriverState.Attacking);
+                                            ((CpuDriver)vehicle.Driver).OnPlayerHit(force);
                                         }
                                         else if (vehicle2.Driver is CpuDriver && vehicle.Driver is PlayerDriver)
                                         {
-                                            ((CpuDriver)vehicle2.Driver).LastPlayerTouchTime = Engine.TotalSeconds;
-                                            ((CpuDriver)vehicle2.Driver).SetState(CpuDriverState.Attacking);
+                                            ((CpuDriver)vehicle2.Driver).OnPlayerHit(force);
                                         }
 
                                         if (vehicle.Chassis.Wheels.Find(a => !a.IsRear && a.InAir) != null)

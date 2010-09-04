@@ -53,6 +53,8 @@ namespace NFSEngine.Audio
 
         public void Update()
         {
+            if (_listener == null) return;
+
             Vector3 listenerPos = _listener.Position;
 
             for (int i = _sounds.Count - 1; i >= 0; i--)

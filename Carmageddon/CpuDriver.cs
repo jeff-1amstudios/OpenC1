@@ -360,5 +360,11 @@ namespace Carmageddon
                 }
             }
         }
+
+        internal void OnPlayerHit(float force)
+        {
+            LastPlayerTouchTime = Engine.TotalSeconds;
+            SetState(CpuDriverState.Attacking);
+        }
     }
 }

@@ -68,18 +68,35 @@ namespace NFSEngine
         /// <summary>
         /// Rotation around the target
         /// </summary>
-        public float Rotation { get; set; }
+        float _requestedRotation;
+        public float RotationSpeed = 3;
+
+        public float Rotation
+        {
+            get { return _currentRotation; }
+        }
+
+        public void RotateTo(float radians)
+        {
+            _requestedRotation = radians;
+        }
+
+        public void ResetRotation()
+        {
+            _requestedRotation = 0;
+            _currentRotation = 0;
+        }
 		
         public void Update()
 		{
-            if (_currentRotation != Rotation)
+            if (_currentRotation != _requestedRotation)
             {
-                if (_currentRotation < Rotation)
-                    _currentRotation += Engine.ElapsedSeconds*3;
+                if (_currentRotation < _requestedRotation)
+                    _currentRotation += Engine.ElapsedSeconds * RotationSpeed;
                 else
-                    _currentRotation -= Engine.ElapsedSeconds*3;
-                if (Math.Abs(_currentRotation - Rotation) < 0.05f)
-                    _currentRotation = Rotation;
+                    _currentRotation -= Engine.ElapsedSeconds * RotationSpeed;
+                if (Math.Abs(_currentRotation - _requestedRotation) < 0.01f)
+                    _currentRotation = _requestedRotation;
             }
 
             Vector3 pos = (-Vector3.Normalize(Orientation) * _chaseDistance);
@@ -90,7 +107,6 @@ namespace NFSEngine
             _lookAt.AddValue(pos);
             Vector3 avgLookAt = _lookAt.GetAveragedValue();
             Vector3 cameraPosition = Position + Vector3.Transform(avgLookAt, Matrix.CreateRotationY(_currentRotation));
-           // Position = cameraPosition;
             View = Matrix.CreateLookAt(cameraPosition, Position + new Vector3(0, 1.3f, 0), Vector3.Up);
             Projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlaneDistance, DrawDistance);
 		}

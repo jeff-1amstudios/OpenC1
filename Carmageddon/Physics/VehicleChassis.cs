@@ -149,7 +149,7 @@ namespace Carmageddon.Physics
 
             //set center of mass
             Vector3 massPos = carFile.CenterOfMass;
-            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + _heightOffset + 0.17f;
+            massPos.Y = carFile.WheelActors[0].Position.Y - carFile.NonDrivenWheelRadius + _heightOffset + 0.35f;
             _massPos = massPos;
             _physXActor.SetCenterOfMassOffsetLocalPosition(massPos);
             
@@ -273,7 +273,7 @@ namespace Carmageddon.Physics
 
             if (!InAir)
             {
-                _physXActor.MaximumAngularVelocity = 3.5f;
+                //_physXActor.MaximumAngularVelocity = 3.5f;
 
                 if (Speed < 10)
                 {
@@ -283,20 +283,26 @@ namespace Carmageddon.Physics
                 }
                 else if ((_steerAngle < -0.1f && Wheels[0].LatSlip > 0.35f) || (_steerAngle > 0.1f && Wheels[0].LatSlip < -0.35f))
                 {
-                    _physXActor.AngularDamping = maxlat * 3.6f;
-                    _physXActor.LinearDamping = maxlat * 0.5f;  //stop insane sliding
+                    _physXActor.AngularDamping = maxlat * 2.1f;
+                    _physXActor.LinearDamping = maxlat * 1.3f;  //stop insane sliding
                     Motor.WheelsSpinning = true;
                     GameConsole.WriteLine("mode alt steer");
                 }
-                else if ((_steerAngle <= 0f && Wheels[0].LatSlip > 0.4f) || (_steerAngle >= 0f && Wheels[0].LatSlip < -0.4f))
+                else if ((_steerAngle < -0.1f && Wheels[0].LatSlip < -0.4f) || (_steerAngle > 0.1f && Wheels[0].LatSlip > 0.4f))
                 {
-                    _physXActor.AngularDamping = maxlat * 1.4f;
-                    _physXActor.LinearDamping = Speed > 20 ? maxlat * 0.5f : maxlat * 0.8f;  //stop insane sliding
-                    GameConsole.WriteLine("mode no steer");
+                    _physXActor.AngularDamping = 0; // maxlat * 1.1f;
+                    _physXActor.LinearDamping = Speed > 20 ? maxlat * 1.3f : maxlat * 0.8f;  //stop insane sliding
+                    GameConsole.WriteLine("mode steer into");
+                }
+                else if ((Math.Abs(_steerAngle) < 0.1f && Math.Abs(Wheels[0].LatSlip) > 0.4f))
+                {
+                    _physXActor.AngularDamping = maxlat * 0.8f;
+                    _physXActor.LinearDamping = Speed > 20 ? maxlat * 1.3f : maxlat * 0.8f;  //stop insane sliding
+                    GameConsole.WriteLine("no steer");
                 }
                 else if (isSkiddingTooMuch)
                 {
-                    if (Speed < 40)
+                    if (Speed < 20)
                         _physXActor.LinearDamping = maxlat * 0.8f;
                     else
                         _physXActor.LinearDamping = maxlat * 0.4f;

@@ -47,7 +47,7 @@ namespace Carmageddon.CameraViews
                 _camera.Orientation = chassis.Actor.GlobalOrientation.Forward;
                 if (chassis.Speed > 15)
                 {
-                    _camera.Rotation = (chassis.Backwards ? MathHelper.Pi : 0);
+                    _camera.RotateTo(chassis.Backwards ? MathHelper.Pi : 0);
                 }
                 if (Race.Current.RaceTime.IsStarted) _camera.HeightOverride = 0;
             }

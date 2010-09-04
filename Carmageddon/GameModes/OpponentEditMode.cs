@@ -10,7 +10,7 @@ using Carmageddon.CameraViews;
 
 namespace Carmageddon.EditModes
 {
-    class OpponentEditMode : IEditMode
+    class OpponentEditMode : GameMode
     {
         FixedChaseCamera _opponentCamera;
         FlyView _fpsView;
@@ -23,13 +23,13 @@ namespace Carmageddon.EditModes
             _fpsView = new FlyView(Race.Current.PlayerVehicle);
         }
 
-        public void Activate()
+        public override void Activate()
         {
             _fpsView.Activate();
             MessageRenderer.Instance.PostHeaderMessage("Edit Mode: Opponents", 3);
         }
 
-        public void Update()
+        public override void Update()
         {
             //if (Engine.Input.WasPressed(Keys.D0))
             //{
@@ -53,7 +53,7 @@ namespace Carmageddon.EditModes
             //}
         }
 
-        public void Render()
+        public override void Render()
         {
             if (_watchingOpponent == 0)
             {

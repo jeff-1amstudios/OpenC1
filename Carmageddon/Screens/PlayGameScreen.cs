@@ -23,25 +23,20 @@ namespace Carmageddon
         Race _race;
 
         BasicEffect2 _effect;   
-        List<IEditMode> _editModes = new List<IEditMode>();
+        List<GameMode> _modes = new List<GameMode>();
        
         int _currentEditMode = 0;
 
         public PlayGameScreen()
         {
-            if (!SoundCache.IsInitialized)
-            {
-                Engine.Audio.SetDefaultVolume(-500);
-                SoundCache.Initialize();
-            }
-
             GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
 
             string playerCar = "blkeagle.txt";
-            _race = new Race(GameVariables.BasePath + @"data\races\cityb3.TXT", playerCar);
+            _race = new Race(GameVariables.BasePath + @"data\races\cityc2.TXT", playerCar);
             
-            _editModes.Add(new NoEditMode());
-            _editModes.Add(new OpponentEditMode());                
+            _modes.Add(new NormalMode());
+            _modes.Add(new OpponentEditMode());
+            GameMode.Current = _modes[_currentEditMode];
         }
 
 
@@ -57,8 +52,8 @@ namespace Carmageddon
 
             if (Engine.Input.WasPressed(Keys.F4))
             {
-                _currentEditMode = (_currentEditMode + 1) % _editModes.Count;
-                _editModes[_currentEditMode].Activate();
+                _currentEditMode = (_currentEditMode + 1) % _modes.Count;
+                GameMode.Current = _modes[_currentEditMode];
             }
             if (Engine.Input.WasPressed(Keys.P))
             {
@@ -72,7 +67,7 @@ namespace Carmageddon
                 _effect = null;
             }
                         
-            _editModes[_currentEditMode].Update();
+            GameMode.Current.Update();
             _race.PlayerVehicle.Chassis.OutputDebugInfo();
 
             Engine.Camera.Update();
@@ -98,7 +93,7 @@ namespace Carmageddon
             Engine.SpriteBatch.Begin();
 
             _race.Render();
-            _editModes[_currentEditMode].Render();
+            _modes[_currentEditMode].Render();
 
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
             {

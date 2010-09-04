@@ -98,6 +98,23 @@
       <ProcessorParameters_FirstCharacter>+</ProcessorParameters_FirstCharacter>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="map-icon-opponent-dead.png">
+      <Name>map-icon-opponent-dead</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="map-icon-opponent.png">
+      <Name>map-icon-opponent</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="map-icon-player.png">
+      <Name>map-icon-player</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\v3.0\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
