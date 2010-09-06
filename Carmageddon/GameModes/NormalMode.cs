@@ -15,7 +15,7 @@ namespace Carmageddon.EditModes
         public NormalMode()
         {
             _views.Add(new ChaseView(Race.Current.PlayerVehicle));
-            _views.Add(new CockpitView(Race.Current.PlayerVehicle, GameVariables.BasePath + @"data\64x48x8\cars\" + Race.Current.PlayerVehicle.Config.FileName));
+            _views.Add(new CockpitView(Race.Current.PlayerVehicle, GameVars.BasePath + @"data\64x48x8\cars\" + Race.Current.PlayerVehicle.Config.FileName));
             _views.Add(new FlyView(Race.Current.PlayerVehicle));
             _views.Add(new RaceCompletedView(Race.Current.PlayerVehicle));
             _views[_currentView].Activate();

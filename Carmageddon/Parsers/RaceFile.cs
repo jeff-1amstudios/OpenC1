@@ -60,7 +60,7 @@ namespace Carmageddon.Parsers
             string version = ReadLine();
             _fileVersion = int.Parse(version.Substring(8,1));
             
-            GridPosition = ReadLineAsVector3() + new Vector3(0, GameVariables.Scale.Y*0.5f, 0);
+            GridPosition = ReadLineAsVector3() + new Vector3(0, GameVars.Scale.Y*0.5f, 0);
 
             GridDirection = MathHelper.ToRadians(ReadLineAsInt());
             string initialTimerPerSkill = ReadLine();
@@ -181,8 +181,8 @@ namespace Carmageddon.Parsers
                 {
                     Matrix m = ReadMatrix();
                                         
-                    m = GameVariables.ScaleMatrix * Matrix.CreateScale(2) * m;
-                    m.Translation = GameVariables.Scale * m.Translation;
+                    m = GameVars.ScaleMatrix * Matrix.CreateScale(2) * m;
+                    m.Translation = GameVars.Scale * m.Translation;
                     vol.Matrix = m;
                 }
                 vol.Gravity = ReadLineAsFloat(false);
@@ -289,7 +289,7 @@ namespace Carmageddon.Parsers
             {
                 string[] tokens = ReadLine().Split(',');
                 Vector3 pos = new Vector3(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2]));
-                pos *= GameVariables.Scale;
+                pos *= GameVars.Scale;
                 pos += new Vector3(0, 2, 0);
                 CopStartPoints.Add(new CopStartPoint { Position = pos, IsSpecialForces = tokens[3].Contains("9") });
             }
@@ -318,11 +318,11 @@ namespace Carmageddon.Parsers
                 string matName = ReadLine();
                 if (matName != "none")
                 {
-                    if (!File.Exists(GameVariables.BasePath + "data\\material\\" + matName))
+                    if (!File.Exists(GameVars.BasePath + "data\\material\\" + matName))
                     {
                         matName = "SKIDMARK.MAT"; //default skidmark if invalid (in indust maps, this is "1" and skidmarks aren't shown)
                     }
-                    MatFile matFile = new MatFile(GameVariables.BasePath + "data\\material\\" + matName);
+                    MatFile matFile = new MatFile(GameVars.BasePath + "data\\material\\" + matName);
                     modifier.SkidMaterial = matFile.Materials[0];
                     modifier.SkidMaterial.ResolveTexture();
                 }
@@ -338,7 +338,7 @@ namespace Carmageddon.Parsers
             for (int i = 0; i < nbrNonCars; i++)
             {
                 string filename = ReadLine();
-                NoncarFile file = new NoncarFile(GameVariables.BasePath + "Data\\Noncars\\" + filename);
+                NoncarFile file = new NoncarFile(GameVars.BasePath + "Data\\Noncars\\" + filename);
                 NonCars.Add(file);
             }
         }

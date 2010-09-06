@@ -184,7 +184,7 @@ namespace Carmageddon
             CrushData data = GetClosestCrushData(contactPoint);
             //foreach (CrushData data in _carFile.CrushSections[1].Data)
             {
-                Vector3 crushPoint = Vector3.Transform(_localVertices[data.RefVertex].Position, GameVariables.ScaleMatrix * _actor.GlobalPose);
+                Vector3 crushPoint = Vector3.Transform(_localVertices[data.RefVertex].Position, GameVars.ScaleMatrix * _actor.GlobalPose);
 
                // if (Vector3.Distance(crushPoint, contactPoint) < 0.5f)
                 {
@@ -316,7 +316,7 @@ namespace Carmageddon
             CrushData minData = null;
             foreach (CrushData data in _carFile.CrushSections[1].Data)
             {
-                Vector3 crushPoint = Vector3.Transform(_localVertices[data.RefVertex].Position, GameVariables.ScaleMatrix * _actor.GlobalPose);
+                Vector3 crushPoint = Vector3.Transform(_localVertices[data.RefVertex].Position, GameVars.ScaleMatrix * _actor.GlobalPose);
                 float dist = Vector3.Distance(crushPoint, contactPoint);
                 if (dist < minDist)
                 {
@@ -423,10 +423,10 @@ namespace Carmageddon
                 Polygon poly = Polygons[i];
                 if (poly.Skip) continue;
 
-                if (GameVariables.CullingDisabled != poly.DoubleSided)
+                if (GameVars.CullingDisabled != poly.DoubleSided)
                 {
                     device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
-                    GameVariables.CullingDisabled = poly.DoubleSided;
+                    GameVars.CullingDisabled = poly.DoubleSided;
                 }
 
                 if (poly.Material != null)
@@ -446,7 +446,7 @@ namespace Carmageddon
                 {
                     currentMaterial.Funk.BeforeRender();
                 }
-                GameVariables.NbrDrawCalls++;
+                GameVars.NbrDrawCalls++;
 
                 Engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3 * poly.NbrPrims, indexBufferStart, poly.NbrPrims);
 

@@ -20,6 +20,9 @@ namespace Carmageddon.Parsers.Grooves
         
         public override void Update()
         {
+            if (_actor == null)
+                return;
+
             switch (Motion)
             {
                 case Motion.Harmonic:
@@ -32,6 +35,7 @@ namespace Carmageddon.Parsers.Grooves
                     //    _speed2 = 1;
                     break;
                 case Motion.Linear:
+                case Motion.Absolute:
                     _currentRock += _direction * Engine.ElapsedSeconds * Speed * 6.28f;
                     break;
                 default:

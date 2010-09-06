@@ -10,18 +10,29 @@ using Carmageddon.HUD;
 
 namespace Carmageddon.Screens
 {
-    class BaseMenuScreen : IGameScreen
+    abstract class BaseMenuScreen : IGameScreen
     {
+        public IGameScreen Parent { get; private set; }
         protected FliPlayer _inAnimation, _outAnimation;
         protected Rectangle _rect;
-        protected int _currentOption;
-        protected List<Option> _options = new List<Option>();
+        protected int _selectedOption;
+        protected List<IMenuOption> _options = new List<IMenuOption>();
         protected bool _waitingForOutAnimation;
 
-        public BaseMenuScreen()
+        public BaseMenuScreen(IGameScreen parent)
         {
+            Parent = parent;
             _rect = new Rectangle(0, 0, Engine.Window.Width, Engine.Window.Height);
             Engine.Camera = new SimpleCamera();
+        }
+
+        public void ReturnToParent()
+        {
+            if (Parent is BaseMenuScreen)
+            {
+                ((BaseMenuScreen)Parent)._inAnimation.Play(false, 0);
+            }
+            Engine.Screen = Parent;
         }
 
         #region IGameScreen Members
@@ -32,32 +43,51 @@ namespace Carmageddon.Screens
             {
                 if (!_outAnimation.IsPlaying)
                 {
+                    _waitingForOutAnimation = false;
                     OnOutAnimationFinished();
                     return;
                 }
             }
-
-            if (Engine.Input.WasPressed(Keys.Down))
+            else
             {
-                if (_currentOption < _options.Count - 1) _currentOption++;
-                SoundCache.Play(SoundIds.UI_UpDown, null, false);
-            }
-            else if (Engine.Input.WasPressed(Keys.Up))
-            {
-                if (_currentOption > 0) _currentOption--;
-                SoundCache.Play(SoundIds.UI_UpDown, null, false);
-            }
-            else if (Engine.Input.WasPressed(Keys.Enter))
-            {
-                SoundCache.Play(SoundIds.UI_Ok, null, false);
-                _outAnimation.Play(false, 0);
-                _waitingForOutAnimation = true;
+                if (Engine.Input.WasPressed(Keys.Escape) && Parent != null)
+                {
+                    SoundCache.Play(SoundIds.UI_Esc, null, false);
+                    ReturnToParent();
+                }
+                if (Engine.Input.WasPressed(Keys.Down))
+                {
+                    if (_selectedOption < _options.Count - 1)
+                        _selectedOption++;
+                    else
+                        _selectedOption = 0;
+                    SoundCache.Play(SoundIds.UI_UpDown, null, false);
+                }
+                else if (Engine.Input.WasPressed(Keys.Up))
+                {
+                    if (_selectedOption > 0)
+                        _selectedOption--;
+                    else
+                        _selectedOption = _options.Count - 1;
+                    SoundCache.Play(SoundIds.UI_UpDown, null, false);
+                }
+                else if (Engine.Input.WasPressed(Keys.Enter))
+                {
+                    SoundCache.Play(SoundIds.UI_Ok, null, false);
+                    PlayOutAnimation();
+                }
             }
             _inAnimation.Update();
             _outAnimation.Update();
         }
 
-        public void Render()
+        private void PlayOutAnimation()
+        {
+            _outAnimation.Play(false, 0);
+            _waitingForOutAnimation = true;
+        }
+
+        public virtual void Render()
         {
             Engine.Device.Clear(Color.Black);
 
@@ -68,18 +98,27 @@ namespace Carmageddon.Screens
             else
                 Engine.SpriteBatch.Draw(_inAnimation.GetCurrentFrame(), _rect, Color.White);
 
-            if (!_inAnimation.IsPlaying && !_outAnimation.IsPlaying && !_waitingForOutAnimation)
+            if (ShouldRenderOptions())
             {
-                Engine.SpriteBatch.Draw(_options[_currentOption].Texture, _options[_currentOption].Rect, Color.White);
+                _options[_selectedOption].RenderInSpriteBatch();
+                Engine.SpriteBatch.End();
+                _options[_selectedOption].RenderOutsideSpriteBatch();
             }
-
-            Engine.SpriteBatch.End();
+            else
+            {
+                Engine.SpriteBatch.End();
+            }
         }
+
+        public abstract void OnOutAnimationFinished();
 
         #endregion
 
-        public virtual void OnOutAnimationFinished()
+        public bool ShouldRenderOptions()
         {
+            return !_inAnimation.IsPlaying && !_outAnimation.IsPlaying && !_waitingForOutAnimation;
         }
+
+
     }
 }

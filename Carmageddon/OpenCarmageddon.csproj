@@ -114,6 +114,8 @@
     <Compile Include="OpponentPath.cs" />
     <Compile Include="Parsers\CockpitFile.cs" />
     <Compile Include="Parsers\Funks\WindscreenFunk.cs" />
+    <Compile Include="Parsers\OpponentsFile.cs" />
+    <Compile Include="Parsers\RacesFile.cs" />
     <Compile Include="Parsers\TextFileDecryptor.cs" />
     <Compile Include="Physics\TriggerReport.cs" />
     <Compile Include="Physics\PhysXConsts.cs" />
@@ -123,8 +125,13 @@
     <Compile Include="RaceTimeController.cs" />
     <Compile Include="RotatingCamera.cs" />
     <Compile Include="Screens\BaseMenuScreen.cs" />
+    <Compile Include="Screens\LoadRaceScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
+    <Compile Include="Screens\MenuOption.cs" />
+    <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\SelectCarScreen.cs" />
+    <Compile Include="Screens\SelectRaceScreen.cs" />
+    <Compile Include="Screens\StartRaceScreen.cs" />
     <Compile Include="Screens\SelectSkillScreen.cs" />
     <Compile Include="SoundDesc.cs" />
     <Compile Include="CWheelActor.cs" />
@@ -170,7 +177,7 @@
     <Compile Include="EndianBinaryReader.cs" />
     <Compile Include="EndianBitConverter.cs" />
     <Compile Include="Endianness.cs" />
-    <Compile Include="GameVariables.cs" />
+    <Compile Include="GameVars.cs" />
     <Compile Include="Parsers\ActFile.cs" />
     <Compile Include="Parsers\BaseDataFile.cs" />
     <Compile Include="Parsers\BaseTextFile.cs" />
@@ -189,6 +196,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Race.cs" />
     <Compile Include="VehicleAudio.cs" />
+    <Compile Include="VehicleModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

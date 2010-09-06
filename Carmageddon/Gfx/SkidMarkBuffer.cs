@@ -48,7 +48,7 @@ namespace Carmageddon.Gfx
 
             _vertexBuffer = new DynamicVertexBuffer(Engine.Device, size, BufferUsage.WriteOnly);
 
-            MatFile matfile = new MatFile(GameVariables.BasePath + "Data\\Material\\skidmark.mat");
+            MatFile matfile = new MatFile(GameVars.BasePath + "Data\\Material\\skidmark.mat");
             matfile.Materials[0].ResolveTexture();
             _defaultTexture = _texture = matfile.Materials[0].Texture;
         }
@@ -119,7 +119,7 @@ namespace Carmageddon.Gfx
             device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionTexture.SizeInBytes);
             device.VertexDeclaration = _vertexDeclaration;
 
-            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
+            GameVars.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
             device.Textures[0] = _texture ?? _defaultTexture;
             device.RenderState.DepthBias = -0.00002f;
@@ -127,7 +127,7 @@ namespace Carmageddon.Gfx
             device.RenderState.CullMode = CullMode.None;
            
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, _maxSkids * 2);
-            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
+            GameVars.CurrentEffect.CurrentTechnique.Passes[0].End();
 
             device.RenderState.CullMode = oldCullMode;
 

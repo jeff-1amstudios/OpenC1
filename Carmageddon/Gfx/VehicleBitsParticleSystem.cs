@@ -24,7 +24,7 @@ namespace Carmageddon.Gfx
             settings.Texture = Engine.ContentManager.Load<Texture2D>("Content/blank-particle");
 
             settings.MaxParticles = 100;
-            Color color = GameVariables.Palette.GetRGBColorForPixel(_material.BasePixel);
+            Color color = GameVars.Palette.GetRGBColorForPixel(_material.BasePixel);
             settings.MinColor = color;
             settings.MaxColor = color;
 

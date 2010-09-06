@@ -26,7 +26,7 @@ namespace Carmageddon
             if (PixName == null)
             {
                 //simp mat
-                Texture = TextureGenerator.Generate(GameVariables.Palette.GetRGBColorForPixel(BasePixel));
+                Texture = TextureGenerator.Generate(GameVars.Palette.GetRGBColorForPixel(BasePixel));
             }
             else
             {
@@ -41,7 +41,7 @@ namespace Carmageddon
             if (PixName == null)
             {
                 //simp mat
-                Texture = TextureGenerator.Generate(GameVariables.Palette.GetRGBColorForPixel(BasePixel));
+                Texture = TextureGenerator.Generate(GameVars.Palette.GetRGBColorForPixel(BasePixel));
             }
             else
             {
@@ -49,7 +49,7 @@ namespace Carmageddon
                 //if (File.Exists(GameVariables.BasePath + "Data\\Reg\\Pixelmap\\" + PixName))
                 //    pix = new PixFile(GameVariables.BasePath + "Data\\Reg\\Pixelmap\\" + PixName);
                 //else
-                    pix = new PixFile(GameVariables.BasePath + "Data\\Pixelmap\\" + PixName);
+                    pix = new PixFile(GameVars.BasePath + "Data\\Pixelmap\\" + PixName);
                 Texture = pix.PixMaps[0].Texture;
             }
         }

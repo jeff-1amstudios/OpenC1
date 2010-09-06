@@ -52,6 +52,7 @@ namespace PlatformEngine
             _fpsCounter = new FrameRateCounter();
             Random = new RandomGenerator();
             TimeScale = 1;
+            Window = Game.Window.ClientBounds;
         }
 
 
@@ -102,11 +103,8 @@ namespace PlatformEngine
             }
         }
 
-        public static Rectangle Window
-        {
-            get { return Game.Window.ClientBounds; }
-        }
-
+        public static Rectangle Window {get; private set; }
+        
         public static float AspectRatio
         {
             get

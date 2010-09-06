@@ -34,9 +34,9 @@ namespace Carmageddon.Parsers.Funks
             if (_lastMode != TextureAddressMode.Wrap)
                 Engine.Device.SamplerStates[0].AddressU = Engine.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
 
-            GameVariables.CurrentEffect.TexCoordsOffset = _uvOffset;
-            GameVariables.CurrentEffect.TexCoordsMultiplier = 0.1f;
-            GameVariables.CurrentEffect.CommitChanges();
+            GameVars.CurrentEffect.TexCoordsOffset = _uvOffset;
+            GameVars.CurrentEffect.TexCoordsMultiplier = 0.1f;
+            GameVars.CurrentEffect.CommitChanges();
         }
 
         public override void AfterRender()
@@ -44,9 +44,9 @@ namespace Carmageddon.Parsers.Funks
             if (_lastMode != TextureAddressMode.Wrap)
                 Engine.Device.SamplerStates[0].AddressU = Engine.Device.SamplerStates[0].AddressV = _lastMode;
 
-            GameVariables.CurrentEffect.TexCoordsOffset = Vector2.Zero;
-            GameVariables.CurrentEffect.TexCoordsMultiplier = 1;
-            GameVariables.CurrentEffect.CommitChanges();
+            GameVars.CurrentEffect.TexCoordsOffset = Vector2.Zero;
+            GameVars.CurrentEffect.TexCoordsMultiplier = 1;
+            GameVars.CurrentEffect.CommitChanges();
         }
 
         public override void Update()

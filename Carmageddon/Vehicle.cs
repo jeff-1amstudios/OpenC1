@@ -21,9 +21,7 @@ namespace Carmageddon
 {
     class Vehicle
     {
-        CActorHierarchy _actors;
-        CrushSection _crushSection;
-        List<BaseGroove> _grooves;
+        CrushSection _crushSection;        
         ParticleEmitter _vehicleBitsEmitter;
 
         public CarFile Config;
@@ -37,14 +35,25 @@ namespace Carmageddon
         public ParticleEmitter DamageSmokeEmitter;
         Vector3 _damagePosition;
         PixmapBillboard _flames;
-
+        VehicleModel _model;
 
         public Vehicle(string filename, IDriver driver)
         {
             Driver = driver;
             Driver.Vehicle = this;
 
-            LoadModel(filename);
+            Config = new CarFile(filename);
+
+            if (Config.WindscreenMaterial != "none")
+                Config.Funks.Add(new WindscreenFunk(Config.WindscreenMaterial, this));
+
+            _model = new VehicleModel(Config, false);
+
+            Audio = new VehicleAudio(this);
+            CActor actor2 = _model.GetActor(Path.GetFileNameWithoutExtension(Config.ModelFile));
+            _deformableModel = (CDeformableModel)actor2.Model;
+
+            Chassis = new VehicleChassis(this, actor2);
 
             _crushSection = Config.CrushSections[1];
 
@@ -57,83 +66,11 @@ namespace Carmageddon
             DamageSmokeEmitter = new ParticleEmitter(new DamageSmokeParticleSystem(Color.Gray), 5, Vector3.Zero);
             DamageSmokeEmitter.Enabled = false;
 
-            _flames = new PixmapBillboard(new Vector2(0.7f, 0.25f), GameVariables.BasePath + "data\\pixelmap\\flames.pix");
+            _flames = new PixmapBillboard(new Vector2(0.7f, 0.25f), GameVars.BasePath + "data\\pixelmap\\flames.pix");
             SkidMarkBuffer = new SkidMarkBuffer(this, 150);
         }
 
-        private void LoadModel(string filename)
-        {
-            Config = new CarFile(filename);
-
-            foreach (string pixFileName in Config.PixFiles)
-            {
-                PixFile pixFile = new PixFile(GameVariables.BasePath + "data\\pixelmap\\" + pixFileName);
-                ResourceCache.Add(pixFile);
-            }
-
-            foreach (string matFileName in Config.MaterialFiles)
-            {
-                MatFile matFile = new MatFile(GameVariables.BasePath + "data\\material\\" + matFileName);
-                ResourceCache.Add(matFile);
-            }
-
-            foreach (string matFileName in Config.CrashMaterialFiles)
-            {
-                MatFile matFile = new MatFile(GameVariables.BasePath + "data\\material\\" + matFileName);
-                ResourceCache.Add(matFile);
-            }
-
-            ResourceCache.ResolveMaterials();
-
-            _grooves = new List<BaseGroove>();
-            foreach (BaseGroove g in Config.Grooves)
-                if (!g.IsWheelActor) _grooves.Add(g);
-
-            DatFile modelFile = new DatFile(GameVariables.BasePath + "data\\models\\" + Config.ModelFile, new List<string> { Config.ModelFile });
-            ActFile actFile = new ActFile(GameVariables.BasePath + "data\\actors\\" + Config.ActorFile, modelFile.Models);
-
-            _actors = actFile.Hierarchy;
-            _actors.ResolveTransforms(true, _grooves);
-
-            if (Config.WindscreenMaterial != "none")
-                Config.Funks.Add(new WindscreenFunk(Config.WindscreenMaterial, this));
-
-            foreach (BaseGroove g in _grooves)
-                g.SetActor(_actors.GetByName(g.ActorName));
-
-            // link the funks and materials
-            foreach (BaseFunk f in Config.Funks)
-                f.Resolve();
-
-            Vector3 tireWidth = new Vector3(0.034f, 0, 0) * GameVariables.Scale;
-
-            foreach (int id in Config.DrivenWheelRefs)
-            {
-                BaseGroove g = Config.Grooves.Find(a => a.Id == id);
-                if (g == null) continue;
-                CActor actor = _actors.GetByName(g.ActorName);
-                CWheelActor ca = new CWheelActor(actor, true, false);
-                ca.Position = actor.Matrix.Translation + (ca.IsLeft ? -1 * tireWidth : tireWidth);
-                Config.WheelActors.Add(ca);
-            }
-            foreach (int id in Config.NonDrivenWheelRefs)
-            {
-                BaseGroove g = Config.Grooves.Find(a => a.Id == id);
-                CActor actor = _actors.GetByName(g.ActorName);
-                CWheelActor ca = new CWheelActor(actor, false, true);
-                ca.Position = actor.Matrix.Translation + (ca.IsLeft ? -1 * tireWidth : tireWidth);
-                Config.WheelActors.Add(ca);
-            }
-
-            Audio = new VehicleAudio(this);
-
-            CActor actor2 = _actors.GetByName(Path.GetFileNameWithoutExtension(Config.ModelFile));
-            _deformableModel = (CDeformableModel)actor2.Model;
-
-            Chassis = new VehicleChassis(this, actor2);
-        }
-
-
+        
         public void PlaceOnGrid(Vector3 position, float direction)
         {
             Matrix pose = GridPlacer.GetGridPosition(position, direction);
@@ -159,7 +96,7 @@ namespace Carmageddon
 
                 if (force > 400)
                 {
-                    GameVariables.SparksEmitter.DumpParticles(position, 6);
+                    GameVars.SparksEmitter.DumpParticles(position, 6);
                 }
 
                 if (Driver is PlayerDriver)
@@ -187,16 +124,7 @@ namespace Carmageddon
 
         public void Update()
         {
-
-            foreach (BaseGroove groove in _grooves)
-            {
-                groove.Update();
-            }
-
-            foreach (BaseFunk funk in Config.Funks)
-            {
-                funk.Update();
-            }
+            _model.Update();
 
             Audio.Update();
 
@@ -216,7 +144,7 @@ namespace Carmageddon
                 }
             }
             
-            Vector3 pos = Vector3.Transform(_damagePosition, GameVariables.ScaleMatrix * Chassis.Actor.GlobalPose);
+            Vector3 pos = Vector3.Transform(_damagePosition, GameVars.ScaleMatrix * Chassis.Actor.GlobalPose);
             DamageSmokeEmitter.Update(pos);
         }
 
@@ -228,24 +156,23 @@ namespace Carmageddon
             
             Vector3 pos2 = Vector3.Transform(new Vector3(0, Chassis._heightOffset, 0), Chassis.Actor.GlobalOrientation);
             Matrix pose = Matrix.CreateFromQuaternion(Chassis.Actor.GlobalOrientationQuat) * Matrix.CreateTranslation(Chassis.Actor.GlobalPosition) * Matrix.CreateTranslation(pos2);
-            _actors.Render(pose, null);
+            _model.Render(pose);
 
-            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();            
+            GameVars.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
             for (int i = 0; i < Config.WheelActors.Count; i++)
             {
-                GameVariables.CurrentEffect.World = Chassis.Wheels[i].GetRenderMatrix();
-                _actors.RenderSingle(Config.WheelActors[i].Actor);
+                GameVars.CurrentEffect.World = Chassis.Wheels[i].GetRenderMatrix();
+                _model.RenderSinglePart(Config.WheelActors[i].Actor);
             }
 
             if (_damage > 50)
             {
-                Vector3 pos = Vector3.Transform(_damagePosition, GameVariables.ScaleMatrix * Chassis.Actor.GlobalPose);
+                Vector3 pos = Vector3.Transform(_damagePosition, GameVars.ScaleMatrix * Chassis.Actor.GlobalPose);
                 _flames.Render(pos);
             }
 
-            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
-            //Engine.DebugRenderer.AddAxis(Chassis.Actor.CenterOfMassGlobalPose, 5);
+            GameVars.CurrentEffect.CurrentTechnique.Passes[0].End();
         }
 
         public Vector3 Position

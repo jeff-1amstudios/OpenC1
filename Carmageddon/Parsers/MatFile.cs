@@ -32,6 +32,9 @@ namespace Carmageddon.Parsers
 
         public MatFile(string filename)
         {
+            if (filename.ToLower().Contains("ed.mat"))
+            {
+            }
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
 
             CMaterial currentMaterial = null;

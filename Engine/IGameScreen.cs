@@ -6,6 +6,7 @@ namespace PlatformEngine
 {
     public interface IGameScreen
     {
+        IGameScreen Parent { get; }
         void Update();
         void Render();
     }

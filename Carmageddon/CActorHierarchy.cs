@@ -13,7 +13,12 @@ namespace Carmageddon
     {
         List<CActor> _actors = new List<CActor>();
         public CModelGroup Models { get; set; }
+        public bool RenderWheelsSeparately { get; set; }
 
+        public CActorHierarchy()
+        {
+            RenderWheelsSeparately = true;
+        }
         
         public CActor Root
         {
@@ -58,7 +63,7 @@ namespace Carmageddon
             }
 
             ResolveTransformations(Matrix.Identity, Root, grooves);
-            ScaleTransformations(GameVariables.Scale, Root);
+            ScaleTransformations(GameVars.Scale, Root);
 
             
         }
@@ -107,25 +112,25 @@ namespace Carmageddon
         {
             Models.SetupRender();
 
-            GameVariables.NbrSectionsRendered = GameVariables.NbrSectionsChecked = 0;
+            GameVars.NbrSectionsRendered = GameVars.NbrSectionsChecked = 0;
                         
             bool overrideActor = world != Matrix.Identity;
 
-            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].Begin();
+            GameVars.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
             for (int i = 0; i < _actors.Count; i++)
             {
                 RenderChildren(frustum, _actors[i], world, false);
             }
 
-            GameVariables.CurrentEffect.CurrentTechnique.Passes[0].End();
+            GameVars.CurrentEffect.CurrentTechnique.Passes[0].End();
 
-            GameConsole.WriteLine("Checked: " + GameVariables.NbrSectionsChecked + ", Rendered: " + GameVariables.NbrSectionsRendered);
+            GameConsole.WriteLine("Checked: " + GameVars.NbrSectionsChecked + ", Rendered: " + GameVars.NbrSectionsRendered);
         }
 
         private void RenderChildren(BoundingFrustum frustum, CActor actor, Matrix world, bool parentAnimated)
         {
-            if (actor.IsWheel) return;
+            if (RenderWheelsSeparately && actor.IsWheel) return;
 
             bool intersects;
 
@@ -139,7 +144,7 @@ namespace Carmageddon
                 if (!intersects)
                 {
                     frustum.Intersects(ref actor.BoundingBox, out intersects);
-                    GameVariables.NbrSectionsChecked++;
+                    GameVars.NbrSectionsChecked++;
                 }
             }
 
@@ -154,26 +159,26 @@ namespace Carmageddon
 
                         if (actor.IsAnimated && !parentAnimated)
                         {
-                            world = m * actor.ParentMatrix * GameVariables.ScaleMatrix * world;
+                            world = m * actor.ParentMatrix * GameVars.ScaleMatrix * world;
                         }
                         else
                         {
                             world = m * world;
                         }
 
-                        GameVariables.CurrentEffect.World = world;
+                        GameVars.CurrentEffect.World = world;
                         parentAnimated = true;
                     }
                     else
                     {
-                        GameVariables.CurrentEffect.World = m * world;
+                        GameVars.CurrentEffect.World = m * world;
                     }
 
-                    GameVariables.CurrentEffect.CommitChanges();
+                    GameVars.CurrentEffect.CommitChanges();
 
                     actor.Model.Render(actor.Material);
 
-                    GameVariables.NbrSectionsRendered++;
+                    GameVars.NbrSectionsRendered++;
                 }
                 foreach (CActor child in actor.Children)
                     RenderChildren(frustum, child, world, parentAnimated);
@@ -184,8 +189,8 @@ namespace Carmageddon
         {
             Matrix m = actor.Matrix;
             m.Translation = Vector3.Zero;
-            GameVariables.CurrentEffect.World = m * GameVariables.CurrentEffect.World;
-            GameVariables.CurrentEffect.CommitChanges();
+            GameVars.CurrentEffect.World = m * GameVars.CurrentEffect.World;
+            GameVars.CurrentEffect.CommitChanges();
 
             actor.Model.Render(actor.Material);
         }

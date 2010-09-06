@@ -117,8 +117,8 @@ namespace Carmageddon.Parsers
 
                     case ActorBlockType.BoundingBox:
                         currentActor.BoundingBox = new BoundingBox(
-                            new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) * GameVariables.Scale,
-                            new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) * GameVariables.Scale
+                            new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) * GameVars.Scale,
+                            new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) * GameVars.Scale
                             );
                         break;
 

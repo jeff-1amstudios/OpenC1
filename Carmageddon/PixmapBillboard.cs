@@ -49,7 +49,7 @@ namespace Carmageddon
 
             Matrix world = Matrix.CreateScale(0.03f) * Matrix.CreateBillboard(position, Engine.Camera.Position, Vector3.Up, Vector3.Forward);
 
-            BasicEffect2 effect = GameVariables.CurrentEffect;
+            BasicEffect2 effect = GameVars.CurrentEffect;
             effect.World = _scaleMatrix * world;
             effect.Texture = _pixmaps[_currentFrame].Texture;
             effect.LightingEnabled = false;

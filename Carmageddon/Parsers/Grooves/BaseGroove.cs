@@ -33,6 +33,10 @@ namespace Carmageddon.Parsers.Grooves
 
         public virtual void SetActor(CActor actor)
         {
+            if (actor == null)
+            {
+                return;
+            }
             _actor = actor;
 
             Vector3 s, t;

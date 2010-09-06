@@ -81,6 +81,7 @@ namespace Carmageddon.Physics
             Core.Dispose();
             Scene = null;
             Core = null;
+            _instance = null;
         }
 
         public void Draw()

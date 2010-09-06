@@ -15,6 +15,9 @@ namespace Carmageddon.Parsers.Grooves
         
         public override void Update()
         {
+            if (_actor == null)
+                return; //BUSTER.TXT
+
             Matrix rot;
             switch (Axis)
             {

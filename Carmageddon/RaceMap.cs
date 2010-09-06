@@ -18,7 +18,7 @@ namespace Carmageddon
         public RaceMap(Race race)
         {
             _race = race;
-            _mapTexture = new PixFile(GameVariables.BasePath + @"data\pixelmap\" + race.ConfigFile.MapTexture).PixMaps[0].Texture;
+            _mapTexture = new PixFile(GameVars.BasePath + @"data\pixelmap\" + race.ConfigFile.MapTexture).PixMaps[0].Texture;
             _player = Engine.ContentManager.Load<Texture2D>("content/map-icon-player");
             _opponent = Engine.ContentManager.Load<Texture2D>("content/map-icon-opponent");
             _deadOpponent = Engine.ContentManager.Load<Texture2D>("content/map-icon-opponent-dead");
@@ -30,7 +30,7 @@ namespace Carmageddon
         {
             Engine.SpriteBatch.Draw(_mapTexture, _mapRect, new Color(255,255,255, 200));
             Vector3 pos = _race.PlayerVehicle.Position;
-            pos /= GameVariables.Scale;
+            pos /= GameVars.Scale;
             Vector3 translated = Vector3.Transform(pos, _race.ConfigFile.MapTranslation);
             translated /= new Vector3(320, 200, 1);
             translated *= new Vector3(_mapRect.Width, _mapRect.Height, 1);
@@ -43,7 +43,7 @@ namespace Carmageddon
             foreach (Opponent o in _race.Opponents)
             {
                 pos = o.Vehicle.Position;
-                pos /= GameVariables.Scale;
+                pos /= GameVars.Scale;
                 translated = Vector3.Transform(pos, _race.ConfigFile.MapTranslation);
                 translated /= new Vector3(320, 200, 1);
                 translated *= new Vector3(_mapRect.Width, _mapRect.Height, 1);

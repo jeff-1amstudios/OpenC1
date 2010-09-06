@@ -24,7 +24,7 @@ namespace Carmageddon.Physics
         private ContactReport()
             : base()
         {
-            GameVariables.SparksEmitter = new ParticleEmitter(new SparksParticleSystem(), 10, Vector3.Zero);
+            GameVars.SparksEmitter = new ParticleEmitter(new SparksParticleSystem(), 10, Vector3.Zero);
         }
 
         public override void OnContactNotify(ContactPair contactInfo, ContactPairFlag events)
@@ -120,7 +120,7 @@ namespace Carmageddon.Physics
                                 {
                                     Vector3 pos = iter.GetPoint();
 
-                                    GameVariables.SparksEmitter.Update(pos);
+                                    GameVars.SparksEmitter.Update(pos);
                                 }
                             }
                         }

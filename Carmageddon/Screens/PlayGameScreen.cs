@@ -14,25 +14,28 @@ using Carmageddon.Physics;
 using System.IO;
 using Particle3DSample;
 using Carmageddon.EditModes;
+using Carmageddon.Screens;
 
 
 namespace Carmageddon
 {
     class PlayGameScreen : IGameScreen
     {
-        Race _race;
+        public IGameScreen Parent { get; private set; }
 
+        Race _race;
         BasicEffect2 _effect;   
         List<GameMode> _modes = new List<GameMode>();
        
         int _currentEditMode = 0;
 
-        public PlayGameScreen()
+        public PlayGameScreen(IGameScreen parent)
         {
-            GameVariables.Palette = new PaletteFile(GameVariables.BasePath + "data\\reg\\palettes\\drrender.pal");
+            Parent = parent;
+            GC.Collect();
 
-            string playerCar = "blkeagle.txt";
-            _race = new Race(GameVariables.BasePath + @"data\races\cityc2.TXT", playerCar);
+            //GameVars.SelectedCarFileName = "blkeagle.txt";
+            _race = new Race(GameVars.BasePath + "data\\races\\" + GameVars.SelectedRaceInfo.RaceFilename, GameVars.SelectedCarFileName);
             
             _modes.Add(new NormalMode());
             _modes.Add(new OpponentEditMode());
@@ -50,6 +53,12 @@ namespace Carmageddon
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
                 system.Update();
 
+            if (Engine.Input.WasPressed(Keys.Escape))
+            {
+                Engine.Screen = new PauseMenuScreen(this);
+                return;
+            }
+
             if (Engine.Input.WasPressed(Keys.F4))
             {
                 _currentEditMode = (_currentEditMode + 1) % _modes.Count;
@@ -62,8 +71,8 @@ namespace Carmageddon
             }
             if (Engine.Input.WasPressed(Keys.L))
             {
-                GameVariables.LightingEnabled = !GameVariables.LightingEnabled;
-                MessageRenderer.Instance.PostHeaderMessage("Lighting: " + (GameVariables.LightingEnabled ? "Enabled" : "Disabled"), 2);
+                GameVars.LightingEnabled = !GameVars.LightingEnabled;
+                MessageRenderer.Instance.PostHeaderMessage("Lighting: " + (GameVars.LightingEnabled ? "Enabled" : "Disabled"), 2);
                 _effect = null;
             }
                         
@@ -79,16 +88,16 @@ namespace Carmageddon
 
         public void Render()
         {
-            Engine.Device.Clear(GameVariables.FogColor);
-            GameVariables.NbrDrawCalls = 0;
-            if (GameVariables.CullingDisabled)
+            Engine.Device.Clear(GameVars.FogColor);
+            GameVars.NbrDrawCalls = 0;
+            if (GameVars.CullingDisabled)
                 Engine.Device.RenderState.CullMode = CullMode.None;
             else
                 Engine.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
 
-            GameVariables.CurrentEffect = SetupRenderEffect();
+            GameVars.CurrentEffect = SetupRenderEffect();
 
-            GameVariables.NbrSectionsChecked = GameVariables.NbrSectionsRendered = 0;
+            GameVars.NbrSectionsChecked = GameVars.NbrSectionsRendered = 0;
 
             Engine.SpriteBatch.Begin();
 
@@ -106,11 +115,11 @@ namespace Carmageddon
             Engine.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
             Engine.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
 
-            GameVariables.CurrentEffect.End();
+            GameVars.CurrentEffect.End();
             
             
 
-            GameConsole.WriteLine("Draw Calls", GameVariables.NbrDrawCalls);
+            GameConsole.WriteLine("Draw Calls", GameVars.NbrDrawCalls);
 
             Carmageddon.Physics.PhysX.Instance.Draw();
         }
@@ -127,25 +136,25 @@ namespace Carmageddon
                 if (Race.Current.ConfigFile.DepthCueMode == DepthCueMode.Dark)
                 {
                     _effect.FogColor = new Vector3(0, 0, 0);
-                    GameVariables.FogColor = new Color(0, 0, 0);
+                    GameVars.FogColor = new Color(0, 0, 0);
                 }
                 else if (Race.Current.ConfigFile.DepthCueMode == DepthCueMode.Fog)
                 {
                     _effect.FogColor = new Vector3(245, 245, 245);
-                    GameVariables.FogColor = new Color(245, 245, 245);
+                    GameVars.FogColor = new Color(245, 245, 245);
                 }
                 else
                 {
                     Debug.Assert(false);
                 }
 
-                _effect.FogStart = Engine.DrawDistance - 45 * GameVariables.Scale.Z;
+                _effect.FogStart = Engine.DrawDistance - 45 * GameVars.Scale.Z;
                 _effect.FogEnd = Engine.DrawDistance;
                 _effect.FogEnabled = true;
                 _effect.TextureEnabled = true;
                 _effect.TexCoordsMultiplier = 1;
 
-                if (GameVariables.LightingEnabled)
+                if (GameVars.LightingEnabled)
                 {
                     //_effect.EnableDefaultLighting();
                     _effect.LightingEnabled = true;
@@ -187,7 +196,7 @@ namespace Carmageddon
 
         private void TakeScreenshot()
         {
-            int count = Directory.GetFiles(GameVariables.BasePath + "data", "ndump*.jpg").Length;
+            int count = Directory.GetFiles(GameVars.BasePath + "data", "ndump*.jpg").Length;
             string name = "ndump" + count.ToString("000") + ".jpg";
 
             GraphicsDevice device = Engine.Device;
@@ -195,7 +204,7 @@ namespace Carmageddon
             using (ResolveTexture2D screenshot = new ResolveTexture2D(device, device.PresentationParameters.BackBufferWidth, device.PresentationParameters.BackBufferHeight, 1, SurfaceFormat.Color))
             {
                 device.ResolveBackBuffer(screenshot);
-                screenshot.Save(GameVariables.BasePath + "data\\" + name, ImageFileFormat.Jpg);
+                screenshot.Save(GameVars.BasePath + "data\\" + name, ImageFileFormat.Jpg);
             }
 
             MessageRenderer.Instance.PostHeaderMessage("Screenshot dumped to " + name, 3);

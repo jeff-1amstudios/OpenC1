@@ -12,6 +12,7 @@
     using NFSEngine;
 using NFSEngine.Audio;
 using Carmageddon.Screens;
+using Carmageddon.Parsers;
 
     namespace Carmageddon
     {
@@ -52,7 +53,7 @@ using Carmageddon.Screens;
                 base.Initialize();
 
                 Engine.Startup(this, _graphics);
-                Engine.DrawDistance = GameVariables.Scale.Z * 60;
+                Engine.DrawDistance = GameVars.Scale.Z * 60;
                 Engine.Audio = new NFSEngine.Audio.MdxSoundEngine();
 
 
@@ -69,7 +70,9 @@ using Carmageddon.Screens;
                     SoundCache.Initialize();
                 }
 
-                Engine.Screen = new MainMenuScreen(); // new PlayGameScreen();
+                GameVars.Palette = new PaletteFile(GameVars.BasePath + "data\\reg\\palettes\\drrender.pal");
+
+                Engine.Screen = new MainMenuScreen(null); // new PlayGameScreen();
             }
 
             /// <summary>
@@ -97,10 +100,10 @@ using Carmageddon.Screens;
             protected override void Update(GameTime gameTime)
             {
                 //check for exit
-                if (Engine.Input.WasPressed(Keys.Escape))
-                {
-                    Exit();
-                }
+                //if (Engine.Input.WasPressed(Keys.Escape))
+                //{
+                //    Exit();
+                //}
 
                 Engine.Update(gameTime);
 

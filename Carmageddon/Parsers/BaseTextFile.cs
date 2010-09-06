@@ -77,7 +77,7 @@ namespace Carmageddon.Parsers
         public float ReadLineAsFloat(bool scale)
         {
             string line = ReadLine();
-            return float.Parse(line) * (scale ? GameVariables.Scale.X : 1); 
+            return float.Parse(line) * (scale ? GameVars.Scale.X : 1); 
         }
 
         public Color ReadLineAsColor()
@@ -97,7 +97,7 @@ namespace Carmageddon.Parsers
             string[] tokens = line.Split(new char[] {',', '\t', ' '}, StringSplitOptions.RemoveEmptyEntries);
             Debug.Assert(tokens.Length == 3);
             Vector3 vec = new Vector3(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2]));
-            if (scale) vec *= GameVariables.Scale;
+            if (scale) vec *= GameVars.Scale;
             return vec;
         }
 
@@ -119,7 +119,7 @@ namespace Carmageddon.Parsers
             string[] tokens = line.Split(new char[] { ',', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             Debug.Assert(tokens.Length == 2);
             Vector2 vec = new Vector2(float.Parse(tokens[0]), float.Parse(tokens[1]));
-            if (scale) vec *= new Vector2(GameVariables.Scale.X, GameVariables.Scale.Y);
+            if (scale) vec *= new Vector2(GameVars.Scale.X, GameVars.Scale.Y);
             return vec;
         }
 

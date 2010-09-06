@@ -61,7 +61,7 @@ namespace Carmageddon.Parsers
                         reader.Seek(2, SeekOrigin.Current);
                         string name = ReadNullTerminatedString(reader);
 
-                        if (deformables.Contains(name))
+                        if (deformables != null && deformables.Contains(name))
                             currentModel = new CDeformableModel();
                         else
                             currentModel = new CModel();

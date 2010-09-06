@@ -32,8 +32,8 @@ namespace Carmageddon.CameraViews
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
             _camera.AspectRatio = Engine.AspectRatio;
 
-            DatFile modelsFile = new DatFile(GameVariables.BasePath + "data\\models\\" + vehicle.Config.BonnetModelFile);
-            ActFile actFile = new ActFile(GameVariables.BasePath + "data\\actors\\" + vehicle.Config.BonnetActorFile, modelsFile.Models);
+            DatFile modelsFile = new DatFile(GameVars.BasePath + "data\\models\\" + vehicle.Config.BonnetModelFile);
+            ActFile actFile = new ActFile(GameVars.BasePath + "data\\actors\\" + vehicle.Config.BonnetActorFile, modelsFile.Models);
             _actors = actFile.Hierarchy;
             _actors.ResolveTransforms(false, null);
 

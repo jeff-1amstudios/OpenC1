@@ -28,6 +28,7 @@ namespace Carmageddon
         public const int CopSiren = 5350;
         public const int UI_UpDown = 3000;
         public const int UI_Ok = 3004;
+        public const int UI_Esc = 3005;
     }
 
     static class SoundCache
@@ -41,7 +42,7 @@ namespace Carmageddon
 
         public static void Initialize()
         {
-            SoundsFile soundFile = new SoundsFile(GameVariables.BasePath + "data\\sound\\sound.txt");
+            SoundsFile soundFile = new SoundsFile(GameVars.BasePath + "data\\sound\\sound.txt");
             _soundDescriptions = soundFile.Sounds;
             IsInitialized = true;
 
@@ -66,7 +67,7 @@ namespace Carmageddon
         {
             if (!_enabled) return null;
             SoundDesc csound = _soundDescriptions.Find(a => a.Id == id);
-            ISound instance = Engine.Audio.Load(GameVariables.BasePath + "data\\sound\\" + csound.FileName, is3d);
+            ISound instance = Engine.Audio.Load(GameVars.BasePath + "data\\sound\\" + csound.FileName, is3d);
 
             if (_playerInstances.Exists(a => a.Id == id))
             {

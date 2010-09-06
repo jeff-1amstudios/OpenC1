@@ -18,14 +18,14 @@ namespace Carmageddon.Parsers.Funks
 
         public override void BeforeRender()
         {
-            GameVariables.CurrentEffect.TexCoordsOffset = _uvOffset;
-            GameVariables.CurrentEffect.CommitChanges();
+            GameVars.CurrentEffect.TexCoordsOffset = _uvOffset;
+            GameVars.CurrentEffect.CommitChanges();
         }
 
         public override void AfterRender()
         {
-            GameVariables.CurrentEffect.TexCoordsOffset = Vector2.Zero;
-            GameVariables.CurrentEffect.CommitChanges();
+            GameVars.CurrentEffect.TexCoordsOffset = Vector2.Zero;
+            GameVars.CurrentEffect.CommitChanges();
         }
 
         public void Initialize()

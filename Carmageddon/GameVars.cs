@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Text;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
@@ -10,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon
 {
-    static class GameVariables
+    static class GameVars
     {
         public static PaletteFile Palette { get; set; }
         public static Vector3 Scale = new Vector3(6);
@@ -24,6 +23,9 @@ namespace Carmageddon
         public static BasicEffect2 CurrentEffect;
         public static ParticleEmitter SparksEmitter;
         public static bool LightingEnabled = true;
+        public static string SelectedCarFileName;
+        public static RaceInfo SelectedRaceInfo;
+        public static Texture2D SelectedRaceScene;
         
     }
 }

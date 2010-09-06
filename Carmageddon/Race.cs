@@ -36,28 +36,27 @@ namespace Carmageddon
 
         public Race(string filename, string playerVehicleFile)
         {
-
             ConfigFile = new RaceFile(filename);
 
             foreach (string matFileName in ConfigFile.MaterialFiles)
             {
-                MatFile matFile = new MatFile(GameVariables.BasePath + @"data\material\" + matFileName);
+                MatFile matFile = new MatFile(GameVars.BasePath + @"data\material\" + matFileName);
                 ResourceCache.Add(matFile);
             }
 
             foreach (string pixFileName in ConfigFile.PixFiles)
             {
-                PixFile pixFile = new PixFile(GameVariables.BasePath + @"data\pixelmap\" + pixFileName);
+                PixFile pixFile = new PixFile(GameVars.BasePath + @"data\pixelmap\" + pixFileName);
                 ResourceCache.Add(pixFile);
             }
 
-            ResourceCache.Add(new MatFile(GameVariables.BasePath + @"data\material\" + "drkcurb.mat"));
+            ResourceCache.Add(new MatFile(GameVars.BasePath + @"data\material\" + "drkcurb.mat"));
                         
             ResourceCache.ResolveMaterials();
 
-            DatFile modelFile = new DatFile(GameVariables.BasePath + @"data\models\" + ConfigFile.ModelFile);
+            DatFile modelFile = new DatFile(GameVars.BasePath + @"data\models\" + ConfigFile.ModelFile);
 
-            ActFile actFile = new ActFile(GameVariables.BasePath + @"data\actors\" + ConfigFile.ActorFile, modelFile.Models);
+            ActFile actFile = new ActFile(GameVars.BasePath + @"data\actors\" + ConfigFile.ActorFile, modelFile.Models);
             _actors = actFile.Hierarchy;
             _actors.ResolveTransforms(false, ConfigFile.Grooves);
 
@@ -73,13 +72,15 @@ namespace Carmageddon
 
             if (ConfigFile.SkyboxTexture != "none")
             {
-                PixFile horizonPix = new PixFile(GameVariables.BasePath + "data\\pixelmap\\" + ConfigFile.SkyboxTexture);
+                PixFile horizonPix = new PixFile(GameVars.BasePath + "data\\pixelmap\\" + ConfigFile.SkyboxTexture);
                 _skybox = SkyboxGenerator.Generate(horizonPix.PixMaps[0].Texture, ConfigFile.SkyboxRepetitionsX - 3f, ConfigFile.DepthCueMode);
                 _skybox.HeightOffset = -220 + ConfigFile.SkyboxPositionY * 1.5f;
             }
 
             Physics.TrackProcessor.GenerateTrackActor(ConfigFile, _actors);
             _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);
+
+            GridPlacer.Reset();
 
             Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
@@ -89,14 +90,14 @@ namespace Carmageddon
 
             foreach (CopStartPoint point in ConfigFile.CopStartPoints)
             {
-              //  Opponents.Add(new Opponent(point.IsSpecialForces ? "bigapc.txt" : "apc.txt", point.Position, 0, new CopDriver()));
+                Opponents.Add(new Opponent(point.IsSpecialForces ? "bigapc.txt" : "apc.txt", point.Position, 0, new CopDriver()));
             }
 
             foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
 
             OpponentController.Nodes = ConfigFile.OpponentPathNodes;
 
-            PlayerVehicle = new Vehicle(GameVariables.BasePath + @"data\cars\" + playerVehicleFile, new PlayerDriver());
+            PlayerVehicle = new Vehicle(GameVars.BasePath + @"data\cars\" + playerVehicleFile, new PlayerDriver());
             PlayerVehicle.PlaceOnGrid(ConfigFile.GridPosition, ConfigFile.GridDirection);
             Drivers.Add(PlayerVehicle.Driver);
 
@@ -200,6 +201,7 @@ namespace Carmageddon
 
             RaceTime.Render();
             MessageRenderer.Instance.Render();
+            Engine.DebugRenderer.AddAxis(Matrix.CreateTranslation(ConfigFile.GridPosition), 10);
             
             if (_map.Show)
             {

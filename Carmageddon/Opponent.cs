@@ -23,7 +23,7 @@ namespace Carmageddon
         {
             if (driver == null) driver = new CpuDriver();
             Driver = driver;
-            Vehicle = new Vehicle(GameVariables.BasePath + @"data\cars\" + carFile, Driver);
+            Vehicle = new Vehicle(GameVars.BasePath + @"data\cars\" + carFile, Driver);
             if (driver is CopDriver)
             {
                 Vehicle.Chassis.Actor.GlobalPosition = position;

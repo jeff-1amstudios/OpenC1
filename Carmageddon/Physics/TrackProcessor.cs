@@ -194,7 +194,7 @@ namespace Carmageddon.Physics
                 if (foundWater)
                 {
                     //add a bottom
-                    waterVerts.Add(new Vector3(waterVerts[0].X, waterVerts[0].Y - 6 * GameVariables.Scale.Y, waterVerts[0].Z));
+                    waterVerts.Add(new Vector3(waterVerts[0].X, waterVerts[0].Y - 6 * GameVars.Scale.Y, waterVerts[0].Z));
 
                     BoundingBox bb = BoundingBox.CreateFromPoints(waterVerts);
                     

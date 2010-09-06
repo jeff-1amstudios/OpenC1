@@ -69,7 +69,7 @@ namespace Carmageddon.Parsers
                         byte[] pixels = reader.ReadBytes(pixelCount * bytesPerPixel);
 
                         Texture2D texture = new Texture2D(Engine.Device, currentPix.Width, currentPix.Height,1, TextureUsage.None, SurfaceFormat.Color);
-                        texture.SetData<byte>(Helpers.GetBytesForImage(pixels, currentPix.Width, currentPix.Height, GameVariables.Palette));
+                        texture.SetData<byte>(Helpers.GetBytesForImage(pixels, currentPix.Width, currentPix.Height, GameVars.Palette));
                         
                         currentPix.Texture = texture;
 						break;
