@@ -53,7 +53,11 @@ using Carmageddon.Parsers;
                 base.Initialize();
 
                 Engine.Startup(this, _graphics);
-                Engine.DrawDistance = GameVars.Scale.Z * 60;
+
+                SettingsFile settings = new SettingsFile();
+                GameVars.DrawDistance = settings.DrawDistance * 10;
+
+                Engine.DrawDistance = GameVars.DrawDistance;
                 Engine.Audio = new NFSEngine.Audio.MdxSoundEngine();
 
 
@@ -61,8 +65,6 @@ using Carmageddon.Parsers;
                 Engine.Device.RenderState.AlphaTestEnable = true;
                 Engine.Device.RenderState.ReferenceAlpha = 200;
                 Engine.Device.RenderState.AlphaFunction = CompareFunction.Greater;
-
-                //IsFixedTimeStep = false;
 
                 if (!SoundCache.IsInitialized)
                 {

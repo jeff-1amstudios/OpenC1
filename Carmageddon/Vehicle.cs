@@ -50,10 +50,16 @@ namespace Carmageddon
             _model = new VehicleModel(Config, false);
 
             Audio = new VehicleAudio(this);
-            CActor actor2 = _model.GetActor(Path.GetFileNameWithoutExtension(Config.ModelFile));
-            _deformableModel = (CDeformableModel)actor2.Model;
+            
+            Chassis = new VehicleChassis(this);
 
-            Chassis = new VehicleChassis(this, actor2);
+            CActor actor2 = _model.GetActor(Path.GetFileNameWithoutExtension(Config.ModelFile));
+            if (actor2 != null)
+            {
+                _deformableModel = (CDeformableModel)actor2.Model;
+                _deformableModel._actor = Chassis.Actor;
+                _deformableModel._carFile = Config;
+            }            
 
             _crushSection = Config.CrushSections[1];
 
@@ -109,16 +115,17 @@ namespace Carmageddon
                         SoundCache.PlayCrash(this, force);
                 }
             }
-            _deformableModel.OnContact(position, force, normal);
+            if (_deformableModel != null)
+                _deformableModel.OnContact(position, force, normal);
 
             // if this is a CPU driven car, only damage if the player has something to do with it.  Stops cars killing themselves
             if (Driver is CpuDriver && ((CpuDriver)Driver).LastPlayerTouchTime + 0.3f > Engine.TotalSeconds)
             {
-                Damage(force);
+                Damage(force, position);
             }
             else if (Driver is PlayerDriver)
             {
-                Damage(force);
+                Damage(force, position);
             }
         }
 
@@ -195,7 +202,7 @@ namespace Carmageddon
             return Position + new Vector3(0, Chassis.Wheels[0].Shape.LocalPosition.Y - Config.DrivenWheelRadius, 0);
         }
 
-        private void Damage(float force)
+        private void Damage(float force, Vector3 position)
         {
             if (force < 170000) return;
 
@@ -210,17 +217,17 @@ namespace Carmageddon
                 DamageSmokeEmitter.Enabled = true;
                 DamageSmokeEmitter.ParticleSystem = new DamageSmokeParticleSystem(Color.White);
                 DamageSmokeEmitter.ParticlesPerSecond = 8;
-                _damagePosition = _deformableModel.GetMostDamagedPosition();
+                _damagePosition = _deformableModel != null ? _deformableModel.GetMostDamagedPosition() : position;
             }
             else if (_damage > 40 && olddamage < 40)
             {
-                _damagePosition = _deformableModel.GetMostDamagedPosition();
+                _damagePosition = _deformableModel != null ? _deformableModel.GetMostDamagedPosition() : position;
                 DamageSmokeEmitter.ParticleSystem = new DamageSmokeParticleSystem(Color.Gray);
                 DamageSmokeEmitter.ParticlesPerSecond = 15;
             }
             else if (_damage > 70 && olddamage < 70)
             {
-                _damagePosition = _deformableModel.GetMostDamagedPosition();
+                _damagePosition = _deformableModel != null ? _deformableModel.GetMostDamagedPosition() : position;
                 DamageSmokeEmitter.ParticleSystem = new DamageSmokeParticleSystem(Color.Black);
                 DamageSmokeEmitter.ParticlesPerSecond = 20;
                 if (Driver is CpuDriver)
@@ -242,7 +249,7 @@ namespace Carmageddon
             {
                 MessageRenderer.Instance.PostHeaderMessage("Repair Cost: " + (int)_damage * 20, 2);
                 SoundCache.Play(SoundIds.Repair, this, false);
-                _deformableModel.Repair();
+                if (_deformableModel != null) _deformableModel.Repair();
                 _damage = Chassis.Motor.Damage = 0;
                 DamageSmokeEmitter.Enabled = false;
             }

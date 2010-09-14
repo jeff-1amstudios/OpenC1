@@ -35,11 +35,11 @@ namespace Carmageddon.Parsers
         }
 
         public DatFile(string filename)
-            : this(filename, new List<string>())
+            : this(filename, false)
         {
         }
 
-        public DatFile(string filename, List<string> deformables)
+        public DatFile(string filename, bool deformMainModel)
         {
             CModel currentModel = null;
 
@@ -61,13 +61,18 @@ namespace Carmageddon.Parsers
                         reader.Seek(2, SeekOrigin.Current);
                         string name = ReadNullTerminatedString(reader);
 
-                        if (deformables != null && deformables.Contains(name))
+
+                        if (deformMainModel && Path.GetFileNameWithoutExtension(name).Equals(Path.GetFileNameWithoutExtension(filename), StringComparison.InvariantCultureIgnoreCase))
+                        {
                             currentModel = new CDeformableModel();
+                        }
                         else
+                        {
                             currentModel = new CModel();
+                        }
                         currentModel.Name = name;
                         _models.Add(currentModel);
-                        
+
                         break;
 
                     case (int)BlockType.Vertices:
@@ -101,7 +106,7 @@ namespace Carmageddon.Parsers
             }
 
             reader.Close();
-            
+
             _models.Resolve(true);
         }
 
@@ -175,6 +180,6 @@ namespace Carmageddon.Parsers
 
                 model.Polygons.Add(polygon);
             }
-        }       
+        }
     }
 }

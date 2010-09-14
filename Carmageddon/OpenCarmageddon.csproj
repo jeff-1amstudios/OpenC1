@@ -115,8 +115,13 @@
     <Compile Include="Parsers\CockpitFile.cs" />
     <Compile Include="Parsers\Funks\WindscreenFunk.cs" />
     <Compile Include="Parsers\OpponentsFile.cs" />
+    <Compile Include="Parsers\PedestriansFile.cs" />
     <Compile Include="Parsers\RacesFile.cs" />
+    <Compile Include="Parsers\SettingsFile.cs" />
     <Compile Include="Parsers\TextFileDecryptor.cs" />
+    <Compile Include="Pedestrian.cs" />
+    <Compile Include="PedestrianBehaviour.cs" />
+    <Compile Include="PedestrianController.cs" />
     <Compile Include="Physics\TriggerReport.cs" />
     <Compile Include="Physics\PhysXConsts.cs" />
     <Compile Include="PixmapBillboard.cs" />
@@ -214,6 +219,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Lib\StillDesign.PhysX.Net.dll" />
+    <Content Include="OpenCarmaSettings.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>

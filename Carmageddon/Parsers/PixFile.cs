@@ -44,6 +44,10 @@ namespace Carmageddon.Parsers
 			{
 				int blockLength = 0;
 				PixBlockType blockType = (PixBlockType)reader.ReadInt32();
+                
+                if (blockType == PixBlockType.Null && reader.BaseStream.Position + 3 >= reader.BaseStream.Length)
+                    break;
+
 				blockLength = reader.ReadInt32();
 
 				switch (blockType)
@@ -75,13 +79,16 @@ namespace Carmageddon.Parsers
 						break;
 
 					case PixBlockType.Null:
+                        if (reader.BaseStream.Position >= 135350)
+                        {
+                        }
 						break;
 
 					default:
 						reader.Seek(blockLength, SeekOrigin.Current);
 						break;
 				}
-				if (reader.BaseStream.Position == reader.BaseStream.Length)
+				if (reader.BaseStream.Position+3 >= reader.BaseStream.Length)
 					break;
 			}
 

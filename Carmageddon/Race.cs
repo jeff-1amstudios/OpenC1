@@ -29,6 +29,7 @@ namespace Carmageddon
         public List<Opponent> Opponents = new List<Opponent>();
         public List<IDriver> Drivers = new List<IDriver>(); //opponent + player drivers
         private RaceMap _map;
+        private PedestrianController _pedController;
 
         public static Race Current;
 
@@ -82,15 +83,15 @@ namespace Carmageddon
 
             GridPlacer.Reset();
 
-            Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("harry.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("harry.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 
             foreach (CopStartPoint point in ConfigFile.CopStartPoints)
             {
-                Opponents.Add(new Opponent(point.IsSpecialForces ? "bigapc.txt" : "apc.txt", point.Position, 0, new CopDriver()));
+              //  Opponents.Add(new Opponent(point.IsSpecialForces ? "bigapc.txt" : "apc.txt", point.Position, 0, new CopDriver()));
             }
 
             foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
@@ -100,6 +101,8 @@ namespace Carmageddon
             PlayerVehicle = new Vehicle(GameVars.BasePath + @"data\cars\" + playerVehicleFile, new PlayerDriver());
             PlayerVehicle.PlaceOnGrid(ConfigFile.GridPosition, ConfigFile.GridDirection);
             Drivers.Add(PlayerVehicle.Driver);
+
+            _pedController = new PedestrianController(ConfigFile.Peds);
 
             Race.Current = this;
 
@@ -134,7 +137,10 @@ namespace Carmageddon
                 foreach (IDriver driver in Drivers)
                     if (driver is CpuDriver)
                     {
-                        ((CpuDriver)driver).TargetNode(closestPath.End);
+                        if (closestPath == null)
+                            ((CpuDriver)driver).SetState(CpuDriverState.Sleeping);
+                        else
+                            ((CpuDriver)driver).TargetNode(closestPath.End);
                     }
             }
 
@@ -169,6 +175,8 @@ namespace Carmageddon
                 opponent.Vehicle.Update();
             }
 
+            _pedController.Update();
+
             MessageRenderer.Instance.Update();
 
             if (Engine.Input.WasPressed(Keys.Tab))
@@ -199,9 +207,11 @@ namespace Carmageddon
                 opponent.Driver.DistanceFromPlayer = Vector3.Distance(PlayerVehicle.Position, opponent.Vehicle.Position);
             }
 
+            _pedController.Render();
+
             RaceTime.Render();
             MessageRenderer.Instance.Render();
-            Engine.DebugRenderer.AddAxis(Matrix.CreateTranslation(ConfigFile.GridPosition), 10);
+            //Engine.DebugRenderer.AddAxis(Matrix.CreateTranslation(ConfigFile.GridPosition), 10);
             
             if (_map.Show)
             {

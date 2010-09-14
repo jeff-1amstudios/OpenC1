@@ -132,33 +132,48 @@ namespace Carmageddon
 
             if (_effect == null)
             {
+                
                 _effect = new BasicEffect2();
+
+                Engine.Device.RenderState.FogEnable = true;
+
                 if (Race.Current.ConfigFile.DepthCueMode == DepthCueMode.Dark)
                 {
-                    _effect.FogColor = new Vector3(0, 0, 0);
                     GameVars.FogColor = new Color(0, 0, 0);
+                    Engine.Device.RenderState.FogTableMode = FogMode.Linear;
+                    Engine.Device.RenderState.FogEnd = GameVars.DrawDistance - (Race.Current.ConfigFile.FogAmount * 15);
+                    Engine.Device.RenderState.FogStart = (1 / Race.Current.ConfigFile.FogAmount) * 100;
+                    //Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0012f;                    
                 }
                 else if (Race.Current.ConfigFile.DepthCueMode == DepthCueMode.Fog)
                 {
-                    _effect.FogColor = new Vector3(245, 245, 245);
                     GameVars.FogColor = new Color(245, 245, 245);
+                    //Engine.Device.RenderState.FogTableMode = FogMode.ExponentSquared;
+                    //Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0015f;
+                    Engine.Device.RenderState.FogTableMode = FogMode.Linear;
+                    Engine.Device.RenderState.FogEnd = GameVars.DrawDistance - (Race.Current.ConfigFile.FogAmount * 15);
+                    Engine.Device.RenderState.FogStart = (1 / Race.Current.ConfigFile.FogAmount) * 100;
                 }
                 else
                 {
                     Debug.Assert(false);
                 }
 
-                _effect.FogStart = Engine.DrawDistance - 45 * GameVars.Scale.Z;
-                _effect.FogEnd = Engine.DrawDistance;
-                _effect.FogEnabled = true;
+                //_effect.FogStart = 1 * (1/Race.Current.ConfigFile.FogAmount);
+                //_effect.FogEnd = Engine.DrawDistance * 2 * (1 / Race.Current.ConfigFile.FogAmount);
+                //_effect.FogEnabled = true;
                 _effect.TextureEnabled = true;
                 _effect.TexCoordsMultiplier = 1;
+                _effect.FogEnabled = false;
+
+                
+                
+                Engine.Device.RenderState.FogColor = GameVars.FogColor;
 
                 if (GameVars.LightingEnabled)
                 {
-                    //_effect.EnableDefaultLighting();
+                    _effect.PreferPerPixelLighting = false;
                     _effect.LightingEnabled = true;
-                    //_effect.DiffuseColor = new Vector3(1);
                     _effect.AmbientLightColor = new Vector3(0.8f);
                     _effect.DirectionalLight0.DiffuseColor = new Vector3(1);
                     
@@ -196,15 +211,14 @@ namespace Carmageddon
 
         private void TakeScreenshot()
         {
-            int count = Directory.GetFiles(GameVars.BasePath + "data", "ndump*.jpg").Length;
-            string name = "ndump" + count.ToString("000") + ".jpg";
+            int count = Directory.GetFiles(GameVars.BasePath + "data", "ndump*.bmp").Length + 1;
+            string name = "ndump" + count.ToString("000") + ".bmp";
 
             GraphicsDevice device = Engine.Device;
-            new ResolveTexture2D(device, 10, 10, 1, SurfaceFormat.Color);
             using (ResolveTexture2D screenshot = new ResolveTexture2D(device, device.PresentationParameters.BackBufferWidth, device.PresentationParameters.BackBufferHeight, 1, SurfaceFormat.Color))
             {
                 device.ResolveBackBuffer(screenshot);
-                screenshot.Save(GameVars.BasePath + "data\\" + name, ImageFileFormat.Jpg);
+                screenshot.Save(GameVars.BasePath + "data\\" + name, ImageFileFormat.Bmp);
             }
 
             MessageRenderer.Instance.PostHeaderMessage("Screenshot dumped to " + name, 3);

@@ -79,7 +79,11 @@ namespace Carmageddon.Parsers
             MaterialFiles = new List<string>();
             PixFiles = new List<string>();
 
-            SkipLines(2);
+            SkipLines(1);
+            if (ReadLine() != "START OF DRIVABLE STUFF")
+            {
+                throw new Exception("Invalid car file: " + filename);
+            }
             DriverHeadPosition = ReadLineAsVector3();
 
             SkipLines(4);  //car name, pratcam shit
@@ -273,7 +277,7 @@ namespace Carmageddon.Parsers
             }
 
             SkipLines(1);
-            string[] suspGive = ReadLine().Split(',');
+            string[] suspGive = ReadLine().Split(new char[] { ',', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             SuspensionGiveFront = float.Parse(suspGive[0]);
             SuspensionGiveRear = float.Parse(suspGive[1]);
             RideHeight = ReadLineAsFloat(false);

@@ -37,15 +37,15 @@ namespace Carmageddon.Gfx
 
             //settings.Gravity = new Vector3(0, -5, 0);
             settings.DurationRandomness = 0.5f;
-            
+            settings.EmitterVelocitySensitivity = 0.5f;
 
             settings.EndVelocity = 0.7f;
 
             settings.MinStartSize = 0.3f;
-            settings.MaxStartSize = 1f;
+            settings.MaxStartSize = 0.5f;
 
-            settings.MinEndSize = 2.5f;
-            settings.MaxEndSize = 3;
+            settings.MinEndSize = 3f;
+            settings.MaxEndSize = 4;
         }
     }
 }

@@ -165,6 +165,9 @@ namespace PlatformEngine
 
             GraphicsDevice device = Engine.Device;
 
+            bool fogEnabled = device.RenderState.FogEnable;
+            device.RenderState.FogEnable = false;
+
             device.RenderState.DepthBufferWriteEnable = false;
             device.VertexDeclaration = _vertexDeclaration;
             device.Vertices[0].SetSource(_vertices, 0, VertexPositionTexture.SizeInBytes);
@@ -182,6 +185,7 @@ namespace PlatformEngine
             _effect.End();
 
             device.RenderState.DepthBufferWriteEnable = true;
+            device.RenderState.FogEnable = fogEnabled;
         }
     }
 }

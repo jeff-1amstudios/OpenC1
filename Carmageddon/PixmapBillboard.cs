@@ -98,34 +98,5 @@ namespace Carmageddon
                 _currentFrameTime = 0;
             }
         }
-
-
-        //public void Render(Matrix world)
-        //{
-        //    Update();
-
-        //    bbEffect.CurrentTechnique = bbEffect.Techniques["CylBillboard"];
-        //    bbEffect.Parameters["xWorld"].SetValue(Matrix.CreateTranslation(0, 0, 0));
-        //    bbEffect.Parameters["xView"].SetValue(Engine.Camera.View);
-        //    bbEffect.Parameters["xProjection"].SetValue(Engine.Camera.Projection);
-        //    bbEffect.Parameters["xCamPos"].SetValue(Engine.Camera.Position);
-        //    bbEffect.Parameters["xAllowedRotDir"].SetValue(new Vector3(0, 1, 0));
-        //    bbEffect.Parameters["xBillboardTexture"].SetValue(_pixmaps[_currentFrame].Texture);
-
-        //    bbEffect.Begin();
-        //    foreach (EffectPass pass in bbEffect.CurrentTechnique.Passes)
-        //    {
-        //        pass.Begin();
-        //        Engine.Device.Vertices[0].SetSource(treeVertexBuffer, 0, VertexPositionTexture.SizeInBytes);
-        //        Engine.Device.VertexDeclaration = treeVertexDeclaration;
-        //        int noVertices = treeVertexBuffer.SizeInBytes / VertexPositionTexture.SizeInBytes;
-        //        int noTriangles = noVertices / 3;
-        //        Engine.Device.DrawPrimitives(PrimitiveType.TriangleList, 0, noTriangles);
-        //        pass.End();
-        //    }
-        //    bbEffect.End();
-        //}
     }
-
-
 }

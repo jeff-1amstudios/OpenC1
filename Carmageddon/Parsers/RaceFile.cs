@@ -34,6 +34,7 @@ namespace Carmageddon.Parsers
         public string SkyboxTexture { get; private set; }
         public float SkyboxPositionY, SkyboxRepetitionsX;
         public DepthCueMode DepthCueMode { get; private set; }
+        public float FogAmount;
         public Vector3 GridPosition;
         public float GridDirection;
         public List<NoncarFile> NonCars { get; set; }
@@ -48,6 +49,7 @@ namespace Carmageddon.Parsers
         public List<OpponentPathNode> OpponentPathNodes;
         public string MapTexture;
         public Matrix MapTranslation;
+        public List<Pedestrian> Peds;
 
         int _fileVersion;
         
@@ -112,7 +114,7 @@ namespace Carmageddon.Parsers
             if (cueMode == "dark") DepthCueMode = DepthCueMode.Dark;
             else if (cueMode == "fog") DepthCueMode = DepthCueMode.Fog;
             else DepthCueMode = DepthCueMode.Fog; //default to fog?
-            ReadLine(); //degree of dark
+            FogAmount = float.Parse(ReadLine().Split(',')[0]); //degree of dark
 
             int defaultEngineNoise = ReadLineAsInt();
             
@@ -228,23 +230,36 @@ namespace Carmageddon.Parsers
 
         private void ReadPedestrianSection()
         {
+            Peds = new List<Pedestrian>();
+
             ReadLine(); //# of pedsubs
-            int nbrPeds = ReadLineAsInt();
+            int nbrPeds = ReadLineAsInt();                       
 
             for (int i = 0; i < nbrPeds; i++)
             {
-                int pedNbr = ReadLineAsInt();
+                Pedestrian ped = new Pedestrian();
+                ped.RefNumber = ReadLineAsInt();
+                
                 int nbrInstructions = ReadLineAsInt();
-                int initialInstruction = ReadLineAsInt();
+                ped.InitialInstruction = ReadLineAsInt() - 1;  //1-based
                 for (int j = 0; j < nbrInstructions; j++)
                 {
-                    string instruction = ReadLine();
-                    if (instruction == "point") ReadLine(); //point data
-                    else if (instruction == "reverse") { }
+                    string type = ReadLine();
+                    if (type == "point")
+                    {
+                        PedestrianPointInstruction instruction = new PedestrianPointInstruction();
+                        instruction.Position = ReadLineAsVector3();
+                        ped.Instructions.Add(instruction);
+                    }
+                    else if (type == "reverse") 
+                    {
+                        ped.Instructions.Add(new PedestrianReverseInstruction());
+                    }
                     else
                     {
                     }
                 }
+                Peds.Add(ped);
             }
         }
 

@@ -274,7 +274,7 @@ namespace Carmageddon
                 Vehicle.Chassis.Steer(_reverseTurning);
             }
 
-            Engine.DebugRenderer.AddWireframeCube(Matrix.CreateScale(2) * Matrix.CreateTranslation(_targetNode.Position), Color.Green);
+            //Engine.DebugRenderer.AddWireframeCube(Matrix.CreateScale(2) * Matrix.CreateTranslation(_targetNode.Position), Color.Green);
         }
 
         public void SetState(CpuDriverState state)

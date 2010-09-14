@@ -70,6 +70,30 @@ namespace Carmageddon.Parsers
             return int.Parse(line);
         }
 
+        public int[] ReadLineAsIntList()
+        {
+            string line = ReadLine();
+            string[] items = line.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            int[] ints = new int[items.Length];
+            for (int i = 0; i < ints.Length; i++)
+                ints[i] = int.Parse(items[i]);
+
+            return ints;
+        }
+
+        public float[] ReadLineAsFloatList()
+        {
+            string line = ReadLine();
+            string[] items = line.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            float[] floats = new float[items.Length];
+            for (int i = 0; i < floats.Length; i++)
+                floats[i] = float.Parse(items[i]);
+
+            return floats;
+        }
+
         public float ReadLineAsFloat()
         {
             return ReadLineAsFloat(true);

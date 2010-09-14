@@ -6,7 +6,7 @@ using PlatformEngine;
 
 namespace Carmageddon.Parsers.Grooves
 {
-    
+
     class RockGroove : BaseGroove
     {
         public Motion Motion;
@@ -17,7 +17,8 @@ namespace Carmageddon.Parsers.Grooves
         float _currentRock;
         float _direction = 1;
         float _speed2 = 2;
-        
+        float _flashRock;
+
         public override void Update()
         {
             if (_actor == null)
@@ -30,18 +31,34 @@ namespace Carmageddon.Parsers.Grooves
 
                     float distance = (MaxAngle - Math.Abs(_currentRock)) / MaxAngle;
                     //if (distance < 0.15f)
-                        _speed2 = MathHelper.Lerp(0.05f, 1f, distance);
+                    _speed2 = MathHelper.Lerp(0.05f, 1f, distance);
                     //else
                     //    _speed2 = 1;
                     break;
                 case Motion.Linear:
                 case Motion.Absolute:
+                    //case Motion.Flash:
                     _currentRock += _direction * Engine.ElapsedSeconds * Speed * 6.28f;
+                    break;
+                case Motion.Flash:
+                    _flashRock += _direction * Engine.ElapsedSeconds * Speed * 6.28f;
                     break;
                 default:
                     throw new NotImplementedException();
             }
 
+            if (Motion == Motion.Flash)
+            {
+                if (Math.Abs(_flashRock) > MaxAngle)
+                    _currentRock = _flashRock;
+                _direction *= -1;
+                if (_flashRock < 0)
+                    _currentRock = _flashRock = -MaxAngle;
+                else
+                    _currentRock = _flashRock = MaxAngle;
+            }
+            else
+            {
             if (Math.Abs(_currentRock) > MaxAngle)
             {
                 _direction *= -1;
@@ -49,6 +66,7 @@ namespace Carmageddon.Parsers.Grooves
                     _currentRock = -MaxAngle;
                 else
                     _currentRock = MaxAngle;
+            }
             }
 
             Matrix rot;

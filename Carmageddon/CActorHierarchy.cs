@@ -19,12 +19,12 @@ namespace Carmageddon
         {
             RenderWheelsSeparately = true;
         }
-        
+
         public CActor Root
         {
             get { return _actors[0]; }
         }
-                
+
 
         public void Add(CActor actor)
         {
@@ -65,7 +65,7 @@ namespace Carmageddon
             ResolveTransformations(Matrix.Identity, Root, grooves);
             ScaleTransformations(GameVars.Scale, Root);
 
-            
+
         }
 
         private void ResolveTransformations(Matrix world, CActor actor, List<BaseGroove> grooves)
@@ -113,7 +113,7 @@ namespace Carmageddon
             Models.SetupRender();
 
             GameVars.NbrSectionsRendered = GameVars.NbrSectionsChecked = 0;
-                        
+
             bool overrideActor = world != Matrix.Identity;
 
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].Begin();
@@ -150,36 +150,36 @@ namespace Carmageddon
 
             if (intersects)
             {
-                if (actor.Model != null)
+                Matrix m = actor.GetDynamicMatrix();
+
+                if (actor.IsAnimated || parentAnimated)
                 {
-                    Matrix m = actor.GetDynamicMatrix();
-
-                    if (actor.IsAnimated || parentAnimated)
+                    if (actor.IsAnimated && !parentAnimated)
                     {
-
-                        if (actor.IsAnimated && !parentAnimated)
-                        {
-                            world = m * actor.ParentMatrix * GameVars.ScaleMatrix * world;
-                        }
-                        else
-                        {
-                            world = m * world;
-                        }
-
-                        GameVars.CurrentEffect.World = world;
-                        parentAnimated = true;
+                        world = m * actor.ParentMatrix * GameVars.ScaleMatrix * world;
                     }
                     else
                     {
-                        GameVars.CurrentEffect.World = m * world;
+                        world = m * world;
                     }
 
-                    GameVars.CurrentEffect.CommitChanges();
-
-                    actor.Model.Render(actor.Material);
-
-                    GameVars.NbrSectionsRendered++;
+                    GameVars.CurrentEffect.World = world;
+                    parentAnimated = true;
                 }
+                else
+                {
+                    GameVars.CurrentEffect.World = m * world;
+                }
+
+                GameVars.CurrentEffect.CommitChanges();
+
+                if (actor.Model != null)
+                {
+                    actor.Model.Render(actor.Material);
+                }
+
+                GameVars.NbrSectionsRendered++;
+
                 foreach (CActor child in actor.Children)
                     RenderChildren(frustum, child, world, parentAnimated);
             }
@@ -194,32 +194,6 @@ namespace Carmageddon
 
             actor.Model.Render(actor.Material);
         }
-
-        //public Matrix CalculateDynamicActorMatrix(CActor actorToFind)
-        //{
-        //    bool done = false;
-        //    Matrix m = CalculateDynamicActorMatrixInternal(_actors[0], Matrix.Identity, actorToFind, ref done);
-        //    return m * GameVariables.ScaleMatrix;
-        //}
-
-        //private Matrix CalculateDynamicActorMatrixInternal(CActor actor, Matrix matrix, CActor actorToFind, ref bool done)
-        //{
-        //    if (done) return matrix;
-
-        //    matrix = matrix * actor.Matrix;
-
-        //    if (actorToFind == actor)
-        //    {
-        //        done = true;
-        //        return matrix;
-        //    }
-        //    foreach (CActor child in actor.Children)
-        //    {
-        //        Matrix m = CalculateDynamicActorMatrixInternal(child, matrix, actorToFind, ref done);
-        //        if (done) return m;
-        //    }
-        //    return matrix;
-        //}
 
         public void RecalculateActorParent(CActor actor)
         {

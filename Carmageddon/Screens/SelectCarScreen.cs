@@ -43,8 +43,18 @@ namespace Carmageddon.Screens
 
             _opponents = OpponentsFile.Instance.Opponents;
             
-            //_carFiles = new List<string>(Directory.GetFiles(GameVariables.BasePath + "data\\cars"));
-            //_carFiles.RemoveAll(a => !a.ToUpper().EndsWith(".TXT"));
+            List<string> carFiles = new List<string>(Directory.GetFiles(GameVars.BasePath + "data\\cars"));
+            carFiles.RemoveAll(a => !a.ToUpper().EndsWith(".TXT"));
+            carFiles.Sort();
+            carFiles.Reverse();
+            foreach (string file in carFiles)
+            {
+                string filename = Path.GetFileName(file);
+                if (!_opponents.Exists(a => a.FileName.Equals(filename, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    _opponents.Insert(0, new OpponentInfo { FileName = filename, Name = Path.GetFileNameWithoutExtension(filename), StrengthRating = 1 });
+                }
+            }
             //_carFiles.RemoveAll(a => a.ToUpper().Contains("ZGRIMM"));
             
             _options.Add(new CarModelMenuOption(_effect, _opponents[0]));
@@ -83,7 +93,14 @@ namespace Carmageddon.Screens
         {
             _effect = effect;
             _info = info;
-            _model = new VehicleModel(new CarFile(GameVars.BasePath + "data\\cars\\" + info.FileName), true);
+            try
+            {
+                _model = new VehicleModel(new CarFile(GameVars.BasePath + "data\\cars\\" + info.FileName), true);
+            }
+            catch (Exception ex)
+            {
+                _info.Name = ex.Message;
+            }
         }
 
         public void RenderInSpriteBatch()
@@ -94,6 +111,12 @@ namespace Carmageddon.Screens
 
         public void RenderOutsideSpriteBatch()
         {
+            if (_model == null)
+                return;
+
+            Engine.Device.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
+            Engine.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
+
             _effect.Begin(SaveStateMode.None);
 
             _model.Update();

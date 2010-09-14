@@ -1,0 +1,4 @@
+﻿// -- OpenCarmageddon --
+//
+// default settings
+35	// Draw distance

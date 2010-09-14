@@ -103,18 +103,18 @@ namespace Carmageddon
                 }
             }
 
+            for (int i = 0; i < _localVertices.Length; i++)
+                _localVertices[i].Normal = Vector3.Zero;
+
             for (int i = 0; i < indices2.Count / 3; i++)
             {
                 Vector3 firstvec = _localVertices[indices2[i * 3 + 1]].Position - _localVertices[indices2[i * 3]].Position;
                 Vector3 secondvec = _localVertices[indices2[i * 3]].Position - _localVertices[indices2[i * 3 + 2]].Position;
                 Vector3 normal = Vector3.Cross(firstvec, secondvec);
                 normal.Normalize();
-                VertexPositionNormalTexture vpnt = _localVertices[indices2[i * 3]];
-                vpnt.Normal += normal;
-                vpnt = _localVertices[indices2[i * 3 + 1]];
-                vpnt.Normal += normal;
-                vpnt = _localVertices[indices2[i * 3 + 2]];
-                vpnt.Normal += normal;
+                _localVertices[indices2[i * 3]].Normal += normal;
+                _localVertices[indices2[i * 3 + 1]].Normal += normal;
+                _localVertices[indices2[i * 3 + 2]].Normal += normal;
             }
             for (int i = 0; i < _localVertices.Length; i++)
                 _localVertices[i].Normal.Normalize();
@@ -182,6 +182,9 @@ namespace Carmageddon
             int hitpoints = 0;
 
             CrushData data = GetClosestCrushData(contactPoint);
+            if (data == null)
+                return; //no crush data for this car
+
             //foreach (CrushData data in _carFile.CrushSections[1].Data)
             {
                 Vector3 crushPoint = Vector3.Transform(_localVertices[data.RefVertex].Position, GameVars.ScaleMatrix * _actor.GlobalPose);
@@ -341,8 +344,6 @@ namespace Carmageddon
             }
         }
 
-
-        int _nbr = 0;
         public override void Render(CMaterial actorMaterial)
         {
             if (_actor == null) return;
@@ -447,7 +448,6 @@ namespace Carmageddon
                     currentMaterial.Funk.BeforeRender();
                 }
                 GameVars.NbrDrawCalls++;
-
                 Engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVert, 0, 3 * poly.NbrPrims, indexBufferStart, poly.NbrPrims);
 
                 indexBufferStart += poly.NbrPrims * 3;
@@ -460,6 +460,14 @@ namespace Carmageddon
             }
 
             device.Vertices[0].SetSource(verts, 0, VertexPositionNormalTexture.SizeInBytes);
+
+            //for (int i = 0; i < _localVertices.Length; i++)
+            //{
+            //    var ver = _localVertices[i];
+            //    Vector3 lineEnd = ver.Position + (ver.Normal * 1f);
+            //    Engine.DebugRenderer.AddLine(Vector3.Transform(ver.Position, GameVars.ScaleMatrix*_actor.GlobalPose),
+            //        Vector3.Transform(lineEnd, GameVars.ScaleMatrix * _actor.GlobalPose), Color.Yellow);
+            //}
         }
 
         internal Vector3 GetMostDamagedPosition()

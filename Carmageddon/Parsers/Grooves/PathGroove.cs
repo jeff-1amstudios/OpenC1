@@ -28,6 +28,7 @@ namespace Carmageddon.Parsers.Grooves
                 //    _speed2 = 1;
                 //break;
                 case Motion.Linear:
+                case Motion.Absolute:
                     _currentPos += _direction * Engine.ElapsedSeconds * Speed * 2;
                     break;
                 default:

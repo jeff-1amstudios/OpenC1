@@ -19,7 +19,8 @@ namespace Carmageddon.Parsers
             Null = 0,
             TextureName = 28,
             TabName = 31,
-            Attributes = 4
+            Attributes = 4,
+            AttributesV2 = 60
         }
 
 
@@ -32,7 +33,7 @@ namespace Carmageddon.Parsers
 
         public MatFile(string filename)
         {
-            if (filename.ToLower().Contains("ed.mat"))
+            if (filename.ToLower().Contains("beast"))
             {
             }
             EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
@@ -45,6 +46,8 @@ namespace Carmageddon.Parsers
                 MaterialBlockType blockType = (MaterialBlockType)reader.ReadInt32();
                 blockLength = reader.ReadInt32();
 
+                byte[] flags;
+
                 switch (blockType)
                 {
                     case MaterialBlockType.Attributes:
@@ -53,15 +56,27 @@ namespace Carmageddon.Parsers
 
                         byte[] color = reader.ReadBytes(4);
                         byte[] otherColors = reader.ReadBytes(16);
-                        byte[] flags = reader.ReadBytes(2);
+                        flags = reader.ReadBytes(2);
                         byte[] transform = reader.ReadBytes(24);
-                        currentMaterial.BasePixel = reader.ReadByte();
-                        byte unk = reader.ReadByte(); //unk
-                        if (unk != 0)
-                        {
-                        }
+                        currentMaterial.SimpMatPixelIndex = reader.ReadByte();
+                        currentMaterial.SimpMatGradientCount = reader.ReadByte();
+                        
                         currentMaterial.DoubleSided = flags[0] == 0x10;
                         currentMaterial.Name = ReadNullTerminatedString(reader);                        
+                        break;
+
+                    case MaterialBlockType.AttributesV2:
+                        currentMaterial = new CMaterial();
+                        _materials.Add(currentMaterial);
+
+                        reader.ReadBytes(4); //color
+                        reader.ReadBytes(16); //othercolors
+                        flags = reader.ReadBytes(4); // flags
+                        reader.ReadBytes(24); //transform
+                        reader.ReadBytes(4); //unk
+                        currentMaterial.DoubleSided = flags[0] == 0x10;
+                        reader.BaseStream.Position += 13;                        
+                        currentMaterial.Name = ReadNullTerminatedString(reader);
                         break;
 
                     case MaterialBlockType.TextureName:

@@ -46,8 +46,8 @@ namespace Carmageddon
             _grooves = new List<BaseGroove>();
             foreach (BaseGroove g in file.Grooves)
                 if (!g.IsWheelActor) _grooves.Add(g);
-
-            DatFile modelFile = new DatFile(GameVars.BasePath + "data\\models\\" + file.ModelFile, forDisplayOnly ? null : new List<string> { file.ModelFile });
+            
+            DatFile modelFile = new DatFile(GameVars.BasePath + "data\\models\\" + file.ModelFile, !forDisplayOnly);
             ActFile actFile = new ActFile(GameVars.BasePath + "data\\actors\\" + file.ActorFile, modelFile.Models);
 
             _actors = actFile.Hierarchy;

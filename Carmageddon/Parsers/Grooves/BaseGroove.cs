@@ -14,7 +14,8 @@ public enum Motion
 {
     Linear,
     Harmonic,
-    Absolute
+    Absolute,
+    Flash
 }
 
 namespace Carmageddon.Parsers.Grooves
@@ -57,6 +58,8 @@ namespace Carmageddon.Parsers.Grooves
                 return (ActorName.StartsWith("FLWHEEL") || ActorName.StartsWith("FRWHEEL") ||
                     ActorName.StartsWith("RLWHEEL") || ActorName.StartsWith("RRWHEEL") ||
                     ActorName.StartsWith("FRPIVOT") || ActorName.StartsWith("FLPIVOT") ||
+                    ActorName.StartsWith("FPIVOT") || ActorName.StartsWith("FWHEEL") ||
+                    ActorName.StartsWith("RPIVOT") || ActorName.StartsWith("RWHEEL") ||
                     ActorName.StartsWith("MRPIVOT") || ActorName.StartsWith("MLPIVOT") ||
                     ActorName.StartsWith("MLWHEEL") || ActorName.StartsWith("MRWHEEL"));
             }

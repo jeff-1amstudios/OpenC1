@@ -18,6 +18,7 @@ namespace Carmageddon.Screens
         public MainMenuScreen(BaseMenuScreen parent)
             : base(parent)
         {
+
             _inAnimation = new FliPlayer(new FliFile(GameVars.BasePath + "data\\anim\\MAI2COME.fli"));
             _inAnimation.Play(false, 1);
 

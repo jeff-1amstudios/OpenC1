@@ -89,7 +89,7 @@ namespace Carmageddon.Screens
 
         public virtual void Render()
         {
-            Engine.Device.Clear(Color.Black);
+            Engine.Device.Clear(Color.White);
 
             Engine.SpriteBatch.Begin();
 
