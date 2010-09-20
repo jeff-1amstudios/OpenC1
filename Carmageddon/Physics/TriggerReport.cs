@@ -43,6 +43,10 @@ namespace Carmageddon.Physics
                     Race.Current.OnVehicleExitSpecVol((SpecialVolume)triggerShape.Actor.UserData, vehicle);
                 }
             }
+            else if (triggerShape.Actor.UserData is Pedestrian)
+            {
+                Race.Current.OnPedestrianHit((Pedestrian)triggerShape.Actor.UserData, vehicle);
+            }
         }
     }
 }

@@ -57,8 +57,8 @@ namespace PlatformEngine
             _mouseSmoothingCache = new Vector2[MOUSE_SMOOTHING_CACHE_SIZE];
             _mouseInputMode = MouseInputMode.FPS;
 
-            Vector2 screenCenter = GetScreenCenter();
-            Mouse.SetPosition((int)screenCenter.X, (int)screenCenter.Y);
+            //Vector2 screenCenter = GetScreenCenter();
+            //Mouse.SetPosition((int)screenCenter.X, (int)screenCenter.Y);
         }
 
         public GamePadState GamePadState
@@ -84,7 +84,7 @@ namespace PlatformEngine
             if (_previousKeyboardState == null)
                 _previousKeyboardState = _keyboardState;
 
-            _mouseState = Mouse.GetState();
+            
 
             if (_keyboardState.IsKeyDown(Keys.LeftAlt))
             {
@@ -94,12 +94,16 @@ namespace PlatformEngine
             {
                 MouseMode = MouseInputMode.FPS;
 
+                MouseState newState = Mouse.GetState();
+
                 Vector2 screenCenter = GetScreenCenter();
-                _mouseDelta.X = (-1 * (screenCenter.X - _mouseState.X)) * _mouseMultiplier;
-                _mouseDelta.Y = (screenCenter.Y - _mouseState.Y) * _mouseMultiplier;
+                _mouseDelta.X = ((newState.X - _mouseState.X)) * _mouseMultiplier;
+                _mouseDelta.Y = -1 * (newState.Y - _mouseState.Y) * _mouseMultiplier;
                 SmoothMouseMovement();
 
-                Mouse.SetPosition((int)screenCenter.X, (int)screenCenter.Y);
+                _mouseState = newState;
+
+                //Mouse.SetPosition((int)screenCenter.X, (int)screenCenter.Y);
             }
             
             base.Update(gameTime);

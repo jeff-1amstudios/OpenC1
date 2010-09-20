@@ -141,7 +141,7 @@ namespace Carmageddon
                 {
                     GameVars.FogColor = new Color(0, 0, 0);
                     Engine.Device.RenderState.FogTableMode = FogMode.Linear;
-                    Engine.Device.RenderState.FogEnd = GameVars.DrawDistance - (Race.Current.ConfigFile.FogAmount * 15);
+                    Engine.Device.RenderState.FogEnd = GameVars.DrawDistance + 20; // GameVars.DrawDistance - (Race.Current.ConfigFile.FogAmount * 15);
                     Engine.Device.RenderState.FogStart = (1 / Race.Current.ConfigFile.FogAmount) * 100;
                     //Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0012f;                    
                 }
@@ -151,7 +151,7 @@ namespace Carmageddon
                     //Engine.Device.RenderState.FogTableMode = FogMode.ExponentSquared;
                     //Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0015f;
                     Engine.Device.RenderState.FogTableMode = FogMode.Linear;
-                    Engine.Device.RenderState.FogEnd = GameVars.DrawDistance - (Race.Current.ConfigFile.FogAmount * 15);
+                    Engine.Device.RenderState.FogEnd = GameVars.DrawDistance + 20; // -(Race.Current.ConfigFile.FogAmount * 15);
                     Engine.Device.RenderState.FogStart = (1 / Race.Current.ConfigFile.FogAmount) * 100;
                 }
                 else

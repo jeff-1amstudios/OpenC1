@@ -302,5 +302,10 @@ namespace Carmageddon
                 MessageRenderer.Instance.PostHeaderMessage("1000 CREDITS", 2);
             }
         }
+
+        public void OnPedestrianHit(Pedestrian ped, Vehicle vehicle)
+        {
+            ped.SetAction(ped.Behaviour.FatalImpact, true);
+        }
     }
 }

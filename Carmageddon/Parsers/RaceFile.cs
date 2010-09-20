@@ -247,13 +247,14 @@ namespace Carmageddon.Parsers
                     string type = ReadLine();
                     if (type == "point")
                     {
-                        PedestrianPointInstruction instruction = new PedestrianPointInstruction();
+                        PedestrianInstruction instruction = new PedestrianInstruction();
                         instruction.Position = ReadLineAsVector3();
                         ped.Instructions.Add(instruction);
                     }
                     else if (type == "reverse") 
                     {
-                        ped.Instructions.Add(new PedestrianReverseInstruction());
+                        ped.Instructions[ped.Instructions.Count - 1].Reverse = true;
+                        if (ped.InitialInstruction >= j) ped.InitialInstruction--;
                     }
                     else
                     {

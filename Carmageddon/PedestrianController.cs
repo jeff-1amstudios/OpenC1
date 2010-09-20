@@ -5,6 +5,7 @@ using Carmageddon.Parsers;
 using PlatformEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.IO;
 
 namespace Carmageddon
 {
@@ -54,15 +55,24 @@ namespace Carmageddon
             {
                 foreach (PedestrianSequence seq in behaviour.Sequences)
                 {
-                    foreach (PedestrianFrame frame in seq.InitialFrames)
+                    var allFrames = new List<PedestrianFrame>();
+                    allFrames.AddRange(seq.InitialFrames);
+                    allFrames.AddRange(seq.LoopingFrames);
+
+                    foreach (PedestrianFrame frame in allFrames)
                     {
                         PixMap pix = _pixMaps.Find(a => a.Name.Equals(frame.PixName, StringComparison.InvariantCultureIgnoreCase));
-                        if (pix != null) frame.Texture = pix.Texture;
-                    }
-                    foreach (PedestrianFrame frame in seq.LoopingFrames)
-                    {
-                        PixMap pix = _pixMaps.Find(a => a.Name.Equals(frame.PixName, StringComparison.InvariantCultureIgnoreCase));
-                        if (pix != null) frame.Texture = pix.Texture;
+                        if (pix == null)
+                        {
+                            if (File.Exists(GameVars.BasePath + "data\\pixelmap\\" + frame.PixName))
+                            {
+                                PixFile pixFile = new PixFile(GameVars.BasePath + "data\\pixelmap\\" + frame.PixName);
+                                _pixMaps.AddRange(pixFile.PixMaps);
+                                pix = pixFile.PixMaps.Find(a => a.Name.Equals(frame.PixName, StringComparison.InvariantCultureIgnoreCase));
+                            }
+                        }
+                        if (pix != null)
+                            frame.Texture = pix.Texture;
                     }
                 }
             }
@@ -76,8 +86,11 @@ namespace Carmageddon
 
             foreach (Pedestrian ped in _peds)
             {
-                if (Vector3.Distance(playerPos, ped.Position) < 10)
-                    ped.SetAction(ped.Behaviour.Running);
+                if (Vector3.Distance(playerPos, ped.Position) < 15)
+                {
+                    ped.SetAction(ped.Behaviour.Running, false);
+                    ped.SetRunning(true);
+                }
                 ped.Update();
             }
         }
