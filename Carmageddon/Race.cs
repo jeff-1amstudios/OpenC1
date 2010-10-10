@@ -24,7 +24,7 @@ namespace Carmageddon
         List<NonCar> _nonCars;
         public RaceTimeController RaceTime = new RaceTimeController();
         SkyBox _skybox;
-        public int NextCheckpoint = 0, CurrentLap, NbrDeadOpponents;
+        public int NextCheckpoint = 0, CurrentLap, NbrDeadOpponents, NbrDeadPeds;
         public Vehicle PlayerVehicle;
         public List<Opponent> Opponents = new List<Opponent>();
         public List<IDriver> Drivers = new List<IDriver>(); //opponent + player drivers
@@ -142,6 +142,7 @@ namespace Carmageddon
                         else
                             ((CpuDriver)driver).TargetNode(closestPath.End);
                     }
+                PlayerVehicle.Audio.Play();
             }
 
             foreach (IDriver driver in Drivers)
@@ -185,7 +186,6 @@ namespace Carmageddon
 
         public void Render()
         {
-           
             if (_skybox != null) _skybox.Draw();
 
             BoundingFrustum frustum = new BoundingFrustum(Engine.Camera.View * Engine.Camera.Projection);
@@ -305,7 +305,13 @@ namespace Carmageddon
 
         public void OnPedestrianHit(Pedestrian ped, Vehicle vehicle)
         {
-            ped.SetAction(ped.Behaviour.FatalImpact, true);
+            NbrDeadPeds++;
+            ped.OnHit(vehicle);
+
+            if (NbrDeadPeds == ConfigFile.Peds.Count)
+            {
+                GameMode.Current = new RaceCompletedMode(CompletionType.Peds);
+            }
         }
     }
 }

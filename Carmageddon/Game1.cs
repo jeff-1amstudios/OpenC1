@@ -34,7 +34,7 @@ using Carmageddon.Parsers;
 
                 Engine.ScreenSize = new Vector2(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
 
-                _graphics.IsFullScreen = false;
+                _graphics.IsFullScreen = true;
                 //_graphics.SynchronizeWithVerticalRetrace = false;
 
                 _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;

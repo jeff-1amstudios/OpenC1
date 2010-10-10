@@ -113,6 +113,7 @@ namespace Carmageddon.Parsers
                         frame.Flipped = flags[2] == "flipped";
                         frame.Offset.X = float.Parse(flags[0]);
                         frame.Offset.Y = float.Parse(flags[1]);
+                        frame.Offset *= GameVars.Scale;
                         seq.InitialFrames.Add(frame);
                     }
 

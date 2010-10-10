@@ -60,6 +60,6 @@ namespace Carmageddon
         public string PixName;
         public Texture2D Texture;
         public bool Flipped;
-        public Vector2 Offset;
+        public Vector3 Offset;
     }
 }

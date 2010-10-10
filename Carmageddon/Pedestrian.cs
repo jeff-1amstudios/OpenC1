@@ -32,6 +32,9 @@ namespace Carmageddon
         private bool _isRunning;
         private Actor _physXActor;
         private Vector3 _direction;
+        private bool _isHit;
+        private float _hitSpeed;
+        public float DistanceFromPlayer;
 
         public Pedestrian()
         {
@@ -41,6 +44,7 @@ namespace Carmageddon
         {
             SetAction(Behaviour.Standing, true);
             Position = Instructions[InitialInstruction].Position;
+            _currentInstruction = InitialInstruction;
 
             ActorDescription actorDesc = new ActorDescription();
             actorDesc.BodyDescription = new BodyDescription(1);
@@ -58,24 +62,36 @@ namespace Carmageddon
 
         public void SetAction(PedestrianAction action, bool force)
         {
-            if (RefNumber == 130)
-            {
-            }
             if (_currentAction == action) return;
             if (_currentSequence != null && !_currentSequence.Collide && !force) return;
-
+            if (action == null) return;
             _currentAction = action;
             SetSequence(Behaviour.Sequences[_currentAction.Sequences[0].SequenceIndex]);
 
             if (_currentAction.Sounds.Length > 0)
                 SoundCache.Play(_currentAction.Sounds[Engine.Random.Next(_currentAction.Sounds.Length)], Race.Current.PlayerVehicle, true);
+
+        }
+
+        public void OnHit(Vehicle vehicle)
+        {
+            _isHit = true;
+            _hitSpeed = vehicle.Chassis.Speed * Behaviour.Acceleration * 300;
+            _direction = Vector3.Normalize(vehicle.Chassis.Actor.LinearVelocity);
+            SetAction(Behaviour.FatalImpact, true);
+            SoundCache.Play(Behaviour.ExplodingSounds[0], Race.Current.PlayerVehicle, true);
         }
 
         public void SetRunning(bool running)
         {
             if (_isRunning == running) return;
+            if (Instructions.Count < 2) return;
+
             _isRunning = running;
-            _currentInstruction = InitialInstruction + 1;
+            if (Instructions[_currentInstruction].Reverse)
+                _currentInstruction--;
+            else
+                _currentInstruction++;
         }
 
         private void SetSequence(PedestrianSequence seq)
@@ -92,25 +108,15 @@ namespace Carmageddon
 
         public void Update()
         {
-//            if (RefNumber != 99) return;
             if (_frameTime < 0) return;
 
             float angle = Helpers.GetSignedAngleBetweenVectors(Engine.Camera.Orientation, _direction, false);
             angle = MathHelper.ToDegrees(angle);
             if (angle < 0) angle += 360;
 
-            GameConsole.WriteLine("ped angle: " + angle);
+            if (float.IsNaN(angle))
+                angle = 0;
 
-            if (angle < 90 || angle > 270)
-                GameConsole.WriteLine("AWAY");
-            else
-                GameConsole.WriteLine("TOWARDS");
-            if (angle < 0 || angle > 360)
-            {
-            }
-            
-            
-            //angle = pedAngle;
             int seq = 0;
             foreach (PedestrianActionSequenceMap seqMap in _currentAction.Sequences)
             {
@@ -156,7 +162,12 @@ namespace Carmageddon
                 }
             }
 
-            if (_isRunning)
+            if (_isHit)
+            {
+                Position += _direction * _hitSpeed;
+                _physXActor.GlobalPosition = Position;
+            }
+            else if (_isRunning)
             {
                 Vector3 target = Instructions[_currentInstruction].Position;
                 _direction = target - Position;
@@ -184,7 +195,7 @@ namespace Carmageddon
                     _frameRate = 1 / Engine.Random.Next(_currentSequence.MinFrameRate, _currentSequence.MaxFrameRate);
                     break;
                 case PedestrianSequenceFrameRate.Speed:
-                    _frameRate = 1 / _currentSequence.MaxFrameRate; // Engine.Random.Next(_currentSequence.MinFrameRate, _currentSequence.MaxFrameRate);
+                    _frameRate = 1 / _currentSequence.MaxFrameRate;
                     break;
                 case PedestrianSequenceFrameRate.Fixed:
                     _frameRate = 0.1f;
@@ -194,8 +205,6 @@ namespace Carmageddon
 
         public void Render()
         {
-            //if (RefNumber != 99) return;
-
             Matrix world = Matrix.CreateConstrainedBillboard(Position, Engine.Camera.Position, Vector3.Up, null, null);
 
             PedestrianFrame frame = _inLoopingFrames ? _currentSequence.LoopingFrames[_frameIndex] : _currentSequence.InitialFrames[_frameIndex];
@@ -209,7 +218,7 @@ namespace Carmageddon
                 world = Matrix.CreateRotationY(MathHelper.Pi) * world;
             }
 
-            world = Matrix.CreateScale(scale) * world;
+            world = Matrix.CreateScale(scale) * world * Matrix.CreateTranslation(frame.Offset);
 
             BasicEffect2 effect = GameVars.CurrentEffect;
             effect.World = world;

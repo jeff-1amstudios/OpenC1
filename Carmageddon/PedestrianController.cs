@@ -86,12 +86,16 @@ namespace Carmageddon
 
             foreach (Pedestrian ped in _peds)
             {
-                if (Vector3.Distance(playerPos, ped.Position) < 15)
+                ped.DistanceFromPlayer = Vector3.Distance(playerPos, ped.Position);
+                if (ped.DistanceFromPlayer < 100)
                 {
-                    ped.SetAction(ped.Behaviour.Running, false);
-                    ped.SetRunning(true);
+                    if (ped.DistanceFromPlayer < 15)
+                    {
+                        ped.SetAction(ped.Behaviour.AfterNonFatalImpact, false);
+                        ped.SetRunning(true);
+                    }
+                    ped.Update();
                 }
-                ped.Update();
             }
         }
 
@@ -106,7 +110,8 @@ namespace Carmageddon
 
             foreach (Pedestrian ped in _peds)
             {
-                ped.Render();
+                if (ped.DistanceFromPlayer < 100)
+                    ped.Render();
             }
 
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].End();

@@ -16,8 +16,8 @@ namespace Carmageddon.HUD
 
         public override void Render()
         {
-            Vector2 pos = ScaleVec2(0.2f, 0.01f);
-            DrawShadow(new Rectangle((int)pos.X-5, (int)pos.Y-5, 155, 22));
+            Vector2 pos = ScaleVec2(0.22f, 0.01f);
+            DrawShadow(new Rectangle((int)pos.X-5, (int)pos.Y-5, 155, 24));
 
             Engine.SpriteBatch.DrawString(_whiteFont, "CP", pos, Color.White);
             pos.X += 25f;
@@ -27,13 +27,21 @@ namespace Carmageddon.HUD
             pos.X += 35f;
             Engine.SpriteBatch.DrawString(_whiteFont, String.Format("{0}/{1}", Race.Current.CurrentLap, Race.Current.ConfigFile.LapCount), pos, Color.White);
 
-            pos = ScaleVec2(0.25f, 0.05f);
+            pos = ScaleVec2(0.22f, 0.054f);
 
-            DrawShadow(new Rectangle((int)pos.X - 5, (int)pos.Y - 5, 115, 22)); 
-            
+            DrawShadow(new Rectangle((int)pos.X - 5, (int)pos.Y - 5, 155, 24));             
             Engine.SpriteBatch.DrawString(_whiteFont, "WASTED", pos, Color.White);
+            
             pos.X += 65f;
             Engine.SpriteBatch.DrawString(_whiteFont, Race.Current.NbrDeadOpponents + "/" + Race.Current.Opponents.Count, pos, Color.White);
+
+            pos.X += 240;
+            DrawShadow(new Rectangle((int)pos.X - 5, (int)pos.Y - 5, 140, 24)); 
+            Engine.SpriteBatch.DrawString(_whiteFont, Race.Current.NbrDeadPeds + "/" + Race.Current.ConfigFile.Peds.Count, pos, Color.White);
+            
+            
+            pos.X += 80;
+            Engine.SpriteBatch.DrawString(_whiteFont, "KILLS", pos, Color.White);
         }
     }
 }

@@ -67,8 +67,6 @@ namespace Carmageddon
             _vehicleBitsEmitter = new ParticleEmitter(new VehicleBitsParticleSystem(crashMat), 3, Vector3.Zero);
             _vehicleBitsEmitter.DumpsPerSecond = 0.7f;
 
-            Audio.Play();
-
             DamageSmokeEmitter = new ParticleEmitter(new DamageSmokeParticleSystem(Color.Gray), 5, Vector3.Zero);
             DamageSmokeEmitter.Enabled = false;
 
