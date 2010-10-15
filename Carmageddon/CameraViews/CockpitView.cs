@@ -23,7 +23,7 @@ namespace Carmageddon.CameraViews
         public CockpitView(Vehicle vehicle, string cockpitFile)
         {
             _vehicle = vehicle;
-            if (!File.Exists(cockpitFile))
+            if (GameVars.Emulation == EmulationMode.Demo || !File.Exists(cockpitFile))
             {
                 cockpitFile = Path.GetDirectoryName(cockpitFile) + "\\blkeagle.txt";
             }
@@ -32,32 +32,13 @@ namespace Carmageddon.CameraViews
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
             _camera.AspectRatio = Engine.AspectRatio;
 
-            DatFile modelsFile = new DatFile(GameVars.BasePath + "data\\models\\" + vehicle.Config.BonnetModelFile);
-            ActFile actFile = new ActFile(GameVars.BasePath + "data\\actors\\" + vehicle.Config.BonnetActorFile, modelsFile.Models);
+            DatFile modelsFile = new DatFile(vehicle.Config.BonnetModelFile);
+            ActFile actFile = new ActFile(vehicle.Config.BonnetActorFile, modelsFile.Models);
             _actors = actFile.Hierarchy;
             _actors.ResolveTransforms(false, null);
 
             //move head back
             _vehicle.Config.DriverHeadPosition.Z += 0.11f;
-
-            foreach (var x in _cockpitFile.LeftHands)
-            {
-                x.Position1 += new Vector2(-20, 0);
-                x.Position2 += new Vector2(-20, 0);
-                x.Position1 /= new Vector2(640, 480);
-                x.Position2 /= new Vector2(640, 480);
-            }
-            foreach (var x in _cockpitFile.RightHands)
-            {
-                x.Position1 += new Vector2(-20, 0);
-                x.Position2 += new Vector2(-20, 0);
-                x.Position1 /= new Vector2(640, 480);
-                x.Position2 /= new Vector2(640, 480);
-            }
-            _cockpitFile.CenterHands.Position1 += new Vector2(-20, 0);
-            _cockpitFile.CenterHands.Position2 += new Vector2(-20, 0);
-            _cockpitFile.CenterHands.Position1 /= new Vector2(640, 480);
-            _cockpitFile.CenterHands.Position2 /= new Vector2(640, 480);
 
         }
 
@@ -83,7 +64,11 @@ namespace Carmageddon.CameraViews
 
         public override void Render()
         {
-            Rectangle src = new Rectangle(32, 20, 640, 480);
+            Rectangle src;
+            if (_cockpitFile.IsHighRes)
+                src = new Rectangle(32, 20, 640, 480);
+            else
+                src = new Rectangle(32, 20, 320, 200);
             Rectangle rect = new Rectangle(0, 0, 800, 600);
             Engine.SpriteBatch.Draw(_cockpitFile.Forward, rect, src, Color.White);
 

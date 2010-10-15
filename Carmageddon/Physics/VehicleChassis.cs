@@ -75,9 +75,9 @@ namespace Carmageddon.Physics
                         
             TireFunctionDescription lngTFD = new TireFunctionDescription();
             lngTFD.ExtremumSlip = 0.1f;
-            lngTFD.ExtremumValue = 7f;
+            lngTFD.ExtremumValue = 4f;
             lngTFD.AsymptoteSlip = 2.0f;
-            lngTFD.AsymptoteValue = 5.9f;
+            lngTFD.AsymptoteValue = 3.2f;
             
             _rearLateralTireFn = new TireFunctionDescription();            
             
@@ -160,7 +160,6 @@ namespace Carmageddon.Physics
             BaseGearbox gearbox = BaseGearbox.Create(false, ratios, 0.4f);
             Motor = new Motor(power, carFile.EnginePower, 6f, carFile.TopSpeed, gearbox);
             Motor.Gearbox.CurrentGear = 0;
-
         }
 
         /// <summary>
@@ -169,14 +168,11 @@ namespace Carmageddon.Physics
         /// </summary>
         public void FixSuspension()
         {
-            bool doneBumper = false;
-
             foreach (VehicleWheel wheel in this.Wheels)
             {
                 Vector3 localPos = wheel.Shape.LocalPosition;
                 localPos.Y += wheel.CurrentSuspensionTravel;
-                wheel.Shape.LocalPosition = localPos;
-               
+                wheel.Shape.LocalPosition = localPos;      
             }
         }
 
@@ -212,7 +208,7 @@ namespace Carmageddon.Physics
             float endLocal = _desiredSteerAngle;
 
             float diff = Math.Abs(endLocal - _steerAngle);
-            float max = 0.001f;
+            float max = 0.0017f;
             if (diff > 0.0025f) // Is the current steering angle ~= desired steering angle?
             { // If not, adjust carefully
 
@@ -274,11 +270,11 @@ namespace Carmageddon.Physics
             if (!InAir)
             {
                 _physXActor.MaximumAngularVelocity = 3.5f;
-
+               
                 if (Speed < 10)
                 {
-                    _physXActor.LinearDamping = Motor.IsAccelerating ? 1 : 4f;
-                    _physXActor.AngularDamping = 0.02f;
+                    _physXActor.LinearDamping = Motor.IsAccelerating ? 1 : 4;
+                    _physXActor.AngularDamping = 0.02f; 
                     GameConsole.WriteLine("mode slow");
                 }
                 else if ((_steerAngle < -0.1f && Wheels[0].LatSlip > 0.35f) || (_steerAngle > 0.1f && Wheels[0].LatSlip < -0.35f))
@@ -317,7 +313,7 @@ namespace Carmageddon.Physics
 
                 if (_physXActor.GlobalOrientation.Up.Y < 0) //car sliding along on the roof
                 {
-                    _physXActor.LinearDamping = 4f;  //stop insane sliding
+                    _physXActor.LinearDamping = 5f;  //stop insane sliding
                     _physXActor.AngularDamping = 2f;
                     GameConsole.WriteLine("mode on roof");
                 }

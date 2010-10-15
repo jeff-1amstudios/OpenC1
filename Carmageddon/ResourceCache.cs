@@ -22,6 +22,11 @@ namespace Carmageddon
                 _materials.Add(material);
         }
 
+        public static void Add(CMaterial material)
+        {
+            _materials.Add(material);
+        }
+
         public static PixMap GetPixelMap(string name)
         {
             return _pixMaps.Find(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));

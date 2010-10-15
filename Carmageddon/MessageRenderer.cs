@@ -82,7 +82,7 @@ namespace Carmageddon
         {
             if (!_textures.ContainsKey(pixname))
             {
-                PixFile pix = new PixFile(GameVars.BasePath + "data\\pixelmap\\" + pixname);
+                PixFile pix = new PixFile(pixname);
                 _textures.Add(pixname, pix.PixMaps[0].Texture);
             }
 

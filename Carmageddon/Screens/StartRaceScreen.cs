@@ -16,12 +16,12 @@ namespace Carmageddon.Screens
         public StartRaceScreen(BaseMenuScreen parent)
             : base(parent)
         {
-            _inAnimation = new FliPlayer(new FliFile(GameVars.BasePath + "data\\anim\\strtcome.fli"));
+            _inAnimation = new FliPlayer(LoadAnimation("strtcome.fli"));
             _inAnimation.Play(false, 0);
 
-            _outAnimation = new FliPlayer(new FliFile(GameVars.BasePath + "data\\anim\\strtaway.fli"));
+            _outAnimation = new FliPlayer(LoadAnimation("strtaway.fli"));
 
-            Texture2D buttonSelectionRect = new FliFile(GameVars.BasePath + "data\\anim\\SMLBUTGL.fli").Frames[0];
+            Texture2D buttonSelectionRect = LoadAnimation("SMLBUTGL.fli").Frames[0];
 
             _options.Add(new TextureMenuOption(
                BaseHUDItem.ScaleRect(0.7f, 0.139f, 0.21f, 0.11f),
@@ -48,7 +48,7 @@ namespace Carmageddon.Screens
             if (GameVars.SelectedRaceInfo == null)
             {
                 GameVars.SelectedRaceInfo = RacesFile.Instance.Races[0];
-                GameVars.SelectedRaceScene = new FliFile(GameVars.BasePath + "data\\anim\\" + GameVars.SelectedRaceInfo.FliFileName).Frames[0];
+                GameVars.SelectedRaceScene = LoadAnimation(GameVars.SelectedRaceInfo.FliFileName).Frames[0];
             }
             if (GameVars.SelectedCarFileName == null)
                 GameVars.SelectedCarFileName = "blkeagle.txt";

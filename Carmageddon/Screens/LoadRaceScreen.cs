@@ -20,7 +20,7 @@ namespace Carmageddon.Screens
         public LoadRaceScreen(IGameScreen parent)
         {
             Parent = parent;
-            _loadingTexture = new PixFile(GameVars.BasePath + "data\\pixelmap\\LOADSCRN.pix").PixMaps[0].Texture;
+            _loadingTexture = new PixFile("LOADSCRN.pix").PixMaps[0].Texture;
 
             _loadRaceThread = new Thread(LoadRaceThreadProc);
             _loadRaceThread.Start();

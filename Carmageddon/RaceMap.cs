@@ -18,7 +18,7 @@ namespace Carmageddon
         public RaceMap(Race race)
         {
             _race = race;
-            _mapTexture = new PixFile(GameVars.BasePath + @"data\pixelmap\" + race.ConfigFile.MapTexture).PixMaps[0].Texture;
+            _mapTexture = new PixFile(race.ConfigFile.MapTexture).PixMaps[0].Texture;
             _player = Engine.ContentManager.Load<Texture2D>("content/map-icon-player");
             _opponent = Engine.ContentManager.Load<Texture2D>("content/map-icon-opponent");
             _deadOpponent = Engine.ContentManager.Load<Texture2D>("content/map-icon-opponent-dead");

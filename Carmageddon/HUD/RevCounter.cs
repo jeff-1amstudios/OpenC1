@@ -24,9 +24,16 @@ namespace Carmageddon.HUD
 
             x = 0.01f;
             y = 0.8f;
-
-            PixFile pix = new PixFile(GameVars.BasePath + "Data\\64x48x8\\pixelmap\\hirestch.pix");
-            _speedoTexture = pix.PixMaps[0].Texture;
+            if (GameVars.Emulation == EmulationMode.Demo)
+            {
+                PixFile pix = new PixFile("tacho.pix");
+                _speedoTexture = pix.PixMaps[0].Texture;
+            }
+            else
+            {
+                PixFile pix = new PixFile("hirestch.pix");
+                _speedoTexture = pix.PixMaps[0].Texture;
+            }
             _speedoLineTexture = TextureGenerator.Generate(new Color(255, 0, 0));            
         }
 

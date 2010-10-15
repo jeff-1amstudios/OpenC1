@@ -241,7 +241,7 @@ namespace Carmageddon.Parsers
                 ped.RefNumber = ReadLineAsInt();
                 
                 int nbrInstructions = ReadLineAsInt();
-                ped.InitialInstruction = ReadLineAsInt() - 1;  //1-based
+                ped.InitialInstruction = ReadLineAsInt() -1;  //1-based
                 for (int j = 0; j < nbrInstructions; j++)
                 {
                     string type = ReadLine();
@@ -338,7 +338,7 @@ namespace Carmageddon.Parsers
                     {
                         matName = "SKIDMARK.MAT"; //default skidmark if invalid (in indust maps, this is "1" and skidmarks aren't shown)
                     }
-                    MatFile matFile = new MatFile(GameVars.BasePath + "data\\material\\" + matName);
+                    MatFile matFile = new MatFile(matName);
                     modifier.SkidMaterial = matFile.Materials[0];
                     modifier.SkidMaterial.ResolveTexture();
                 }

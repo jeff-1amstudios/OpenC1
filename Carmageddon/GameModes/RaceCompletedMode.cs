@@ -13,7 +13,8 @@ namespace Carmageddon.GameModes
     {
         Checkpoints,
         Opponents,
-        Peds
+        Peds,
+        TimeUp
     }
 
     class RaceCompletedMode : GameMode
@@ -30,21 +31,29 @@ namespace Carmageddon.GameModes
             switch (type)
             {
                 case CompletionType.Opponents:
-                    //MessageRenderer.Instance.PostHeaderMessage("Every opponent wasted!!", 10);
+                    MessageRenderer.Instance.PostHeaderMessage("Every opponent wasted!!", 10);
+                    MessageRenderer.Instance.PostMainMessage("raceover.pix", 8, 0.7f, 0.003f, 1.4f);
+                    SoundCache.Play(SoundIds.RaceCompleted, null, false);
+                    SoundCache.Play(SoundIds.Clapping, null, false);
                     break;
                 case CompletionType.Checkpoints:
-                    MessageRenderer.Instance.PostHeaderMessage("Every opponent wasted!!", 10);
+                    MessageRenderer.Instance.PostHeaderMessage("All checkpoints passed!!", 10);
+                    MessageRenderer.Instance.PostMainMessage("raceover.pix", 8, 0.7f, 0.003f, 1.4f);
+                    SoundCache.Play(SoundIds.RaceCompleted, null, false);
+                    SoundCache.Play(SoundIds.Clapping, null, false);
                     break;
                 case CompletionType.Peds:
                     MessageRenderer.Instance.PostHeaderMessage("Every pedestrian murdered!!", 10);
+                    MessageRenderer.Instance.PostMainMessage("raceover.pix", 8, 0.7f, 0.003f, 1.4f);
+                    SoundCache.Play(SoundIds.RaceCompleted, null, false);
+                    SoundCache.Play(SoundIds.Clapping, null, false);
                     break;
-            }
+                case CompletionType.TimeUp:
+                    MessageRenderer.Instance.PostMainMessage("timeup.pix", 8, 0.7f, 0.003f, 1.4f);
+                    SoundCache.Play(SoundIds.OutOfTime, null, false);
+                    break;
+            }            
             
-            MessageRenderer.Instance.PostMainMessage("raceover.pix", 8, 0.7f, 0.003f, 1.4f);
-            
-            SoundCache.Play(SoundIds.RaceCompleted, null, false);
-            SoundCache.Play(SoundIds.Clapping, null, false);
-
             _camera.ResetRotation();
             _camera.RotateTo(MathHelper.Pi * 2);
             PlatformEngine.Engine.Camera = _camera;

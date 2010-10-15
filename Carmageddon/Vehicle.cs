@@ -36,6 +36,7 @@ namespace Carmageddon
         Vector3 _damagePosition;
         PixmapBillboard _flames;
         VehicleModel _model;
+        public float LastRunOverPedTime;
 
         public Vehicle(string filename, IDriver driver)
         {
@@ -70,7 +71,7 @@ namespace Carmageddon
             DamageSmokeEmitter = new ParticleEmitter(new DamageSmokeParticleSystem(Color.Gray), 5, Vector3.Zero);
             DamageSmokeEmitter.Enabled = false;
 
-            _flames = new PixmapBillboard(new Vector2(0.7f, 0.25f), GameVars.BasePath + "data\\pixelmap\\flames.pix");
+            _flames = new PixmapBillboard(new Vector2(0.7f, 0.25f), "flames.pix");
             SkidMarkBuffer = new SkidMarkBuffer(this, 150);
         }
 
@@ -81,13 +82,13 @@ namespace Carmageddon
             Chassis.Actor.GlobalPose = pose;
         }
 
-        public void OnCollision(float force, Vector3 position, Vector3 normal, ContactPairFlag events)
+        public void OnCollision(float force, Vector3 position, Vector3 normal, bool deform)
         {
             float product = Math.Abs(Vector3.Dot(Chassis.Actor.GlobalPose.Forward, normal));
 
             if (Chassis.LastSpeeds.GetMax() > 7)
             {
-                int particles = Math.Max(6, (int)force / 150000);
+                int particles = Math.Min(8, (int)force / 150000);
                 
                 if (force > 50000)
                 {
@@ -113,7 +114,7 @@ namespace Carmageddon
                         SoundCache.PlayCrash(this, force);
                 }
             }
-            if (_deformableModel != null)
+            if (deform && _deformableModel != null)
                 _deformableModel.OnContact(position, force, normal);
 
             // if this is a CPU driven car, only damage if the player has something to do with it.  Stops cars killing themselves

@@ -81,9 +81,7 @@ namespace Carmageddon
 
             Engine.Camera.Update();
             
-            GameConsole.WriteLine("FPS", Engine.Fps);
-
-            
+            GameConsole.WriteLine("FPS", Engine.Fps);   
         }
 
         public void Render()

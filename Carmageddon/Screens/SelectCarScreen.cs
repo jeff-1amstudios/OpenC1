@@ -25,10 +25,10 @@ namespace Carmageddon.Screens
             SimpleCamera cam = Engine.Camera as SimpleCamera;
             cam.DrawDistance = 999999;
 
-            _inAnimation = new FliPlayer(new FliFile(GameVars.BasePath + "data\\anim\\chcrcome.fli"));
+            _inAnimation = new FliPlayer(LoadAnimation("chcrcome.fli"));
             _inAnimation.Play(false, 0);
 
-            _outAnimation = new FliPlayer(new FliFile(GameVars.BasePath + "data\\anim\\chcraway.fli"));
+            _outAnimation = new FliPlayer(LoadAnimation("chcraway.fli"));
 
             _effect = new BasicEffect2();
             _effect.LightingEnabled = false;
@@ -42,20 +42,22 @@ namespace Carmageddon.Screens
             _effect.Projection = Engine.Camera.Projection;
 
             _opponents = OpponentsFile.Instance.Opponents;
-            
-            List<string> carFiles = new List<string>(Directory.GetFiles(GameVars.BasePath + "data\\cars"));
-            carFiles.RemoveAll(a => !a.ToUpper().EndsWith(".TXT"));
-            carFiles.Sort();
-            carFiles.Reverse();
-            foreach (string file in carFiles)
+            if (GameVars.Emulation != EmulationMode.Demo)
             {
-                string filename = Path.GetFileName(file);
-                if (!_opponents.Exists(a => a.FileName.Equals(filename, StringComparison.InvariantCultureIgnoreCase)))
+                // If we're not in demo mode, add car files in directory that havent been added to opponent.txt
+                List<string> carFiles = new List<string>(Directory.GetFiles(GameVars.BasePath + "data\\cars"));
+                carFiles.RemoveAll(a => !a.ToUpper().EndsWith(".TXT"));
+                carFiles.Sort();
+                carFiles.Reverse();
+                foreach (string file in carFiles)
                 {
-                    _opponents.Insert(0, new OpponentInfo { FileName = filename, Name = Path.GetFileNameWithoutExtension(filename), StrengthRating = 1 });
+                    string filename = Path.GetFileName(file);
+                    if (!_opponents.Exists(a => a.FileName.Equals(filename, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        _opponents.Insert(0, new OpponentInfo { FileName = filename, Name = Path.GetFileNameWithoutExtension(filename), StrengthRating = 1 });
+                    }
                 }
             }
-            //_carFiles.RemoveAll(a => a.ToUpper().Contains("ZGRIMM"));
             
             _options.Add(new CarModelMenuOption(_effect, _opponents[0]));
         }
@@ -95,7 +97,8 @@ namespace Carmageddon.Screens
             _info = info;
             try
             {
-                _model = new VehicleModel(new CarFile(GameVars.BasePath + "data\\cars\\" + info.FileName), true);
+                var carfile = new CarFile(GameVars.BasePath + "data\\cars\\" + info.FileName);
+                _model = new VehicleModel(carfile, true);
             }
             catch (Exception ex)
             {

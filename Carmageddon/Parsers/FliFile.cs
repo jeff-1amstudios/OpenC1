@@ -33,7 +33,7 @@ namespace Carmageddon.Parsers
     }
 
 
-    class FliFile
+    class FliFile : BaseDataFile
     {
         public string Filename;
         FliPalette _palette;
@@ -50,6 +50,8 @@ namespace Carmageddon.Parsers
         public FliFile(string filename)
         {
             Filename = filename;
+            if (!File.Exists(filename))
+                return;
             BinaryReader reader = new BinaryReader(File.Open(filename, FileMode.Open));
             int filesize = reader.ReadInt32();
             ushort type = reader.ReadUInt16();
@@ -302,7 +304,6 @@ namespace Carmageddon.Parsers
         {
             Texture2D texture = new Texture2D(Engine.Device, _width, _height, 1, TextureUsage.None, SurfaceFormat.Color);
             texture.SetData<byte>(Helpers.GetBytesForImage(pixels, _width, _height, _palette));
-            //texture.Save("c:\\temp\\fli" + _frames.Count + ".png", ImageFileFormat.Png);
             _frames.Add(texture);
             _lastFramePixels = pixels;
         }

@@ -7,6 +7,8 @@ using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
 using Carmageddon.HUD;
 using NFSEngine.Audio;
+using Carmageddon.EditModes;
+using Carmageddon.GameModes;
 
 namespace Carmageddon
 {
@@ -15,8 +17,8 @@ namespace Carmageddon
         public bool IsStarted, IsOver;
         public bool CountingDown { get; private set; }
         public float CountdownTime;
-        int _lastSecond=-1;
-        public float TimeRemaining = 1; // 90; //1:30
+        int _lastSecond = -1;
+        public float TimeRemaining = 90; //1:30
         List<string> _countdownTextures = new List<string>();
         List<int> _countdownSoundIds = new List<int>();
         public float TotalTime;
@@ -56,7 +58,7 @@ namespace Carmageddon
                 {
                     TimeRemaining = 0;
                     IsOver = true;
-                    //SoundCache.Play(SoundIds.OutOfTime);
+                    GameMode.Current = new RaceCompletedMode(CompletionType.TimeUp);
                 }
             }
             if (CountingDown)
@@ -87,11 +89,6 @@ namespace Carmageddon
 
                 _lastSecond = second;
             }            
-
-            if (TimeRemaining == 0)
-            {
-                //MessageRenderer.Instance.PostMessagePix("timeup.pix", 10, 0.6f, 0.0033f);   
-            }
         }
     }
 }

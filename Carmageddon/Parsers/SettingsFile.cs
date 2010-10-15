@@ -16,7 +16,11 @@ namespace Carmageddon.Parsers
         public SettingsFile()
             : base(Path.Combine(StorageContainer.TitleLocation, "OpenCarmaSettings.txt"))
         {
-            DrawDistance = ReadLineAsInt();
+            GameVars.BasePath = ReadLine();
+            GameVars.DrawDistance = ReadLineAsInt() * 10;
+            string emu = ReadLine();
+            GameVars.Emulation = (EmulationMode)Enum.Parse(typeof(EmulationMode), emu);
+            
             CloseFile();
         }
     }

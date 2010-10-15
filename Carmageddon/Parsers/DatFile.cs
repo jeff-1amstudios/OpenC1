@@ -43,7 +43,11 @@ namespace Carmageddon.Parsers
         {
             CModel currentModel = null;
 
-            EndianBinaryReader reader = new EndianBinaryReader(new BigEndianBitConverter(), File.Open(filename, FileMode.Open));
+            Stream file = OpenDataFile(filename);
+            if (!Exists)
+                return;
+
+            EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, file);
 
             while (true)
             {
@@ -61,15 +65,11 @@ namespace Carmageddon.Parsers
                         reader.Seek(2, SeekOrigin.Current);
                         string name = ReadNullTerminatedString(reader);
 
-
                         if (deformMainModel && Path.GetFileNameWithoutExtension(name).Equals(Path.GetFileNameWithoutExtension(filename), StringComparison.InvariantCultureIgnoreCase))
-                        {
                             currentModel = new CDeformableModel();
-                        }
                         else
-                        {
                             currentModel = new CModel();
-                        }
+
                         currentModel.Name = name;
                         _models.Add(currentModel);
 
@@ -152,8 +152,7 @@ namespace Carmageddon.Parsers
             for (int i = 0; i < nbrFaceMaterials; i++)
             {
                 int matIndex = reader.ReadInt16() - 1;   //-1 because it is 1-based
-                if (matIndex > -1)
-                    currentModel.Polygons[i].MaterialIndex = matIndex;
+                currentModel.Polygons[i].MaterialIndex = matIndex;
             }
         }
 
@@ -173,11 +172,8 @@ namespace Carmageddon.Parsers
                 byte unk2 = reader.ReadByte();
                 byte unk3 = reader.ReadByte();
 
-                //Debug.WriteLine(unk1 + ", " + unk2 + ", " + unk3);
-
                 Polygon polygon = new Polygon(v1, v2, v3);
                 polygon.CalculateNormal(_models._vertexPositions, model.VertexBaseIndex);
-
                 model.Polygons.Add(polygon);
             }
         }

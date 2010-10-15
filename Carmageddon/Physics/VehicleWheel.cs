@@ -29,10 +29,10 @@ namespace Carmageddon.Physics
         private float _defaultLatExtremum, _defaultLngExtremum;
         public float LatSlip;
         public float CurrentSuspensionTravel;
-
+        
         public bool InAir
         {
-            get { return Shape.GetContactData().ContactForce == 0; }
+            get { return ContactPoint == Vector3.Zero; }
         }
 
         public VehicleWheel(VehicleChassis chassis, CWheelActor cactor, WheelShape wheel, float axleOffset)

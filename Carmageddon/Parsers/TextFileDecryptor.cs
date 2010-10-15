@@ -32,7 +32,7 @@ namespace Carmageddon.Parsers
 		static byte ENCRYPTED_LINE_START = (byte)'@';
 
 
-		public static string DecryptDemoFile(string filename)
+		public static byte[] DecryptDemoFile(string filename)
 		{
 			byte[] data = File.ReadAllBytes(filename);
 			MemoryStream ms = new MemoryStream(data.Length);
@@ -65,11 +65,11 @@ namespace Carmageddon.Parsers
 				}
 				filePos += strLen + 1;
 			}
-			return Encoding.ASCII.GetString(ms.ToArray());
+			return ms.ToArray();
 		}
 
 
-		public static string DecryptFile(string filename)
+		public static byte[] DecryptFile(string filename)
 		{	
 			byte[] data = File.ReadAllBytes(filename);
 			MemoryStream ms = new MemoryStream(data.Length);
@@ -112,7 +112,7 @@ namespace Carmageddon.Parsers
 				}
 				filePos += strLen + 1;
 			}
-			return Encoding.ASCII.GetString(ms.ToArray());
+			return ms.ToArray();
 		}
 
 

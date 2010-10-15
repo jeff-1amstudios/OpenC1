@@ -39,6 +39,22 @@ namespace Carmageddon.Parsers
             TorqueRequiredToMove = ReadLineAsFloat(false);
 
             CloseFile();
+
+            if (IndexNumber == 1)  //PEDCROSS.TXT
+            {
+                //Physx doesnt handle the thin stem and thick box very well so we make PhysX happy here
+                Vector3 oldMax = BoundingBox.Max;
+                Vector3 oldMin = BoundingBox.Min;
+
+                BoundingBox.Min.X = BoundingBox.Min.Z = -0.35f;
+                BoundingBox.Max.X = BoundingBox.Max.Z = 0.35f;
+                BoundingBox.Min.Y = 0.01f;
+                ExtraBoundingBoxPoints.Clear();
+                ExtraBoundingBoxPoints.Add(oldMax);
+                ExtraBoundingBoxPoints.Add(new Vector3(oldMax.X, oldMax.Y, oldMin.Z));
+                ExtraBoundingBoxPoints.Add(new Vector3(oldMin.X, oldMax.Y, oldMax.Z));
+                ExtraBoundingBoxPoints.Add(new Vector3(oldMin.X, oldMax.Y, oldMin.Z));
+            }
         }
     }
 }

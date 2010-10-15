@@ -20,6 +20,16 @@ namespace Carmageddon
         public Texture2D Texture;
         public BaseFunk Funk;
 
+        public CMaterial()
+        {
+        }
+
+        public CMaterial(string name, int paletteIndex)
+        {
+            Name = name;
+            SimpMatPixelIndex = paletteIndex;
+        }
+
         public void ResolveTexture(List<PixMap> pixmaps)
         {
             if (Texture != null) return;  //weve already resolved this material
@@ -49,12 +59,9 @@ namespace Carmageddon
             }
             else
             {
-                PixFile pix;
-                //if (File.Exists(GameVariables.BasePath + "Data\\Reg\\Pixelmap\\" + PixName))
-                //    pix = new PixFile(GameVariables.BasePath + "Data\\Reg\\Pixelmap\\" + PixName);
-                //else
-                    pix = new PixFile(GameVars.BasePath + "Data\\Pixelmap\\" + PixName);
-                Texture = pix.PixMaps[0].Texture;
+                PixFile pix = new PixFile(PixName);
+                if (pix.Exists)
+                    Texture = pix.PixMaps[0].Texture;
             }
         }
 

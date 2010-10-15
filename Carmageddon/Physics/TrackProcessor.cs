@@ -34,6 +34,9 @@ namespace Carmageddon.Physics
 
                 foreach (Polygon poly in actor.Model.Polygons)
                 {
+                    if (poly.MaterialIndex < 0)
+                        continue;
+
                     string materialName = actor.Model.MaterialNames[poly.MaterialIndex];
                     //this is a non-solid material
                     if (materialName.StartsWith("!"))
@@ -180,6 +183,7 @@ namespace Carmageddon.Physics
                 List<Vector3> waterVerts = new List<Vector3>();
                 foreach (Polygon poly in model.Polygons)
                 {
+                    if (poly.MaterialIndex < 0) continue;
                     string materialName = model.MaterialNames[poly.MaterialIndex];
                     //this is a non-solid material
                     if (materialName.StartsWith("!"))
@@ -249,7 +253,7 @@ namespace Carmageddon.Physics
                         Vector3 scaleout, transout;
                         Quaternion b;
                         bool success = actor.Matrix.Decompose(out scaleout, out b, out transout);
-                        if (!success) throw new Exception();
+                        //if (!success) throw new Exception();
 
                         Matrix m =
                             Matrix.CreateFromQuaternion(b) *
@@ -260,8 +264,8 @@ namespace Carmageddon.Physics
                         instance.SetCenterOfMassOffsetLocalPosition(nonCarFile.CenterOfMass);
                         instance.Group = PhysXConsts.NonCarId;
                         
-                        foreach (Shape s in instance.Shapes)
-                            s.SetFlag(ShapeFlag.Visualization, false);
+                        //foreach (Shape s in instance.Shapes)
+                        //    s.SetFlag(ShapeFlag.Visualization, false);
 
                         NonCar noncar = new NonCar { Config = nonCarFile, CActor = actor };
                         instance.UserData = noncar;

@@ -29,7 +29,7 @@ namespace Carmageddon
         public List<Opponent> Opponents = new List<Opponent>();
         public List<IDriver> Drivers = new List<IDriver>(); //opponent + player drivers
         private RaceMap _map;
-        private PedestrianController _pedController;
+        public PedestrianController Peds;
 
         public static Race Current;
 
@@ -41,23 +41,26 @@ namespace Carmageddon
 
             foreach (string matFileName in ConfigFile.MaterialFiles)
             {
-                MatFile matFile = new MatFile(GameVars.BasePath + @"data\material\" + matFileName);
+                MatFile matFile = new MatFile(matFileName);
                 ResourceCache.Add(matFile);
             }
 
             foreach (string pixFileName in ConfigFile.PixFiles)
             {
-                PixFile pixFile = new PixFile(GameVars.BasePath + @"data\pixelmap\" + pixFileName);
+                PixFile pixFile = new PixFile(pixFileName);
                 ResourceCache.Add(pixFile);
             }
 
-            ResourceCache.Add(new MatFile(GameVars.BasePath + @"data\material\" + "drkcurb.mat"));
+            if (GameVars.Emulation == EmulationMode.Demo)
+                ResourceCache.Add(new CMaterial("drkcurb.mat", 226));
+            else
+                ResourceCache.Add(new MatFile("drkcurb.mat"));
                         
             ResourceCache.ResolveMaterials();
 
-            DatFile modelFile = new DatFile(GameVars.BasePath + @"data\models\" + ConfigFile.ModelFile);
+            DatFile modelFile = new DatFile(ConfigFile.ModelFile);
 
-            ActFile actFile = new ActFile(GameVars.BasePath + @"data\actors\" + ConfigFile.ActorFile, modelFile.Models);
+            ActFile actFile = new ActFile(ConfigFile.ActorFile, modelFile.Models);
             _actors = actFile.Hierarchy;
             _actors.ResolveTransforms(false, ConfigFile.Grooves);
 
@@ -73,7 +76,7 @@ namespace Carmageddon
 
             if (ConfigFile.SkyboxTexture != "none")
             {
-                PixFile horizonPix = new PixFile(GameVars.BasePath + "data\\pixelmap\\" + ConfigFile.SkyboxTexture);
+                PixFile horizonPix = new PixFile(ConfigFile.SkyboxTexture);
                 _skybox = SkyboxGenerator.Generate(horizonPix.PixMaps[0].Texture, ConfigFile.SkyboxRepetitionsX - 3f, ConfigFile.DepthCueMode);
                 _skybox.HeightOffset = -220 + ConfigFile.SkyboxPositionY * 1.5f;
             }
@@ -83,15 +86,15 @@ namespace Carmageddon
 
             GridPlacer.Reset();
 
-            //Opponents.Add(new Opponent("tassle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("ivan.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("harry.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            //Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("grimm.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("otis.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
 
             foreach (CopStartPoint point in ConfigFile.CopStartPoints)
             {
-              //  Opponents.Add(new Opponent(point.IsSpecialForces ? "bigapc.txt" : "apc.txt", point.Position, 0, new CopDriver()));
+                Opponents.Add(new Opponent(point.IsSpecialForces ? "bigapc.txt" : "apc.txt", point.Position, 0, new CopDriver()));
             }
 
             foreach (Opponent o in Opponents) Drivers.Add(o.Driver);
@@ -102,7 +105,7 @@ namespace Carmageddon
             PlayerVehicle.PlaceOnGrid(ConfigFile.GridPosition, ConfigFile.GridDirection);
             Drivers.Add(PlayerVehicle.Driver);
 
-            _pedController = new PedestrianController(ConfigFile.Peds);
+            Peds = new PedestrianController(ConfigFile.Peds);
 
             Race.Current = this;
 
@@ -145,6 +148,9 @@ namespace Carmageddon
                 PlayerVehicle.Audio.Play();
             }
 
+            Peds.Update();
+            
+
             foreach (IDriver driver in Drivers)
                 driver.Update();
 
@@ -176,8 +182,6 @@ namespace Carmageddon
                 opponent.Vehicle.Update();
             }
 
-            _pedController.Update();
-
             MessageRenderer.Instance.Update();
 
             if (Engine.Input.WasPressed(Keys.Tab))
@@ -188,8 +192,7 @@ namespace Carmageddon
         {
             if (_skybox != null) _skybox.Draw();
 
-            BoundingFrustum frustum = new BoundingFrustum(Engine.Camera.View * Engine.Camera.Projection);
-
+            BoundingFrustum frustum = new BoundingFrustum(Engine.Camera.View * Engine.Camera.Projection);   
             _actors.Render(Matrix.Identity, frustum);
 
             foreach (Opponent opponent in Opponents)
@@ -207,7 +210,7 @@ namespace Carmageddon
                 opponent.Driver.DistanceFromPlayer = Vector3.Distance(PlayerVehicle.Position, opponent.Vehicle.Position);
             }
 
-            _pedController.Render();
+            Peds.Render();
 
             RaceTime.Render();
             MessageRenderer.Instance.Render();
@@ -282,6 +285,10 @@ namespace Carmageddon
                 }
             }
 
+            int time = GeneralSettingsFile.Instance.TimePerCarKill[GameVars.SkillLevel];
+            RaceTime.TimeRemaining += time;
+            MessageRenderer.Instance.PostTimerMessage(time);
+
             if (NbrDeadOpponents == Opponents.Count)
             {
                 GameMode.Current = new RaceCompletedMode(CompletionType.Opponents);
@@ -294,21 +301,27 @@ namespace Carmageddon
 
         internal void OnPlayerCpuCarHit(float damage)
         {
-            int time = (int)damage * 3;
+            int time = (int)(damage * GeneralSettingsFile.Instance.TimePerCarDamage[GameVars.SkillLevel] * 6);
             if (time > 0)
             {
                 RaceTime.TimeRemaining += time;
                 MessageRenderer.Instance.PostTimerMessage(time);
-                MessageRenderer.Instance.PostHeaderMessage("1000 CREDITS", 2);
+                MessageRenderer.Instance.PostHeaderMessage(time*14 + " CREDITS", 2);
             }
         }
 
         public void OnPedestrianHit(Pedestrian ped, Vehicle vehicle)
         {
+            if (ped.IsHit) return;
+
             NbrDeadPeds++;
             ped.OnHit(vehicle);
 
-            if (NbrDeadPeds == ConfigFile.Peds.Count)
+            int time = GeneralSettingsFile.Instance.TimePerPedKill[GameVars.SkillLevel];
+            RaceTime.TimeRemaining += time;
+            MessageRenderer.Instance.PostTimerMessage(time);
+
+            if (NbrDeadPeds == Peds.Count)
             {
                 GameMode.Current = new RaceCompletedMode(CompletionType.Peds);
             }

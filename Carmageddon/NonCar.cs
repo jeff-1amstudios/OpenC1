@@ -18,6 +18,8 @@ namespace Carmageddon
         public bool Hit;
         public Vector3 Rotation;
         private Matrix _origOrientation;
+        public Vector3 LastForce;
+        public Vector3 LastForcePosition;
         bool _initialized;
 
         public void OnHit()
@@ -43,6 +45,8 @@ namespace Carmageddon
                 CActor.PhysXActor.GlobalOrientation = _origOrientation * orientation;
                 IsAttached = false;
                 CActor.PhysXActor.ClearBodyFlag(BodyFlag.Kinematic);
+                CActor.PhysXActor.LinearDamping = 0.13f;
+                CActor.PhysXActor.AddForceAtPosition(LastForce, LastForcePosition, ForceMode.Force);
             }
             else
             {

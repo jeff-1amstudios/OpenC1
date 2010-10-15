@@ -38,9 +38,12 @@ namespace Carmageddon.Parsers
             {
                 OpponentInfo opp = new OpponentInfo();
                 opp.Name = ReadLine();
-                SkipLines(2); //short name, race #
+                SkipLines(1); //short name, race #
+                int raceNumber = ReadLineAsInt();
                 opp.StrengthRating = ReadLineAsInt();
-                SkipLines(2); //network availability, unused fli
+                SkipLines(1);
+                if (GameVars.Emulation != EmulationMode.Demo)
+                    SkipLines(1);
                 opp.FileName = ReadLine();
                 SkipLines(1); //fli
 
@@ -52,6 +55,11 @@ namespace Carmageddon.Parsers
                     SkipLines(nbrLines);
                 }
 
+                if (GameVars.Emulation == EmulationMode.Demo)
+                {
+                    if (i != 0 && i != 16 && i != 12 && i != 22 && i != 19 && i != 7)
+                        continue;
+                }
                 Opponents.Add(opp);
             }
 

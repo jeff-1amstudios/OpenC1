@@ -18,8 +18,13 @@ namespace Carmageddon.Parsers
             while (true)
             {
                 PedestrianBehaviour ped = new PedestrianBehaviour();
+                
+                string line = ReadLine();
+                if (line == "END OF PEDESTRIANS")
+                    break;
+
                 _pedestrians.Add(ped);
-                ped.RefNumber = ReadLineAsInt();
+                ped.RefNumber = int.Parse(line);
                 ped.Height = ReadLineAsFloat();
                 ped.PointsValue = ReadLineAsInt();
                 ped.HitPoints = ReadLineAsFloat();
@@ -79,12 +84,13 @@ namespace Carmageddon.Parsers
                 ped.FatalFalling = actionIndexes[3] > -1 ? actions[actionIndexes[3]] : null;
                 ped.NonFatalFalling = actionIndexes[4] > -1 ? actions[actionIndexes[4]] : null;
                 ped.Giblets = actionIndexes[5] > -1 ? actions[actionIndexes[5]] : null;
+                ped.Actions = actions;
 
                 int nbrSequences = ReadLineAsInt(); // this is not always correct (MOO 2)
                 while (true)
                 {
                     PedestrianSequence seq = new PedestrianSequence();
-                    string line = ReadLine();
+                    line = ReadLine();
 
                     if (line == "END OF PEDESTRIANS")
                     {

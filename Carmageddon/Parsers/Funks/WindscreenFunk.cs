@@ -61,7 +61,9 @@ namespace Carmageddon.Parsers.Funks
             if (_vehicle.CurrentSpecialVolume.Count > 0)
             {
                 SpecialVolume vol = _vehicle.CurrentSpecialVolume.Peek();
-                this.Material.Texture = ResourceCache.GetMaterial(vol.WindscreenMaterial).Texture;
+                CMaterial mat = ResourceCache.GetMaterial(vol.WindscreenMaterial);
+                if (mat != null)
+                    this.Material.Texture = mat.Texture;
             }
             else
             {

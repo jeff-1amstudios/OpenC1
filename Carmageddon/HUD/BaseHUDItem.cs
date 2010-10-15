@@ -32,6 +32,11 @@ namespace Carmageddon.HUD
             return new Rectangle((int)(x * _window.Width), (int)(y * _window.Height), (int)(width * _window.Width), (int)(height * _window.Height));
         }
 
+        public static Rectangle ScaleRect(Vector2 pos, float width, float height)
+        {
+            return new Rectangle((int)(pos.X * _window.Width), (int)(pos.Y * _window.Height), (int)(width * _window.Width), (int)(height * _window.Height));
+        }
+
         protected static Rectangle CenterRectX(float y, float width, float height)
         {
             Rectangle rect = ScaleRect(0, y, width, height);

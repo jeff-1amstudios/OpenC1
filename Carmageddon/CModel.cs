@@ -42,9 +42,13 @@ namespace Carmageddon
                 }
 
 
-                if (poly.MaterialIndex >= 0 && MaterialNames != null)
+                if (MaterialNames != null)
                 {
-                    CMaterial material = ResourceCache.GetMaterial(MaterialNames[poly.MaterialIndex]);
+                    CMaterial material;
+                    if (poly.MaterialIndex < 0)
+                        material = ResourceCache.GetMaterial("drkcurb.mat");
+                    else
+                        material = ResourceCache.GetMaterial(MaterialNames[poly.MaterialIndex]);
 
                     if (material != null)
                     {

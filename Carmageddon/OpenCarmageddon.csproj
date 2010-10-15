@@ -114,6 +114,7 @@
     <Compile Include="OpponentPath.cs" />
     <Compile Include="Parsers\CockpitFile.cs" />
     <Compile Include="Parsers\Funks\WindscreenFunk.cs" />
+    <Compile Include="Parsers\GeneralSettingsFile.cs" />
     <Compile Include="Parsers\OpponentsFile.cs" />
     <Compile Include="Parsers\PedestriansFile.cs" />
     <Compile Include="Parsers\RacesFile.cs" />

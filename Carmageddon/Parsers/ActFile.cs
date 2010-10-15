@@ -39,7 +39,11 @@ namespace Carmageddon.Parsers
 
         public ActFile(string filename, CModelGroup models)
         {
-            EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
+            Stream file = OpenDataFile(filename);
+            if (!Exists)
+                return;
+
+            EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, file);
 
             CActor currentActor = null;
             Stack<CActor> actorStack = new Stack<CActor>();

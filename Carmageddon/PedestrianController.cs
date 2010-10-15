@@ -15,6 +15,7 @@ namespace Carmageddon
         static List<PixMap> _pixMaps = new List<PixMap>();
 
         List<Pedestrian> _peds;
+        public int Count;
 
         VertexPositionTexture[] _vertices;
         VertexBuffer _vertexBuffer;
@@ -33,6 +34,9 @@ namespace Carmageddon
             {   //match up behaviour to ped instance
                 ped.Behaviour = _behaviours.Find(a => a.RefNumber == ped.RefNumber);
                 ped.Initialize();
+
+                if (ped.RefNumber < 100)
+                    Count++;
             }
         }
 
@@ -45,7 +49,7 @@ namespace Carmageddon
             {
                 if (!loadedFiles.Contains(behaviour.PixFile))
                 {
-                    PixFile pixFile = new PixFile(GameVars.BasePath + "data\\pixelmap\\" + behaviour.PixFile);
+                    PixFile pixFile = new PixFile(behaviour.PixFile);
                     _pixMaps.AddRange(pixFile.PixMaps);
                     loadedFiles.Add(behaviour.PixFile);
                 }
@@ -64,12 +68,9 @@ namespace Carmageddon
                         PixMap pix = _pixMaps.Find(a => a.Name.Equals(frame.PixName, StringComparison.InvariantCultureIgnoreCase));
                         if (pix == null)
                         {
-                            if (File.Exists(GameVars.BasePath + "data\\pixelmap\\" + frame.PixName))
-                            {
-                                PixFile pixFile = new PixFile(GameVars.BasePath + "data\\pixelmap\\" + frame.PixName);
-                                _pixMaps.AddRange(pixFile.PixMaps);
-                                pix = pixFile.PixMaps.Find(a => a.Name.Equals(frame.PixName, StringComparison.InvariantCultureIgnoreCase));
-                            }
+                            PixFile pixFile = new PixFile(frame.PixName);
+                            _pixMaps.AddRange(pixFile.PixMaps);
+                            pix = pixFile.PixMaps.Find(a => a.Name.Equals(frame.PixName, StringComparison.InvariantCultureIgnoreCase));
                         }
                         if (pix != null)
                             frame.Texture = pix.Texture;
@@ -89,10 +90,12 @@ namespace Carmageddon
                 ped.DistanceFromPlayer = Vector3.Distance(playerPos, ped.Position);
                 if (ped.DistanceFromPlayer < 100)
                 {
-                    if (ped.DistanceFromPlayer < 15)
+                    if (ped.DistanceFromPlayer < 25)
                     {
-                        ped.SetAction(ped.Behaviour.AfterNonFatalImpact, false);
-                        ped.SetRunning(true);
+                        if (Race.Current.RaceTime.IsStarted)
+                        {
+                            ped.SetRunning(true);
+                        }
                     }
                     ped.Update();
                 }
@@ -105,18 +108,18 @@ namespace Carmageddon
             Engine.Device.VertexDeclaration = _vertexDeclaration;
             GameVars.CurrentEffect.LightingEnabled = false;
             Engine.Device.RenderState.CullMode = CullMode.None;
+            Engine.Device.RenderState.ReferenceAlpha = 100;
 
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
             foreach (Pedestrian ped in _peds)
             {
-                if (ped.DistanceFromPlayer < 100)
+                if (ped.DistanceFromPlayer < 150)
                     ped.Render();
             }
 
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].End();
             GameVars.CurrentEffect.LightingEnabled = true;
-            Engine.Device.RenderState.FillMode = FillMode.Solid;
         }
 
         private void CreateGeometry()

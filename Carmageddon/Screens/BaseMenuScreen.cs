@@ -7,6 +7,7 @@ using NFSEngine;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.HUD;
+using Carmageddon.Parsers;
 
 namespace Carmageddon.Screens
 {
@@ -119,6 +120,20 @@ namespace Carmageddon.Screens
             return !_inAnimation.IsPlaying && !_outAnimation.IsPlaying && !_waitingForOutAnimation;
         }
 
+        public static FliFile LoadAnimation(string filename)
+        {
+            switch (GameVars.Emulation)
+            {
+                case EmulationMode.Demo:
+                    return new FliFile(GameVars.BasePath + @"DATA\32X20X8\ANIM\" + filename);
 
+                case EmulationMode.Full:
+                case EmulationMode.SplatPack:
+                    return new FliFile(GameVars.BasePath + @"DATA\ANIM\" + filename);
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
     }
 }

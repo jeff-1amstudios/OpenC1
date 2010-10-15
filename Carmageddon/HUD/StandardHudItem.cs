@@ -36,8 +36,8 @@ namespace Carmageddon.HUD
             Engine.SpriteBatch.DrawString(_whiteFont, Race.Current.NbrDeadOpponents + "/" + Race.Current.Opponents.Count, pos, Color.White);
 
             pos.X += 240;
-            DrawShadow(new Rectangle((int)pos.X - 5, (int)pos.Y - 5, 140, 24)); 
-            Engine.SpriteBatch.DrawString(_whiteFont, Race.Current.NbrDeadPeds + "/" + Race.Current.ConfigFile.Peds.Count, pos, Color.White);
+            DrawShadow(new Rectangle((int)pos.X - 5, (int)pos.Y - 5, 140, 24));
+            Engine.SpriteBatch.DrawString(_whiteFont, Race.Current.NbrDeadPeds + "/" + Race.Current.Peds.Count, pos, Color.White);
             
             
             pos.X += 80;

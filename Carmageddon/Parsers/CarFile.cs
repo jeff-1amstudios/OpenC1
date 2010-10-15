@@ -112,10 +112,13 @@ namespace Carmageddon.Parsers
             int nbrShadeTables = ReadLineAsInt();
             SkipLines(nbrShadeTables);
 
-            int nbrLowMemMats = ReadLineAsInt();
-            SkipLines(nbrLowMemMats);
-            int nbrStdDetailMats = ReadLineAsInt();
-            SkipLines(nbrStdDetailMats);
+            if (GameVars.Emulation != EmulationMode.Demo) //demo files have only 1 set of mat entries
+            {
+                int nbrLowMemMats = ReadLineAsInt();
+                SkipLines(nbrLowMemMats);
+                int nbrStdDetailMats = ReadLineAsInt();
+                SkipLines(nbrStdDetailMats);
+            }
 
             int nbrHighDetailMats = ReadLineAsInt();
 

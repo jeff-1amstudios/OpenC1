@@ -37,7 +37,11 @@ namespace Carmageddon.Parsers
 
         public PixFile(string filename)
 		{
-			EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
+            Stream file = OpenDataFile(filename);
+            if (!Exists)
+                return;
+
+            EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, file);
             PixMap currentPix=null;
 
 			while (true)

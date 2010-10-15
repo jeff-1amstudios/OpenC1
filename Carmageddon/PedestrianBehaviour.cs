@@ -20,6 +20,7 @@ namespace Carmageddon
 
         public PedestrianAction Standing, Running, FatalImpact, NonFatalImpact, AfterNonFatalImpact, FatalFalling, NonFatalFalling, Giblets;
         public List<PedestrianSequence> Sequences = new List<PedestrianSequence>();
+        public List<PedestrianAction> Actions = new List<PedestrianAction>();
     }
 
 

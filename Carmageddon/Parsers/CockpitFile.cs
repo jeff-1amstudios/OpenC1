@@ -19,14 +19,18 @@ namespace Carmageddon.Parsers
         public List<CockpitHandFrame> LeftHands = new List<CockpitHandFrame>();
         public List<CockpitHandFrame> RightHands = new List<CockpitHandFrame>();
         public CockpitHandFrame CenterHands;
+        public bool IsHighRes;
         
 
 		public CockpitFile(string filename) : base(filename)
 		{
             string folderName = Path.GetDirectoryName(filename);
+            
+            if (filename.Contains("64x48"))
+                IsHighRes = true;
 
 			Forward = GetTextureFromPixFile(folderName, ReadLine());
-            ForwardRect = ReadLineAsRect();
+            ForwardRect = ReadLineAsRect();            
             Left = GetTextureFromPixFile(folderName, ReadLine());
             LeftRect = ReadLineAsRect();
             Right = GetTextureFromPixFile(folderName, ReadLine());
@@ -54,12 +58,37 @@ namespace Carmageddon.Parsers
 			SkipLines(2); //mirror
 
 			CloseFile();
+
+            int w = 640; int h = 480;
+            if (!IsHighRes)
+            {
+                w = 320; h = 200;
+            }
+
+            foreach (var x in LeftHands)
+            {
+                x.Position1 += new Vector2(-20, 0);
+                x.Position2 += new Vector2(-20, 0);
+                x.Position1 /= new Vector2(w, h);
+                x.Position2 /= new Vector2(w, h);
+            }
+            foreach (var x in RightHands)
+            {
+                x.Position1 += new Vector2(-20, 0);
+                x.Position2 += new Vector2(-20, 0);
+                x.Position1 /= new Vector2(w, h);
+                x.Position2 /= new Vector2(w, h);
+            }
+            CenterHands.Position1 += new Vector2(-20, 0);
+            CenterHands.Position2 += new Vector2(-20, 0);
+            CenterHands.Position1 /= new Vector2(w, h);
+            CenterHands.Position2 /= new Vector2(w, h);
 		}
 
         private Texture2D GetTextureFromPixFile(string curFolder, string filename)
         {
             if (filename == "none") return null;
-            PixFile pixFile = new PixFile(Path.Combine(curFolder, "..\\pixelmap\\" + filename));
+            PixFile pixFile = new PixFile(filename);
             return pixFile.PixMaps[0].Texture;
         }
 	}

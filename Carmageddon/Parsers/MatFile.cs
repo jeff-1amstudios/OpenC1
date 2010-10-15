@@ -33,10 +33,11 @@ namespace Carmageddon.Parsers
 
         public MatFile(string filename)
         {
-            if (filename.ToLower().Contains("beast"))
-            {
-            }
-            EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, File.Open(filename, FileMode.Open));
+            Stream file = OpenDataFile(filename);
+            if (!Exists)
+                return;
+
+            EndianBinaryReader reader = new EndianBinaryReader(EndianBitConverter.Big, file);
 
             CMaterial currentMaterial = null;
 
@@ -62,7 +63,8 @@ namespace Carmageddon.Parsers
                         currentMaterial.SimpMatGradientCount = reader.ReadByte();
                         
                         currentMaterial.DoubleSided = flags[0] == 0x10;
-                        currentMaterial.Name = ReadNullTerminatedString(reader);                        
+                        currentMaterial.Name = ReadNullTerminatedString(reader);
+
                         break;
 
                     case MaterialBlockType.AttributesV2:
@@ -77,6 +79,7 @@ namespace Carmageddon.Parsers
                         currentMaterial.DoubleSided = flags[0] == 0x10;
                         reader.BaseStream.Position += 13;                        
                         currentMaterial.Name = ReadNullTerminatedString(reader);
+
                         break;
 
                     case MaterialBlockType.TextureName:

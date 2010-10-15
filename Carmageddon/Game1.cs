@@ -34,7 +34,7 @@ using Carmageddon.Parsers;
 
                 Engine.ScreenSize = new Vector2(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
 
-                _graphics.IsFullScreen = true;
+                //_graphics.IsFullScreen = true;
                 //_graphics.SynchronizeWithVerticalRetrace = false;
 
                 _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;
@@ -54,8 +54,7 @@ using Carmageddon.Parsers;
 
                 Engine.Startup(this, _graphics);
 
-                SettingsFile settings = new SettingsFile();
-                GameVars.DrawDistance = settings.DrawDistance * 10;
+                SettingsFile settings = new SettingsFile();  //load opencarmageddon.txt
 
                 Engine.DrawDistance = GameVars.DrawDistance;
                 Engine.Audio = new NFSEngine.Audio.MdxSoundEngine();

@@ -24,54 +24,86 @@ namespace Carmageddon.Gfx
         const float SKID_TIME = 0.2f;
         private int _maxSkids;
 
-        VertexPositionTexture[] _particles;
-        DynamicVertexBuffer _vertexBuffer;
+        VertexPositionTexture[] _vertices;
+        DynamicVertexBuffer _buffer;
         VertexDeclaration _vertexDeclaration;
 
-        int _firstNewParticle;
-        int _firstFreeParticle;
-        Texture2D _texture, _defaultTexture;
+        int _firstNewVert;
+        int _firstFreeVert;
+        bool _usingBloodTexture;
+        Texture2D _texture;
+        static Texture2D _defaultTexture, _bloodTexture;
         Vehicle _vehicle;
+        Texture2D[] _skids;
+        int _skidPtr;
 
         private List<CurrentSkid> _currentSkids = new List<CurrentSkid>();
+
 
         public SkidMarkBuffer(Vehicle vehicle, int maxSkids)
         {
             _maxSkids = maxSkids;
             _vehicle = vehicle;
-            _particles = new VertexPositionTexture[_maxSkids * 6];
+            _vertices = new VertexPositionTexture[_maxSkids * 6];
+            _skids = new Texture2D[_maxSkids];
 
             _vertexDeclaration = new VertexDeclaration(Engine.Device, VertexPositionTexture.VertexElements);
 
             // Create a dynamic vertex buffer.
-            int size = VertexPositionTexture.SizeInBytes * _particles.Length;
+            int size = VertexPositionTexture.SizeInBytes * _vertices.Length;
 
-            _vertexBuffer = new DynamicVertexBuffer(Engine.Device, size, BufferUsage.WriteOnly);
+            _buffer = new DynamicVertexBuffer(Engine.Device, size, BufferUsage.WriteOnly);
 
-            MatFile matfile = new MatFile(GameVars.BasePath + "Data\\Material\\skidmark.mat");
-            matfile.Materials[0].ResolveTexture();
-            _defaultTexture = _texture = matfile.Materials[0].Texture;
+            if (_defaultTexture == null)
+            {
+                MatFile matfile = new MatFile("skidmark.mat");
+                matfile.Materials[0].ResolveTexture();
+                _defaultTexture = matfile.Materials[0].Texture;
+                matfile = new MatFile("gibsmear.mat");
+                matfile.Materials[0].ResolveTexture();
+                _bloodTexture = matfile.Materials[0].Texture;
+            }
+            _texture = _defaultTexture;
         }
 
         public void SetTexture(Texture2D texture)
         {
+            if (_usingBloodTexture) return;
+
             if (_texture != texture)
             {
                 _texture = texture;
-                _firstFreeParticle = _firstNewParticle = 0;
+                //_firstFreeParticle = _firstNewParticle = 0;
+                _usingBloodTexture = texture == _bloodTexture;
             }
         }
 
         private void Update()
         {
-            foreach (var wheel in _vehicle.Chassis.Wheels)
+            if (!Helpers.HasTimePassed(0.9f, _vehicle.LastRunOverPedTime))
             {
-                if (wheel.IsSkiddingLat || wheel.IsSkiddingLng)
+                foreach (var wheel in _vehicle.Chassis.Wheels)
                 {
-                    AddSkid(wheel, wheel.ContactPoint);
+                    if (!wheel.IsRear) RegisterSkid(wheel, wheel.ContactPoint);
+                }
+                SetTexture(_bloodTexture);
+            }
+            else
+            {
+                if (_usingBloodTexture)
+                {
+                    _usingBloodTexture = false;
+                    SetTexture(_defaultTexture);
+                }
+
+                foreach (var wheel in _vehicle.Chassis.Wheels)
+                {
+                    if (wheel.IsSkiddingLat || wheel.IsSkiddingLng)
+                    {
+                        RegisterSkid(wheel, wheel.ContactPoint);
+                    }
                 }
             }
-        
 
             for (int i = 0; i < _currentSkids.Count; i++)
             {
@@ -80,11 +112,11 @@ namespace Carmageddon.Gfx
                 {
                     _currentSkids.RemoveAt(i);
                     i--;
-                    AddSkidToBuffer(skid);
+                    AddToBuffer(skid);
                 }
                 else if (Helpers.HasTimePassed(SKID_TIME, _currentSkids[i].StartTime))
                 {
-                    AddSkidToBuffer(skid);
+                    AddToBuffer(skid);
                     skid.StartPosition = skid.EndPosition;
                     skid.StartTime = Engine.TotalSeconds;
                 }
@@ -97,36 +129,56 @@ namespace Carmageddon.Gfx
                 {
                     //temp
                     _currentSkids[i].EndPosition = _currentSkids[i].Wheel.ContactPoint;
-                    AddSkidToBuffer(_currentSkids[i]);
+                    AddToBuffer(_currentSkids[i]);
                     nbrTempSkids++;
                 }
             }
 
             AddNewParticlesToVertexBuffer();
 
-            _firstFreeParticle -= 6 * nbrTempSkids;
-            if (_firstFreeParticle < 0)
-                _firstFreeParticle = _particles.Length - (-_firstFreeParticle);
-            _firstNewParticle = _firstFreeParticle;
+            _firstFreeVert -= 6 * nbrTempSkids;
+            if (_firstFreeVert < 0)
+                _firstFreeVert = _vertices.Length - (-_firstFreeVert);
+            _firstNewVert = _firstFreeVert;
+            _skidPtr -= 1 * nbrTempSkids;
+            if (_skidPtr < 0)
+                _skidPtr = _maxSkids - (-_skidPtr);
         }
 
 
         public void Render()
         {
             Update();
+
             GraphicsDevice device = Engine.Device;
 
-            device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionTexture.SizeInBytes);
+            device.Vertices[0].SetSource(_buffer, 0, VertexPositionTexture.SizeInBytes);
             device.VertexDeclaration = _vertexDeclaration;
 
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
-            device.Textures[0] = _texture ?? _defaultTexture;
             device.RenderState.DepthBias = -0.00002f;
             CullMode oldCullMode = Engine.Device.RenderState.CullMode;
             device.RenderState.CullMode = CullMode.None;
-           
-            device.DrawPrimitives(PrimitiveType.TriangleList, 0, _maxSkids * 2);
+
+            int nbrCalls = 0;
+            for (int i = 0; i < _maxSkids; )
+            {
+                if (_skids[i] == null) break;
+
+                int j = 1;
+                for (; i+j < _maxSkids; j++)
+                    if (_skids[i] != _skids[i+j])
+                        break;
+                device.Textures[0] = _skids[i];
+                device.DrawPrimitives(PrimitiveType.TriangleList, i * 6, j * 2);
+                nbrCalls++;
+                
+                i += j;
+            }
+
+            GameConsole.WriteLine("skids", nbrCalls);
+
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].End();
 
             device.RenderState.CullMode = oldCullMode;
@@ -144,41 +196,48 @@ namespace Carmageddon.Gfx
             int stride = VertexPositionTexture.SizeInBytes;
 
 
-            if (_firstNewParticle < _firstFreeParticle)
+            if (_firstNewVert < _firstFreeVert)
             {
                 // If the new particles are all in one consecutive range,
                 // we can upload them all in a single call.
-                _vertexBuffer.SetData(_firstNewParticle * stride, _particles,
-                                     _firstNewParticle,
-                                     _firstFreeParticle - _firstNewParticle,
+                _buffer.SetData(_firstNewVert * stride, _vertices,
+                                     _firstNewVert,
+                                     _firstFreeVert - _firstNewVert,
                                      stride, SetDataOptions.NoOverwrite);
+               
             }
             else
             {
                 // If the new particle range wraps past the end of the queue
                 // back to the start, we must split them over two upload calls.
-                _vertexBuffer.SetData(_firstNewParticle * stride, _particles,
-                                     _firstNewParticle,
-                                     _particles.Length - _firstNewParticle,
+                _buffer.SetData(_firstNewVert * stride, _vertices,
+                                     _firstNewVert,
+                                     _vertices.Length - _firstNewVert,
                                      stride, SetDataOptions.NoOverwrite);
 
-                if (_firstFreeParticle > 0)
+                
+
+                if (_firstFreeVert > 0)
                 {
-                    _vertexBuffer.SetData(0, _particles,
-                                         0, _firstFreeParticle,
+                    _buffer.SetData(0, _vertices,
+                                         0, _firstFreeVert,
                                          stride, SetDataOptions.NoOverwrite);
+                    
                 }
             }
 
             // Move the particles we just uploaded from the new to the active queue.
-            _firstNewParticle = _firstFreeParticle;
+            _firstNewVert = _firstFreeVert;
         }
 
 
         #region Public Methods
 
-        public void AddSkid(VehicleWheel wheel, Vector3 pos)
+        public void RegisterSkid(VehicleWheel wheel, Vector3 pos)
         {
+            if (pos == Vector3.Zero)
+                return;
+
             CurrentSkid skid = null;
             foreach (CurrentSkid cskid in _currentSkids)
             {
@@ -199,12 +258,12 @@ namespace Carmageddon.Gfx
             }
         }
 
-        private void AddSkidToBuffer(CurrentSkid skid)
+        private void AddToBuffer(CurrentSkid skid)
         {
             int p1, p2;
-            
 
-            float thickness = 0.15f;
+            float thickness = 0.13f;
+            float length = _vehicle.Chassis.Speed * 0.042f;
 
             Vector3 direction = skid.EndPosition - skid.StartPosition;
             direction.Normalize();
@@ -212,29 +271,31 @@ namespace Carmageddon.Gfx
             Vector3 normal = Vector3.Cross(direction, Vector3.UnitY);
             normal.Normalize();
 
-            _particles[_firstFreeParticle].Position = skid.StartPosition - normal * thickness;
-            _particles[_firstFreeParticle].TextureCoordinate = new Vector2(0, 1);
+            _vertices[_firstFreeVert].Position = skid.StartPosition - normal * thickness;
+            _vertices[_firstFreeVert].TextureCoordinate = new Vector2(0, 1);
 
-            _firstFreeParticle++;
-            p1 = _firstFreeParticle;
-            _particles[_firstFreeParticle].Position = skid.EndPosition - normal * thickness;
-            _particles[_firstFreeParticle].TextureCoordinate = new Vector2(3, 1);
+            _firstFreeVert++;
+            p1 = _firstFreeVert;
+            _vertices[_firstFreeVert].Position = skid.EndPosition - normal * thickness;
+            _vertices[_firstFreeVert].TextureCoordinate = new Vector2(length, 1);
 
-            _firstFreeParticle++;
-            p2 = _firstFreeParticle;
-            _particles[_firstFreeParticle].Position = skid.StartPosition + normal * thickness;
-            _particles[_firstFreeParticle].TextureCoordinate = Vector2.Zero;
-            
+            _firstFreeVert++;
+            p2 = _firstFreeVert;
+            _vertices[_firstFreeVert].Position = skid.StartPosition + normal * thickness;
+            _vertices[_firstFreeVert].TextureCoordinate = Vector2.Zero;
 
-            _firstFreeParticle++;
-            _particles[_firstFreeParticle] = _particles[p2];
-            _firstFreeParticle++;
-            _particles[_firstFreeParticle] = _particles[p1];
-            _firstFreeParticle++;
-            _particles[_firstFreeParticle].Position = skid.EndPosition + normal * thickness;
-            _particles[_firstFreeParticle].TextureCoordinate = new Vector2(3, 0);
-
-            _firstFreeParticle = (_firstFreeParticle + 1) % _particles.Length;
+            _firstFreeVert++;
+            _vertices[_firstFreeVert] = _vertices[p2];
+            _firstFreeVert++;
+            _vertices[_firstFreeVert] = _vertices[p1];
+            _firstFreeVert++;
+            _vertices[_firstFreeVert].Position = skid.EndPosition + normal * thickness;
+            _vertices[_firstFreeVert].TextureCoordinate = new Vector2(length, 0);
+                        
+            _firstFreeVert = (_firstFreeVert + 1) % _vertices.Length;
+             
+            _skids[_skidPtr] = _texture ?? _defaultTexture;
+            _skidPtr = (_skidPtr + 1) % _maxSkids;
         }
 
         

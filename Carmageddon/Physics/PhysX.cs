@@ -54,7 +54,7 @@ namespace Carmageddon.Physics
             Core.SetParameter(PhysicsParameter.VisualizeBodyAxes, false);
             Core.SetParameter(PhysicsParameter.VisualizeContactNormal, false);
             Core.SetParameter(PhysicsParameter.VisualizeContactForce, false);
-            Core.SetParameter(PhysicsParameter.VisualizeActorAxes, true);
+            Core.SetParameter(PhysicsParameter.VisualizeActorAxes, false);
             
             SceneDescription sceneDescription = new SceneDescription();
             sceneDescription.Gravity = new Vector3(0f, Gravity, 0f);

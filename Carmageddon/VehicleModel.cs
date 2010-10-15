@@ -21,24 +21,20 @@ namespace Carmageddon
             
             foreach (string pixFileName in file.PixFiles)
             {
-                PixFile pixFile = new PixFile(GameVars.BasePath + "data\\pixelmap\\" + pixFileName);
+                PixFile pixFile = new PixFile(pixFileName);
                 ResourceCache.Add(pixFile);
             }
 
             foreach (string matFileName in file.MaterialFiles)
             {
-                MatFile matFile = new MatFile(GameVars.BasePath + "data\\material\\" + matFileName);
+                MatFile matFile = new MatFile(matFileName);
                 ResourceCache.Add(matFile);
             }
 
             foreach (string matFileName in file.CrashMaterialFiles)
             {
-                string filename = GameVars.BasePath + "data\\material\\" + matFileName;
-                if (File.Exists(filename))
-                {
-                    MatFile matFile = new MatFile(GameVars.BasePath + "data\\material\\" + matFileName);
-                    ResourceCache.Add(matFile);
-                }
+                MatFile matFile = new MatFile(matFileName);
+                ResourceCache.Add(matFile);
             }
 
             ResourceCache.ResolveMaterials();
@@ -47,8 +43,8 @@ namespace Carmageddon
             foreach (BaseGroove g in file.Grooves)
                 if (!g.IsWheelActor) _grooves.Add(g);
             
-            DatFile modelFile = new DatFile(GameVars.BasePath + "data\\models\\" + file.ModelFile, !forDisplayOnly);
-            ActFile actFile = new ActFile(GameVars.BasePath + "data\\actors\\" + file.ActorFile, modelFile.Models);
+            DatFile modelFile = new DatFile(file.ModelFile, !forDisplayOnly);
+            ActFile actFile = new ActFile(file.ActorFile, modelFile.Models);
 
             _actors = actFile.Hierarchy;
             _actors.ResolveTransforms(!forDisplayOnly, _grooves);

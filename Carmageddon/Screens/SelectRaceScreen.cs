@@ -15,10 +15,10 @@ namespace Carmageddon.Screens
         public SelectRaceScreen(BaseMenuScreen parent)
             : base(parent)
         {
-            _inAnimation = new FliPlayer(new FliFile(GameVars.BasePath + "data\\anim\\chrccome.fli"));
+            _inAnimation = new FliPlayer(LoadAnimation("chrccome.fli"));
             _inAnimation.Play(false, 0);
 
-            _outAnimation = new FliPlayer(new FliFile(GameVars.BasePath + "data\\anim\\chrcaway.fli"));
+            _outAnimation = new FliPlayer(LoadAnimation("chrcaway.fli"));
 
             _options.Add(new RaceOption(RacesFile.Instance.Races[0]));
         }
@@ -28,7 +28,10 @@ namespace Carmageddon.Screens
             Engine.Camera.Position = new Vector3(-1.5f, 3.5f, 10);
             Engine.Camera.Orientation = new Vector3(0, -0.28f, -1);
             base.Update();
-
+            
+            if (GameVars.Emulation == EmulationMode.Demo)  //only 1 track in demo mode
+                return;
+            
             if (_selectedOption == _options.Count - 1 && RacesFile.Instance.Races.Count > _selectedOption + 1)
             {
                 _options.Add(new RaceOption(RacesFile.Instance.Races[_selectedOption + 1]));
@@ -51,7 +54,7 @@ namespace Carmageddon.Screens
         public RaceOption(RaceInfo info)
         {
             _info = info;
-            _scene = new FliFile(GameVars.BasePath + "data\\anim\\" + _info.FliFileName).Frames[0];
+            _scene = BaseMenuScreen.LoadAnimation(_info.FliFileName).Frames[0];
         }
 
         #region IMenuOption Members

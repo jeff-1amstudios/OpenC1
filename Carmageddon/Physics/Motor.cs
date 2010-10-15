@@ -50,8 +50,13 @@ namespace Carmageddon.Physics
 
         public float MaxPower
         {
-            get { return _maxPower; }
-            set { _maxPower = value * 132.5f; }  //magic number...
+            get
+            {
+                if (_lastCarSpeed < 20 && Gearbox.CurrentGear == 1)
+                    return _maxPower * 0.7f;
+                return _maxPower;
+            }
+            set { _maxPower = value * 200.5f; }  //magic number...
         }
 
         public bool AtRedline
@@ -122,7 +127,7 @@ namespace Carmageddon.Physics
                         _lastBlip = Engine.TotalSeconds;
                     }
                 }
-                _currentPowerOutput = _maxPower * MathHelper.Lerp(_powerCurve[(int)_rpm], _powerCurve[(int)_rpm + 1], _rpm - (int)_rpm);
+                _currentPowerOutput = MaxPower * MathHelper.Lerp(_powerCurve[(int)_rpm], _powerCurve[(int)_rpm + 1], _rpm - (int)_rpm);
             }
 
             if (_gearbox.GearEngaged)

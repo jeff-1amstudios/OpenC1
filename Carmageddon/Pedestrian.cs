@@ -13,12 +13,15 @@ namespace Carmageddon
 
     class Pedestrian
     {
-        public static float RunningSpeed = 0.1f;
+        public static float RunningSpeed = 5f;
 
         public int RefNumber;
         public int InitialInstruction;
         public PedestrianBehaviour Behaviour;
         public List<PedestrianInstruction> Instructions = new List<PedestrianInstruction>();
+        public Vector3 Position;
+        public bool IsHit;
+        public float DistanceFromPlayer;
 
         PedestrianAction _currentAction;
         PedestrianSequence _currentSequence;
@@ -26,15 +29,15 @@ namespace Carmageddon
         private bool _inLoopingFrames;
         private int _frameIndex;
         private float _frameTime;
-        private float _frameRate;
-        public Vector3 Position;
+        private float _frameRate;        
         private int _currentInstruction, _instructionDirection = 1;
         private bool _isRunning;
         private Actor _physXActor;
         private Vector3 _direction;
-        private bool _isHit;
-        private float _hitSpeed;
-        public float DistanceFromPlayer;
+        private float _groundHeight;        
+        private float _hitSpeed, _hitSpinSpeed, _hitUpSpeed, _hitCurrentSpin;
+        
+        private bool _stopUpdating;
 
         public Pedestrian()
         {
@@ -42,7 +45,14 @@ namespace Carmageddon
 
         public void Initialize()
         {
-            SetAction(Behaviour.Standing, true);
+            if (Behaviour.RefNumber == 99) //flag waving guy
+            {
+                SetAction(Behaviour.Actions[7], true);
+            }
+            else
+            {
+                SetAction(Behaviour.Standing, true);
+            }
             Position = Instructions[InitialInstruction].Position;
             _currentInstruction = InitialInstruction;
 
@@ -52,7 +62,7 @@ namespace Carmageddon
             actorDesc.BodyDescription.BodyFlags |= BodyFlag.Kinematic;
 
             BoxShapeDescription box = new BoxShapeDescription(1.6f, 2.5f, 1.6f);
-            box.Flags = ShapeFlag.TriggerOnEnter | ShapeFlag.Visualization;
+            box.Flags = ShapeFlag.TriggerOnEnter;
             box.LocalPosition = new Vector3(0, 1, 0);
             actorDesc.Shapes.Add(box);
             _physXActor = PhysX.Instance.Scene.CreateActor(actorDesc);
@@ -75,8 +85,21 @@ namespace Carmageddon
 
         public void OnHit(Vehicle vehicle)
         {
-            _isHit = true;
-            _hitSpeed = vehicle.Chassis.Speed * Behaviour.Acceleration * 300;
+            IsHit = true;
+            _groundHeight = Position.Y;
+
+            float speed = Math.Min(140, vehicle.Chassis.Speed);
+
+            if (speed > 90)
+            {   
+                _hitSpinSpeed = speed * 0.1f;
+                _hitUpSpeed = speed * 0.11f;
+                _hitSpeed = speed * Behaviour.Acceleration * 10000;
+            }
+            else
+            {
+                _hitSpeed = speed * Behaviour.Acceleration * 19000;
+            }
             _direction = Vector3.Normalize(vehicle.Chassis.Actor.LinearVelocity);
             SetAction(Behaviour.FatalImpact, true);
             SoundCache.Play(Behaviour.ExplodingSounds[0], Race.Current.PlayerVehicle, true);
@@ -92,6 +115,8 @@ namespace Carmageddon
                 _currentInstruction--;
             else
                 _currentInstruction++;
+
+            SetAction(Behaviour.AfterNonFatalImpact, false);
         }
 
         private void SetSequence(PedestrianSequence seq)
@@ -108,7 +133,7 @@ namespace Carmageddon
 
         public void Update()
         {
-            if (_frameTime < 0) return;
+            if (_stopUpdating) return;
 
             float angle = Helpers.GetSignedAngleBetweenVectors(Engine.Camera.Orientation, _direction, false);
             angle = MathHelper.ToDegrees(angle);
@@ -127,7 +152,6 @@ namespace Carmageddon
                     break;
                 }
             }
-
 
             _frameTime += Engine.ElapsedSeconds;
             if (_frameTime > _frameRate)
@@ -162,9 +186,30 @@ namespace Carmageddon
                 }
             }
 
-            if (_isHit)
+            if (IsHit)
             {
-                Position += _direction * _hitSpeed;
+                Position += _direction * _hitSpeed * Engine.ElapsedSeconds;
+
+                if (_hitUpSpeed != 0)
+                {
+                    Position.Y += _hitUpSpeed * Engine.ElapsedSeconds;
+                    _hitUpSpeed -= Engine.ElapsedSeconds * 30;
+                    _hitSpeed -= Engine.ElapsedSeconds * 10;
+                    if (Position.Y <= _groundHeight)
+                    {
+                        Position.Y = _groundHeight;
+                        _hitCurrentSpin = _hitSpinSpeed = _hitUpSpeed = 0;
+                        _hitSpeed = 0;
+                        _stopUpdating = true;
+                    }
+                    _hitCurrentSpin += _hitSpinSpeed * Engine.ElapsedSeconds;
+                }
+                else
+                {
+                    if (_frameTime == -1)
+                        _stopUpdating = true;  //if were not spining the ped, stop them as soon as anim is finished
+                }
+
                 _physXActor.GlobalPosition = Position;
             }
             else if (_isRunning)
@@ -172,7 +217,7 @@ namespace Carmageddon
                 Vector3 target = Instructions[_currentInstruction].Position;
                 _direction = target - Position;
                 _direction.Normalize();
-                Position += _direction * RunningSpeed;
+                Position += _direction * RunningSpeed * Engine.ElapsedSeconds;
                 _physXActor.GlobalPosition = Position;
 
                 if (Vector3.Distance(Position, target) < 1)
@@ -182,7 +227,7 @@ namespace Carmageddon
                         _instructionDirection *= -1;
                     }
                     _currentInstruction += _instructionDirection;
-                    if (_currentInstruction == -1) { _currentInstruction = 0; _instructionDirection *= -1; }                    
+                    if (_currentInstruction == -1) { _currentInstruction = 0; _instructionDirection *= -1; }
                 }
             }
         }
@@ -217,6 +262,8 @@ namespace Carmageddon
             {
                 world = Matrix.CreateRotationY(MathHelper.Pi) * world;
             }
+
+            world = Matrix.CreateRotationZ(_hitCurrentSpin) * world;
 
             world = Matrix.CreateScale(scale) * world * Matrix.CreateTranslation(frame.Offset);
 

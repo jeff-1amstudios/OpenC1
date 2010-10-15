@@ -1,4 +1,6 @@
 ﻿// -- OpenCarmageddon --
 //
 // default settings
-35	// Draw distance
+c:\games\carmdemo\   // Base path  (must end with a slash)
+35				 // Draw distance
+Demo		     // Emulation mode (Demo / Full)

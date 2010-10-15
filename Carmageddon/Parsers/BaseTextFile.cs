@@ -16,6 +16,16 @@ namespace Carmageddon.Parsers
         public BaseTextFile(string filename)
         {
             _file = new StreamReader(filename);
+            string firstline = _file.ReadLine();
+            if (firstline.StartsWith("@"))
+            {
+                _file.Close();
+                byte[] decrypted = TextFileDecryptor.DecryptDemoFile(filename);
+                //File.WriteAllBytes("c:\\temp\\dec.txt", decrypted);
+                _file = new StreamReader(new MemoryStream(decrypted));
+            }
+            _file.BaseStream.Position = 0;
+            _file.DiscardBufferedData();
         }
 
         public void CloseFile()

@@ -24,6 +24,8 @@ namespace Carmageddon.Parsers.Funks
 
         public override void Update()
         {
+            if (_frames.Count == 0) return;
+
             _currentFrameTime += Engine.ElapsedSeconds;
             if (_currentFrameTime > _speed)
             {
