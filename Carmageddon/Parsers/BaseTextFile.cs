@@ -21,7 +21,7 @@ namespace Carmageddon.Parsers
             {
                 _file.Close();
                 byte[] decrypted = TextFileDecryptor.DecryptDemoFile(filename);
-                File.WriteAllBytes("c:\\temp\\dec.txt", decrypted);
+                //File.WriteAllBytes("c:\\temp\\dec.txt", decrypted);
                 _file = new StreamReader(new MemoryStream(decrypted));
             }
             _file.BaseStream.Position = 0;
@@ -80,6 +80,12 @@ namespace Carmageddon.Parsers
             return int.Parse(line);
         }
 
+        public bool ReadLineAsBool()
+        {
+            string line = ReadLine();
+            return bool.Parse(line);
+        }
+
         public int[] ReadLineAsIntList()
         {
             string line = ReadLine();
@@ -129,7 +135,7 @@ namespace Carmageddon.Parsers
         {
             string line = ReadLine();
             string[] tokens = line.Split(new char[] {',', '\t', ' '}, StringSplitOptions.RemoveEmptyEntries);
-            Debug.Assert(tokens.Length == 3);
+            Trace.Assert(tokens.Length == 3);
             Vector3 vec = new Vector3(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2]));
             if (scale) vec *= GameVars.Scale;
             return vec;
@@ -139,7 +145,7 @@ namespace Carmageddon.Parsers
         {
             string line = ReadLine();
             string[] tokens = line.Split(new char[] { ',', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            Debug.Assert(tokens.Length == 4);
+            Trace.Assert(tokens.Length == 4);
             Rectangle rectangle = new Rectangle(int.Parse(tokens[0]), int.Parse(tokens[1]), 0, 0);
             rectangle.Width = int.Parse(tokens[2]) - rectangle.X;
             rectangle.Height = int.Parse(tokens[3]) - rectangle.Y;
@@ -151,7 +157,7 @@ namespace Carmageddon.Parsers
         {
             string line = ReadLine();
             string[] tokens = line.Split(new char[] { ',', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            Debug.Assert(tokens.Length == 2);
+            Trace.Assert(tokens.Length == 2);
             Vector2 vec = new Vector2(float.Parse(tokens[0]), float.Parse(tokens[1]));
             if (scale) vec *= new Vector2(GameVars.Scale.X, GameVars.Scale.Y);
             return vec;

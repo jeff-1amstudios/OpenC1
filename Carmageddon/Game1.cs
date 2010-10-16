@@ -31,14 +31,15 @@ namespace Carmageddon
             _graphics.PreferredBackBufferHeight = 600;
             _graphics.PreferMultiSampling = true;
 
+            SettingsFile settings = new SettingsFile();  //load opencarmageddon.txt
+
             Engine.ScreenSize = new Vector2(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
 
-            //_graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = GameVars.FullScreen;
             //_graphics.SynchronizeWithVerticalRetrace = false;
 
             _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;
             _graphics.MinimumPixelShaderProfile = ShaderProfile.PS_2_0;
-
         }
 
         /// <summary>
@@ -52,8 +53,6 @@ namespace Carmageddon
             base.Initialize();
 
             Engine.Startup(this, _graphics);
-
-            SettingsFile settings = new SettingsFile();  //load opencarmageddon.txt
 
             Engine.DrawDistance = GameVars.DrawDistance;
             Engine.Audio = new MdxSoundEngine();

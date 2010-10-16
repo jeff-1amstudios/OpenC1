@@ -92,7 +92,8 @@ namespace Carmageddon
 
             if (speed > 90)
             {   
-                _hitSpinSpeed = speed * 0.1f;
+                _hitSpinSpeed = speed * Engine.Random.Next(0.07f, 0.13f);
+                if (Engine.Random.Next() % 2 == 0) _hitSpinSpeed *= -1;
                 _hitUpSpeed = speed * 0.11f;
                 _hitSpeed = speed * Behaviour.Acceleration * 10000;
             }

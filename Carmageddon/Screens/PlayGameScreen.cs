@@ -152,7 +152,7 @@ namespace Carmageddon
                 }
                 else
                 {
-                    Debug.Assert(false);
+                    Trace.Assert(false);
                 }
 
                 //_effect.FogStart = 1 * (1/Race.Current.ConfigFile.FogAmount);

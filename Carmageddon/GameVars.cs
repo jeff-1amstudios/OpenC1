@@ -36,6 +36,7 @@ namespace Carmageddon
         public static Texture2D SelectedRaceScene;
         public static EmulationMode Emulation;
         public static int SkillLevel = 1;
+        public static bool FullScreen;
         
     }
 }

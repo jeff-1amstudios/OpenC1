@@ -124,13 +124,13 @@ namespace Carmageddon.Parsers
                 MaterialFiles.Add(ReadLine());
 
             int nbrModels = ReadLineAsInt();
-            Debug.Assert(nbrModels == 3);
+            Trace.Assert(nbrModels == 3);
             string lowPolyMode = ReadLine();
             ModelFile = ReadLine();
             BonnetModelFile = ReadLine();
 
             int nbrActors = ReadLineAsInt();
-            Debug.Assert(nbrActors == 3);
+            Trace.Assert(nbrActors == 3);
             string lowPolyActor = ReadLine();
             ActorFile = ReadLine();
             ActorFile = ActorFile.Substring(ActorFile.IndexOf(",") + 1);  //this is in the format 0,Eagle.act
@@ -139,7 +139,7 @@ namespace Carmageddon.Parsers
 
             WindscreenMaterial = ReadLine();
             int nbrSteerableWheels = ReadLineAsInt();
-            //Debug.Assert(nbrSteerableWheels == 2);
+            //Trace.Assert(nbrSteerableWheels == 2);
             for (int i = 0; i < nbrSteerableWheels; i++)
             {
                 int wref = ReadLineAsInt();
@@ -181,7 +181,7 @@ namespace Carmageddon.Parsers
 
         private void ReadFunkSection()
         {
-            Debug.Assert(ReadLine() == "START OF FUNK");
+            Trace.Assert(ReadLine() == "START OF FUNK");
             Funks = new List<BaseFunk>();
             FunkReader reader = new FunkReader();
 
@@ -194,7 +194,7 @@ namespace Carmageddon.Parsers
 
         private void ReadGrooveSection()
         {
-            Debug.Assert(ReadLine() == "START OF GROOVE");
+            Trace.Assert(ReadLine() == "START OF GROOVE");
             Grooves = new List<BaseGroove>();
             GrooveReader reader = new GrooveReader();
 
@@ -255,7 +255,7 @@ namespace Carmageddon.Parsers
         private void ReadMechanicsSection()
         {
             string startOfMechanics = ReadLine();
-            Debug.Assert(startOfMechanics.StartsWith("START OF MECHANICS"));
+            Trace.Assert(startOfMechanics.StartsWith("START OF MECHANICS"));
 
             for (int i = 0; i < 4; i++)
             {
@@ -266,7 +266,7 @@ namespace Carmageddon.Parsers
             if (startOfMechanics.EndsWith("2"))
             {
                 int nbrBoxes = ReadLineAsInt();
-                Debug.Assert(nbrBoxes == 1);
+                Trace.Assert(nbrBoxes == 1);
             }
             BoundingBox = new BoundingBox(ReadLineAsVector3(), ReadLineAsVector3());
 
@@ -291,7 +291,7 @@ namespace Carmageddon.Parsers
             TopSpeed = ReadLineAsFloat(false);
             EnginePower = ReadLineAsFloat(false);
 
-            Debug.Assert(ReadLine().StartsWith("END OF MECHANICS"));
+            Trace.Assert(ReadLine().StartsWith("END OF MECHANICS"));
         }
     }
 }

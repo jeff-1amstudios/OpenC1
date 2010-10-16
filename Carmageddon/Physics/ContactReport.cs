@@ -29,9 +29,6 @@ namespace Carmageddon.Physics
         {
             using (ContactStreamIterator iter = new ContactStreamIterator(contactInfo.ContactStream))
             {
-                if (events == ContactPairFlag.OnEndTouch)
-                {
-                }
                 //if we are looking at the player car
                 if (contactInfo.ActorB.Group == PhysXConsts.VehicleId)
                 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Storage;
 using System.IO;
+using OneAmEngine;
 
 namespace Carmageddon.Parsers
 {
@@ -19,6 +20,7 @@ namespace Carmageddon.Parsers
             GameVars.DrawDistance = ReadLineAsInt() * 10;
             string emu = ReadLine();
             GameVars.Emulation = (EmulationMode)Enum.Parse(typeof(EmulationMode), emu);
+            GameVars.FullScreen = ReadLineAsBool();
             
             CloseFile();
         }

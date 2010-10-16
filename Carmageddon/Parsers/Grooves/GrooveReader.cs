@@ -5,8 +5,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
 namespace Carmageddon.Parsers.Grooves
-{
-    
+{    
     class GrooveReader
     {
         public bool AtEnd;
@@ -20,16 +19,8 @@ namespace Carmageddon.Parsers.Grooves
                 return null;
             }
 
-            //if (actorName.StartsWith("FLWHEEL") || actorName.StartsWith("FRWHEEL") ||
-            //    actorName.StartsWith("RLWHEEL") || actorName.StartsWith("RRWHEEL") ||
-            //    actorName.StartsWith("FRPIVOT") || actorName.StartsWith("FLPIVOT"))
-            //{
-            //    ReadToEndOfGroove(file);
-            //    return null;
-            //}
-
             string lollipop = file.ReadLine().ToUpper();
-            Debug.Assert(lollipop.StartsWith("NOT A"));
+            Trace.Assert(lollipop.StartsWith("NOT A"));
             string movement = file.ReadLine(); //constant / distance
             string pathType = file.ReadLine().ToUpper(); //no path
             PathGroove path = null;
@@ -41,7 +32,7 @@ namespace Carmageddon.Parsers.Grooves
                 path.Speed = file.ReadLineAsFloat(false);
                 path.Movement = file.ReadLineAsVector3(false);
             }
-            //Debug.Assert(path.StartsWith("NO "));
+            //Trace.Assert(path.StartsWith("NO "));
             string action = file.ReadLine().ToUpper();
 
             if (action == "SPIN")

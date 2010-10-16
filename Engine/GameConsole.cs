@@ -13,7 +13,7 @@ namespace OneAmEngine
         static Texture2D _shadow;
         static List<string> _scrollingLines = new List<string>();
         static int _currentLine;
-        private static bool _enabled = true;
+        private static bool _enabled = false;
 
         static GameConsole()
         {

@@ -55,7 +55,7 @@ namespace Carmageddon.Parsers
             BinaryReader reader = new BinaryReader(File.Open(filename, FileMode.Open));
             int filesize = reader.ReadInt32();
             ushort type = reader.ReadUInt16();
-            //Debug.Assert(type == 0xAF12);
+            //Trace.Assert(type == 0xAF12);
             ushort frames = reader.ReadUInt16();
             _width = reader.ReadUInt16();
             _height = reader.ReadUInt16();
@@ -130,7 +130,7 @@ namespace Carmageddon.Parsers
             short nbrPackets = reader.ReadInt16();
             byte skipCount = reader.ReadByte();
             byte copyCount = reader.ReadByte();
-            Debug.Assert(copyCount == 0);
+            Trace.Assert(copyCount == 0);
             _palette = new FliPalette(reader.ReadBytes(768));
         }
 
@@ -139,7 +139,7 @@ namespace Carmageddon.Parsers
             short nbrPackets = reader.ReadInt16();
             byte skipCount = reader.ReadByte();
             byte copyCount = reader.ReadByte();
-            Debug.Assert(copyCount == 0);
+            Trace.Assert(copyCount == 0);
             byte[] palette = reader.ReadBytes(768);
             for (int i = 0; i < 256; i++)
                 palette[i] *= 4;
@@ -201,7 +201,7 @@ namespace Carmageddon.Parsers
                     byte skip = reader.ReadByte();
                     position += skip;
                     int count = (int)reader.ReadSByte();
-                    Debug.Assert(count != 0);
+                    Trace.Assert(count != 0);
                     if (count > 0)
                     {
                         Array.Copy(reader.ReadBytes(count), 0, buffer, position, count);

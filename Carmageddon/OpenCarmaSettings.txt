@@ -4,3 +4,4 @@
 c:\games\carmdemo\   // Base path  (must end with a slash)
 35				 // Draw distance
 Demo		     // Emulation mode (Demo / Full)
+true			// Full screen (true / false)

@@ -155,7 +155,7 @@ namespace Carmageddon.Parsers
             {
                 SkipLines(2);
                 int quads = ReadLineAsInt();
-                Debug.Assert(quads == 1);
+                Trace.Assert(quads == 1);
                 Checkpoint point = new Checkpoint { Number = i };
                 List<Vector3> points = new List<Vector3>();
                 points.Add(ReadLineAsVector3());
@@ -204,7 +204,7 @@ namespace Carmageddon.Parsers
 
         private void ReadFunkSection()
         {
-            Debug.Assert(ReadLine() == "START OF FUNK");
+            Trace.Assert(ReadLine() == "START OF FUNK");
             Funks = new List<BaseFunk>();
             FunkReader reader = new FunkReader();
 
@@ -218,7 +218,7 @@ namespace Carmageddon.Parsers
         private void ReadGrooveSection()
         {
             string start = ReadLine();
-            Debug.Assert(start == "START OF GROOVE");
+            Trace.Assert(start == "START OF GROOVE");
             Grooves = new List<BaseGroove>();
             GrooveReader reader = new GrooveReader();
             while (!reader.AtEnd)
@@ -266,7 +266,7 @@ namespace Carmageddon.Parsers
 
         private void ReadOpponentPathsSection()
         {
-            Debug.Assert(ReadLine() == "START OF OPPONENT PATHS");
+            Trace.Assert(ReadLine() == "START OF OPPONENT PATHS");
             
             int nbrNodes = ReadLineAsInt();
 
@@ -309,7 +309,7 @@ namespace Carmageddon.Parsers
                 pos += new Vector3(0, 2, 0);
                 CopStartPoints.Add(new CopStartPoint { Position = pos, IsSpecialForces = tokens[3].Contains("9") });
             }
-            Debug.Assert(ReadLine() == "END OF OPPONENT PATHS");
+            Trace.Assert(ReadLine() == "END OF OPPONENT PATHS");
         }
 
         private void ReadMaterialModifierSection()
