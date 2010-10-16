@@ -262,7 +262,7 @@ namespace Carmageddon.Gfx
             int p1, p2;
 
             float thickness = 0.13f;
-            float length = _vehicle.Chassis.Speed * 0.042f;
+            float length = _vehicle.Chassis.Speed * 0.045f;
 
             Vector3 direction = skid.EndPosition - skid.StartPosition;
             direction.Normalize();
