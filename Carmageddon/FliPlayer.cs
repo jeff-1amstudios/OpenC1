@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework.Graphics;
-using PlatformEngine;
+using OneAmEngine;
 
 namespace Carmageddon
 {
@@ -15,17 +15,20 @@ namespace Carmageddon
         int _currentFrame;
         FliFile _fli;
 
-        public FliPlayer(FliFile fli)
+        public FliPlayer(FliFile fli) : this(fli, 0)
+        {
+        }
+
+        public FliPlayer(FliFile fli, int startFrame)
         {
             _fli = fli;
+            _currentFrame = startFrame;
         }
 
         public bool IsPlaying { get { return _playing; } }
 
-        public void Play(bool loop, float delay)
+        public void Play(bool loop)
         {
-            _currentFrame = 0;
-            _currentFrameTime = -delay;
             _playing = true;
             _loop = loop;
         }

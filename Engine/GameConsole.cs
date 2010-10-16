@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using PlatformEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace NFSEngine
+namespace OneAmEngine
 {
     public static class GameConsole
     {

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using Carmageddon.HUD;
-using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
-using NFSEngine;
+
 using Microsoft.Xna.Framework;
 using Carmageddon.Physics;
+using OneAmEngine;
 
 namespace Carmageddon.CameraViews
 {
@@ -50,10 +50,13 @@ namespace Carmageddon.CameraViews
                     _camera.RotateTo(chassis.Backwards ? MathHelper.Pi : 0);
                 }
                 if (Race.Current.RaceTime.IsStarted) _camera.HeightOverride = 0;
+                _camera.ChaseDistance = new Vector3(6.3f, 1, 6.3f);
             }
             else
             {
                 if (Race.Current.RaceTime.IsStarted) _camera.HeightOverride = 2;
+                _camera.ChaseDistance = new Vector3(7f, 1, 7f);
+                
             }
 
             foreach (BaseHUDItem item in _hudItems)

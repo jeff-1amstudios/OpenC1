@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
-using PlatformEngine;
 
-namespace NFSEngine
+namespace OneAmEngine
 {
     /// <summary>
     /// Camera that stays a fixed distance behind an object but swings freely
     /// </summary>
     public class FixedChaseCamera : ICamera
     {
-        private Vector3 _chaseDistance, _actualPosition;
+        public Vector3 ChaseDistance;
         float _currentRotation;
         public float HeightOverride;
         float _height;
 
         public FixedChaseCamera(float chaseDistance, float height)
 		{
-            _chaseDistance = new Vector3(chaseDistance, 1, chaseDistance);
+            ChaseDistance = new Vector3(chaseDistance, 1, chaseDistance);
             _height = height;
             AspectRatio = Engine.AspectRatio;
             FieldOfView = MathHelper.ToRadians(45f);
@@ -99,7 +98,7 @@ namespace NFSEngine
                     _currentRotation = _requestedRotation;
             }
 
-            Vector3 pos = (-Vector3.Normalize(Orientation) * _chaseDistance);
+            Vector3 pos = (-Vector3.Normalize(Orientation) * ChaseDistance);
             if (HeightOverride != 0)
                 pos.Y = HeightOverride;
             else

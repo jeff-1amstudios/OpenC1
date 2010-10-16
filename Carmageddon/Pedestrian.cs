@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
-using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
 using StillDesign.PhysX;
 using Carmageddon.Physics;
-using NFSEngine;
+using OneAmEngine;
+
 
 namespace Carmageddon
 {
@@ -37,7 +37,7 @@ namespace Carmageddon
         private float _groundHeight;        
         private float _hitSpeed, _hitSpinSpeed, _hitUpSpeed, _hitCurrentSpin;
         
-        private bool _stopUpdating;
+        public bool _stopUpdating;
 
         public Pedestrian()
         {

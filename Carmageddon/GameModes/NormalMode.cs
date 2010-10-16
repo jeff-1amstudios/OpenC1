@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using Carmageddon.CameraViews;
-using PlatformEngine;
 using Microsoft.Xna.Framework.Input;
+using OneAmEngine;
 
-namespace Carmageddon.EditModes
+namespace Carmageddon.GameModes
 {
     class NormalMode : GameMode
     {
@@ -19,8 +19,6 @@ namespace Carmageddon.EditModes
                 _views.Add(new CockpitView(Race.Current.PlayerVehicle, GameVars.BasePath + @"data\32x20x8\cars\" + Race.Current.PlayerVehicle.Config.FileName));
             else
                 _views.Add(new CockpitView(Race.Current.PlayerVehicle, GameVars.BasePath + @"data\64x48x8\cars\" + Race.Current.PlayerVehicle.Config.FileName));
-            _views.Add(new FlyView(Race.Current.PlayerVehicle));
-            _views.Add(new RaceCompletedView(Race.Current.PlayerVehicle));
             _views[_currentView].Activate();
         }
 

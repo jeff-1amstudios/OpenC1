@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace PlatformEngine
+namespace OneAmEngine
 {
     public abstract class GameObject
     {

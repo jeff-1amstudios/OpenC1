@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using PlatformEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework.Input;
-using NFSEngine;
 using Carmageddon.Gfx;
 using System.Diagnostics;
 using Carmageddon.CameraViews;
 using Carmageddon.Physics;
 using System.IO;
-using Particle3DSample;
-using Carmageddon.EditModes;
+using OneAmEngine;
 using Carmageddon.Screens;
+using Carmageddon.GameModes;
 
 
 namespace Carmageddon
@@ -34,10 +32,10 @@ namespace Carmageddon
             Parent = parent;
             GC.Collect();
 
-            //GameVars.SelectedCarFileName = "blkeagle.txt";
             _race = new Race(GameVars.BasePath + "data\\races\\" + GameVars.SelectedRaceInfo.RaceFilename, GameVars.SelectedCarFileName);
             
             _modes.Add(new NormalMode());
+            _modes.Add(new FlyMode());
             _modes.Add(new OpponentEditMode());
             GameMode.Current = _modes[_currentEditMode];
         }

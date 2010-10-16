@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NFSEngine.Audio
+namespace OneAmEngine.Audio
 {
     public interface ISoundEngine
     {
@@ -13,5 +13,6 @@ namespace NFSEngine.Audio
         void Register3dSound(ISound sound);
         void Unregister3dSound(ISound sound);
         void Update();
+        void StopAll();
     }
 }

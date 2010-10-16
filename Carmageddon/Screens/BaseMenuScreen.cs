@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using PlatformEngine;
 using Microsoft.Xna.Framework;
-using NFSEngine;
+
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.HUD;
 using Carmageddon.Parsers;
+using OneAmEngine;
 
 namespace Carmageddon.Screens
 {
@@ -31,7 +31,7 @@ namespace Carmageddon.Screens
         {
             if (Parent is BaseMenuScreen)
             {
-                ((BaseMenuScreen)Parent)._inAnimation.Play(false, 0);
+                ((BaseMenuScreen)Parent)._inAnimation.Play(false);
             }
             Engine.Screen = Parent;
         }
@@ -84,7 +84,7 @@ namespace Carmageddon.Screens
 
         private void PlayOutAnimation()
         {
-            _outAnimation.Play(false, 0);
+            _outAnimation.Play(false);
             _waitingForOutAnimation = true;
         }
 

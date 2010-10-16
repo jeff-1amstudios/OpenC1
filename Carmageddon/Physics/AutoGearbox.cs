@@ -7,7 +7,7 @@ namespace Carmageddon.Physics
     class AutoGearbox : BaseGearbox
     {
         private const float ChangeUpPoint = 0.94f;
-        private const float ChangeDownPoint = 0.65f;
+        private const float ChangeDownPoint = 0.6f;
 
         public AutoGearbox(List<float> ratios, float changeTime)
             : base(ratios, changeTime)
@@ -33,7 +33,7 @@ namespace Carmageddon.Physics
 
             if (_currentGear == GEAR_NEUTRAL)
             {
-                GearUp();
+                //GearUp();
             }
 
             if (!_motor.WheelsSpinning)

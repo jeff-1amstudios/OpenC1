@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.EditModes;
-using NFSEngine;
 using Microsoft.Xna.Framework;
 using Carmageddon.Physics;
-using NFSEngine.Audio;
+using OneAmEngine.Audio;
+using OneAmEngine;
+using Microsoft.Xna.Framework.Input;
 
 namespace Carmageddon.GameModes
 {
@@ -56,12 +56,15 @@ namespace Carmageddon.GameModes
             
             _camera.ResetRotation();
             _camera.RotateTo(MathHelper.Pi * 2);
-            PlatformEngine.Engine.Camera = _camera;
+            Engine.Camera = _camera;
         }
 
         public override void Activate()
         {
-            
+            PlayerVehicleController.ForceBrake = true;
+            foreach (IDriver driver in Race.Current.Drivers)
+                if (driver is CpuDriver)
+                    ((CpuDriver)driver).SetState(CpuDriverState.Sleeping);
         }
 
         public override void Update()
@@ -75,6 +78,11 @@ namespace Carmageddon.GameModes
             {
                 _camera.ResetRotation();
                 _camera.RotateTo(MathHelper.Pi * 2);
+            }
+
+            if (Engine.Input.WasPressed(Keys.Enter))
+            {
+                Engine.Game.Exit();
             }
         }
 

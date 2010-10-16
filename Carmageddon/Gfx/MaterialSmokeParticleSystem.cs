@@ -1,10 +1,9 @@
-﻿    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using Microsoft.Xna.Framework;
-    using Particle3DSample;
-    using PlatformEngine;
-    using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.Xna.Framework;
+using OneAmEngine;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Carmageddon.Gfx
 {
@@ -22,7 +21,7 @@ namespace Carmageddon.Gfx
         protected override void InitializeSettings(ParticleSettings settings)
         {
             settings.Texture = Engine.ContentManager.Load<Texture2D>("Content/material-modifier-smoke");
-            
+
             settings.MaxParticles = 200;
             settings.MinColor = _color;
             settings.MaxColor = _color;
@@ -47,4 +46,4 @@ namespace Carmageddon.Gfx
         }
     }
 }
-    
+

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using PlatformEngine;
 using Microsoft.Xna.Framework.Input;
+using OneAmEngine;
 
 namespace Carmageddon
 {
@@ -29,7 +29,7 @@ namespace Carmageddon
             get
             {
                 if (ForceBrake)
-                    return 1.0f;
+                    return 0f;
 
                 if (Engine.Input.IsKeyDown(Keys.Down))
                     return 1.0f;
@@ -89,7 +89,11 @@ namespace Carmageddon
 
         public static bool Handbrake
         {
-            get { return Engine.Input.IsKeyDown(Keys.Space); }
+            get
+            {
+                if (ForceBrake) return true;
+                return Engine.Input.IsKeyDown(Keys.Space);
+            }
         }
     }
 }

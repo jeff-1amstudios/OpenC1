@@ -4,7 +4,6 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Carmageddon.Physics;
 using StillDesign.PhysX;
-using PlatformEngine;
 
 namespace Carmageddon
 {

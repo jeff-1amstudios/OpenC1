@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
-using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using NFSEngine;
-using Carmageddon.CameraViews;
 
-namespace Carmageddon.EditModes
+using Carmageddon.CameraViews;
+using OneAmEngine;
+
+namespace Carmageddon.GameModes
 {
     class OpponentEditMode : GameMode
     {
@@ -18,8 +18,8 @@ namespace Carmageddon.EditModes
 
         public OpponentEditMode()
         {
-            //_opponentCamera = new FixedChaseCamera(6.3f, 3.3f);
-            //_opponentCamera.FieldOfView = MathHelper.ToRadians(55.55f);
+            _opponentCamera = new FixedChaseCamera(6.3f, 2.3f);
+            _opponentCamera.FieldOfView = MathHelper.ToRadians(55.55f);
             _fpsView = new FlyView(Race.Current.PlayerVehicle);
         }
 
@@ -31,26 +31,26 @@ namespace Carmageddon.EditModes
 
         public override void Update()
         {
-            //if (Engine.Input.WasPressed(Keys.D0))
-            //{
-            //    _watchingOpponent = (_watchingOpponent + 1) % (Race.Current.Opponents.Count + 1);   
-            //}
+            if (Engine.Input.WasPressed(Keys.D0))
+            {
+                _watchingOpponent = (_watchingOpponent + 1) % (Race.Current.Opponents.Count + 1);
+            }
 
-            //if (_watchingOpponent == 0)
-            //{
-            //    _opponentCamera.Position = Race.Current.PlayerVehicle.GetBodyBottom();
-            //    _opponentCamera.Orientation = Race.Current.PlayerVehicle.Chassis.Actor.GlobalOrientation.Forward;
-            //    Engine.Camera = _opponentCamera;
-            //}
-            //else
-            //{
-            //    Opponent opponent = Race.Current.Opponents[_watchingOpponent-1];
-            //    _opponentCamera.Position = opponent.Vehicle.GetBodyBottom();
-            //    _opponentCamera.Orientation = opponent.Vehicle.Chassis.Actor.GlobalOrientation.Forward;
-            //    Engine.Camera = _opponentCamera;
+            if (_watchingOpponent == 0)
+            {
+                _opponentCamera.Position = Race.Current.PlayerVehicle.GetBodyBottom();
+                _opponentCamera.Orientation = Race.Current.PlayerVehicle.Chassis.Actor.GlobalOrientation.Forward;
+                Engine.Camera = _opponentCamera;
+            }
+            else
+            {
+                Opponent opponent = Race.Current.Opponents[_watchingOpponent - 1];
+                _opponentCamera.Position = opponent.Vehicle.GetBodyBottom();
+                _opponentCamera.Orientation = opponent.Vehicle.Chassis.Actor.GlobalOrientation.Forward;
+                Engine.Camera = _opponentCamera;
 
-            //    opponent.Vehicle.Chassis.OutputDebugInfo();
-            //}
+                opponent.Vehicle.Chassis.OutputDebugInfo();
+            }
         }
 
         public override void Render()
@@ -65,8 +65,7 @@ namespace Carmageddon.EditModes
                 
                 Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(node.Position), Color.White);
                 foreach (OpponentPath path in node.Paths)
-                {
-                    
+                {                    
                         Color c = Color.Yellow;
                         if (path.Type == PathType.Race) c = Color.Red;
                         if (path.Type == PathType.Cheat) c = Color.Blue;

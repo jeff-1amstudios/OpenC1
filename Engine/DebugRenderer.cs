@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 #endregion
 
-namespace PlatformEngine
+namespace OneAmEngine
 {
     /// <summary>
     /// Used for text justification.

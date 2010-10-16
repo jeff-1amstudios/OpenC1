@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace NFSEngine
+namespace OneAmEngine
 {
 	public class AverageValueVector3
 	{

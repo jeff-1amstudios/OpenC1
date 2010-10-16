@@ -10,11 +10,10 @@
 #region Using Statements
 using System;
 using Microsoft.Xna.Framework;
-using PlatformEngine;
 using System.Collections.Generic;
 #endregion
 
-namespace Particle3DSample
+namespace OneAmEngine
 {
     /// <summary>
     /// Helper for objects that want to leave particles behind them as they

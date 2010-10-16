@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Carmageddon.EditModes
+namespace Carmageddon.GameModes
 {
     abstract class GameMode
     {

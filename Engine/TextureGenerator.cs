@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
-using PlatformEngine;
 using Microsoft.DirectX;
 
-namespace NFSEngine
+namespace OneAmEngine
 {
     public static class TextureGenerator
     {

@@ -6,10 +6,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StillDesign.PhysX;
 using OneamEngine;
-using NFSEngine;
-using PlatformEngine;
 using Carmageddon;
 using Carmageddon.Parsers;
+using OneAmEngine;
 
 namespace Carmageddon.Physics
 {
@@ -313,7 +312,7 @@ namespace Carmageddon.Physics
 
                 if (_physXActor.GlobalOrientation.Up.Y < 0) //car sliding along on the roof
                 {
-                    _physXActor.LinearDamping = 5f;  //stop insane sliding
+                    _physXActor.LinearDamping = 7f;  //stop insane sliding
                     _physXActor.AngularDamping = 2f;
                     GameConsole.WriteLine("mode on roof");
                 }

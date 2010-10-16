@@ -12,13 +12,12 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using PlatformEngine;
-using NFSEngine;
+
 using System.Diagnostics;
 using System.Collections.Generic;
 #endregion
 
-namespace Particle3DSample
+namespace OneAmEngine
 {
     /// <summary>
     /// The main component in charge of displaying particles.

@@ -7,7 +7,6 @@ using MiscUtil.Conversion;
 using System.IO;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
-using PlatformEngine;
 
 namespace Carmageddon.Parsers
 {

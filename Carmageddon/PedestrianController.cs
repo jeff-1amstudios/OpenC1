@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using Carmageddon.Parsers;
-using PlatformEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
+using OneAmEngine;
 
 namespace Carmageddon
 {
@@ -85,8 +85,19 @@ namespace Carmageddon
         {
             Vector3 playerPos = Race.Current.PlayerVehicle.Position;
 
-            foreach (Pedestrian ped in _peds)
+            for (int i = 0; i < _peds.Count; i++)
             {
+                Pedestrian ped = _peds[i];
+                if (ped.RefNumber >= 100)
+                {
+                    // remove used powerups & mines
+                    if (ped._stopUpdating)
+                    {
+                        _peds.Remove(ped);
+                        i--;
+                        continue;
+                    }
+                }
                 ped.DistanceFromPlayer = Vector3.Distance(playerPos, ped.Position);
                 if (ped.DistanceFromPlayer < 100)
                 {

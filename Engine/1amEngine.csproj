@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NFSEngine</RootNamespace>
-    <AssemblyName>NFSEngine</AssemblyName>
+    <RootNamespace>OneAmEngine</RootNamespace>
+    <AssemblyName>1amStudiosEngine</AssemblyName>
     <XnaFrameworkVersion>v3.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
     <XnaCrossPlatformGroupID>93f21dfc-1174-45e7-a69b-cfdb57b16ac4</XnaCrossPlatformGroupID>

@@ -5,11 +5,10 @@ using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using NFSEngine;
-using NFSEngine.Audio;
 using OneamEngine;
+using OneAmEngine.Audio;
 
-namespace PlatformEngine
+namespace OneAmEngine
 {
     public static class Engine
     {

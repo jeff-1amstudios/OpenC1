@@ -4,8 +4,7 @@ using System.Text;
 using StillDesign.PhysX;
 using Carmageddon.Physics;
 using Microsoft.Xna.Framework;
-using PlatformEngine;
-using Particle3DSample;
+using OneAmEngine;
 using Carmageddon.Gfx;
 using Carmageddon.Parsers;
 
@@ -46,9 +45,9 @@ namespace Carmageddon
         {
             if (Bumpiness > 0)
             {
-                if (wheel.Index == _nextWheel && chassis.Speed > 5 && _lastBump + 0.3f < Engine.TotalSeconds)
+                if (wheel.Index == _nextWheel && chassis.Speed > 5 && _lastBump + 0.3f < Engine.TotalSeconds && !wheel.InAir)
                 {
-                    chassis.Actor.AddForceAtLocalPosition(new Vector3(0, Bumpiness * 55, 0), wheel.Shape.LocalPosition, ForceMode.Impulse, true);
+                    chassis.Actor.AddForceAtLocalPosition(new Vector3(0, Bumpiness * 65, 0), wheel.Shape.LocalPosition, ForceMode.Impulse, true);
                     _lastBump = Engine.TotalSeconds;
                     _nextWheel = Engine.Random.Next(0, chassis.Wheels.Count - 1);
                 }

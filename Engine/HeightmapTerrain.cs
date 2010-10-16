@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using Microsoft.Xna.Framework;
 
-namespace PlatformEngine
+namespace OneAmEngine
 {
     public class HeightmapTerrain
     {

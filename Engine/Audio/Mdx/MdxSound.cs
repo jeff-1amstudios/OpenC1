@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.DirectX.DirectSound;
 using Microsoft.Xna.Framework;
-using PlatformEngine;
 
-namespace NFSEngine.Audio
+namespace OneAmEngine.Audio
 {
 	class MdxSound : ISound
 	{

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using PlatformEngine;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NFSEngine;
+
 using Carmageddon.HUD;
 using Microsoft.Xna.Framework.Input;
+using OneAmEngine;
 
 namespace Carmageddon.Screens
 {
@@ -19,8 +19,10 @@ namespace Carmageddon.Screens
             : base(parent)
         {
 
-            _inAnimation = new FliPlayer(LoadAnimation("MAI2COME.fli"));
-            _inAnimation.Play(false, 1);
+            _inAnimation = new FliPlayer(LoadAnimation("MAI2COME.fli"), 2);
+            _inAnimation.Play(false);
+            ScreenEffects.Instance.FadeSpeed = 300;
+            ScreenEffects.Instance.UnFadeScreen();
 
             _outAnimation = new FliPlayer(LoadAnimation("MAI2AWAY.fli"));
 

@@ -7,7 +7,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Carmageddon</RootNamespace>
-    <AssemblyName>Carmageddon</AssemblyName>
+    <AssemblyName>OpenCarmageddon</AssemblyName>
     <XnaFrameworkVersion>v3.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
     <XnaCrossPlatformGroupID>d21e1db0-0b1c-4adf-81c3-7340137f9eeb</XnaCrossPlatformGroupID>
@@ -95,6 +95,7 @@
     <Compile Include="CopDriver.cs" />
     <Compile Include="CpuDriver.cs" />
     <Compile Include="FliPlayer.cs" />
+    <Compile Include="GameModes\FlyMode.cs" />
     <Compile Include="GameModes\GameMode.cs" />
     <Compile Include="GameModes\NormalMode.cs" />
     <Compile Include="GameModes\OpponentEditMode.cs" />
@@ -207,13 +208,7 @@
   <ItemGroup>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
-    <Content Include="Lib\NxCharacter.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Lib\NxCooking.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Lib\NxExtensions.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Lib\PhysXLoader.dll">
@@ -232,9 +227,9 @@
     </NestedContentProject>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Engine\Engine.csproj">
+    <ProjectReference Include="..\Engine\1amEngine.csproj">
       <Project>{32825548-A7A9-4D8E-A3AC-5DDA50EDB14B}</Project>
-      <Name>Engine</Name>
+      <Name>1amEngine</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

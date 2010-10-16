@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.DirectX.DirectSound;
-using PlatformEngine;
 using Microsoft.Xna.Framework;
 
-namespace NFSEngine.Audio
+namespace OneAmEngine.Audio
 {
 
 	public class MdxSoundEngine : ISoundEngine
@@ -62,16 +61,22 @@ namespace NFSEngine.Audio
                 float distance = Vector3.Distance(_sounds[i].Position, listenerPos);
                 if (distance > _sounds[i].MaximumDistance && _sounds[i].IsPlaying)
                 {
-                    GameConsole.WriteEvent("stopping sound");
                     _sounds[i].Pause();
                     _sounds.RemoveAt(i);
                 }
                 else if (distance < _sounds[i].MaximumDistance && !_sounds[i].IsPlaying)
                 {
-                    GameConsole.WriteEvent("restarting sound");
                     _sounds[i].Play(true);
                 }
             }
+        }
+
+        public void StopAll()
+        {
+            foreach (ISound sound in _sounds)
+                sound.Stop();
+
+            _sounds.Clear();
         }
 	}
 }

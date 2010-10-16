@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Text;
 using Microsoft.Xna.Framework;
-using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using Carmageddon.Physics;
 using Carmageddon.Gfx;
 using Carmageddon.Parsers.Grooves;
-using NFSEngine.Audio;
 using Carmageddon.Parsers.Funks;
-using Particle3DSample;
-using NFSEngine;
+using OneAmEngine;
+
 using System.IO;
 using StillDesign.PhysX;
 using Microsoft.Xna.Framework.Input;
@@ -236,7 +233,7 @@ namespace Carmageddon
                 }
             }
 
-            if (Driver is CpuDriver)
+            if (Driver is CpuDriver && !((CpuDriver)Driver).IsDead)
             {
                 Race.Current.OnPlayerCpuCarHit(damage);
             }

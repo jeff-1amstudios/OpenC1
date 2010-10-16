@@ -21,7 +21,7 @@ namespace Carmageddon.Parsers
             {
                 _file.Close();
                 byte[] decrypted = TextFileDecryptor.DecryptDemoFile(filename);
-                //File.WriteAllBytes("c:\\temp\\dec.txt", decrypted);
+                File.WriteAllBytes("c:\\temp\\dec.txt", decrypted);
                 _file = new StreamReader(new MemoryStream(decrypted));
             }
             _file.BaseStream.Position = 0;

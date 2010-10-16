@@ -5,7 +5,7 @@ using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
 using StillDesign.PhysX;
 using Carmageddon.Physics;
-using NFSEngine;
+
 
 namespace Carmageddon
 {

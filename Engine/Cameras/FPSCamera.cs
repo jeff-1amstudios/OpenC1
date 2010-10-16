@@ -24,9 +24,9 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using NFSEngine;
 
-namespace PlatformEngine
+
+namespace OneAmEngine
 {
     /// <summary>
     /// The FirstPersonCamera class implements the logic for a first person

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using Carmageddon.Parsers;
 using Microsoft.Xna.Framework.Graphics;
-using PlatformEngine;
 using Microsoft.Xna.Framework;
 using Carmageddon.HUD;
+using OneAmEngine;
 
 namespace Carmageddon.Screens
 {
@@ -16,7 +16,7 @@ namespace Carmageddon.Screens
             : base(parent)
         {
             _inAnimation = new FliPlayer(LoadAnimation("chrccome.fli"));
-            _inAnimation.Play(false, 0);
+            _inAnimation.Play(false);
 
             _outAnimation = new FliPlayer(LoadAnimation("chrcaway.fli"));
 

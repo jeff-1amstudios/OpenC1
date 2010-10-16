@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using PlatformEngine;
 using Microsoft.Xna.Framework;
 using Carmageddon.Parsers;
 using Carmageddon.HUD;
+using OneAmEngine;
 
 namespace Carmageddon.Screens
 {
@@ -17,7 +17,7 @@ namespace Carmageddon.Screens
             _selectedOption = 1;
 
             _inAnimation = new FliPlayer(LoadAnimation("skilcome.fli"));
-            _inAnimation.Play(false, 0);
+            _inAnimation.Play(false);
 
             _outAnimation = new FliPlayer(LoadAnimation("skilaway.fli"));
 

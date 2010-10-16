@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Text;
 using Microsoft.Xna.Framework;
-using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers;
 using Carmageddon.Physics;
 using StillDesign.PhysX;
 using Carmageddon.Parsers.Grooves;
 using Carmageddon.Parsers.Funks;
-using NFSEngine;
 using Carmageddon.Gfx;
 using Microsoft.Xna.Framework.Input;
-using Carmageddon.EditModes;
 using Carmageddon.GameModes;
+using OneAmEngine;
 
 namespace Carmageddon
 {
@@ -324,6 +321,7 @@ namespace Carmageddon
             if (NbrDeadPeds == Peds.Count)
             {
                 GameMode.Current = new RaceCompletedMode(CompletionType.Peds);
+                RaceTime.IsOver = true;
             }
         }
     }

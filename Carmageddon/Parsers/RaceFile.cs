@@ -322,7 +322,7 @@ namespace Carmageddon.Parsers
                 MaterialModifier modifier = new MaterialModifier
                     {
                         CarWallFriction = ReadLineAsFloat(false),
-                        TyreRoadFriction = ReadLineAsFloat(false),
+                        TyreRoadFriction = Math.Min(1, ReadLineAsFloat(false)),  /* deal with weird (wrong?) settings for grass on cityb maps*/
                         Downforce = ReadLineAsFloat(false),
                         Bumpiness = ReadLineAsFloat(false),
                         TyreSoundIndex = ReadLineAsInt(),
@@ -331,6 +331,7 @@ namespace Carmageddon.Parsers
                         Sparkiness = ReadLineAsFloat(false),
                         SmokeTableIndex = ReadLineAsInt()
                     };
+
                 string matName = ReadLine();
                 if (matName != "none")
                 {

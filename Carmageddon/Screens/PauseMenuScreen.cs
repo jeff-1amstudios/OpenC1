@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Carmageddon.Parsers;
 using Carmageddon.HUD;
-using PlatformEngine;
 using Carmageddon.Physics;
+using OneAmEngine;
 
 namespace Carmageddon.Screens
 {
@@ -15,7 +15,7 @@ namespace Carmageddon.Screens
             : base(parent)
         {
             _inAnimation = new FliPlayer(LoadAnimation("MAINCOME.fli"));
-            _inAnimation.Play(false, 0);
+            _inAnimation.Play(false);
 
             _outAnimation = new FliPlayer(LoadAnimation("MAINAWAY.fli"));
 
@@ -47,8 +47,9 @@ namespace Carmageddon.Screens
                     ReturnToParent();
                     break;
                 case 1:
-                    PhysX.Instance.Delete();
-                    Engine.Screen = Parent.Parent;
+                    Engine.Game.Exit();
+                    //PhysX.Instance.Delete();
+                    //Engine.Screen = Parent.Parent;
                     break;
                 case 2:
                     Engine.Game.Exit();

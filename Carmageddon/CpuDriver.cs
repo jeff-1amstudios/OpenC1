@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
-using NFSEngine;
-using PlatformEngine;
 using Microsoft.Xna.Framework.Graphics;
+using OneAmEngine;
 
 namespace Carmageddon
 {
@@ -90,7 +89,7 @@ namespace Carmageddon
                 }
                 LogPosition(pos);
             }
-            if (Vehicle.Chassis.Actor.GlobalPose.Up.Y < 0.002f && Vehicle.Chassis.Speed < 5)
+            if (Vehicle.Chassis.Actor.GlobalPose.Up.Y < 0.002f && Vehicle.Chassis.Speed < 5 && !InPlayersView)
             {
                 Vehicle.Chassis.Reset();
                 return;
@@ -208,7 +207,7 @@ namespace Carmageddon
                 {
                     _closestPointOnPath = Vector3.Lerp(_currentPath.End.Position, _closestPointOnPath, dist / (_currentPath.Width * 1.5f));
                 }
-                Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(_closestPointOnPath), Color.Blue);
+                //Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(_closestPointOnPath), Color.Blue);
             }
             else if (_state == CpuDriverState.Attacking)
             {
