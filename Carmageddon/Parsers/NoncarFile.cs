@@ -30,10 +30,10 @@ namespace Carmageddon.Parsers
             }
 
             string massline = ReadLine();
-            string[] masses = massline.Split(',');
-            Mass = float.Parse(masses[0]) * 1000;
-            MassWhenAttached = float.Parse(masses[1]) * 1000;
-
+            float[] masses = ReadLineAsFloatList();
+            Mass = masses[0] * 1000;
+            MassWhenAttached = masses[1] * 1000;
+            
             ReadLine(); //ang mom dimensions
             BendAngleBeforeSnapping = ReadLineAsFloat(false);
             TorqueRequiredToMove = ReadLineAsFloat(false);

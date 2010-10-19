@@ -273,6 +273,9 @@ namespace Carmageddon
                 Vehicle.Chassis.Steer(_reverseTurning);
             }
 
+            if (Vehicle.Chassis.Motor.Gearbox.CurrentGear == 0)
+                Vehicle.Chassis.Motor.Gearbox.CurrentGear = 1;
+
             //Engine.DebugRenderer.AddWireframeCube(Matrix.CreateScale(2) * Matrix.CreateTranslation(_targetNode.Position), Color.Green);
         }
 

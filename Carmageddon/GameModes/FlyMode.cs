@@ -22,12 +22,13 @@ namespace Carmageddon.GameModes
 
         public override void Update()
         {
-            throw new NotImplementedException();
+            _fpsView.Update();
+            
         }
 
         public override void Render()
         {
-            throw new NotImplementedException();
+            _fpsView.Render();
         }
     }
 }

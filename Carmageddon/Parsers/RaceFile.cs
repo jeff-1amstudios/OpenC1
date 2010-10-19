@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Carmageddon.Parsers.Grooves;
 using Carmageddon.Parsers.Funks;
 using Microsoft.Xna.Framework.Graphics;
+using System.Globalization;
 
 namespace Carmageddon.Parsers
 {
@@ -26,6 +27,8 @@ namespace Carmageddon.Parsers
     
     class RaceFile : BaseTextFile
     {
+        private float PEDESTRIAN_AUTO_Y_FLAG = 1000.4f * GameVars.Scale.Y;
+
         public List<string> MaterialFiles { get; private set; }
         public List<string> PixFiles { get; private set; }
         public string ModelFile { get; private set; }
@@ -114,7 +117,7 @@ namespace Carmageddon.Parsers
             if (cueMode == "dark") DepthCueMode = DepthCueMode.Dark;
             else if (cueMode == "fog") DepthCueMode = DepthCueMode.Fog;
             else DepthCueMode = DepthCueMode.Fog; //default to fog?
-            FogAmount = float.Parse(ReadLine().Split(',')[0]); //degree of dark
+            FogAmount = ReadLineAsFloatList()[0]; //degree of dark
 
             int defaultEngineNoise = ReadLineAsInt();
             
@@ -249,6 +252,11 @@ namespace Carmageddon.Parsers
                     {
                         PedestrianInstruction instruction = new PedestrianInstruction();
                         instruction.Position = ReadLineAsVector3();
+                        if (instruction.Position.Y > 500)
+                        {
+                            instruction.Position.Y -= PEDESTRIAN_AUTO_Y_FLAG;
+                            instruction.AutoY = true;
+                        }
                         ped.Instructions.Add(instruction);
                     }
                     else if (type == "reverse") 
@@ -282,16 +290,16 @@ namespace Carmageddon.Parsers
             {
                 string[] tokens = ReadLine().Split(',');
 
-                OpponentPathNode startNode = OpponentPathNodes[int.Parse(tokens[0])];
+                OpponentPathNode startNode = OpponentPathNodes[int.Parse(tokens[0], CultureInfo.InvariantCulture)];
 
                 OpponentPath path = new OpponentPath();
                 path.Number = i;
                 path.Start = startNode;
-                path.End = OpponentPathNodes[int.Parse(tokens[1])];
-                path.MinSpeedAtEnd = float.Parse(tokens[4]) * 2.2f; //speeds are in BRU (BRender units). Convert to game speed
-                path.MaxSpeedAtEnd = float.Parse(tokens[5]) * 2.2f;
-                path.Width = float.Parse(tokens[6]) * 6.5f;
-                path.Type = (PathType)int.Parse(tokens[7]);
+                path.End = OpponentPathNodes[int.Parse(tokens[1], CultureInfo.InvariantCulture)];
+                path.MinSpeedAtEnd = float.Parse(tokens[4], CultureInfo.InvariantCulture) * 2.2f; //speeds are in BRU (BRender units). Convert to game speed
+                path.MaxSpeedAtEnd = float.Parse(tokens[5], CultureInfo.InvariantCulture) * 2.2f;
+                path.Width = float.Parse(tokens[6], CultureInfo.InvariantCulture) * 6.5f;
+                path.Type = (PathType)int.Parse(tokens[7], CultureInfo.InvariantCulture);
 
                 startNode.Paths.Add(path);
             }
@@ -304,7 +312,7 @@ namespace Carmageddon.Parsers
             for (int i = 0; i < nbrPoints; i++)
             {
                 string[] tokens = ReadLine().Split(',');
-                Vector3 pos = new Vector3(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2]));
+                Vector3 pos = new Vector3(float.Parse(tokens[0], CultureInfo.InvariantCulture), float.Parse(tokens[1], CultureInfo.InvariantCulture), float.Parse(tokens[2], CultureInfo.InvariantCulture));
                 pos *= GameVars.Scale;
                 pos += new Vector3(0, 2, 0);
                 CopStartPoints.Add(new CopStartPoint { Position = pos, IsSpecialForces = tokens[3].Contains("9") });

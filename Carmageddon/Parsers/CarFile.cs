@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Carmageddon.Parsers.Grooves;
 using Carmageddon.Parsers.Funks;
+using System.Globalization;
 
 namespace Carmageddon.Parsers
 {
@@ -86,10 +87,7 @@ namespace Carmageddon.Parsers
 
             SkipLines(4);  //car name, pratcam shit
 
-            string[] engineNoises = ReadLine().Split(',');
-            EngineSoundIds = new List<int>();
-            foreach (string id in engineNoises)
-                EngineSoundIds.Add(int.Parse(id));
+            EngineSoundIds = new List<int>(ReadLineAsIntList());
             
             SkipLines(1); //stealworthy
 
@@ -150,15 +148,14 @@ namespace Carmageddon.Parsers
 
             DrivenWheelRefs = new List<int>();
             NonDrivenWheelRefs = new List<int>();
-            string refsLine = ReadLine();
-            string[] refs = refsLine.Split(',');
-            foreach (string wref in refs)
-                if (wref != "-1") DrivenWheelRefs.Add(int.Parse(wref));
+            
+            int[] refs = ReadLineAsIntList();
+            foreach (int wref in refs)
+                if (wref != -1) DrivenWheelRefs.Add(wref);
 
-            refsLine = ReadLine();
-            refs = refsLine.Split(',');
-            foreach (string wref in refs)
-                if (wref != "-1") NonDrivenWheelRefs.Add(int.Parse(wref));
+            refs = ReadLineAsIntList();
+            foreach (int wref in refs)
+                if (wref != -1) NonDrivenWheelRefs.Add(wref);
 
             NonDrivenWheelRadius = ReadLineAsFloat() / 2f;
             DrivenWheelRadius = ReadLineAsFloat() / 2f;
@@ -279,8 +276,8 @@ namespace Carmageddon.Parsers
 
             SkipLines(1);
             string[] suspGive = ReadLine().Split(new char[] { ',', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-            SuspensionGiveFront = float.Parse(suspGive[0]);
-            SuspensionGiveRear = float.Parse(suspGive[1]);
+            SuspensionGiveFront = float.Parse(suspGive[0], CultureInfo.InvariantCulture);
+            SuspensionGiveRear = float.Parse(suspGive[1], CultureInfo.InvariantCulture);
             RideHeight = ReadLineAsFloat(false);
             SuspensionDamping = ReadLineAsFloat(false);
             Mass = ReadLineAsFloat(false) * 1000;

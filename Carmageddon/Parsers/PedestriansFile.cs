@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Carmageddon.Parsers
 {
@@ -117,8 +118,8 @@ namespace Carmageddon.Parsers
                         frame.PixName = ReadLine();
                         string[] flags = ReadLine().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                         frame.Flipped = flags[2] == "flipped";
-                        frame.Offset.X = float.Parse(flags[0]);
-                        frame.Offset.Y = float.Parse(flags[1]);
+                        frame.Offset.X = float.Parse(flags[0], CultureInfo.InvariantCulture);
+                        frame.Offset.Y = float.Parse(flags[1], CultureInfo.InvariantCulture);
                         frame.Offset *= GameVars.Scale;
                         seq.InitialFrames.Add(frame);
                     }
@@ -131,8 +132,8 @@ namespace Carmageddon.Parsers
                         frame.PixName = ReadLine();
                         string[] flags = ReadLine().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                         frame.Flipped = flags[2] == "flipped";
-                        frame.Offset.X = float.Parse(flags[0]);
-                        frame.Offset.Y = float.Parse(flags[1]);
+                        frame.Offset.X = float.Parse(flags[0], CultureInfo.InvariantCulture);
+                        frame.Offset.Y = float.Parse(flags[1], CultureInfo.InvariantCulture);
                         seq.LoopingFrames.Add(frame);
                     }
                     ped.Sequences.Add(seq);

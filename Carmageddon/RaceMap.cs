@@ -42,6 +42,9 @@ namespace Carmageddon
 
             foreach (Opponent o in _race.Opponents)
             {
+                if (o.Driver is CopDriver)
+                    continue;
+
                 pos = o.Vehicle.Position;
                 pos /= GameVars.Scale;
                 translated = Vector3.Transform(pos, _race.ConfigFile.MapTranslation);

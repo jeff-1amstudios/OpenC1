@@ -216,6 +216,11 @@ namespace Carmageddon
             else if (_isRunning)
             {
                 Vector3 target = Instructions[_currentInstruction].Position;
+                if (Instructions[_currentInstruction].AutoY)
+                {
+                    StillDesign.PhysX.RaycastHit hit = PhysX.Instance.Scene.RaycastClosestShape(new StillDesign.PhysX.Ray(Position + new Vector3(0, 3, 0), Vector3.Down), StillDesign.PhysX.ShapesType.Static);
+                    target = hit.WorldImpact;
+                }
                 _direction = target - Position;
                 _direction.Normalize();
                 Position += _direction * RunningSpeed * Engine.ElapsedSeconds;
@@ -280,5 +285,6 @@ namespace Carmageddon
     {
         public Vector3 Position;
         public bool Reverse;
+        public bool AutoY;
     }
 }

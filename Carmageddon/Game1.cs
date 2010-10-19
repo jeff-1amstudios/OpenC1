@@ -12,6 +12,7 @@ using Carmageddon.Screens;
 using Carmageddon.Parsers;
 using OneAmEngine;
 using OneAmEngine.Audio;
+using System.IO;
 
 namespace Carmageddon
 {
@@ -27,6 +28,8 @@ namespace Carmageddon
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
             _graphics.PreferredBackBufferWidth = 800;
             _graphics.PreferredBackBufferHeight = 600;
             _graphics.PreferMultiSampling = true;
@@ -40,6 +43,11 @@ namespace Carmageddon
 
             _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;
             _graphics.MinimumPixelShaderProfile = ShaderProfile.PS_2_0;
+        }
+
+        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            File.WriteAllText("crash.log", e.ExceptionObject.ToString());
         }
 
         /// <summary>
