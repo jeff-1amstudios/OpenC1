@@ -6,7 +6,7 @@ using MiscUtil.IO;
 using System.IO;
 using System.Diagnostics;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
     class BaseDataFile
     {

@@ -18,7 +18,7 @@ public enum Motion
     Flash
 }
 
-namespace Carmageddon.Parsers.Grooves
+namespace OpenC1.Parsers.Grooves
 {
     
     abstract class BaseGroove

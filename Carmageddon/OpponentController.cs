@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using OneAmEngine;
 
-namespace Carmageddon
+namespace OpenC1
 {
     static class OpponentController
     {

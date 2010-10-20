@@ -6,7 +6,7 @@
 //using Microsoft.Xna.Framework;
 //using System.Diagnostics;
 
-//namespace Carmageddon.Parsers
+//namespace OpenC1.Parsers
 //{
 //    public interface IFunk
 //    {

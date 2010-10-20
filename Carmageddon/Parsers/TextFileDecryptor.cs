@@ -2,10 +2,10 @@
 using System.IO;
 using System.Text;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
     //
-	// Ported from the Carmageddon & Carmageddon demo file decoders by Shayde (shayde@ihug.co.nz), thanks!
+	// Ported from the c1 & c1 demo file decoders by Shayde (shayde@ihug.co.nz), thanks!
     //
 	static class TextFileDecryptor
 	{

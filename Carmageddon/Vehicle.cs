@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Carmageddon.Parsers;
-using Carmageddon.Physics;
-using Carmageddon.Gfx;
-using Carmageddon.Parsers.Grooves;
-using Carmageddon.Parsers.Funks;
+using OpenC1.Parsers;
+using OpenC1.Physics;
+using OpenC1.Gfx;
+using OpenC1.Parsers.Grooves;
+using OpenC1.Parsers.Funks;
 using OneAmEngine;
 
 using System.IO;
 using StillDesign.PhysX;
 using Microsoft.Xna.Framework.Input;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class Vehicle
     {

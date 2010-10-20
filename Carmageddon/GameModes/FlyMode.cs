@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.CameraViews;
+using OpenC1.CameraViews;
 
-namespace Carmageddon.GameModes
+namespace OpenC1.GameModes
 {
     class FlyMode : GameMode
     {

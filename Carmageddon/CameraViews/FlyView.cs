@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using OneAmEngine;
 
-namespace Carmageddon.CameraViews
+namespace OpenC1.CameraViews
 {
     class FlyView : ICameraView
     {

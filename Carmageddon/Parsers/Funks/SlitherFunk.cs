@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using OneAmEngine;
 
-namespace Carmageddon.Parsers.Funks
+namespace OpenC1.Parsers.Funks
 {
     class SlitherFunk : BaseFunk
     {

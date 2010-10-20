@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StillDesign.PhysX;
-using Carmageddon.HUD;
+using OpenC1.HUD;
 using System.Diagnostics;
 using System.IO;
 using OneAmEngine;
 
-namespace Carmageddon.CameraViews
+namespace OpenC1.CameraViews
 {
     class CockpitView : BaseHUDItem, ICameraView
     {

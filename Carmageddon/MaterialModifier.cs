@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using StillDesign.PhysX;
-using Carmageddon.Physics;
+using OpenC1.Physics;
 using Microsoft.Xna.Framework;
 using OneAmEngine;
-using Carmageddon.Gfx;
-using Carmageddon.Parsers;
+using OpenC1.Gfx;
+using OpenC1.Parsers;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class MaterialModifier
     {

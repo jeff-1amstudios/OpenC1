@@ -8,9 +8,9 @@ using System.Diagnostics;
 using MiscUtil.IO;
 using MiscUtil.Conversion;
 using StillDesign.PhysX;
-using Carmageddon.Physics;
+using OpenC1.Physics;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
     enum BlockType
     {

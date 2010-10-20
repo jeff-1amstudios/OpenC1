@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using Carmageddon.Physics;
+using OpenC1.Physics;
 using OneAmEngine;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class ModelShadow
     {

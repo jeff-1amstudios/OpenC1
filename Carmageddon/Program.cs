@@ -1,6 +1,6 @@
 using System;
 
-namespace Carmageddon
+namespace OpenC1
 {
     static class Program
     {

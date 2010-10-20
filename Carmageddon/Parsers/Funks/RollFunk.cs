@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OneAmEngine;
 
-namespace Carmageddon.Parsers.Funks
+namespace OpenC1.Parsers.Funks
 {
     class RollFunk : BaseFunk
     {

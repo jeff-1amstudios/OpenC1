@@ -4,7 +4,7 @@ using StillDesign.PhysX;
 using System;
 using OneAmEngine;
 
-namespace Carmageddon.Physics
+namespace OpenC1.Physics
 {
     
     internal class PhysX

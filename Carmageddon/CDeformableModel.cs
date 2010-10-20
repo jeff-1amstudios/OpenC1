@@ -4,14 +4,14 @@ using System.Text;
 using StillDesign.PhysX;
 using Microsoft.Xna.Framework;
 using System.IO;
-using Carmageddon.Physics;
+using OpenC1.Physics;
 using Microsoft.Xna.Framework.Graphics;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 
 using Microsoft.Xna.Framework.Input;
 using OneAmEngine;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class CDeformableModel : CModel
     {

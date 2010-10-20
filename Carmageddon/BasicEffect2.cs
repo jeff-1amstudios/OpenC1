@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using OneAmEngine;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class BasicEffect2
     {

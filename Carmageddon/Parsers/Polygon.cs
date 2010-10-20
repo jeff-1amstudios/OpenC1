@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
 
     class Polygon

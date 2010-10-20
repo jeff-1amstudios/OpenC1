@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1amEngine", "Engine\1amEngine.csproj", "{32825548-A7A9-4D8E-A3AC-5DDA50EDB14B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenCarmageddon", "Carmageddon\OpenCarmageddon.csproj", "{31C0A532-654F-42FE-B871-9A497528A9D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenC1", "Carmageddon\OpenC1.csproj", "{31C0A532-654F-42FE-B871-9A497528A9D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,12 +39,12 @@ Global
 		{C0F00F41-8C7A-4D78-B313-C59E13FD8417}.DebugWindows|Xbox 360.ActiveCfg = Debug|x86
 		{C0F00F41-8C7A-4D78-B313-C59E13FD8417}.Release|x86.ActiveCfg = Release|x86
 		{C0F00F41-8C7A-4D78-B313-C59E13FD8417}.Release|Xbox 360.ActiveCfg = Release|x86
-		{3FDF9AE0-8AEF-4A48-8729-62DD1729179A}.Debug|x86.ActiveCfg = Debug|x86
-		{3FDF9AE0-8AEF-4A48-8729-62DD1729179A}.Debug|Xbox 360.ActiveCfg = Debug|x86
-		{3FDF9AE0-8AEF-4A48-8729-62DD1729179A}.DebugWindows|x86.ActiveCfg = Debug|x86
-		{3FDF9AE0-8AEF-4A48-8729-62DD1729179A}.DebugWindows|Xbox 360.ActiveCfg = Debug|x86
-		{3FDF9AE0-8AEF-4A48-8729-62DD1729179A}.Release|x86.ActiveCfg = Release|x86
-		{3FDF9AE0-8AEF-4A48-8729-62DD1729179A}.Release|Xbox 360.ActiveCfg = Release|x86
+		{B2067D9B-E882-4A02-876D-4B3DCFCA7B39}.Debug|x86.ActiveCfg = Debug|x86
+		{B2067D9B-E882-4A02-876D-4B3DCFCA7B39}.Debug|Xbox 360.ActiveCfg = Debug|x86
+		{B2067D9B-E882-4A02-876D-4B3DCFCA7B39}.DebugWindows|x86.ActiveCfg = Debug|x86
+		{B2067D9B-E882-4A02-876D-4B3DCFCA7B39}.DebugWindows|Xbox 360.ActiveCfg = Debug|x86
+		{B2067D9B-E882-4A02-876D-4B3DCFCA7B39}.Release|x86.ActiveCfg = Release|x86
+		{B2067D9B-E882-4A02-876D-4B3DCFCA7B39}.Release|Xbox 360.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

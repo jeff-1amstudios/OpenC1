@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using Microsoft.Xna.Framework.Input;
-using Carmageddon.Gfx;
+using OpenC1.Gfx;
 using System.Diagnostics;
-using Carmageddon.CameraViews;
-using Carmageddon.Physics;
+using OpenC1.CameraViews;
+using OpenC1.Physics;
 using System.IO;
 using OneAmEngine;
-using Carmageddon.Screens;
-using Carmageddon.GameModes;
+using OpenC1.Screens;
+using OpenC1.GameModes;
 
 
-namespace Carmageddon
+namespace OpenC1
 {
     class PlayGameScreen : IGameScreen
     {
@@ -112,12 +112,11 @@ namespace Carmageddon
             Engine.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
 
             GameVars.CurrentEffect.End();
-            
-            
+                       
 
             GameConsole.WriteLine("Draw Calls", GameVars.NbrDrawCalls);
 
-            Carmageddon.Physics.PhysX.Instance.Draw();
+            OpenC1.Physics.PhysX.Instance.Draw();
         }
 
 

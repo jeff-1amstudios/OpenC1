@@ -6,7 +6,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 using OneAmEngine;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
 
     class FliPalette : IPalette

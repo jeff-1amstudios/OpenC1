@@ -7,7 +7,7 @@ using MiscUtil.Conversion;
 using System.IO;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
     class PaletteFile : BaseDataFile, IPalette
     {

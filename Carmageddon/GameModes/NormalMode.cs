@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.CameraViews;
+using OpenC1.CameraViews;
 using Microsoft.Xna.Framework.Input;
 using OneAmEngine;
 
-namespace Carmageddon.GameModes
+namespace OpenC1.GameModes
 {
     class NormalMode : GameMode
     {

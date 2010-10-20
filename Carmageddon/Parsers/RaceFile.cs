@@ -5,12 +5,12 @@ using System.Text;
 using System.IO;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
-using Carmageddon.Parsers.Grooves;
-using Carmageddon.Parsers.Funks;
+using OpenC1.Parsers.Grooves;
+using OpenC1.Parsers.Funks;
 using Microsoft.Xna.Framework.Graphics;
 using System.Globalization;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
     enum DepthCueMode
     {

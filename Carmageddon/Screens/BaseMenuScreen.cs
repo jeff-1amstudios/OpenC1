@@ -5,11 +5,11 @@ using Microsoft.Xna.Framework;
 
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
-using Carmageddon.HUD;
-using Carmageddon.Parsers;
+using OpenC1.HUD;
+using OpenC1.Parsers;
 using OneAmEngine;
 
-namespace Carmageddon.Screens
+namespace OpenC1.Screens
 {
     abstract class BaseMenuScreen : IGameScreen
     {

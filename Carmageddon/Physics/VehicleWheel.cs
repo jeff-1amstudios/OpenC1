@@ -6,9 +6,9 @@ using Microsoft.Xna.Framework;
 using StillDesign.PhysX;
 
 using OneAmEngine;
-using Carmageddon.Gfx;
+using OpenC1.Gfx;
 
-namespace Carmageddon.Physics
+namespace OpenC1.Physics
 {
     class VehicleWheel
     {

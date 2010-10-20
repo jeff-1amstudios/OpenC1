@@ -5,7 +5,7 @@ using OneAmEngine.Audio;
 
 using Microsoft.Xna.Framework;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class VehicleAudio
     {

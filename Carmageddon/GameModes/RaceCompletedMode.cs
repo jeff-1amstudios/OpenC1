@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
-using Carmageddon.Physics;
+using OpenC1.Physics;
 using OneAmEngine.Audio;
 using OneAmEngine;
 using Microsoft.Xna.Framework.Input;
 
-namespace Carmageddon.GameModes
+namespace OpenC1.GameModes
 {
     enum CompletionType
     {

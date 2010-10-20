@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
     class GeneralSettingsFile : BaseTextFile
     {

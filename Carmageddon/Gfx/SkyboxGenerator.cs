@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using OneAmEngine;
 
 
-namespace Carmageddon.Gfx
+namespace OpenC1.Gfx
 {
     class SkyboxGenerator
     {

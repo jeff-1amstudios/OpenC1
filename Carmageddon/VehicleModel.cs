@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.Parsers;
-using Carmageddon.Parsers.Grooves;
-using Carmageddon.Parsers.Funks;
+using OpenC1.Parsers;
+using OpenC1.Parsers.Grooves;
+using OpenC1.Parsers.Funks;
 using Microsoft.Xna.Framework;
 using System.IO;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class VehicleModel
     {

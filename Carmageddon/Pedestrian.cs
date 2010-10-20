@@ -4,10 +4,10 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StillDesign.PhysX;
-using Carmageddon.Physics;
+using OpenC1.Physics;
 using OneAmEngine;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class Pedestrian
     {

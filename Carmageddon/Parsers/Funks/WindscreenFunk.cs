@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using OneAmEngine;
 
-namespace Carmageddon.Parsers.Funks
+namespace OpenC1.Parsers.Funks
 {
     class WindscreenFunk : BaseFunk
     {

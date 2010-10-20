@@ -8,7 +8,7 @@ using System.IO;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
     
     class MatFile : BaseDataFile

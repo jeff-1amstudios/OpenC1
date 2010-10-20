@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using OneAmEngine;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Carmageddon.Gfx
+namespace OpenC1.Gfx
 {
     class SparksParticleSystem : ParticleSystem
     {

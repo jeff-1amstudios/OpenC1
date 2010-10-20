@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using Microsoft.Xna.Framework;
-using Carmageddon.HUD;
-using Carmageddon.GameModes;
+using OpenC1.HUD;
+using OpenC1.GameModes;
 using OneAmEngine;
 using OneAmEngine.Audio;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class RaceTimeController
     {

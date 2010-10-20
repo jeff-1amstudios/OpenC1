@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.Parsers;
-using Carmageddon.HUD;
-using Carmageddon.Physics;
+using OpenC1.Parsers;
+using OpenC1.HUD;
+using OpenC1.Physics;
 using OneAmEngine;
 
-namespace Carmageddon.Screens
+namespace OpenC1.Screens
 {
     class PauseMenuScreen : BaseMenuScreen
     {

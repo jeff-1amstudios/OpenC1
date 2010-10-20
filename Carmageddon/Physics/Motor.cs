@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using OneAmEngine;
 
-namespace Carmageddon.Physics
+namespace OpenC1.Physics
 {
     class Motor
     {

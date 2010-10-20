@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using OneAmEngine;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using Carmageddon.Physics;
-using Carmageddon.Parsers;
+using OpenC1.Physics;
 
-namespace Carmageddon.HUD
+namespace OpenC1.HUD
 {
     class RevCounter: BaseHUDItem
     {

@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Input;
 using OneAmEngine;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class PlayerVehicleController
     {

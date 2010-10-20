@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Carmageddon.Physics
+namespace OpenC1.Physics
 {
     class PhysXConsts
     {

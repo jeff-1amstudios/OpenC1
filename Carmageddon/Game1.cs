@@ -8,15 +8,15 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
-using Carmageddon.Screens;
-using Carmageddon.Parsers;
+using OpenC1.Screens;
+using OpenC1.Parsers;
 using OneAmEngine;
 using OneAmEngine.Audio;
 using System.IO;
 using System.Threading;
 using System.Globalization;
 
-namespace Carmageddon
+namespace OpenC1
 {
     /// <summary>
     /// This is the main type for your game
@@ -39,7 +39,7 @@ namespace Carmageddon
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-            SettingsFile settings = new SettingsFile();  //load opencarmageddon.txt
+            SettingsFile settings = new SettingsFile();  //load open1settings.txt
 
             Engine.ScreenSize = new Vector2(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
 

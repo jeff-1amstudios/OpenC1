@@ -5,16 +5,13 @@ using Microsoft.Xna.Framework.Storage;
 using System.IO;
 using OneAmEngine;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
 
     class SettingsFile : BaseTextFile
     {
-
-        public int DrawDistance;
-
         public SettingsFile()
-            : base(Path.Combine(StorageContainer.TitleLocation, "OpenCarmaSettings.txt"))
+            : base(Path.Combine(StorageContainer.TitleLocation, "OpenC1Settings.txt"))
         {
             GameVars.BasePath = ReadLine();
             GameVars.DrawDistance = ReadLineAsInt() * 10;

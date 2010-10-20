@@ -4,7 +4,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
     class PedestriansFile : BaseTextFile
     {

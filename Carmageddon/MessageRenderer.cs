@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.HUD;
+using OpenC1.HUD;
 using Microsoft.Xna.Framework.Graphics;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using Microsoft.Xna.Framework;
 using OneAmEngine;
 
 
-namespace Carmageddon
+namespace OpenC1
 {
     class MessageRenderer : BaseHUDItem
     {

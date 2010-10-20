@@ -12,7 +12,7 @@ namespace System.Runtime.CompilerServices
     }
 }
 
-namespace Carmageddon
+namespace OpenC1
 {
     public static class Extensions
     {

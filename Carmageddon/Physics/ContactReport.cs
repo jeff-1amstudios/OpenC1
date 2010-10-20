@@ -1,11 +1,11 @@
 ﻿using StillDesign.PhysX;
 using System;
 using OneAmEngine;
-using Carmageddon.Gfx;
+using OpenC1.Gfx;
 using Microsoft.Xna.Framework;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 
-namespace Carmageddon.Physics
+namespace OpenC1.Physics
 {
     internal class ContactReport : UserContactReport
     {

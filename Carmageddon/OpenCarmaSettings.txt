@@ -1,8 +1,0 @@
-﻿// -- OpenCarmageddon --
-//
-// default settings
-c:\games\carmdemo\   // Base path  (must end with a slash)
-35				 // Draw distance
-Demo		     // Emulation mode (Demo / Full)
-false			// Full screen (true / false)
-false			// Disable fog (true / false)  Try this if you have an ATI card and can only see a white screen

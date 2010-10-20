@@ -4,7 +4,7 @@ using System.Text;
 using StillDesign.PhysX;
 using OneAmEngine;
 
-namespace Carmageddon.Physics
+namespace OpenC1.Physics
 {
     class TriggerReport : UserTriggerReport
     {

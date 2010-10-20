@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using Carmageddon.Physics;
-using Carmageddon.Parsers;
+using OpenC1.Physics;
+using OpenC1.Parsers;
 using OneAmEngine;
 
-namespace Carmageddon.Gfx
+namespace OpenC1.Gfx
 {
 
     class CurrentSkid

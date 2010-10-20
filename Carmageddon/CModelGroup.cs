@@ -4,12 +4,12 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using StillDesign.PhysX;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using System.IO;
-using Carmageddon.Physics;
+using OpenC1.Physics;
 using OneAmEngine;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class CModelGroup
     {

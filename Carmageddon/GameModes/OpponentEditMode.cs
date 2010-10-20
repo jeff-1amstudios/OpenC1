@@ -5,10 +5,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-using Carmageddon.CameraViews;
+using OpenC1.CameraViews;
 using OneAmEngine;
 
-namespace Carmageddon.GameModes
+namespace OpenC1.GameModes
 {
     class OpponentEditMode : GameMode
     {

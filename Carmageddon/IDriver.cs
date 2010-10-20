@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Carmageddon
+namespace OpenC1
 {
     interface IDriver
     {

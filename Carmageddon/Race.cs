@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Carmageddon.Parsers;
-using Carmageddon.Physics;
+using OpenC1.Parsers;
+using OpenC1.Physics;
 using StillDesign.PhysX;
-using Carmageddon.Parsers.Grooves;
-using Carmageddon.Parsers.Funks;
-using Carmageddon.Gfx;
+using OpenC1.Parsers.Grooves;
+using OpenC1.Parsers.Funks;
+using OpenC1.Gfx;
 using Microsoft.Xna.Framework.Input;
-using Carmageddon.GameModes;
+using OpenC1.GameModes;
 using OneAmEngine;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class Race
     {

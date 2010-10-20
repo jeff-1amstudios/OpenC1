@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using OneAmEngine;
 
-namespace Carmageddon.HUD
+namespace OpenC1.HUD
 {
     abstract class BaseHUDItem
     {

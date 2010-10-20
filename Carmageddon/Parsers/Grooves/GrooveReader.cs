@@ -4,7 +4,7 @@ using System.Text;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
-namespace Carmageddon.Parsers.Grooves
+namespace OpenC1.Parsers.Grooves
 {    
     class GrooveReader
     {

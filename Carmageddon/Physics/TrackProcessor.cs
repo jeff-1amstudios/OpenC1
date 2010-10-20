@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using Microsoft.Xna.Framework;
 using StillDesign.PhysX;
 using System.IO;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Carmageddon.Physics
+namespace OpenC1.Physics
 {
     class TrackProcessor
     {
@@ -17,7 +17,7 @@ namespace Carmageddon.Physics
             List<Vector3> verts = new List<Vector3>();
             List<ushort> indices = new List<ushort>();
             List<ushort> materialIndices = new List<ushort>();
-            List<Carmageddon.CActor> actorsList = actors.All();
+            List<OpenC1.CActor> actorsList = actors.All();
 
             for (int i = 0; i < actorsList.Count; i++)
             {
@@ -217,7 +217,7 @@ namespace Carmageddon.Physics
 
             for (int i = 0; i < actorsList.Count; i++)
             {
-                Carmageddon.CActor actor = actorsList[i];
+                OpenC1.CActor actor = actorsList[i];
                 if (actor.Model == null) continue;
                 if (actor.Name.StartsWith("&"))
                 {

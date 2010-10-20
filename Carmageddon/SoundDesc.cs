@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using OneAmEngine.Audio;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class SoundDesc
     {

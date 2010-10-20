@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using Carmageddon.HUD;
+using OpenC1.HUD;
 using Microsoft.Xna.Framework.Input;
 using OneAmEngine;
 
-namespace Carmageddon.Screens
+namespace OpenC1.Screens
 {
     
     class MainMenuScreen : BaseMenuScreen

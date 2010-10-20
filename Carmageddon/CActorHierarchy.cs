@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using Microsoft.Xna.Framework;
-using Carmageddon.Parsers.Grooves;
+using OpenC1.Parsers.Grooves;
 using OneAmEngine;
 
 
-namespace Carmageddon
+namespace OpenC1
 {
     class CActorHierarchy
     {

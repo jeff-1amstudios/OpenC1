@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OneAmEngine;
 
-namespace Carmageddon.Screens
+namespace OpenC1.Screens
 {
     interface IMenuOption
     {

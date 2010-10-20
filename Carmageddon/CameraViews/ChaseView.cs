@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Carmageddon.HUD;
+using OpenC1.HUD;
 using Microsoft.Xna.Framework.Graphics;
 
 using Microsoft.Xna.Framework;
-using Carmageddon.Physics;
+using OpenC1.Physics;
 using OneAmEngine;
 
-namespace Carmageddon.CameraViews
+namespace OpenC1.CameraViews
 {
     class ChaseView : ICameraView
     {

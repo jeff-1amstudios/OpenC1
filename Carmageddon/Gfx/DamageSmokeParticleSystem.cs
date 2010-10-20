@@ -5,7 +5,7 @@ using OneAmEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace Carmageddon.Gfx
+namespace OpenC1.Gfx
 {
     class DamageSmokeParticleSystem : ParticleSystem
     {

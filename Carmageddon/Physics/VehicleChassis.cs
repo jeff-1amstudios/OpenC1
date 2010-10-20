@@ -6,11 +6,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StillDesign.PhysX;
 using OneamEngine;
-using Carmageddon;
-using Carmageddon.Parsers;
+using OpenC1;
+using OpenC1.Parsers;
 using OneAmEngine;
 
-namespace Carmageddon.Physics
+namespace OpenC1.Physics
 {
     
     class VehicleChassis
@@ -152,7 +152,7 @@ namespace Carmageddon.Physics
             _massPos = massPos;
             _physXActor.SetCenterOfMassOffsetLocalPosition(massPos);
             
-            //a real power curve doesnt work too well in carmageddon :)
+            //a real power curve doesnt work too well :)
             List<float> power = new List<float>(new float[] { 0.5f, 0.5f, 0.5f, 1f, 1f, 1.0f, 1.0f, 0 });
             List<float> ratios = new List<float>(new float[] { 3.227f, 2.360f, 1.685f, 1.312f, 1.000f, 0.793f });
 

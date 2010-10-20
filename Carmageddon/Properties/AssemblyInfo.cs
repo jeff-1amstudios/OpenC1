@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OpenCarmageddon")]
-[assembly: AssemblyProduct("OpenCarmageddon")]
-[assembly: AssemblyDescription("Open source rewrite of the Carmageddon 1 engine")]
+[assembly: AssemblyTitle("OpenC1")]
+[assembly: AssemblyProduct("OpenC1")]
+[assembly: AssemblyDescription("OpenC1")]
 [assembly: AssemblyCompany("1am Studios")]
 
 [assembly: AssemblyCopyright("")]

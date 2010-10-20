@@ -8,9 +8,9 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using Carmageddon.Parsers.Grooves;
+using OpenC1.Parsers.Grooves;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
 
     class ActFile : BaseDataFile

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
-using Carmageddon.Parsers.Funks;
+using OpenC1.Parsers.Funks;
 
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 using System.IO;
 using OneAmEngine;
 
-namespace Carmageddon
+namespace OpenC1
 {
     class CMaterial
     {

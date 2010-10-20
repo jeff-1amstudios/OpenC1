@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Carmageddon.Parsers.Funks
+namespace OpenC1.Parsers.Funks
 {
 
     public enum FunkActivationType

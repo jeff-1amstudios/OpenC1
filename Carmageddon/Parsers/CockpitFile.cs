@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Carmageddon.Parsers
+namespace OpenC1.Parsers
 {
 	class CockpitHandFrame
 	{

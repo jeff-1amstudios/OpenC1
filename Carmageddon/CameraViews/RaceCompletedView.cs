@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
-using Carmageddon.Physics;
+using OpenC1.Physics;
 using OneAmEngine;
 
-namespace Carmageddon.CameraViews
+namespace OpenC1.CameraViews
 {
     class RaceCompletedView : ICameraView
     {

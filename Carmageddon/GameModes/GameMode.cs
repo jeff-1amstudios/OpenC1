@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Carmageddon.GameModes
+namespace OpenC1.GameModes
 {
     abstract class GameMode
     {

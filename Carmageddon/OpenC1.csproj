@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Carmageddon</RootNamespace>
-    <AssemblyName>OpenCarmageddon</AssemblyName>
+    <RootNamespace>OpenC1</RootNamespace>
+    <AssemblyName>OpenC1</AssemblyName>
     <XnaFrameworkVersion>v3.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
     <XnaCrossPlatformGroupID>d21e1db0-0b1c-4adf-81c3-7340137f9eeb</XnaCrossPlatformGroupID>
@@ -215,7 +215,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Lib\StillDesign.PhysX.Net.dll" />
-    <Content Include="OpenCarmaSettings.txt">
+    <Content Include="OpenC1Settings.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="todo.txt" />

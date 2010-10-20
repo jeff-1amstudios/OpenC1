@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Carmageddon.Parsers;
+using OpenC1.Parsers;
 
-namespace Carmageddon
+namespace OpenC1
 {
     static class ResourceCache
     {

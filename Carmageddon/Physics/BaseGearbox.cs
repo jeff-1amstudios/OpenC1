@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using OneAmEngine;
 
-namespace Carmageddon.Physics
+namespace OpenC1.Physics
 {
     class GearboxGearChange
     {
