@@ -21,6 +21,7 @@ namespace Carmageddon.Parsers
             string emu = ReadLine();
             GameVars.Emulation = (EmulationMode)Enum.Parse(typeof(EmulationMode), emu);
             GameVars.FullScreen = ReadLineAsBool();
+            GameVars.DisableFog = ReadLineAsBool();
             
             CloseFile();
         }

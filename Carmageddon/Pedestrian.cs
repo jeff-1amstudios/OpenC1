@@ -7,10 +7,8 @@ using StillDesign.PhysX;
 using Carmageddon.Physics;
 using OneAmEngine;
 
-
 namespace Carmageddon
 {
-
     class Pedestrian
     {
         public static float RunningSpeed = 5f;
@@ -36,6 +34,7 @@ namespace Carmageddon
         private Vector3 _direction;
         private float _groundHeight;        
         private float _hitSpeed, _hitSpinSpeed, _hitUpSpeed, _hitCurrentSpin;
+        private bool _isFalling;
         
         public bool _stopUpdating;
 
@@ -55,6 +54,12 @@ namespace Carmageddon
             }
             Position = Instructions[InitialInstruction].Position;
             _currentInstruction = InitialInstruction;
+
+            if (Instructions[_currentInstruction].AutoY)
+            {
+                StillDesign.PhysX.RaycastHit hit = PhysX.Instance.Scene.RaycastClosestShape(new StillDesign.PhysX.Ray(Position + new Vector3(0, 10, 0), Vector3.Down), StillDesign.PhysX.ShapesType.Static);
+                Position = hit.WorldImpact;
+            }
 
             ActorDescription actorDesc = new ActorDescription();
             actorDesc.BodyDescription = new BodyDescription(1);
@@ -80,7 +85,6 @@ namespace Carmageddon
 
             if (_currentAction.Sounds.Length > 0)
                 SoundCache.Play(_currentAction.Sounds[Engine.Random.Next(_currentAction.Sounds.Length)], Race.Current.PlayerVehicle, true);
-
         }
 
         public void OnHit(Vehicle vehicle)
@@ -216,17 +220,38 @@ namespace Carmageddon
             else if (_isRunning)
             {
                 Vector3 target = Instructions[_currentInstruction].Position;
-                if (Instructions[_currentInstruction].AutoY)
-                {
-                    StillDesign.PhysX.RaycastHit hit = PhysX.Instance.Scene.RaycastClosestShape(new StillDesign.PhysX.Ray(Position + new Vector3(0, 3, 0), Vector3.Down), StillDesign.PhysX.ShapesType.Static);
-                    target = hit.WorldImpact;
-                }
+                
                 _direction = target - Position;
                 _direction.Normalize();
                 Position += _direction * RunningSpeed * Engine.ElapsedSeconds;
-                _physXActor.GlobalPosition = Position;
 
-                if (Vector3.Distance(Position, target) < 1)
+                if (Instructions[_currentInstruction].AutoY)
+                {
+                    StillDesign.PhysX.RaycastHit hit = PhysX.Instance.Scene.RaycastClosestShape(new StillDesign.PhysX.Ray(Position + new Vector3(0, 10, 0), Vector3.Down), StillDesign.PhysX.ShapesType.Static);
+                    target.Y = hit.WorldImpact.Y;
+                    float fallDist = Position.Y - hit.WorldImpact.Y;
+                    if (fallDist > 10)
+                    {
+                        SetAction(Behaviour.NonFatalFalling, true);
+                        if (!_isFalling) SoundCache.Play(Behaviour.FallingNoise, Race.Current.PlayerVehicle, true);
+                        _isFalling = true;
+                    }
+                    if (fallDist > 0.5f)
+                        Position.Y -= Engine.ElapsedSeconds * 20;
+                    else
+                    {
+                        Position.Y = hit.WorldImpact.Y;
+                        if (_isFalling)
+                        {
+                            OnHit(Race.Current.PlayerVehicle);
+                            return;
+                        }
+                    }
+                }
+                _physXActor.GlobalPosition = Position;
+                Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(target), Color.Yellow);
+
+                if (Vector3.Distance(Position, target) < 0.5f)
                 {
                     if (Instructions[_currentInstruction].Reverse)
                     {

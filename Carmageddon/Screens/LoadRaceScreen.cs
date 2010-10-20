@@ -6,6 +6,7 @@ using Carmageddon.Parsers;
 using Microsoft.Xna.Framework;
 using System.Threading;
 using OneAmEngine;
+using System.Globalization;
 
 namespace Carmageddon.Screens
 {
@@ -43,6 +44,8 @@ namespace Carmageddon.Screens
 
         private void LoadRaceThreadProc()
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             _raceScreen = new PlayGameScreen(Parent);
         }
     }

@@ -13,6 +13,8 @@ using Carmageddon.Parsers;
 using OneAmEngine;
 using OneAmEngine.Audio;
 using System.IO;
+using System.Threading;
+using System.Globalization;
 
 namespace Carmageddon
 {
@@ -33,6 +35,9 @@ namespace Carmageddon
             _graphics.PreferredBackBufferWidth = 800;
             _graphics.PreferredBackBufferHeight = 600;
             _graphics.PreferMultiSampling = true;
+
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
             SettingsFile settings = new SettingsFile();  //load opencarmageddon.txt
 

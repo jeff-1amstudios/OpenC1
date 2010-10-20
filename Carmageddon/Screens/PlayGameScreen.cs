@@ -131,7 +131,7 @@ namespace Carmageddon
                 
                 _effect = new BasicEffect2();
 
-                Engine.Device.RenderState.FogEnable = true;
+                Engine.Device.RenderState.FogEnable = !GameVars.DisableFog;
 
                 if (Race.Current.ConfigFile.DepthCueMode == DepthCueMode.Dark)
                 {
@@ -139,36 +139,36 @@ namespace Carmageddon
                     Engine.Device.RenderState.FogTableMode = FogMode.Linear;
                     Engine.Device.RenderState.FogEnd = GameVars.DrawDistance + 20; // GameVars.DrawDistance - (Race.Current.ConfigFile.FogAmount * 15);
                     Engine.Device.RenderState.FogStart = (1 / Race.Current.ConfigFile.FogAmount) * 100;
-                    //Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0012f;                    
+                    Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0012f;
+                    Engine.Device.RenderState.FogColor = GameVars.FogColor;
                 }
                 else if (Race.Current.ConfigFile.DepthCueMode == DepthCueMode.Fog)
                 {
                     GameVars.FogColor = new Color(245, 245, 245);
                     //Engine.Device.RenderState.FogTableMode = FogMode.ExponentSquared;
-                    //Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0015f;
+                    Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0015f;
                     Engine.Device.RenderState.FogTableMode = FogMode.Linear;
                     Engine.Device.RenderState.FogEnd = GameVars.DrawDistance + 20; // -(Race.Current.ConfigFile.FogAmount * 15);
                     Engine.Device.RenderState.FogStart = (1 / Race.Current.ConfigFile.FogAmount) * 100;
+                    Engine.Device.RenderState.FogColor = GameVars.FogColor;
                 }
                 else
                 {
                     Trace.Assert(false);
                 }
-
-                //_effect.FogStart = 1 * (1/Race.Current.ConfigFile.FogAmount);
-                //_effect.FogEnd = Engine.DrawDistance * 2 * (1 / Race.Current.ConfigFile.FogAmount);
-                //_effect.FogEnabled = true;
+                //_effect.FogEnabled = !GameVars.DisableFog;
+                //_effect.FogColor = GameVars.FogColor.ToVector3();
+                //_effect.FogStart = 200 * (1/Race.Current.ConfigFile.FogAmount);
+                //_effect.FogEnd = Engine.DrawDistance * 8 * (1 / Race.Current.ConfigFile.FogAmount);
                 _effect.TextureEnabled = true;
                 _effect.TexCoordsMultiplier = 1;
-                _effect.FogEnabled = false;
-
+                _effect.PreferPerPixelLighting = false;
                 
                 
-                Engine.Device.RenderState.FogColor = GameVars.FogColor;
 
                 if (GameVars.LightingEnabled)
                 {
-                    _effect.PreferPerPixelLighting = false;
+                    //_effect.PreferPerPixelLighting = false;
                     _effect.LightingEnabled = true;
                     _effect.AmbientLightColor = new Vector3(0.8f);
                     _effect.DirectionalLight0.DiffuseColor = new Vector3(1);

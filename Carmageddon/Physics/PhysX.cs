@@ -142,8 +142,13 @@ namespace Carmageddon.Physics
 
         public void Simulate()
         {
-            Scene.Simulate(Engine.ElapsedSeconds);
-            Scene.FlushStream();            
+            try
+            {
+                Scene.Simulate(Engine.ElapsedSeconds);
+                Scene.FlushStream();
+            }
+            catch
+            { }
         }
 
         public void Fetch()

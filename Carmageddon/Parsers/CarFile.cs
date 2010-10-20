@@ -276,8 +276,8 @@ namespace Carmageddon.Parsers
 
             SkipLines(1);
             string[] suspGive = ReadLine().Split(new char[] { ',', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-            SuspensionGiveFront = float.Parse(suspGive[0], CultureInfo.InvariantCulture);
-            SuspensionGiveRear = float.Parse(suspGive[1], CultureInfo.InvariantCulture);
+            SuspensionGiveFront = float.Parse(suspGive[0]);
+            SuspensionGiveRear = float.Parse(suspGive[1]);
             RideHeight = ReadLineAsFloat(false);
             SuspensionDamping = ReadLineAsFloat(false);
             Mass = ReadLineAsFloat(false) * 1000;

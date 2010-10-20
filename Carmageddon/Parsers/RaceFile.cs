@@ -290,16 +290,16 @@ namespace Carmageddon.Parsers
             {
                 string[] tokens = ReadLine().Split(',');
 
-                OpponentPathNode startNode = OpponentPathNodes[int.Parse(tokens[0], CultureInfo.InvariantCulture)];
+                OpponentPathNode startNode = OpponentPathNodes[int.Parse(tokens[0])];
 
                 OpponentPath path = new OpponentPath();
                 path.Number = i;
                 path.Start = startNode;
-                path.End = OpponentPathNodes[int.Parse(tokens[1], CultureInfo.InvariantCulture)];
-                path.MinSpeedAtEnd = float.Parse(tokens[4], CultureInfo.InvariantCulture) * 2.2f; //speeds are in BRU (BRender units). Convert to game speed
-                path.MaxSpeedAtEnd = float.Parse(tokens[5], CultureInfo.InvariantCulture) * 2.2f;
-                path.Width = float.Parse(tokens[6], CultureInfo.InvariantCulture) * 6.5f;
-                path.Type = (PathType)int.Parse(tokens[7], CultureInfo.InvariantCulture);
+                path.End = OpponentPathNodes[int.Parse(tokens[1])];
+                path.MinSpeedAtEnd = float.Parse(tokens[4]) * 2.2f; //speeds are in BRU (BRender units). Convert to game speed
+                path.MaxSpeedAtEnd = float.Parse(tokens[5]) * 2.2f;
+                path.Width = float.Parse(tokens[6]) * 6.5f;
+                path.Type = (PathType)int.Parse(tokens[7]);
 
                 startNode.Paths.Add(path);
             }
@@ -312,7 +312,7 @@ namespace Carmageddon.Parsers
             for (int i = 0; i < nbrPoints; i++)
             {
                 string[] tokens = ReadLine().Split(',');
-                Vector3 pos = new Vector3(float.Parse(tokens[0], CultureInfo.InvariantCulture), float.Parse(tokens[1], CultureInfo.InvariantCulture), float.Parse(tokens[2], CultureInfo.InvariantCulture));
+                Vector3 pos = new Vector3(float.Parse(tokens[0]), float.Parse(tokens[1]), float.Parse(tokens[2]));
                 pos *= GameVars.Scale;
                 pos += new Vector3(0, 2, 0);
                 CopStartPoints.Add(new CopStartPoint { Position = pos, IsSpecialForces = tokens[3].Contains("9") });
