@@ -142,8 +142,7 @@ namespace OpenC1.Parsers
             {
                 int wref = ReadLineAsInt();
             }
-
-            
+                        
             SkipLines(4); //suspension refs
 
             DrivenWheelRefs = new List<int>();

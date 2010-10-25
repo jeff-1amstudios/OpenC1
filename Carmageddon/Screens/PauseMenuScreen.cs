@@ -14,23 +14,23 @@ namespace OpenC1.Screens
         public PauseMenuScreen(PlayGameScreen parent)
             : base(parent)
         {
-            _inAnimation = new FliPlayer(LoadAnimation("MAINCOME.fli"));
+            _inAnimation = new AnimationPlayer(LoadAnimation("MAINCOME.fli"));
             _inAnimation.Play(false);
 
-            _outAnimation = new FliPlayer(LoadAnimation("MAINAWAY.fli"));
+            _outAnimation = new AnimationPlayer(LoadAnimation("MAINAWAY.fli"));
 
             _options.Add(
                new TextureMenuOption(BaseHUDItem.ScaleRect(0.202f, 0.185f, 0.65f, 0.045f),
-                   LoadAnimation("MAINCNGL.fli").Frames[0])
+                   LoadAnimation("MAINCNGL.fli")[0])
            );
             _options.Add(
                 new TextureMenuOption(BaseHUDItem.ScaleRect(0.172f, 0.356f, 0.715f, 0.045f),
-                    LoadAnimation("MAINARGL.fli").Frames[0])
+                    LoadAnimation("MAINARGL.fli")[0])
             );
 
             _options.Add(
                 new TextureMenuOption(BaseHUDItem.ScaleRect(0.201f, 0.778f, 0.725f, 0.045f),
-                    LoadAnimation("MAINQTGL.fli").Frames[0])
+                    LoadAnimation("MAINQTGL.fli")[0])
             );
         }
 

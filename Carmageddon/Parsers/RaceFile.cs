@@ -96,17 +96,18 @@ namespace OpenC1.Parsers
             int nbrModels = ReadLineAsInt();
             ModelFile = ReadLine();
 
-            if (_fileVersion == 6)
+            if (_fileVersion >= 6)
             {
                 int nbrLowMemModels = ReadLineAsInt();
                 SkipLines(nbrLowMemModels);
             }
 
             ActorFile = ReadLine();
-            if (_fileVersion == 6)
+            if (_fileVersion >= 6)
             {
                 SkipLines(1); //low mem actor
             }
+            SkipLines(1); // default transparency of '!' materials
             AdditionalActorFile = ReadLine();
 
             SkyboxTexture = ReadLine().ToLower();
@@ -343,7 +344,7 @@ namespace OpenC1.Parsers
                 string matName = ReadLine();
                 if (matName != "none")
                 {
-                    if (!File.Exists(GameVars.BasePath + "data\\material\\" + matName))
+                    if (!File.Exists(GameVars.BasePath + "material\\" + matName))
                     {
                         matName = "SKIDMARK.MAT"; //default skidmark if invalid (in indust maps, this is "1" and skidmarks aren't shown)
                     }
@@ -363,7 +364,7 @@ namespace OpenC1.Parsers
             for (int i = 0; i < nbrNonCars; i++)
             {
                 string filename = ReadLine();
-                NoncarFile file = new NoncarFile(GameVars.BasePath + "Data\\Noncars\\" + filename);
+                NoncarFile file = new NoncarFile(GameVars.BasePath + "Noncars\\" + filename);
                 NonCars.Add(file);
             }
         }

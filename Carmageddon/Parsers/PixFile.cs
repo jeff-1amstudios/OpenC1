@@ -73,6 +73,7 @@ namespace OpenC1.Parsers
 					case PixBlockType.PixelData:
 						int pixelCount = reader.ReadInt32();
 						int bytesPerPixel = reader.ReadInt32();
+                        bytesPerPixel = 1; //PixEd sometimes doesnt get this right
                         byte[] pixels = reader.ReadBytes(pixelCount * bytesPerPixel);
 
                         Texture2D texture = new Texture2D(Engine.Device, currentPix.Width, currentPix.Height,1, TextureUsage.None, SurfaceFormat.Color);
@@ -82,9 +83,6 @@ namespace OpenC1.Parsers
 						break;
 
 					case PixBlockType.Null:
-                        if (reader.BaseStream.Position >= 135350)
-                        {
-                        }
 						break;
 
 					default:

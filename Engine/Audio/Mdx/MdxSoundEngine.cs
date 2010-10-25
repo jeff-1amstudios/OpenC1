@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.DirectX.DirectSound;
 using Microsoft.Xna.Framework;
+using System.IO;
 
 namespace OneAmEngine.Audio
 {
@@ -34,6 +35,7 @@ namespace OneAmEngine.Audio
 
 		public ISound Load(string name, bool is3d)
 		{
+            if (!File.Exists(name)) return null;
 			ISound sound = new MdxSound(_audioDevice, name, is3d);
             sound.Volume = _defaultVolume;
 			return sound;

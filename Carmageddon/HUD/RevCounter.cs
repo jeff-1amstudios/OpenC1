@@ -14,12 +14,10 @@ namespace OpenC1.HUD
         VehicleChassis _chassis;
         float x, y;
         Texture2D _speedoTexture, _speedoLineTexture;
-        SpriteFont _font;
 
         public RevCounter(VehicleChassis vehicle)
         {
             _chassis = vehicle;
-            _font = Engine.ContentManager.Load<SpriteFont>("content/speedo-font");
 
             x = 0.01f;
             y = 0.8f;
@@ -47,12 +45,10 @@ namespace OpenC1.HUD
             DrawShadow(ScaleRect(x + 0.06f, y + 0.112f, 0.03f, 0.057f));
             if (_chassis.Motor.Gearbox.CurrentGear >= 0)
             {
-                DrawString(_font, _chassis.Motor.Gearbox.CurrentGear.ToString(), ScaleVec2(x + 0.065f, y + 0.118f), Color.Yellow);
-                //Engine.SpriteBatch.DrawString(_font, _chassis.Motor.Gearbox.CurrentGear.ToString(), ScaleVec2(x + 0.065f, y + 0.118f), Color.Yellow, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
+                FontRenderer.Render(Fonts.Speedo, _chassis.Motor.Gearbox.CurrentGear.ToString(), ScaleVec2(x + 0.065f, y + 0.118f), Color.Yellow, FontScale);
             }
             DrawShadow(ScaleRect(x + 0.1f, y + 0.112f, 0.068f, 0.057f));
-            DrawString(_font, ((int)_chassis.Speed).ToString("000"), ScaleVec2(x + 0.102f, y + 0.118f), Color.GreenYellow);
-            //Engine.SpriteBatch.DrawString(_font, ((int)_chassis.Speed).ToString("000"), ScaleVec2(x + 0.102f, y + 0.118f), Color.GreenYellow, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
+            FontRenderer.Render(Fonts.Speedo, ((int)_chassis.Speed).ToString("000"), ScaleVec2(x + 0.102f, y + 0.118f), Color.GreenYellow, FontScale);
 
             float rpmFactor = _chassis.Motor.Rpm / _chassis.Motor.RedlineRpm;
             float rotation = (float)(rpmFactor * 4f) + 0.5f;

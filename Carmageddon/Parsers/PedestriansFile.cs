@@ -11,7 +11,7 @@ namespace OpenC1.Parsers
         public List<PedestrianBehaviour> _pedestrians = new List<PedestrianBehaviour>();
 
         public PedestriansFile()
-            : base(GameVars.BasePath + "data\\pedestrn.txt")
+            : base(GameVars.BasePath + "pedestrn.txt")
         {
 
             bool atEnd = false;

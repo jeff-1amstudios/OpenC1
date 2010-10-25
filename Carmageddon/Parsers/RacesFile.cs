@@ -29,7 +29,7 @@ namespace OpenC1.Parsers
         }
 
         private RacesFile()
-            : base(GameVars.BasePath + "data\\races.txt")
+            : base(GameVars.BasePath + "races.txt")
         {
             Races = new List<RaceInfo>();
 

@@ -7,22 +7,23 @@ using OneAmEngine;
 
 namespace OpenC1
 {
-    class FliPlayer
+    class AnimationPlayer
     {
         bool _loop;
         bool _playing;
         float _currentFrameTime;
         int _currentFrame;
-        FliFile _fli;
+        List<Texture2D> _frames;
 
-        public FliPlayer(FliFile fli) : this(fli, 0)
+        public AnimationPlayer(List<Texture2D> frames)
+            : this(frames, 0)
         {
         }
 
-        public FliPlayer(FliFile fli, int startFrame)
+        public AnimationPlayer(List<Texture2D> frames, int startFrame)
         {
-            _fli = fli;
-            _currentFrame = startFrame;
+            _frames = frames;
+            _currentFrame = Math.Min(_frames.Count - 1, startFrame);
         }
 
         public bool IsPlaying { get { return _playing; } }
@@ -39,10 +40,10 @@ namespace OpenC1
 
             _currentFrameTime += Engine.ElapsedSeconds;
 
-            if (_currentFrameTime > ((float)_fli.FrameRate / 1000))
+            if (_currentFrameTime > ((float)100 / 1000))
             {
                 _currentFrame++;
-                if (_currentFrame == _fli.Frames.Count)
+                if (_currentFrame == _frames.Count)
                 {
                     if (_loop)
                         _currentFrame = 0;
@@ -58,7 +59,7 @@ namespace OpenC1
 
         public Texture2D GetCurrentFrame()
         {
-            return _fli.Frames[_currentFrame];
+            return _frames[_currentFrame];
         }
     }
 }

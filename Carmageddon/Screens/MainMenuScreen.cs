@@ -19,21 +19,21 @@ namespace OpenC1.Screens
             : base(parent)
         {
 
-            _inAnimation = new FliPlayer(LoadAnimation("MAI2COME.fli"), 2);
+            _inAnimation = new AnimationPlayer(LoadAnimation("MAI2COME.fli"), 1);
             _inAnimation.Play(false);
             ScreenEffects.Instance.FadeSpeed = 300;
             ScreenEffects.Instance.UnFadeScreen();
 
-            _outAnimation = new FliPlayer(LoadAnimation("MAI2AWAY.fli"));
+            _outAnimation = new AnimationPlayer(LoadAnimation("MAI2AWAY.fli"));
 
             _options.Add(
                 new TextureMenuOption(BaseHUDItem.ScaleRect(0.181f, 0.256f, 0.68f, 0.045f),
-                    LoadAnimation("MAI2N1GL.fli").Frames[0])
+                    LoadAnimation("MAI2N1GL.fli")[0])
             );
 
             _options.Add(
                 new TextureMenuOption(BaseHUDItem.ScaleRect(0.180f, 0.711f, 0.715f, 0.045f),
-                    LoadAnimation("MAI2QTGL.fli").Frames[0])
+                    LoadAnimation("MAI2QTGL.fli")[0])
             );
         }
 

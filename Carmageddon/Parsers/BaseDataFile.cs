@@ -10,22 +10,25 @@ namespace OpenC1.Parsers
 {
     class BaseDataFile
     {
-        static List<string> _pixPaths, _matPaths;
+        static List<string> _pixPaths, _matPaths, _fliPaths;
         public bool Exists { get; private set; }
 
         static BaseDataFile()
         {
             _pixPaths = new List<string>();
-            _pixPaths.Add(GameVars.BasePath + "data\\pixelmap\\");
-            _pixPaths.Add(GameVars.BasePath + "data\\reg\\pixelmap\\");
+            _pixPaths.Add(GameVars.BasePath + "pixelmap\\");
+            _pixPaths.Add(GameVars.BasePath + "reg\\pixelmap\\");
             if (GameVars.Emulation != EmulationMode.Demo)
-                _pixPaths.Add(GameVars.BasePath + "data\\64X48X8\\pixelmap\\");  //demo doesnt have 64x48x8 folder
-            _pixPaths.Add(GameVars.BasePath + "data\\32X20X8\\pixelmap\\");
+                _pixPaths.Add(GameVars.BasePath + "64X48X8\\pixelmap\\");  //demo doesnt have 64x48x8 folder
+            _pixPaths.Add(GameVars.BasePath + "32X20X8\\pixelmap\\");
 
             _matPaths = new List<string>();
-            _matPaths.Add(GameVars.BasePath + "data\\material\\");
-            _matPaths.Add(GameVars.BasePath + "data\\reg\\material\\");
-            
+            _matPaths.Add(GameVars.BasePath + "material\\");
+            _matPaths.Add(GameVars.BasePath + "reg\\material\\");
+
+            _fliPaths = new List<string>();
+            _fliPaths.Add(GameVars.BasePath + "anim\\");
+            _fliPaths.Add(GameVars.BasePath + "32x20x8\\anim\\");
         }
 
         protected Stream OpenDataFile(string filename)
@@ -56,13 +59,25 @@ namespace OpenC1.Parsers
                 Exists = false;
                 return null;
             }
+            else if (this is FliFile)
+            {
+                foreach (string path in _fliPaths)
+                {
+                    fullname = path + filename;
+                    if (File.Exists(fullname))
+                        return File.Open(fullname, FileMode.Open);
+                }
+                Debug.WriteLine("File not found: " + filename);
+                Exists = false;
+                return null;
+            }
             else if (this is ActFile)
             {
-                fullname = GameVars.BasePath + "data\\actors\\" + filename;
+                fullname = GameVars.BasePath + "actors\\" + filename;
             }
             else if (this is DatFile)
             {
-                fullname = GameVars.BasePath + "data\\models\\" + filename;
+                fullname = GameVars.BasePath + "models\\" + filename;
             }
             if (File.Exists(fullname))
                 return File.Open(fullname, FileMode.Open);

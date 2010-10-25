@@ -15,10 +15,10 @@ namespace OpenC1.Screens
         public SelectRaceScreen(BaseMenuScreen parent)
             : base(parent)
         {
-            _inAnimation = new FliPlayer(LoadAnimation("chrccome.fli"));
+            _inAnimation = new AnimationPlayer(LoadAnimation("chrccome.fli"));
             _inAnimation.Play(false);
 
-            _outAnimation = new FliPlayer(LoadAnimation("chrcaway.fli"));
+            _outAnimation = new AnimationPlayer(LoadAnimation("chrcaway.fli"));
 
             _options.Add(new RaceOption(RacesFile.Instance.Races[0]));
         }
@@ -54,7 +54,7 @@ namespace OpenC1.Screens
         public RaceOption(RaceInfo info)
         {
             _info = info;
-            _scene = BaseMenuScreen.LoadAnimation(_info.FliFileName).Frames[0];
+            _scene = BaseMenuScreen.LoadAnimation(_info.FliFileName)[0];
         }
 
         #region IMenuOption Members

@@ -13,6 +13,7 @@ using System.IO;
 using OneAmEngine;
 using OpenC1.Screens;
 using OpenC1.GameModes;
+using Microsoft.Xna.Framework.Storage;
 
 
 namespace OpenC1
@@ -32,11 +33,12 @@ namespace OpenC1
             Parent = parent;
             GC.Collect();
 
-            _race = new Race(GameVars.BasePath + "data\\races\\" + GameVars.SelectedRaceInfo.RaceFilename, GameVars.SelectedCarFileName);
+            _race = new Race(GameVars.BasePath + "races\\" + GameVars.SelectedRaceInfo.RaceFilename, GameVars.SelectedCarFileName);
             
             _modes.Add(new NormalMode());
             _modes.Add(new FlyMode());
             _modes.Add(new OpponentEditMode());
+            _modes.Add(new PedEditMode());
             GameMode.Current = _modes[_currentEditMode];
         }
 
@@ -112,6 +114,8 @@ namespace OpenC1
             Engine.Device.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
 
             GameVars.CurrentEffect.End();
+
+            GameConsole.WriteLine("Position", Race.Current.PlayerVehicle.GetBodyBottom() / 6);
                        
 
             GameConsole.WriteLine("Draw Calls", GameVars.NbrDrawCalls);
@@ -206,17 +210,17 @@ namespace OpenC1
 
         private void TakeScreenshot()
         {
-            int count = Directory.GetFiles(GameVars.BasePath + "data", "ndump*.bmp").Length + 1;
-            string name = "ndump" + count.ToString("000") + ".bmp";
+            int count = Directory.GetFiles(StorageContainer.TitleLocation+"\\", "ndump*.bmp").Length + 1;
+            string name = "\\ndump" + count.ToString("000") + ".bmp";
 
             GraphicsDevice device = Engine.Device;
             using (ResolveTexture2D screenshot = new ResolveTexture2D(device, device.PresentationParameters.BackBufferWidth, device.PresentationParameters.BackBufferHeight, 1, SurfaceFormat.Color))
             {
                 device.ResolveBackBuffer(screenshot);
-                screenshot.Save(GameVars.BasePath + "data\\" + name, ImageFileFormat.Bmp);
+                screenshot.Save(StorageContainer.TitleLocation + name, ImageFileFormat.Bmp);
             }
 
-            MessageRenderer.Instance.PostHeaderMessage("Screenshot dumped to " + name, 3);
+            //MessageRenderer.Instance.PostHeaderMessage("Screenshot dumped to " + name, 3);
         }
     }
 }

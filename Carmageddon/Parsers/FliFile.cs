@@ -50,9 +50,12 @@ namespace OpenC1.Parsers
         public FliFile(string filename)
         {
             Filename = filename;
-            if (!File.Exists(filename))
+
+            Stream file = OpenDataFile(filename);
+            if (!Exists)
                 return;
-            BinaryReader reader = new BinaryReader(File.Open(filename, FileMode.Open));
+                        
+            BinaryReader reader = new BinaryReader(file);
             int filesize = reader.ReadInt32();
             ushort type = reader.ReadUInt16();
             //Trace.Assert(type == 0xAF12);

@@ -44,6 +44,8 @@ namespace OpenC1
 
         public void Render(Vector3 position)
         {
+            if (_pixmaps.Count == 0) return;
+
             Update();
             BeginBatch();
 

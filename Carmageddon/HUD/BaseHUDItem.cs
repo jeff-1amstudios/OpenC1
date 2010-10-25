@@ -14,16 +14,12 @@ namespace OpenC1.HUD
         public abstract void Render();
         private static Rectangle _window;
         protected static float FontScale = 1f;
-        protected static SpriteFont _whiteFont, _textFont, _blueFont;
 
         static BaseHUDItem()
         {
             _shadow = TextureGenerator.Generate(new Color(0f, 0f, 0f, 0.6f));
             _window = Engine.Window;
             FontScale = _window.Width / 800f;
-            _whiteFont = Engine.ContentManager.Load<SpriteFont>("content/white-font");
-            _textFont = Engine.ContentManager.Load<SpriteFont>("content/text-font");
-            _blueFont = Engine.ContentManager.Load<SpriteFont>("content/blue-font");
         }
 
         public static Rectangle ScaleRect(float x, float y, float width, float height)
@@ -58,9 +54,9 @@ namespace OpenC1.HUD
             Engine.SpriteBatch.Draw(_shadow, rect, Color.White);
         }
 
-        protected void DrawString(SpriteFont font, string text, Vector2 position, Color color)
-        {
-            Engine.SpriteBatch.DrawString(font, text, position, color, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
-        }
+        //protected void DrawString(SpriteFont font, string text, Vector2 position, Color color)
+        //{
+        //    Engine.SpriteBatch.DrawString(font, text, position, color, 0, Vector2.Zero, FontScale, SpriteEffects.None, 0);
+        //}
     }
 }

@@ -25,10 +25,10 @@ namespace OpenC1.Screens
             SimpleCamera cam = Engine.Camera as SimpleCamera;
             cam.DrawDistance = 999999;
 
-            _inAnimation = new FliPlayer(LoadAnimation("chcrcome.fli"));
+            _inAnimation = new AnimationPlayer(LoadAnimation("chcrcome.fli"));
             _inAnimation.Play(false);
 
-            _outAnimation = new FliPlayer(LoadAnimation("chcraway.fli"));
+            _outAnimation = new AnimationPlayer(LoadAnimation("chcraway.fli"));
 
             _effect = new BasicEffect2();
             _effect.LightingEnabled = false;
@@ -45,7 +45,7 @@ namespace OpenC1.Screens
             if (GameVars.Emulation != EmulationMode.Demo)
             {
                 // If we're not in demo mode, add car files in directory that havent been added to opponent.txt
-                List<string> carFiles = new List<string>(Directory.GetFiles(GameVars.BasePath + "data\\cars"));
+                List<string> carFiles = new List<string>(Directory.GetFiles(GameVars.BasePath + "cars"));
                 carFiles.RemoveAll(a => !a.ToUpper().EndsWith(".TXT"));
                 carFiles.Sort();
                 carFiles.Reverse();
@@ -97,7 +97,7 @@ namespace OpenC1.Screens
             _info = info;
             try
             {
-                var carfile = new CarFile(GameVars.BasePath + "data\\cars\\" + info.FileName);
+                var carfile = new CarFile(GameVars.BasePath + "cars\\" + info.FileName);
                 _model = new VehicleModel(carfile, true);
             }
             catch (Exception ex)

@@ -15,6 +15,7 @@ using OneAmEngine.Audio;
 using System.IO;
 using System.Threading;
 using System.Globalization;
+using System.Text;
 
 namespace OpenC1
 {
@@ -27,6 +28,8 @@ namespace OpenC1
 
         public Game1()
         {
+            //FixFile();
+
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
@@ -49,6 +52,35 @@ namespace OpenC1
             _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;
             _graphics.MinimumPixelShaderProfile = ShaderProfile.PS_2_0;
         }
+
+        //void FixFile()
+        //{
+        //    Stream file = File.Open("ped-edit.txt", FileMode.Open);
+        //    StreamReader sr = new StreamReader(file);
+        //    StringBuilder sb = new StringBuilder();
+
+        //    while (!sr.EndOfStream)
+        //    {
+        //        sb.AppendLine(sr.ReadLine());
+        //        sb.AppendLine(sr.ReadLine());
+        //        sb.AppendLine(sr.ReadLine());
+
+        //        while (true)
+        //        {
+        //            string line = sr.ReadLine();
+        //            sb.AppendLine(line);
+        //            if (line == "reverse") break;
+                    
+        //            string v3line = sr.ReadLine();
+        //            string[] bits = v3line.Split(new char[] { ',' } ,  StringSplitOptions.RemoveEmptyEntries);
+        //            Vector3 v3 = new Vector3(float.Parse(bits[0]), float.Parse(bits[1]), float.Parse(bits[2]));
+        //            v3 /= 6;
+        //            sb.AppendLine(v3.ToShortString());
+        //        }
+        //        sb.AppendLine();
+        //    }
+        //    File.WriteAllText("ped-edit2.txt", sb.ToString());
+        //}
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
@@ -82,7 +114,7 @@ namespace OpenC1
                 SoundCache.Initialize();
             }
 
-            GameVars.Palette = new PaletteFile(GameVars.BasePath + "data\\reg\\palettes\\drrender.pal");
+            GameVars.Palette = new PaletteFile(GameVars.BasePath + "reg\\palettes\\drrender.pal");
 
             Engine.Screen = new MainMenuScreen(null); // new PlayGameScreen();
         }

@@ -16,15 +16,16 @@ namespace OpenC1.GameModes
         {
             _views.Add(new ChaseView(Race.Current.PlayerVehicle));
             if (GameVars.Emulation == EmulationMode.Demo)
-                _views.Add(new CockpitView(Race.Current.PlayerVehicle, GameVars.BasePath + @"data\32x20x8\cars\" + Race.Current.PlayerVehicle.Config.FileName));
+                _views.Add(new CockpitView(Race.Current.PlayerVehicle, GameVars.BasePath + @"32x20x8\cars\" + Race.Current.PlayerVehicle.Config.FileName));
             else
-                _views.Add(new CockpitView(Race.Current.PlayerVehicle, GameVars.BasePath + @"data\64x48x8\cars\" + Race.Current.PlayerVehicle.Config.FileName));
+                _views.Add(new CockpitView(Race.Current.PlayerVehicle, GameVars.BasePath + @"64x48x8\cars\" + Race.Current.PlayerVehicle.Config.FileName));
             _views[_currentView].Activate();
         }
 
         public override void Activate()
         {
             _views[_currentView].Activate();
+            MessageRenderer.Instance.PostHeaderMessage("Race mode", 3);
         }
 
         public override void Update()

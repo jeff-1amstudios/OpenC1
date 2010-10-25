@@ -83,8 +83,11 @@ namespace OpenC1
             if (!_textures.ContainsKey(pixname))
             {
                 PixFile pix = new PixFile(pixname);
-                _textures.Add(pixname, pix.PixMaps[0].Texture);
+                if (pix.Exists) _textures.Add(pixname, pix.PixMaps[0].Texture);
             }
+
+            if (!_textures.ContainsKey(pixname))
+                return;
 
             _hasPaused = false;
             _pauseTime = 0;
@@ -104,13 +107,13 @@ namespace OpenC1
         {
             if (_headerTtl > 0)
             {
-                DrawString(_textFont, _headerText, new Vector2(_headerRect.Left, _headerRect.Top), Color.White);
+                FontRenderer.Render(Fonts.Text,_headerText, new Vector2(_headerRect.Left, _headerRect.Top), Color.White);
             }
 
             if (_timerTtl > 0)
             {
                 TimeSpan ts = TimeSpan.FromSeconds(_timerSeconds);
-                DrawString(_blueFont, "+" + ts.Minutes + ":" + ts.Seconds.ToString("00"), new Vector2(_timerRect.Left, _timerRect.Top), Color.White);
+                FontRenderer.Render(Fonts.Blue, "+" + ts.Minutes + ":" + ts.Seconds.ToString("00"), new Vector2(_timerRect.Left, _timerRect.Top), Color.White, FontScale);
             }
 
             if (_animationSpeed == 0)

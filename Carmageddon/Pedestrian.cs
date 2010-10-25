@@ -214,7 +214,9 @@ namespace OpenC1
                     if (_frameTime == -1)
                         _stopUpdating = true;  //if were not spining the ped, stop them as soon as anim is finished
                 }
-
+                if (float.IsNaN(Position.X))
+                {
+                }
                 _physXActor.GlobalPosition = Position;
             }
             else if (_isRunning)
@@ -222,34 +224,36 @@ namespace OpenC1
                 Vector3 target = Instructions[_currentInstruction].Position;
                 
                 _direction = target - Position;
-                _direction.Normalize();
-                Position += _direction * RunningSpeed * Engine.ElapsedSeconds;
-
-                if (Instructions[_currentInstruction].AutoY)
+                if (_direction != Vector3.Zero)
                 {
-                    StillDesign.PhysX.RaycastHit hit = PhysX.Instance.Scene.RaycastClosestShape(new StillDesign.PhysX.Ray(Position + new Vector3(0, 10, 0), Vector3.Down), StillDesign.PhysX.ShapesType.Static);
-                    target.Y = hit.WorldImpact.Y;
-                    float fallDist = Position.Y - hit.WorldImpact.Y;
-                    if (fallDist > 10)
+                    _direction.Normalize();
+                    Position += _direction * RunningSpeed * Engine.ElapsedSeconds;
+
+                    if (Instructions[_currentInstruction].AutoY)
                     {
-                        SetAction(Behaviour.NonFatalFalling, true);
-                        if (!_isFalling) SoundCache.Play(Behaviour.FallingNoise, Race.Current.PlayerVehicle, true);
-                        _isFalling = true;
-                    }
-                    if (fallDist > 0.5f)
-                        Position.Y -= Engine.ElapsedSeconds * 20;
-                    else
-                    {
-                        Position.Y = hit.WorldImpact.Y;
-                        if (_isFalling)
+                        StillDesign.PhysX.RaycastHit hit = PhysX.Instance.Scene.RaycastClosestShape(new StillDesign.PhysX.Ray(Position + new Vector3(0, 10, 0), Vector3.Down), StillDesign.PhysX.ShapesType.Static);
+                        target.Y = hit.WorldImpact.Y;
+                        float fallDist = Position.Y - hit.WorldImpact.Y;
+                        if (fallDist > 10)
                         {
-                            OnHit(Race.Current.PlayerVehicle);
-                            return;
+                            SetAction(Behaviour.NonFatalFalling, true);
+                            if (!_isFalling) SoundCache.Play(Behaviour.FallingNoise, Race.Current.PlayerVehicle, true);
+                            _isFalling = true;
+                        }
+                        if (fallDist > 0.5f)
+                            Position.Y -= Engine.ElapsedSeconds * 20;
+                        else
+                        {
+                            Position.Y = hit.WorldImpact.Y;
+                            if (_isFalling)
+                            {
+                                OnHit(Race.Current.PlayerVehicle);
+                                return;
+                            }
                         }
                     }
+                    _physXActor.GlobalPosition = Position;
                 }
-                _physXActor.GlobalPosition = Position;
-                Engine.DebugRenderer.AddCube(Matrix.CreateTranslation(target), Color.Yellow);
 
                 if (Vector3.Distance(Position, target) < 0.5f)
                 {

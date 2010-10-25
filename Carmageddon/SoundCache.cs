@@ -42,7 +42,7 @@ namespace OpenC1
 
         public static void Initialize()
         {
-            SoundsFile soundFile = new SoundsFile(GameVars.BasePath + "data\\sound\\sound.txt");
+            SoundsFile soundFile = new SoundsFile(GameVars.BasePath + "sound\\sound.txt");
             _soundDescriptions = soundFile.Sounds;
             IsInitialized = true;
 
@@ -67,7 +67,13 @@ namespace OpenC1
         {
             if (!_enabled) return null;
             SoundDesc csound = _soundDescriptions.Find(a => a.Id == id);
-            ISound instance = Engine.Audio.Load(GameVars.BasePath + "data\\sound\\" + csound.FileName, is3d);
+            if (csound == null || csound.FailedToLoad) return null;
+            ISound instance = Engine.Audio.Load(GameVars.BasePath + "sound\\" + csound.FileName, is3d);
+            if (instance == null)
+            {
+                csound.FailedToLoad = true;
+                return null;
+            }
 
             if (_playerInstances.Exists(a => a.Id == id))
             {
@@ -99,6 +105,9 @@ namespace OpenC1
                     instance.Owner = vehicle;
                     instance.Play(false);
                     //GameConsole.WriteEvent("PlaySound " + id.ToString());
+                }
+                else
+                {
                 }
                 return instance;
             }

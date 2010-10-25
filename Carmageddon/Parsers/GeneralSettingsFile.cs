@@ -23,7 +23,7 @@ namespace OpenC1.Parsers
         public int[] TimePerCarKill;
 
         private GeneralSettingsFile()
-            : base(GameVars.BasePath + "data\\general.txt")
+            : base(GameVars.BasePath + "general.txt")
         {
             SkipLines(6);
             int[] initialCredits = ReadLineAsIntList();

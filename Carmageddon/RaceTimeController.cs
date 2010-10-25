@@ -17,7 +17,7 @@ namespace OpenC1
         public bool CountingDown { get; private set; }
         public float CountdownTime;
         int _lastSecond = -1;
-        public float TimeRemaining = 90; //1:30
+        public float TimeRemaining = 1190; //1:30
         List<string> _countdownTextures = new List<string>();
         List<int> _countdownSoundIds = new List<int>();
         public float TotalTime;
@@ -82,7 +82,7 @@ namespace OpenC1
                 if (second > _lastSecond)
                 {
                     ISound sound = SoundCache.Play(_countdownSoundIds[second], null, false);
-                    sound.Volume = -1600;
+                    if (sound != null) sound.Volume = -1600;
                     MessageRenderer.Instance.PostMainMessage(_countdownTextures[second], 0.7f, 0.24f, 0.003f, 0);
                 }
 

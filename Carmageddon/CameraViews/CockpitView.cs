@@ -26,18 +26,21 @@ namespace OpenC1.CameraViews
             {
                 cockpitFile = Path.GetDirectoryName(cockpitFile) + "\\blkeagle.txt";
             }
-            _cockpitFile = new CockpitFile(cockpitFile);
+            if (File.Exists(cockpitFile))
+            {
+                _cockpitFile = new CockpitFile(cockpitFile);
+                DatFile modelsFile = new DatFile(vehicle.Config.BonnetModelFile);
+                ActFile actFile = new ActFile(vehicle.Config.BonnetActorFile, modelsFile.Models);
+                _actors = actFile.Hierarchy;
+                _actors.ResolveTransforms(false, null);
+
+                //move head back
+                _vehicle.Config.DriverHeadPosition.Z += 0.11f;
+            }
+            
             _camera = new SimpleCamera();
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
             _camera.AspectRatio = Engine.AspectRatio;
-
-            DatFile modelsFile = new DatFile(vehicle.Config.BonnetModelFile);
-            ActFile actFile = new ActFile(vehicle.Config.BonnetActorFile, modelsFile.Models);
-            _actors = actFile.Hierarchy;
-            _actors.ResolveTransforms(false, null);
-
-            //move head back
-            _vehicle.Config.DriverHeadPosition.Z += 0.11f;
 
         }
 
@@ -63,6 +66,9 @@ namespace OpenC1.CameraViews
 
         public override void Render()
         {
+            if (_cockpitFile == null)
+                return;
+
             Rectangle src;
             if (_cockpitFile.IsHighRes)
                 src = new Rectangle(32, 20, 640, 480);

@@ -33,6 +33,9 @@ namespace OpenC1
             foreach (Pedestrian ped in _peds)
             {   //match up behaviour to ped instance
                 ped.Behaviour = _behaviours.Find(a => a.RefNumber == ped.RefNumber);
+                if (ped.Behaviour == null)
+                    ped.Behaviour = _behaviours[Engine.Random.Next(1, _behaviours.Count-1)];
+
                 ped.Initialize();
 
                 if (ped.RefNumber < 100)

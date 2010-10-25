@@ -16,7 +16,7 @@ namespace OpenC1.Parsers.Funks
 
         public FlicFunk(string fliname)
         {
-            FliFile fli = ResourceCache.GetFliFile(GameVars.BasePath + "data\\anim\\" + fliname);
+            FliFile fli = ResourceCache.GetFliFile(GameVars.BasePath + "anim\\" + fliname);
             _frames = fli.Frames;
             _speed = (float)fli.FrameRate / 1000; // to seconds
         }

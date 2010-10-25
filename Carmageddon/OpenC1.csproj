@@ -94,11 +94,13 @@
     <Compile Include="CModelGroup.cs" />
     <Compile Include="CopDriver.cs" />
     <Compile Include="CpuDriver.cs" />
-    <Compile Include="FliPlayer.cs" />
+    <Compile Include="AnimationPlayer.cs" />
+    <Compile Include="FontRenderer.cs" />
     <Compile Include="GameModes\FlyMode.cs" />
     <Compile Include="GameModes\GameMode.cs" />
     <Compile Include="GameModes\NormalMode.cs" />
     <Compile Include="GameModes\OpponentEditMode.cs" />
+    <Compile Include="GameModes\PedEditMode.cs" />
     <Compile Include="GameModes\RaceCompletedMode.cs" />
     <Compile Include="Gfx\DamageSmokeParticleSystem.cs" />
     <Compile Include="GridPlacer.cs" />

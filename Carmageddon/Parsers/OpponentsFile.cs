@@ -28,7 +28,7 @@ namespace OpenC1.Parsers
         }
 
         private OpponentsFile()
-            : base(GameVars.BasePath + "data\\opponent.txt")
+            : base(GameVars.BasePath + "opponent.txt")
         {
 
             Opponents = new List<OpponentInfo>();

@@ -14,5 +14,6 @@ namespace OpenC1
         public string MinMaxVolume;
         public string MinMaxPitch;
         public string MinMaxSpeed;
+        public bool FailedToLoad;
     }
 }

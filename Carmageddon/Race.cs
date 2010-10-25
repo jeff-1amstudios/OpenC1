@@ -83,11 +83,32 @@ namespace OpenC1
 
             GridPlacer.Reset();
 
-            Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("grimm.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("otis.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            if (GameVars.Emulation == EmulationMode.Demo)
+            {
+                Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+                Opponents.Add(new Opponent("grimm.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+                Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+                Opponents.Add(new Opponent("otis.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+                Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+            }
+            else
+            {
+                List<int> pickedNbrs = new List<int>();
+                for (int i = 0; i < 6; i++)
+                {
+                    int index = 0;
+                    while (true)
+                    {
+                        index = Engine.Random.Next(1, OpponentsFile.Instance.Opponents.Count);
+                        if (!pickedNbrs.Contains(index))
+                        {
+                            pickedNbrs.Add(index);
+                            break;
+                        }
+                    }
+                    Opponents.Add(new Opponent(OpponentsFile.Instance.Opponents[index].FileName, ConfigFile.GridPosition, ConfigFile.GridDirection));
+                }
+            }
 
             foreach (CopStartPoint point in ConfigFile.CopStartPoints)
             {
@@ -98,7 +119,7 @@ namespace OpenC1
 
             OpponentController.Nodes = ConfigFile.OpponentPathNodes;
 
-            PlayerVehicle = new Vehicle(GameVars.BasePath + @"data\cars\" + playerVehicleFile, new PlayerDriver());
+            PlayerVehicle = new Vehicle(GameVars.BasePath + @"cars\" + playerVehicleFile, new PlayerDriver());
             PlayerVehicle.PlaceOnGrid(ConfigFile.GridPosition, ConfigFile.GridDirection);
             Drivers.Add(PlayerVehicle.Driver);
 

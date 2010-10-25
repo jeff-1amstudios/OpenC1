@@ -20,7 +20,9 @@ namespace OpenC1
             {
                 for (int x = 0; x < width; x++)
                 {
-                    byte pixel = pixels[width * i + x];
+                    byte pixel = 0;
+                    int idx = width * i + x;
+                    if (idx < pixels.Length) pixel = pixels[idx];
 
                     if (pixel > 0)
                     {

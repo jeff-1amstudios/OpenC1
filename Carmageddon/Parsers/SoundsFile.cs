@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace OpenC1.Parsers
 {
@@ -12,7 +13,7 @@ namespace OpenC1.Parsers
             : base(filename)
         {
 
-            while (_file.BaseStream.Position < _file.BaseStream.Length)
+            while (!_file.EndOfStream)
             {
                 SoundDesc sound = new SoundDesc();
                 sound.Id = ReadLineAsInt();
@@ -28,6 +29,8 @@ namespace OpenC1.Parsers
                 int lowMemAlts = ReadLineAsInt();
                 for (int i = 0; i < lowMemAlts; i++)
                     ReadLine(); //unused
+
+                
 
                 if (flags[0] == "0x00")
                 {

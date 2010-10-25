@@ -8,13 +8,14 @@ using Microsoft.Xna.Framework.Graphics;
 using OpenC1.HUD;
 using OpenC1.Parsers;
 using OneAmEngine;
+using System.IO;
 
 namespace OpenC1.Screens
 {
     abstract class BaseMenuScreen : IGameScreen
     {
         public IGameScreen Parent { get; private set; }
-        protected FliPlayer _inAnimation, _outAnimation;
+        protected AnimationPlayer _inAnimation, _outAnimation;
         protected Rectangle _rect;
         protected int _selectedOption;
         protected List<IMenuOption> _options = new List<IMenuOption>();
@@ -90,9 +91,11 @@ namespace OpenC1.Screens
 
         public virtual void Render()
         {
-            Engine.Device.Clear(Color.White);
+            Engine.Device.Clear(Color.Black);
 
-            Engine.SpriteBatch.Begin();
+            Engine.Device.RenderState.AlphaTestEnable = true;
+            Engine.Device.RenderState.ReferenceAlpha = 200;
+            Engine.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
 
             if (_waitingForOutAnimation)
                 Engine.SpriteBatch.Draw(_outAnimation.GetCurrentFrame(), _rect, Color.White);
@@ -120,20 +123,37 @@ namespace OpenC1.Screens
             return !_inAnimation.IsPlaying && !_outAnimation.IsPlaying && !_waitingForOutAnimation;
         }
 
-        public static FliFile LoadAnimation(string filename)
+        public static List<Texture2D> LoadAnimation(string filename)
         {
-            switch (GameVars.Emulation)
+            FliFile fli = new FliFile(filename);
+            if (fli.Exists)
+                return fli.Frames;
+            filename = filename.Substring(0, filename.Length - 3) + "png";
+            if (File.Exists(GameVars.BasePath + "anim\\" + filename))
             {
-                case EmulationMode.Demo:
-                    return new FliFile(GameVars.BasePath + @"DATA\32X20X8\ANIM\" + filename);
-
-                case EmulationMode.Full:
-                case EmulationMode.SplatPack:
-                    return new FliFile(GameVars.BasePath + @"DATA\ANIM\" + filename);
-
-                default:
-                    throw new NotImplementedException();
+                return new List<Texture2D> { (Texture2D)Texture.FromFile(Engine.Device, GameVars.BasePath + "anim\\" + filename) };
             }
+
+            filename = filename.Substring(0, filename.Length - 3) + "pix";
+            PixFile pix = new PixFile(filename);
+            if (pix.Exists)
+                return new List<Texture2D> { pix.PixMaps[0].Texture };
+
+            return null;
+            
+
+            //switch (GameVars.Emulation)
+            //{
+            //    case EmulationMode.Demo:
+            //        return new FliFile(GameVars.BasePath + @"DATA\32X20X8\ANIM\" + filename);
+
+            //    case EmulationMode.Full:
+            //    case EmulationMode.SplatPack:
+            //        return new FliFile(GameVars.BasePath + @"DATA\ANIM\" + filename);
+
+            //    default:
+            //        throw new NotImplementedException();
+            //}
         }
     }
 }
