@@ -51,7 +51,7 @@ namespace OpenC1
             
             Chassis = new VehicleChassis(this);
 
-            CActor actor2 = _model.GetActor(Path.GetFileNameWithoutExtension(Config.ModelFile));
+            CActor actor2 = _model.GetActor(Path.GetFileNameWithoutExtension(_model.ModelName));
             if (actor2 != null)
             {
                 _deformableModel = (CDeformableModel)actor2.Model;

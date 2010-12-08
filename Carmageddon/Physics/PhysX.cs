@@ -141,14 +141,9 @@ namespace OpenC1.Physics
         }
 
         public void Simulate()
-        {
-            try
-            {
-                Scene.Simulate(Engine.ElapsedSeconds);
-                Scene.FlushStream();
-            }
-            catch
-            { }
+        {    
+            Scene.Simulate(Engine.ElapsedSeconds);
+            Scene.FlushStream();
         }
 
         public void Fetch()

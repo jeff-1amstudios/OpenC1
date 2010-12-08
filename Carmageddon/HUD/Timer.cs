@@ -26,7 +26,7 @@ namespace OpenC1.HUD
             TimeSpan ts = TimeSpan.FromSeconds(Race.Current.RaceTime.TimeRemaining);
             float nudge = ts.Minutes < 10 ? 13 * FontScale : 0;
             FontRenderer.Render(Fonts.Timer,
-                String.Format("{0}:{1}", (int)ts.Minutes, ts.Seconds.ToString("00")), new Vector2(rect.X + 5 + nudge, rect.Y + 7), Color.White, FontScale);
+                String.Format("{0}/{1}", (int)ts.Minutes, ts.Seconds.ToString("00")), new Vector2(rect.X + 5 + nudge, rect.Y + 7), Color.White, FontScale);
         }
     }
 }

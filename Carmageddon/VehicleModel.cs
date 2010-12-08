@@ -14,6 +14,7 @@ namespace OpenC1
         CActorHierarchy _actors;
         List<BaseGroove> _grooves;
         CarFile Config;
+        public string ModelName;
 
         public VehicleModel(CarFile file, bool forDisplayOnly)
         {
@@ -43,10 +44,12 @@ namespace OpenC1
             foreach (BaseGroove g in file.Grooves)
                 if (!g.IsWheelActor) _grooves.Add(g);
             
-            DatFile modelFile = new DatFile(file.ModelFile, !forDisplayOnly);
-            ActFile actFile = new ActFile(file.ActorFile, modelFile.Models);
-
+            ActFile actFile = new ActFile(file.ActorFile);
             _actors = actFile.Hierarchy;
+            DatFile modelFile = new DatFile(_actors.Root.ModelName, !forDisplayOnly);
+            ModelName = _actors.Root.ModelName;
+                        
+            _actors.AttachModels(modelFile.Models);
             _actors.ResolveTransforms(!forDisplayOnly, _grooves);
             
             foreach (BaseGroove g in _grooves)

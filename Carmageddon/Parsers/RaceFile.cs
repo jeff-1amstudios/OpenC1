@@ -106,8 +106,13 @@ namespace OpenC1.Parsers
             if (_fileVersion >= 6)
             {
                 SkipLines(1); //low mem actor
+                
             }
-            SkipLines(1); // default transparency of '!' materials
+            if (_fileVersion >= 7)
+            {
+                SkipLines(1); // default transparency of '!' materials
+            }
+            
             AdditionalActorFile = ReadLine();
 
             SkyboxTexture = ReadLine().ToLower();

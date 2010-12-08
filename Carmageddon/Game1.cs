@@ -116,7 +116,7 @@ namespace OpenC1
 
             GameVars.Palette = new PaletteFile(GameVars.BasePath + "reg\\palettes\\drrender.pal");
 
-            Engine.Screen = new MainMenuScreen(null); // new PlayGameScreen();
+            Engine.Screen = new DataInfoScreen(null);
         }
 
         /// <summary>

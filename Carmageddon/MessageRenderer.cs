@@ -68,7 +68,7 @@ namespace OpenC1
             if (_timerTtl <= 0) _timerSeconds = 0;
             _timerTtl = 2;
             _timerSeconds += seconds;
-            _timerRect = CenterRectX(0.08f, 0.09f, 0.075f);
+            _timerRect = CenterRectX(0.09f, 0.09f, 0.075f);
         }
 
         public void PostHeaderMessage(string message, float displayTime)

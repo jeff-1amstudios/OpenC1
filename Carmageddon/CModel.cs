@@ -40,7 +40,6 @@ namespace OpenC1
                     vertices.Add(new VertexPositionNormalTexture(vertexPositions[poly.Vertex3 + VertexBaseIndex], poly.Normal, uv));
                 }
 
-
                 if (MaterialNames != null)
                 {
                     CMaterial material;

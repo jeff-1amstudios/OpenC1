@@ -95,7 +95,7 @@ namespace OpenC1
             float speed = Math.Min(140, vehicle.Chassis.Speed);
 
             if (speed > 90)
-            {   
+            {
                 _hitSpinSpeed = speed * Engine.Random.Next(0.07f, 0.13f);
                 if (Engine.Random.Next() % 2 == 0) _hitSpinSpeed *= -1;
                 _hitUpSpeed = speed * 0.11f;
@@ -107,7 +107,8 @@ namespace OpenC1
             }
             _direction = Vector3.Normalize(vehicle.Chassis.Actor.LinearVelocity);
             SetAction(Behaviour.FatalImpact, true);
-            SoundCache.Play(Behaviour.ExplodingSounds[0], Race.Current.PlayerVehicle, true);
+            if (Behaviour.ExplodingSounds.Length > 0)
+                SoundCache.Play(Behaviour.ExplodingSounds[0], Race.Current.PlayerVehicle, true);
         }
 
         public void SetRunning(bool running)
@@ -216,18 +217,27 @@ namespace OpenC1
                 }
                 if (float.IsNaN(Position.X))
                 {
+                    
                 }
+
                 _physXActor.GlobalPosition = Position;
+                
             }
             else if (_isRunning)
             {
                 Vector3 target = Instructions[_currentInstruction].Position;
                 
                 _direction = target - Position;
+                if (float.IsNaN(_direction.X))
+                {
+                }
                 if (_direction != Vector3.Zero)
                 {
                     _direction.Normalize();
                     Position += _direction * RunningSpeed * Engine.ElapsedSeconds;
+                    if (float.IsNaN(_direction.X))
+                    {
+                    }
 
                     if (Instructions[_currentInstruction].AutoY)
                     {

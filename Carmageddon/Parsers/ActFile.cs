@@ -35,7 +35,7 @@ namespace OpenC1.Parsers
             get { return _actors; }
         }
 
-        public ActFile(string filename, CModelGroup models)
+        public ActFile(string filename)
         {
             Stream file = OpenDataFile(filename);
             if (!Exists)
@@ -114,7 +114,6 @@ namespace OpenC1.Parsers
                     case ActorBlockType.ModelName:
                         string modelName = ReadNullTerminatedString(reader);
                         currentActor.ModelName = modelName;
-                        currentActor.Model = models.GetModel(modelName);
                         break;
 
                     case ActorBlockType.BoundingBox:
@@ -136,8 +135,7 @@ namespace OpenC1.Parsers
             }
             reader.Close();
 
-            _actors.Models = models;
             _actors.ResolveMaterials();
-        }        
+        }
     }
 }

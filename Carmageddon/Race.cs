@@ -34,6 +34,8 @@ namespace OpenC1
 
         public Race(string filename, string playerVehicleFile)
         {
+            Race.Current = this;
+
             ConfigFile = new RaceFile(filename);
 
             foreach (string matFileName in ConfigFile.MaterialFiles)
@@ -57,8 +59,9 @@ namespace OpenC1
 
             DatFile modelFile = new DatFile(ConfigFile.ModelFile);
 
-            ActFile actFile = new ActFile(ConfigFile.ActorFile, modelFile.Models);
+            ActFile actFile = new ActFile(ConfigFile.ActorFile);
             _actors = actFile.Hierarchy;
+            _actors.AttachModels(modelFile.Models);
             _actors.ResolveTransforms(false, ConfigFile.Grooves);
 
             // link the actors and grooves
@@ -99,7 +102,12 @@ namespace OpenC1
                     int index = 0;
                     while (true)
                     {
-                        index = Engine.Random.Next(1, OpponentsFile.Instance.Opponents.Count);
+                        index = 0;// Engine.Random.Next(1, OpponentsFile.Instance.Opponents.Count);
+                        break;
+                        if (OpponentsFile.Instance.Opponents.Count <= 6)
+                        {
+                            break;
+                        }
                         if (!pickedNbrs.Contains(index))
                         {
                             pickedNbrs.Add(index);
@@ -125,7 +133,7 @@ namespace OpenC1
 
             Peds = new PedestrianController(ConfigFile.Peds);
 
-            Race.Current = this;
+            
 
             _map = new RaceMap(this);
 

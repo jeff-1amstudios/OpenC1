@@ -98,7 +98,7 @@ namespace OpenC1.Parsers
                         atEnd = true;
                         break;
                     }
-                    if (line == "NEXT PEDESTRIAN")
+                    if (line.StartsWith("NEXT PED")) // should be "NEXT PEDESTRIAN" but theres a typo in splatpack pedestrn.
                         break;
 
                     seq.Collide = (line == "collide");

@@ -49,7 +49,7 @@ namespace OpenC1.HUD
             return new Vector2(vec.X * _window.Width, vec.Y * _window.Height);
         }
 
-        protected void DrawShadow(Rectangle rect)
+        public static void DrawShadow(Rectangle rect)
         {
             Engine.SpriteBatch.Draw(_shadow, rect, Color.White);
         }

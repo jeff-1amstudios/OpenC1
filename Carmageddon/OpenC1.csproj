@@ -103,6 +103,7 @@
     <Compile Include="GameModes\PedEditMode.cs" />
     <Compile Include="GameModes\RaceCompletedMode.cs" />
     <Compile Include="Gfx\DamageSmokeParticleSystem.cs" />
+    <Compile Include="Gfx\PixMapFont.cs" />
     <Compile Include="GridPlacer.cs" />
     <Compile Include="IDriver.cs" />
     <Compile Include="MaterialModifier.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="OpponentPathNode.cs" />
     <Compile Include="OpponentPath.cs" />
     <Compile Include="Parsers\CockpitFile.cs" />
+    <Compile Include="Parsers\FontDescriptionFile.cs" />
     <Compile Include="Parsers\Funks\WindscreenFunk.cs" />
     <Compile Include="Parsers\GeneralSettingsFile.cs" />
     <Compile Include="Parsers\OpponentsFile.cs" />
@@ -134,6 +136,7 @@
     <Compile Include="RaceTimeController.cs" />
     <Compile Include="RotatingCamera.cs" />
     <Compile Include="Screens\BaseMenuScreen.cs" />
+    <Compile Include="Screens\DataInfoScreen.cs" />
     <Compile Include="Screens\LoadRaceScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Screens\MenuOption.cs" />

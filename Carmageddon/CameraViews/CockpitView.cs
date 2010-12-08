@@ -29,9 +29,11 @@ namespace OpenC1.CameraViews
             if (File.Exists(cockpitFile))
             {
                 _cockpitFile = new CockpitFile(cockpitFile);
-                DatFile modelsFile = new DatFile(vehicle.Config.BonnetModelFile);
-                ActFile actFile = new ActFile(vehicle.Config.BonnetActorFile, modelsFile.Models);
+                
+                ActFile actFile = new ActFile(vehicle.Config.BonnetActorFile);
                 _actors = actFile.Hierarchy;
+                DatFile modelsFile = new DatFile(_actors.Root.ModelName);
+                _actors.AttachModels(modelsFile.Models);
                 _actors.ResolveTransforms(false, null);
 
                 //move head back

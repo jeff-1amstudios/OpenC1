@@ -9,6 +9,7 @@ using OpenC1.HUD;
 using OpenC1.Parsers;
 using OneAmEngine;
 using System.IO;
+using System.Reflection;
 
 namespace OpenC1.Screens
 {
@@ -43,7 +44,7 @@ namespace OpenC1.Screens
         {
             if (_waitingForOutAnimation)
             {
-                if (!_outAnimation.IsPlaying)
+                if (_outAnimation == null || !_outAnimation.IsPlaying)
                 {
                     _waitingForOutAnimation = false;
                     OnOutAnimationFinished();
@@ -79,13 +80,13 @@ namespace OpenC1.Screens
                     PlayOutAnimation();
                 }
             }
-            _inAnimation.Update();
-            _outAnimation.Update();
+            if (_inAnimation != null)            _inAnimation.Update();
+            if (_outAnimation != null)  _outAnimation.Update();
         }
 
         private void PlayOutAnimation()
         {
-            _outAnimation.Play(false);
+            if (_outAnimation != null) _outAnimation.Play(false);
             _waitingForOutAnimation = true;
         }
 
@@ -97,10 +98,14 @@ namespace OpenC1.Screens
             Engine.Device.RenderState.ReferenceAlpha = 200;
             Engine.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
 
-            if (_waitingForOutAnimation)
+            if (_outAnimation != null && _waitingForOutAnimation)
                 Engine.SpriteBatch.Draw(_outAnimation.GetCurrentFrame(), _rect, Color.White);
-            else
+            else if (_inAnimation != null)
                 Engine.SpriteBatch.Draw(_inAnimation.GetCurrentFrame(), _rect, Color.White);
+
+            Vector2 pos = BaseHUDItem.ScaleVec2(0.01f, 0.96f);
+            Version v = Assembly.GetExecutingAssembly().GetName().Version;
+            Engine.SpriteBatch.DrawString(Engine.ContentManager.Load<SpriteFont>("content/SG14"), "Open C1 v" + v.Major + "." + v.Minor + " - " + GameVars.BasePath , pos, Color.Red, 0, Vector2.Zero, 1.1f, SpriteEffects.None, 0);
 
             if (ShouldRenderOptions())
             {
@@ -120,7 +125,7 @@ namespace OpenC1.Screens
 
         public bool ShouldRenderOptions()
         {
-            return !_inAnimation.IsPlaying && !_outAnimation.IsPlaying && !_waitingForOutAnimation;
+            return _options.Count > 0 && !_inAnimation.IsPlaying && !_outAnimation.IsPlaying && !_waitingForOutAnimation;
         }
 
         public static List<Texture2D> LoadAnimation(string filename)

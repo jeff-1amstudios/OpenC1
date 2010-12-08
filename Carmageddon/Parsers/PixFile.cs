@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using OneAmEngine;
+using System.Collections;
 
 namespace OpenC1.Parsers
 {
@@ -52,6 +53,9 @@ namespace OpenC1.Parsers
                     break;
 
 				blockLength = reader.ReadInt32();
+                if (blockLength < 0)
+                {
+                }
 
 				switch (blockType)
 				{
@@ -67,17 +71,65 @@ namespace OpenC1.Parsers
 						byte[] unk2 = reader.ReadBytes(4);
                         currentPix.Name = ReadNullTerminatedString(reader);
 
+                        if (currentPix.Name == "brntrn.pix")
+                        {
+                        }
+
                         _pixMaps.Add(currentPix);
 						break;
 
 					case PixBlockType.PixelData:
 						int pixelCount = reader.ReadInt32();
 						int bytesPerPixel = reader.ReadInt32();
-                        bytesPerPixel = 1; //PixEd sometimes doesnt get this right
-                        byte[] pixels = reader.ReadBytes(pixelCount * bytesPerPixel);
+                        if (bytesPerPixel > 3) bytesPerPixel = 1;  //PixEd sometimes doesnt get this right
 
-                        Texture2D texture = new Texture2D(Engine.Device, currentPix.Width, currentPix.Height,1, TextureUsage.None, SurfaceFormat.Color);
-                        texture.SetData<byte>(Helpers.GetBytesForImage(pixels, currentPix.Width, currentPix.Height, GameVars.Palette));
+                        if (currentPix == null)
+                        {
+                            int size = (int)Math.Sqrt(pixelCount);
+                            currentPix = new PixMap();
+                            currentPix.Name = Path.GetFileName(filename);
+                            currentPix.Width = size;
+                            currentPix.Height = size;
+                            _pixMaps.Add(currentPix);
+                        }
+                        
+                        byte[] pixels = reader.ReadBytes(pixelCount * bytesPerPixel);
+                        Texture2D texture=null;
+
+                        if (bytesPerPixel == 1)
+                        {
+                            texture = new Texture2D(Engine.Device, currentPix.Width, currentPix.Height, 1, TextureUsage.None, SurfaceFormat.Color);
+                            texture.SetData<byte>(Helpers.GetBytesForImage(pixels, currentPix.Width, currentPix.Height, GameVars.Palette));
+                        }
+                        else if (bytesPerPixel == 2)
+                        {
+                            texture = new Texture2D(Engine.Device, currentPix.Width, currentPix.Height, 1, TextureUsage.None, SurfaceFormat.Bgr565);
+                            int j = 0;
+                            byte[] px = new byte[2];
+                            for (int i = 0; i < pixels.Length; i += 2)
+                            {
+                                byte tmp = pixels[i + 1];
+                                pixels[i + 1] = pixels[i];
+                                pixels[i] = tmp; 
+                            }
+                            texture.SetData<byte>(pixels);
+                            //texture.Save("c:\\temp\\" + currentPix.Name + ".jpg", ImageFileFormat.Jpg);
+                        }
+                        else if (bytesPerPixel ==3 )
+                        {
+                            texture = new Texture2D(Engine.Device, currentPix.Width, currentPix.Height, 1, TextureUsage.None, SurfaceFormat.Color);
+                            int j = 0;
+                            byte[] px2 = new byte[pixels.Length * 4];
+                            for (int i = 0; i < pixels.Length; i += 3)
+                            {
+                                px2[j++] = pixels[i];
+                                px2[j++] = pixels[i+1];
+                                px2[j++] = pixels[i+2];
+                                px2[j++] = 255;
+                            }
+                            texture.SetData<byte>(px2);
+                            texture.Save("c:\\temp\\" + currentPix.Name + ".jpg", ImageFileFormat.Jpg);
+                        }
                         
                         currentPix.Texture = texture;
 						break;

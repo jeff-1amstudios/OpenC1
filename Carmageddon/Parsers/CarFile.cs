@@ -47,8 +47,7 @@ namespace OpenC1.Parsers
         public string FileName;
         public List<string> MaterialFiles { get; private set; }
         public List<string> PixFiles { get; private set; }
-        public string ModelFile { get; private set; }
-        public string BonnetModelFile { get; private set; }
+        
         public string ActorFile { get; private set; }
         public string BonnetActorFile { get; private set; }
         public List<CrushSection> CrushSections = new List<CrushSection>();
@@ -123,18 +122,21 @@ namespace OpenC1.Parsers
 
             int nbrModels = ReadLineAsInt();
             Trace.Assert(nbrModels == 3);
-            string lowPolyMode = ReadLine();
-            ModelFile = ReadLine();
-            BonnetModelFile = ReadLine();
+            SkipLines(nbrModels);
 
             int nbrActors = ReadLineAsInt();
             Trace.Assert(nbrActors == 3);
-            string lowPolyActor = ReadLine();
-            ActorFile = ReadLine();
-            ActorFile = ActorFile.Substring(ActorFile.IndexOf(",") + 1);  //this is in the format 0,Eagle.act
-            BonnetActorFile = ReadLine();
-            BonnetActorFile = BonnetActorFile.Substring(BonnetActorFile.IndexOf(",") + 1);   //this is in the format 1,Ebonnect.act
 
+            for (int i = 0; i < nbrActors; i++)
+            {
+                string modelRef = ReadLine();  //this is in the format 0,Eagle.act
+                int dist = int.Parse(modelRef.Substring(0, modelRef.IndexOf(",")));
+                if (dist == -1)
+                    BonnetActorFile = modelRef.Substring(modelRef.IndexOf(",")+1);
+                else if (dist == 0)
+                    ActorFile = modelRef.Substring(modelRef.IndexOf(",")+1);
+            }
+            
             WindscreenMaterial = ReadLine();
             int nbrSteerableWheels = ReadLineAsInt();
             //Trace.Assert(nbrSteerableWheels == 2);

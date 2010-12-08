@@ -16,7 +16,9 @@ namespace OpenC1.Parsers
             while (!_file.EndOfStream)
             {
                 SoundDesc sound = new SoundDesc();
-                sound.Id = ReadLineAsInt();
+                string id = ReadLine();
+                if (id == null) break;
+                sound.Id = int.Parse(id);
                 string[] flags = ReadLine().Split(',');
                 sound.FileName = ReadLine();
                 sound.Priority = ReadLineAsInt();
@@ -29,9 +31,7 @@ namespace OpenC1.Parsers
                 int lowMemAlts = ReadLineAsInt();
                 for (int i = 0; i < lowMemAlts; i++)
                     ReadLine(); //unused
-
-                
-
+                      
                 if (flags[0] == "0x00")
                 {
                     Sounds.Add(sound);

@@ -25,7 +25,8 @@ namespace OpenC1.Parsers.Funks
         public override void Resolve()
         {
             base.Resolve();
-            _origTexture = Material.Texture;
+            if (Material != null)
+                _origTexture = Material.Texture;
         }
 
         public override void BeforeRender()

@@ -13,6 +13,10 @@ namespace OpenC1.Parsers
     {
         protected StreamReader _file;
 
+        public BaseTextFile()
+        {
+        }
+
         public BaseTextFile(string filename)
         {
             _file = new StreamReader(filename);
@@ -67,6 +71,7 @@ namespace OpenC1.Parsers
             while (true)
             {
                 string line = _file.ReadLine();
+                if (line == null) return null;
                 if (!line.StartsWith("//") && line != "")
                 {
                     return line.Split(new string[] { "//" }, StringSplitOptions.None)[0].Trim();
@@ -91,11 +96,14 @@ namespace OpenC1.Parsers
             string line = ReadLine();
             string[] items = line.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            int[] ints = new int[items.Length];
-            for (int i = 0; i < ints.Length; i++)
-                ints[i] = int.Parse(items[i]);
-
-            return ints;
+            List<int> ints = new List<int>();
+            for (int i = 0; i < items.Length; i++)
+            {
+                int result;
+                if (int.TryParse(items[i], out result))
+                    ints.Add(result);
+            }
+            return ints.ToArray();
         }
 
         public float[] ReadLineAsFloatList()

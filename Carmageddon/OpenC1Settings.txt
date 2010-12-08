@@ -1,7 +1,7 @@
 ﻿// -- OpenC1 --
 //
 // default settings
-data\   // Base path  (must end with a slash)
+c:\games\carmasp\data   // Base path
 35				 // Draw distance
-Demo		     // Emulation mode (Demo / Full)
 false			// Full screen (true / false)
+false			// Fog disabled

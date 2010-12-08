@@ -12,7 +12,7 @@ namespace OpenC1
     class CActorHierarchy
     {
         List<CActor> _actors = new List<CActor>();
-        public CModelGroup Models { get; set; }
+        public CModelGroup Models { get; private set; }
         public bool RenderWheelsSeparately { get; set; }
 
         public CActorHierarchy()
@@ -29,6 +29,15 @@ namespace OpenC1
         public void Add(CActor actor)
         {
             _actors.Add(actor);
+        }
+
+        public void AttachModels(CModelGroup models)
+        {
+            foreach (CActor actor in All())
+            {
+                actor.Model = models.GetModel(actor.ModelName);
+            }
+            Models = models;
         }
 
         public List<CActor> All()

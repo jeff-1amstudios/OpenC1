@@ -5,12 +5,13 @@ using System.Text;
 using MiscUtil.IO;
 using System.IO;
 using System.Diagnostics;
+using OpenC1.Gfx;
 
 namespace OpenC1.Parsers
 {
     class BaseDataFile
     {
-        static List<string> _pixPaths, _matPaths, _fliPaths;
+        static List<string> _pixPaths, _matPaths, _fliPaths, _pixFontPaths;
         public bool Exists { get; private set; }
 
         static BaseDataFile()
@@ -19,8 +20,18 @@ namespace OpenC1.Parsers
             _pixPaths.Add(GameVars.BasePath + "pixelmap\\");
             _pixPaths.Add(GameVars.BasePath + "reg\\pixelmap\\");
             if (GameVars.Emulation != EmulationMode.Demo)
+            {
                 _pixPaths.Add(GameVars.BasePath + "64X48X8\\pixelmap\\");  //demo doesnt have 64x48x8 folder
+            }
             _pixPaths.Add(GameVars.BasePath + "32X20X8\\pixelmap\\");
+
+            _pixFontPaths = new List<string>();
+            if (GameVars.Emulation != EmulationMode.Demo)
+            {
+                _pixFontPaths.Add(GameVars.BasePath + "64X48X8\\fonts\\");
+            }
+            _pixFontPaths.Add(GameVars.BasePath + "32X20X8\\fonts\\");
+            _pixFontPaths.Add(GameVars.BasePath + "32X20X8\\pixelmap\\");
 
             _matPaths = new List<string>();
             _matPaths.Add(GameVars.BasePath + "material\\");
@@ -34,6 +45,15 @@ namespace OpenC1.Parsers
         protected Stream OpenDataFile(string filename)
         {
             Exists = true;
+            string fullname= Path.IsPathRooted(filename) ? filename : FindDataFile(filename);
+            if (Exists)
+                return File.Open(fullname, FileMode.Open);
+            else
+                return null;
+        }
+
+        public string FindDataFile(string filename)
+        {
             string fullname="";
             if (this is PixFile)
             {
@@ -41,7 +61,19 @@ namespace OpenC1.Parsers
                 {
                     fullname = path + filename;
                     if (File.Exists(fullname))
-                        return File.Open(fullname, FileMode.Open);
+                        return fullname;
+                }
+                Debug.WriteLine("File not found: " + filename);
+                Exists = false;
+                return null;
+            }
+            else if (this is PixMapFont)
+            {
+                foreach (string path in _pixFontPaths)
+                {
+                    fullname = path + filename;
+                    if (File.Exists(fullname))
+                        return fullname;
                 }
                 Debug.WriteLine("File not found: " + filename);
                 Exists = false;
@@ -53,7 +85,7 @@ namespace OpenC1.Parsers
                 {
                     fullname = path + filename;
                     if (File.Exists(fullname))
-                        return File.Open(fullname, FileMode.Open);
+                        return fullname;
                 }
                 Debug.WriteLine("File not found: " + filename);
                 Exists = false;
@@ -65,7 +97,7 @@ namespace OpenC1.Parsers
                 {
                     fullname = path + filename;
                     if (File.Exists(fullname))
-                        return File.Open(fullname, FileMode.Open);
+                        return fullname;
                 }
                 Debug.WriteLine("File not found: " + filename);
                 Exists = false;
@@ -80,7 +112,7 @@ namespace OpenC1.Parsers
                 fullname = GameVars.BasePath + "models\\" + filename;
             }
             if (File.Exists(fullname))
-                return File.Open(fullname, FileMode.Open);
+                return fullname;
             else
             {
                 Debug.WriteLine("File not found: " + filename);

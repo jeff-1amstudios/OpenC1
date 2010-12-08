@@ -31,6 +31,7 @@ namespace OpenC1.Parsers.Funks
         public virtual void Resolve()
         {
             CMaterial cm = ResourceCache.GetMaterial(MaterialName);
+            if (cm == null) return;
             cm.Funk = this;
             Material = cm;
         }

@@ -35,7 +35,7 @@ namespace OpenC1.Physics
                     if (poly.MaterialIndex < 0)
                         continue;
 
-                    string materialName = actor.Model.MaterialNames[poly.MaterialIndex];
+                    string materialName = actor.Model.MaterialNames == null ? "none" : actor.Model.MaterialNames[poly.MaterialIndex];
                     //this is a non-solid material
                     if (materialName.StartsWith("!"))
                         continue;
@@ -137,12 +137,15 @@ namespace OpenC1.Physics
                 Quaternion q = new Quaternion();
                 Matrix matrix = vol.Matrix;
                 bool success = matrix.Decompose(out scale, out q, out trans);
+                if (scale.Z == 0) scale.Z = 0.1f;
 
                 ActorDescription actorDesc = new ActorDescription();
                 BoxShapeDescription box = new BoxShapeDescription(scale);
 
                 if (success)
                 {
+                    if (float.IsNaN(q.X))
+                        continue;
                     box.LocalRotation = Matrix.CreateFromQuaternion(q);
                 }
                 else
@@ -169,6 +172,7 @@ namespace OpenC1.Physics
 
         private static void CreateDefaultWaterSpecVols(RaceFile file, List<CActor> actors, CModelGroup models)
         {
+            if (file.SpecialVolumes.Count == 0) return;
 
             for (int i = 0; i < actors.Count; i++)
             {
@@ -182,7 +186,7 @@ namespace OpenC1.Physics
                 foreach (Polygon poly in model.Polygons)
                 {
                     if (poly.MaterialIndex < 0) continue;
-                    string materialName = model.MaterialNames[poly.MaterialIndex];
+                    string materialName = actor.Model.MaterialNames == null ? "none" : actor.Model.MaterialNames[poly.MaterialIndex];
                     //this is a non-solid material
                     if (materialName.StartsWith("!"))
                     {
