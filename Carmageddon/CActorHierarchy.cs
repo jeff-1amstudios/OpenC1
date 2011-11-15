@@ -185,6 +185,10 @@ namespace OpenC1
                 if (actor.Model != null)
                 {
                     actor.Model.Render(actor.Material);
+					if (actor.Model is CDeformableModel)
+					{
+						Models.SetupRender();
+					}
                 }
 
                 GameVars.NbrSectionsRendered++;

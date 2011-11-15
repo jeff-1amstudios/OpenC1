@@ -50,8 +50,8 @@ namespace OpenC1.Screens
                 GameVars.SelectedRaceInfo = RacesFile.Instance.Races[0];
                 GameVars.SelectedRaceScene = LoadAnimation(GameVars.SelectedRaceInfo.FliFileName)[0];
             }
-            if (GameVars.SelectedCarFileName == null)
-                GameVars.SelectedCarFileName = OpponentsFile.Instance.Opponents[0].FileName;
+			if (GameVars.SelectedCarFileName == null)
+				GameVars.SelectedCarFileName = OpponentsFile.Instance.Opponents[0].FileName;
         }
 
         public override void Render()

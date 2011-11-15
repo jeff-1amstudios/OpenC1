@@ -107,10 +107,10 @@ namespace OpenC1
                 Polygon poly = Polygons[i];
                 if (poly.Skip) continue;
 
-                if (GameVars.CullingDisabled != poly.DoubleSided)
+				if (!GameVars.ForceCullModeOff && GameVars.CullingOff != poly.DoubleSided)
                 {
                     device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
-                    GameVars.CullingDisabled = poly.DoubleSided;
+                    GameVars.CullingOff = poly.DoubleSided;
                 }
 
 

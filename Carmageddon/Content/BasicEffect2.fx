@@ -451,8 +451,8 @@ VertexLightingVSOutputTx VSBasicTx(VSInputTx vin)
 	vout.PositionPS	= cout.Pos_ps;
 	vout.Diffuse	= cout.Diffuse;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
-	//vout.TexCoord	= vin.TexCoord;
-	vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
+	vout.TexCoord	= vin.TexCoord;
+	//vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
 
 	return vout;
 }
@@ -467,8 +467,8 @@ VertexLightingVSOutputTx VSBasicTxVc(VSInputTxVc vin)
 	vout.PositionPS	= cout.Pos_ps;
 	vout.Diffuse	= cout.Diffuse * vin.Color;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
-	//vout.TexCoord	= vin.TexCoord;
-	vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
+	vout.TexCoord	= vin.TexCoord;
+	//vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
 	return vout;
 }
 
@@ -497,8 +497,8 @@ VertexLightingVSOutputTx VSBasicNmTxVc(VSInputNmTxVc vin)
 	vout.PositionPS	= cout.Pos_ps;
 	vout.Diffuse	= cout.Diffuse * vin.Color;
 	vout.Specular	= float4(cout.Specular, cout.FogFactor);
-	//vout.TexCoord	= vin.TexCoord;
-	vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
+	vout.TexCoord	= vin.TexCoord;
+	//vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
 	return vout;
 }
 
@@ -517,7 +517,7 @@ PixelLightingVSOutput VSBasicPixelLightingNm(VSInputNm vin)
 	
 	vout.PositionPS		= pos_ps;
 	vout.PositionWS.xyz	= pos_ws.xyz;
-	vout.PositionWS.w	= ComputeFogFactor(length(EyePosition - pos_ws));
+	vout.PositionWS.w	= 0; //ComputeFogFactor(length(EyePosition - pos_ws));
 	vout.NormalWS		= normalize(mul(vin.Normal, World));
 	vout.Diffuse		= float4(1, 1, 1, Alpha);
 	
@@ -535,7 +535,7 @@ PixelLightingVSOutput VSBasicPixelLightingNmVc(VSInputNmVc vin)
 	
 	vout.PositionPS		= pos_ps;
 	vout.PositionWS.xyz	= pos_ws.xyz;
-	vout.PositionWS.w	= ComputeFogFactor(length(EyePosition - pos_ws));
+	vout.PositionWS.w	= 0; // ComputeFogFactor(length(EyePosition - pos_ws));
 	vout.NormalWS		= normalize(mul(vin.Normal, World));
 	vout.Diffuse.rgb	= vin.Color.rgb;
 	vout.Diffuse.a		= vin.Color.a * Alpha;
@@ -554,7 +554,7 @@ PixelLightingVSOutputTx VSBasicPixelLightingNmTx(VSInputNmTx vin)
 	
 	vout.PositionPS		= pos_ps;
 	vout.PositionWS.xyz	= pos_ws.xyz;
-	vout.PositionWS.w	= ComputeFogFactor(length(EyePosition - pos_ws));
+	vout.PositionWS.w	= 0; //ComputeFogFactor(length(EyePosition - pos_ws));
 	vout.NormalWS		= normalize(mul(vin.Normal, World));
 	vout.Diffuse		= float4(1, 1, 1, Alpha);
 	vout.TexCoord		= vin.TexCoord;
@@ -573,7 +573,7 @@ PixelLightingVSOutputTx VSBasicPixelLightingNmTxVc(VSInputNmTxVc vin)
 	
 	vout.PositionPS		= pos_ps;
 	vout.PositionWS.xyz	= pos_ws.xyz;
-	vout.PositionWS.w	= ComputeFogFactor(length(EyePosition - pos_ws));
+	vout.PositionWS.w	= 0; //ComputeFogFactor(length(EyePosition - pos_ws));
 	vout.NormalWS		= normalize(mul(vin.Normal, World));
 	vout.Diffuse.rgb	= vin.Color.rgb;
 	vout.Diffuse.a		= vin.Color.a * Alpha;
@@ -627,11 +627,13 @@ float4 PSBasicPixelLightingTx(PixelLightingPSInputTx pin) : COLOR
 	float3 N = normalize(pin.NormalWS);
 	float3 E = normalize(posToEye);
 	
-	ColorPair lightResult = ComputePerPixelLights(E, N);
+	float4 pos_ws = mul(pin.PositionWS, World);
+	float ff = ComputeFogFactor(length(posToEye));
+	//ColorPair lightResult = ComputePerPixelLights(E, N);
 	
-	float4 diffuse = tex2D(TextureSampler, pin.TexCoord) * float4(lightResult.Diffuse * pin.Diffuse.rgb, pin.Diffuse.a);
-	float4 color = diffuse + float4(lightResult.Specular, 0);
-	color.rgb = lerp(color.rgb, FogColor, pin.PositionWS.w);
+	float4 diffuse = tex2D(TextureSampler, pin.TexCoord); 
+	float4 color = diffuse; // + float4(lightResult.Specular, 0);
+	color.rgb = lerp(color.rgb, FogColor, ff);
 	
 	return color;
 }
@@ -683,7 +685,7 @@ PixelShader PSArray[12] =
 
 Technique BasicEffect
 {
-	Pass
+	pass P0
 	{
 		VertexShader = (VSArray[ShaderIndex]);
 		PixelShader	 = (PSArray[ShaderIndex]);

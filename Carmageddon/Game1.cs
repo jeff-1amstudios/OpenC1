@@ -49,7 +49,7 @@ namespace OpenC1
             _graphics.IsFullScreen = GameVars.FullScreen;
             //_graphics.SynchronizeWithVerticalRetrace = false;
 
-            _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_2_0;
+            _graphics.MinimumVertexShaderProfile = ShaderProfile.VS_1_1;
             _graphics.MinimumPixelShaderProfile = ShaderProfile.PS_2_0;
         }
 
@@ -84,7 +84,7 @@ namespace OpenC1
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            File.WriteAllText("crash.log", e.ExceptionObject.ToString());
+            Logger.Log("CRASH:\r\n" + e.ExceptionObject.ToString());
         }
 
         /// <summary>
@@ -108,15 +108,7 @@ namespace OpenC1
             Engine.Device.RenderState.ReferenceAlpha = 200;
             Engine.Device.RenderState.AlphaFunction = CompareFunction.Greater;
 
-            if (!SoundCache.IsInitialized)
-            {
-                Engine.Audio.SetDefaultVolume(-500);
-                SoundCache.Initialize();
-            }
-
-            GameVars.Palette = new PaletteFile(GameVars.BasePath + "reg\\palettes\\drrender.pal");
-
-            Engine.Screen = new DataInfoScreen(null);
+            Engine.Screen = new ModSelectionScreen(null);
         }
 
         /// <summary>

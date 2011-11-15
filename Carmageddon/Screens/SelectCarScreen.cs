@@ -31,7 +31,8 @@ namespace OpenC1.Screens
             _outAnimation = new AnimationPlayer(LoadAnimation("chcraway.fli"));
 
             _effect = new BasicEffect2();
-            _effect.LightingEnabled = false;
+            //_effect.LightingEnabled = false;
+			_effect.PreferPerPixelLighting = true;
             _effect.TexCoordsMultiplier = 1;
             _effect.TextureEnabled = true;
 

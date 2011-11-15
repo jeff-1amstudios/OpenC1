@@ -1,7 +1,13 @@
-﻿// -- OpenC1 --
+﻿// -- OpenC1 settings file v1.3 --
 //
-// default settings
-c:\games\carmasp\data   // Base path
-35				 // Draw distance
-false			// Full screen (true / false)
-false			// Fog disabled
+
+// Path to load data from. 
+C:\code\OpenC1_Data
+
+// If you choose to use a different data folder than the official OpenC1 data folder from 1amStudios, 
+// you must check the license.txt first and ensure you comply with the terms contained within.							
+								
+35								// Draw distance
+false							// Full screen (true / false)
+false							// Fog disabled (turn this on if you have an ATi card and can only see a white screen)
+true							// Culling disabled (turn this on if you have an ATi card and parts of the cars are invisible)

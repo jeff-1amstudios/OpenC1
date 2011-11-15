@@ -48,7 +48,7 @@ namespace OpenC1
         public static void Render(Fonts font, string text, Vector2 position, Color color)
         {
             if (_useDefaultFont)
-                Engine.SpriteBatch.DrawString(_default, text, position, color);
+                Engine.SpriteBatch.DrawString(_default, text, position, Color.Black);
             else
                 _fonts[(int)font].DrawString(text, position, color, 1);
         }
@@ -56,7 +56,7 @@ namespace OpenC1
         public static void Render(Fonts font, string text, Vector2 position, Color color, float scale)
         {
             if (_useDefaultFont)
-                Engine.SpriteBatch.DrawString(_default, text, position, color, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+                Engine.SpriteBatch.DrawString(_default, text, position, Color.Black, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
             else
                 _fonts[(int)font].DrawString(text, position, color, scale);
         }

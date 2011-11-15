@@ -15,7 +15,7 @@ namespace OpenC1.Screens
         Texture2D _loadingTexture;
 
         public IGameScreen Parent { get; set; }
-        private Thread _loadRaceThread;
+        //private Thread _loadRaceThread;
         PlayGameScreen _raceScreen;
 
         public LoadRaceScreen(IGameScreen parent)
@@ -23,14 +23,15 @@ namespace OpenC1.Screens
             Parent = parent;
             _loadingTexture = new PixFile("LOADSCRN.pix").PixMaps[0].Texture;
 
-            _loadRaceThread = new Thread(LoadRaceThreadProc);
-            _loadRaceThread.Start();
+            //_loadRaceThread = new Thread(LoadRaceThreadProc);
+            //_loadRaceThread.Start();
         }
 
         public void Update()
         {
-            if (_loadRaceThread.ThreadState != ThreadState.Running)
+            //if (_loadRaceThread.ThreadState != ThreadState.Running)
             {
+				LoadRaceThreadProc();
                 Engine.Screen = _raceScreen;
             }
         }

@@ -104,6 +104,11 @@ namespace OpenC1.Parsers
 							data[pos] = 9;
 						c = (c + 7) % 16;
 					}
+					for (int x = filePos; x < filePos + strLen; x++)
+					{
+						if (data[x] == 0x80)
+							data[x] = 0x20;
+					}
 					ms.Write(data, filePos + 1, strLen);
 				}
 				else

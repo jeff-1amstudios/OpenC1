@@ -31,10 +31,11 @@ namespace OpenC1.Screens
 
         public void ReturnToParent()
         {
-            if (Parent is BaseMenuScreen)
-            {
-                ((BaseMenuScreen)Parent)._inAnimation.Play(false);
-            }
+			if (Parent is BaseMenuScreen)
+			{
+				if (((BaseMenuScreen)Parent)._inAnimation != null)
+					((BaseMenuScreen)Parent)._inAnimation.Play(false);
+			}
             Engine.Screen = Parent;
         }
 
@@ -55,7 +56,7 @@ namespace OpenC1.Screens
             {
                 if (Engine.Input.WasPressed(Keys.Escape) && Parent != null)
                 {
-                    SoundCache.Play(SoundIds.UI_Esc, null, false);
+                    if (SoundCache.IsInitialized) SoundCache.Play(SoundIds.UI_Esc, null, false);
                     ReturnToParent();
                 }
                 if (Engine.Input.WasPressed(Keys.Down))
@@ -64,7 +65,7 @@ namespace OpenC1.Screens
                         _selectedOption++;
                     else
                         _selectedOption = 0;
-                    SoundCache.Play(SoundIds.UI_UpDown, null, false);
+                    if (SoundCache.IsInitialized) SoundCache.Play(SoundIds.UI_UpDown, null, false);
                 }
                 else if (Engine.Input.WasPressed(Keys.Up))
                 {
@@ -72,11 +73,11 @@ namespace OpenC1.Screens
                         _selectedOption--;
                     else
                         _selectedOption = _options.Count - 1;
-                    SoundCache.Play(SoundIds.UI_UpDown, null, false);
+                    if (SoundCache.IsInitialized)  SoundCache.Play(SoundIds.UI_UpDown, null, false);
                 }
                 else if (Engine.Input.WasPressed(Keys.Enter))
                 {
-                    SoundCache.Play(SoundIds.UI_Ok, null, false);
+                    if (SoundCache.IsInitialized) SoundCache.Play(SoundIds.UI_Ok, null, false);
                     PlayOutAnimation();
                 }
             }
@@ -105,7 +106,7 @@ namespace OpenC1.Screens
 
             Vector2 pos = BaseHUDItem.ScaleVec2(0.01f, 0.96f);
             Version v = Assembly.GetExecutingAssembly().GetName().Version;
-            Engine.SpriteBatch.DrawString(Engine.ContentManager.Load<SpriteFont>("content/SG14"), "Open C1 v" + v.Major + "." + v.Minor + " - " + GameVars.BasePath , pos, Color.Red, 0, Vector2.Zero, 1.1f, SpriteEffects.None, 0);
+            Engine.SpriteBatch.DrawString(Engine.ContentManager.Load<SpriteFont>("content/M42"), "Open C1 v" + v.Major + "." + v.Minor + "." + v.Build + " - " + GameVars.BasePath , pos, Color.Red, 0, Vector2.Zero, 1.1f, SpriteEffects.None, 0);
 
             if (ShouldRenderOptions())
             {

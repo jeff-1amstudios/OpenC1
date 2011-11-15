@@ -37,6 +37,7 @@ namespace OpenC1.Parsers
         public string SkyboxTexture { get; private set; }
         public float SkyboxPositionY, SkyboxRepetitionsX;
         public DepthCueMode DepthCueMode { get; private set; }
+        public int[] InitialTimerValues;
         public float FogAmount;
         public Vector3 GridPosition;
         public float GridDirection;
@@ -68,7 +69,7 @@ namespace OpenC1.Parsers
             GridPosition = ReadLineAsVector3() + new Vector3(0, GameVars.Scale.Y*0.5f, 0);
 
             GridDirection = MathHelper.ToRadians(ReadLineAsInt());
-            string initialTimerPerSkill = ReadLine();
+            InitialTimerValues = ReadLineAsIntList();
             LapCount = ReadLineAsInt();
             SkipLines(3);  //race completed bonuses
             SkipLines(2); //?

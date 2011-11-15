@@ -17,7 +17,7 @@ namespace OpenC1
         public bool CountingDown { get; private set; }
         public float CountdownTime;
         int _lastSecond = -1;
-        public float TimeRemaining = 1190; //1:30
+        public float TimeRemaining;
         List<string> _countdownTextures = new List<string>();
         List<int> _countdownSoundIds = new List<int>();
         public float TotalTime;
@@ -37,6 +37,8 @@ namespace OpenC1
             _countdownSoundIds.Add(8002);
             _countdownSoundIds.Add(8001);
             _countdownSoundIds.Add(8000);
+
+            TimeRemaining = Race.Current.ConfigFile.InitialTimerValues[GameVars.SkillLevel];
         }
 
         public void StartCountdown()

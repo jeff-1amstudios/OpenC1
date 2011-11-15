@@ -19,6 +19,15 @@ namespace OpenC1.Screens
             : base(parent)
         {
 
+            if (!SoundCache.IsInitialized)
+            {
+                Engine.Audio.SetDefaultVolume(-500);
+                SoundCache.Initialize();
+
+                GameVars.Palette = new PaletteFile(GameVars.BasePath + "reg\\palettes\\drrender.pal");
+            }
+            
+
             _inAnimation = new AnimationPlayer(LoadAnimation("MAI2COME.fli"), 1);
             _inAnimation.Play(false);
             ScreenEffects.Instance.FadeSpeed = 300;

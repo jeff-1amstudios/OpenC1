@@ -88,7 +88,7 @@ namespace OpenC1
         {
             Engine.Device.Clear(GameVars.FogColor);
             GameVars.NbrDrawCalls = 0;
-            if (GameVars.CullingDisabled)
+            if (GameVars.ForceCullModeOff || GameVars.CullingOff)
                 Engine.Device.RenderState.CullMode = CullMode.None;
             else
                 Engine.Device.RenderState.CullMode = CullMode.CullClockwiseFace;
@@ -116,7 +116,6 @@ namespace OpenC1
             GameVars.CurrentEffect.End();
 
             GameConsole.WriteLine("Position", Race.Current.PlayerVehicle.GetBodyBottom() / 6);
-                       
 
             GameConsole.WriteLine("Draw Calls", GameVars.NbrDrawCalls);
 
@@ -131,47 +130,41 @@ namespace OpenC1
 
             if (_effect == null)
             {
-                
                 _effect = new BasicEffect2();
-
-                Engine.Device.RenderState.FogEnable = !GameVars.DisableFog;
 
                 if (Race.Current.ConfigFile.DepthCueMode == DepthCueMode.Dark)
                 {
                     GameVars.FogColor = new Color(0, 0, 0);
-                    Engine.Device.RenderState.FogTableMode = FogMode.Linear;
-                    Engine.Device.RenderState.FogEnd = GameVars.DrawDistance + 20; // GameVars.DrawDistance - (Race.Current.ConfigFile.FogAmount * 15);
-                    Engine.Device.RenderState.FogStart = (1 / Race.Current.ConfigFile.FogAmount) * 100;
-                    Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0012f;
-                    Engine.Device.RenderState.FogColor = GameVars.FogColor;
+					//Engine.Device.RenderState.FogTableMode = FogMode.Linear;
+					//Engine.Device.RenderState.FogEnd = GameVars.DrawDistance + 20; // GameVars.DrawDistance - (Race.Current.ConfigFile.FogAmount * 15);
+					//Engine.Device.RenderState.FogStart = (1 / Race.Current.ConfigFile.FogAmount) * 100;
+					//Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0012f;
+					//Engine.Device.RenderState.FogColor = GameVars.FogColor;
                 }
                 else if (Race.Current.ConfigFile.DepthCueMode == DepthCueMode.Fog)
                 {
                     GameVars.FogColor = new Color(245, 245, 245);
-                    //Engine.Device.RenderState.FogTableMode = FogMode.ExponentSquared;
-                    Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0015f;
-                    Engine.Device.RenderState.FogTableMode = FogMode.Linear;
-                    Engine.Device.RenderState.FogEnd = GameVars.DrawDistance + 20; // -(Race.Current.ConfigFile.FogAmount * 15);
-                    Engine.Device.RenderState.FogStart = (1 / Race.Current.ConfigFile.FogAmount) * 100;
-                    Engine.Device.RenderState.FogColor = GameVars.FogColor;
+					//Engine.Device.RenderState.FogDensity = Race.Current.ConfigFile.FogAmount * 0.0015f;
+					//Engine.Device.RenderState.FogTableMode = FogMode.Linear;
+					//Engine.Device.RenderState.FogEnd = GameVars.DrawDistance + 20; // -(Race.Current.ConfigFile.FogAmount * 15);
+					//Engine.Device.RenderState.FogStart = (1 / Race.Current.ConfigFile.FogAmount) * 100;
+					//Engine.Device.RenderState.FogColor = GameVars.FogColor;
                 }
                 else
                 {
                     Trace.Assert(false);
                 }
-                //_effect.FogEnabled = !GameVars.DisableFog;
-                //_effect.FogColor = GameVars.FogColor.ToVector3();
-                //_effect.FogStart = 200 * (1/Race.Current.ConfigFile.FogAmount);
-                //_effect.FogEnd = Engine.DrawDistance * 8 * (1 / Race.Current.ConfigFile.FogAmount);
+                _effect.FogEnabled = !GameVars.DisableFog;
+                _effect.FogColor = GameVars.FogColor.ToVector3();
+                _effect.FogEnd = Engine.DrawDistance * 6 * (1 / Race.Current.ConfigFile.FogAmount);
+				_effect.FogStart = _effect.FogEnd - 200;
                 _effect.TextureEnabled = true;
                 _effect.TexCoordsMultiplier = 1;
-                _effect.PreferPerPixelLighting = false;
-                
+                _effect.PreferPerPixelLighting = true;
                 
 
                 if (GameVars.LightingEnabled)
                 {
-                    //_effect.PreferPerPixelLighting = false;
                     _effect.LightingEnabled = true;
                     _effect.AmbientLightColor = new Vector3(0.8f);
                     _effect.DirectionalLight0.DiffuseColor = new Vector3(1);

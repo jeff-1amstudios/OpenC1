@@ -6,6 +6,7 @@ using MiscUtil.IO;
 using System.IO;
 using System.Diagnostics;
 using OpenC1.Gfx;
+using OneAmEngine;
 
 namespace OpenC1.Parsers
 {
@@ -45,9 +46,12 @@ namespace OpenC1.Parsers
         protected Stream OpenDataFile(string filename)
         {
             Exists = true;
-            string fullname= Path.IsPathRooted(filename) ? filename : FindDataFile(filename);
+            string fullname = Path.IsPathRooted(filename) ? filename : FindDataFile(filename);
             if (Exists)
+            {
+                Logger.Log("Opened " + filename);
                 return File.Open(fullname, FileMode.Open);
+            }
             else
                 return null;
         }

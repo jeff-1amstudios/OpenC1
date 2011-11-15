@@ -45,8 +45,6 @@ namespace OpenC1
         public BasicEffect2()
         {
             _effect = Engine.ContentManager.Load<Effect>("Content/BasicEffect2");
-
-
             this.CacheEffectParams(Engine.Device);
         }
 
@@ -154,8 +152,9 @@ namespace OpenC1
 
         private void UpdateShaderIndex()
         {
-            int num = ((this.vertexColorEnabled ? 1 : 0) | (this.textureEnabled ? 2 : 0)) | (this.lightingEnabled ? 4 : 0);
-            num += ((this.lightingEnabled && this.preferPerPixelLighting) && this.hasPS20) ? 4 : 0;
+			bool lightingEnabled2 = true;
+			int num = ((this.vertexColorEnabled ? 1 : 0) | (this.textureEnabled ? 2 : 0)) | (lightingEnabled2 ? 4 : 0);
+			num += ((lightingEnabled2 && this.preferPerPixelLighting) && this.hasPS20) ? 4 : 0;
             this.shaderIndexParam.SetValue(num);
         }
 

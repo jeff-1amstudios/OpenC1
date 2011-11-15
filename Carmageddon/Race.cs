@@ -12,6 +12,7 @@ using OpenC1.Gfx;
 using Microsoft.Xna.Framework.Input;
 using OpenC1.GameModes;
 using OneAmEngine;
+using System.IO;
 
 namespace OpenC1
 {
@@ -19,7 +20,7 @@ namespace OpenC1
     {
         CActorHierarchy _actors;
         List<NonCar> _nonCars;
-        public RaceTimeController RaceTime = new RaceTimeController();
+        public RaceTimeController RaceTime;
         SkyBox _skybox;
         public int NextCheckpoint = 0, CurrentLap, NbrDeadOpponents, NbrDeadPeds;
         public Vehicle PlayerVehicle;
@@ -36,6 +37,8 @@ namespace OpenC1
         {
             Race.Current = this;
 
+            Logger.Log("Starting race " + Path.GetFileName(filename));
+
             ConfigFile = new RaceFile(filename);
 
             foreach (string matFileName in ConfigFile.MaterialFiles)
@@ -51,18 +54,24 @@ namespace OpenC1
             }
 
             if (GameVars.Emulation == EmulationMode.Demo)
-                ResourceCache.Add(new CMaterial("drkcurb.mat", 226));
+                ResourceCache.Add(new CMaterial("drkcurb.mat", 226)); //demo doesn't have this file, I guess the color is hard-coded
             else
                 ResourceCache.Add(new MatFile("drkcurb.mat"));
                         
             ResourceCache.ResolveMaterials();
 
-            DatFile modelFile = new DatFile(ConfigFile.ModelFile);
+            if (filename.Contains("TESTMAP")) //nasty hack...
+                GameVars.Scale.Y *= 0.5f;
 
+            DatFile modelFile = new DatFile(ConfigFile.ModelFile);
+            
             ActFile actFile = new ActFile(ConfigFile.ActorFile);
             _actors = actFile.Hierarchy;
             _actors.AttachModels(modelFile.Models);
             _actors.ResolveTransforms(false, ConfigFile.Grooves);
+
+            if (filename.Contains("TESTMAP")) //nasty hack...
+                GameVars.Scale.Y *= 2f;
 
             // link the actors and grooves
             foreach (BaseGroove g in ConfigFile.Grooves)
@@ -86,6 +95,8 @@ namespace OpenC1
 
             GridPlacer.Reset();
 
+			List<int> opponentIds = new List<int>();
+
             if (GameVars.Emulation == EmulationMode.Demo)
             {
                 Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
@@ -94,29 +105,36 @@ namespace OpenC1
                 Opponents.Add(new Opponent("otis.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
                 Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
             }
-            else
-            {
-                List<int> pickedNbrs = new List<int>();
-                for (int i = 0; i < 6; i++)
-                {
-                    int index = 0;
-                    while (true)
-                    {
-                        index = 0;// Engine.Random.Next(1, OpponentsFile.Instance.Opponents.Count);
-                        break;
-                        if (OpponentsFile.Instance.Opponents.Count <= 6)
-                        {
-                            break;
-                        }
-                        if (!pickedNbrs.Contains(index))
-                        {
-                            pickedNbrs.Add(index);
-                            break;
-                        }
-                    }
-                    Opponents.Add(new Opponent(OpponentsFile.Instance.Opponents[index].FileName, ConfigFile.GridPosition, ConfigFile.GridDirection));
-                }
-            }
+			else if (GameVars.Emulation == EmulationMode.SplatPackDemo)
+			{
+				Opponents.Add(new Opponent("monster.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+				Opponents.Add(new Opponent("muscle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+				Opponents.Add(new Opponent("semi.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+				Opponents.Add(new Opponent("SPAGHETI.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+				Opponents.Add(new Opponent("SUBFRAME.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
+			}
+			else
+			{
+				List<int> pickedNbrs = new List<int>();
+				for (int i = 0; i < 6; i++)
+				{
+					int index = 0;
+					while (true)
+					{
+						index = Engine.Random.Next(1, OpponentsFile.Instance.Opponents.Count);
+						if (OpponentsFile.Instance.Opponents.Count <= 6)
+						{
+							break;
+						}
+						if (!pickedNbrs.Contains(index))
+						{
+							pickedNbrs.Add(index);
+							break;
+						}
+					}
+					Opponents.Add(new Opponent(OpponentsFile.Instance.Opponents[index].FileName, ConfigFile.GridPosition, ConfigFile.GridDirection));
+				}
+			}
 
             foreach (CopStartPoint point in ConfigFile.CopStartPoints)
             {
@@ -132,10 +150,9 @@ namespace OpenC1
             Drivers.Add(PlayerVehicle.Driver);
 
             Peds = new PedestrianController(ConfigFile.Peds);
-
-            
-
             _map = new RaceMap(this);
+
+            RaceTime = new RaceTimeController();
 
             PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.TrackId, PhysXConsts.VehicleId, ContactPairFlag.Forces | ContactPairFlag.OnStartTouch | ContactPairFlag.OnTouch);
             PhysX.Instance.Scene.SetActorGroupPairFlags(PhysXConsts.VehicleId, PhysXConsts.NonCarId, ContactPairFlag.Forces | ContactPairFlag.OnStartTouch | ContactPairFlag.OnTouch);

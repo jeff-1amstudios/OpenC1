@@ -89,7 +89,9 @@ namespace OpenC1.Parsers
         {
             if (filename == "none") return null;
             PixFile pixFile = new PixFile(filename);
-            return pixFile.PixMaps[0].Texture;
+			if (pixFile.PixMaps.Count > 0)
+				return pixFile.PixMaps[0].Texture;
+			return null;
         }
 	}
 }

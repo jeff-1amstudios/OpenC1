@@ -128,6 +128,7 @@
     <Compile Include="Pedestrian.cs" />
     <Compile Include="PedestrianBehaviour.cs" />
     <Compile Include="PedestrianController.cs" />
+    <Compile Include="PedestrianGibsController.cs" />
     <Compile Include="Physics\TriggerReport.cs" />
     <Compile Include="Physics\PhysXConsts.cs" />
     <Compile Include="PixmapBillboard.cs" />
@@ -136,7 +137,7 @@
     <Compile Include="RaceTimeController.cs" />
     <Compile Include="RotatingCamera.cs" />
     <Compile Include="Screens\BaseMenuScreen.cs" />
-    <Compile Include="Screens\DataInfoScreen.cs" />
+    <Compile Include="Screens\ModSelectionScreen.cs" />
     <Compile Include="Screens\LoadRaceScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Screens\MenuOption.cs" />
@@ -223,7 +224,6 @@
     <Content Include="OpenC1Settings.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
     <NestedContentProject Include="Content\Content.contentproj">

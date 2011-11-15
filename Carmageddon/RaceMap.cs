@@ -18,7 +18,9 @@ namespace OpenC1
         public RaceMap(Race race)
         {
             _race = race;
-            _mapTexture = new PixFile(race.ConfigFile.MapTexture).PixMaps[0].Texture;
+            PixFile pix = new PixFile(race.ConfigFile.MapTexture);
+            if (pix.Exists)
+                _mapTexture = pix.PixMaps[0].Texture;
             _player = Engine.ContentManager.Load<Texture2D>("content/map-icon-player");
             _opponent = Engine.ContentManager.Load<Texture2D>("content/map-icon-opponent");
             _deadOpponent = Engine.ContentManager.Load<Texture2D>("content/map-icon-opponent-dead");
@@ -28,6 +30,8 @@ namespace OpenC1
 
         public void Render()
         {
+            if (_mapTexture == null) return;
+
             Engine.SpriteBatch.Draw(_mapTexture, _mapRect, new Color(255,255,255, 200));
             Vector3 pos = _race.PlayerVehicle.Position;
             pos /= GameVars.Scale;

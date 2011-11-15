@@ -6,6 +6,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
+using OneAmEngine;
 
 namespace OpenC1.Parsers
 {
@@ -24,12 +25,18 @@ namespace OpenC1.Parsers
             if (firstline.StartsWith("@"))
             {
                 _file.Close();
-                byte[] decrypted = TextFileDecryptor.DecryptDemoFile(filename);
-                //File.WriteAllBytes("c:\\temp\\dec.txt", decrypted);
+				byte[] decrypted;
+				if (GameVars.Emulation == EmulationMode.Demo)
+					decrypted = TextFileDecryptor.DecryptDemoFile(filename);
+				else
+					decrypted = TextFileDecryptor.DecryptFile(filename);
+                File.WriteAllBytes("c:\\temp\\dec.txt", decrypted);
                 _file = new StreamReader(new MemoryStream(decrypted));
             }
             _file.BaseStream.Position = 0;
             _file.DiscardBufferedData();
+
+            Logger.Log("Opened " + filename);
         }
 
         public void CloseFile()
@@ -72,6 +79,7 @@ namespace OpenC1.Parsers
             {
                 string line = _file.ReadLine();
                 if (line == null) return null;
+                line = line.Trim();
                 if (!line.StartsWith("//") && line != "")
                 {
                     return line.Split(new string[] { "//" }, StringSplitOptions.None)[0].Trim();

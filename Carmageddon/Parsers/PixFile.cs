@@ -53,10 +53,7 @@ namespace OpenC1.Parsers
                     break;
 
 				blockLength = reader.ReadInt32();
-                if (blockLength < 0)
-                {
-                }
-
+                
 				switch (blockType)
 				{
 					case PixBlockType.Attributes:
@@ -70,11 +67,6 @@ namespace OpenC1.Parsers
 						                        
 						byte[] unk2 = reader.ReadBytes(4);
                         currentPix.Name = ReadNullTerminatedString(reader);
-
-                        if (currentPix.Name == "brntrn.pix")
-                        {
-                        }
-
                         _pixMaps.Add(currentPix);
 						break;
 
@@ -113,7 +105,6 @@ namespace OpenC1.Parsers
                                 pixels[i] = tmp; 
                             }
                             texture.SetData<byte>(pixels);
-                            //texture.Save("c:\\temp\\" + currentPix.Name + ".jpg", ImageFileFormat.Jpg);
                         }
                         else if (bytesPerPixel ==3 )
                         {
@@ -128,7 +119,6 @@ namespace OpenC1.Parsers
                                 px2[j++] = 255;
                             }
                             texture.SetData<byte>(px2);
-                            texture.Save("c:\\temp\\" + currentPix.Name + ".jpg", ImageFileFormat.Jpg);
                         }
                         
                         currentPix.Texture = texture;

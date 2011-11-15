@@ -16,17 +16,10 @@ namespace OpenC1.Parsers
             GameVars.BasePath = ReadLine();
             if (!GameVars.BasePath.EndsWith("\\")) GameVars.BasePath += "\\";
             GameVars.DrawDistance = ReadLineAsInt() * 10;
-            
-            //string emu = ReadLine();
-            //GameVars.Emulation = (EmulationMode)Enum.Parse(typeof(EmulationMode), emu);
-
-            if (!File.Exists(GameVars.BasePath + "NETRACES.TXT"))
-                GameVars.Emulation = EmulationMode.Demo;
-            else
-                GameVars.Emulation = EmulationMode.Full;
 
             GameVars.FullScreen = ReadLineAsBool();
             GameVars.DisableFog = ReadLineAsBool();
+            GameVars.ForceCullModeOff = ReadLineAsBool();
             
             CloseFile();
         }

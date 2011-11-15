@@ -98,7 +98,7 @@ namespace OpenC1
             {
                 _hitSpinSpeed = speed * Engine.Random.Next(0.07f, 0.13f);
                 if (Engine.Random.Next() % 2 == 0) _hitSpinSpeed *= -1;
-                _hitUpSpeed = speed * 0.11f;
+                _hitUpSpeed = speed * 0.10f;
                 _hitSpeed = speed * Behaviour.Acceleration * 10000;
             }
             else
@@ -106,6 +106,10 @@ namespace OpenC1
                 _hitSpeed = speed * Behaviour.Acceleration * 19000;
             }
             _direction = Vector3.Normalize(vehicle.Chassis.Actor.LinearVelocity);
+            if (float.IsNaN(_direction.X))
+            {
+                _direction = Vector3.Zero;
+            }
             SetAction(Behaviour.FatalImpact, true);
             if (Behaviour.ExplodingSounds.Length > 0)
                 SoundCache.Play(Behaviour.ExplodingSounds[0], Race.Current.PlayerVehicle, true);
@@ -196,10 +200,10 @@ namespace OpenC1
             {
                 Position += _direction * _hitSpeed * Engine.ElapsedSeconds;
 
-                if (_hitUpSpeed != 0)
+                if (_hitSpinSpeed != 0)
                 {
                     Position.Y += _hitUpSpeed * Engine.ElapsedSeconds;
-                    _hitUpSpeed -= Engine.ElapsedSeconds * 30;
+                    _hitUpSpeed -= Engine.ElapsedSeconds * 45;
                     _hitSpeed -= Engine.ElapsedSeconds * 10;
                     if (Position.Y <= _groundHeight)
                     {
@@ -308,9 +312,7 @@ namespace OpenC1
                 world = Matrix.CreateRotationY(MathHelper.Pi) * world;
             }
 
-            world = Matrix.CreateRotationZ(_hitCurrentSpin) * world;
-
-            world = Matrix.CreateScale(scale) * world * Matrix.CreateTranslation(frame.Offset);
+            world = Matrix.CreateScale(scale) * Matrix.CreateRotationZ(_hitCurrentSpin) * world * Matrix.CreateTranslation(frame.Offset) *Matrix.CreateTranslation(0, scale.Y * 0.5f, 0);
 
             BasicEffect2 effect = GameVars.CurrentEffect;
             effect.World = world;
