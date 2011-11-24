@@ -22,15 +22,20 @@ namespace OpenC1.CameraViews
         public CockpitView(Vehicle vehicle, string cockpitFile)
         {
             _vehicle = vehicle;
-            if (GameVars.Emulation == EmulationMode.Demo || !File.Exists(cockpitFile))
-            {
+			if (GameVars.Emulation == EmulationMode.Demo)
                 cockpitFile = Path.GetDirectoryName(cockpitFile) + "\\blkeagle.txt";
-            }
+			else if (GameVars.Emulation == EmulationMode.SplatPackDemo)
+				cockpitFile = Path.GetDirectoryName(cockpitFile) + "\\neweagle.txt";
+			else if (!File.Exists(cockpitFile))
+				cockpitFile = Path.GetDirectoryName(cockpitFile) + "\\blkeagle.txt";
+			
             if (File.Exists(cockpitFile))
             {
                 _cockpitFile = new CockpitFile(cockpitFile);
                 
                 ActFile actFile = new ActFile(vehicle.Config.BonnetActorFile);
+				if (!actFile.Exists)
+					actFile = new ActFile("EBONNET.ACT");
                 _actors = actFile.Hierarchy;
                 DatFile modelsFile = new DatFile(_actors.Root.ModelName);
                 _actors.AttachModels(modelsFile.Models);

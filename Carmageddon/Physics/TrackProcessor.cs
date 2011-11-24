@@ -188,7 +188,7 @@ namespace OpenC1.Physics
                     if (poly.MaterialIndex < 0) continue;
                     string materialName = actor.Model.MaterialNames == null ? "none" : actor.Model.MaterialNames[poly.MaterialIndex];
                     //this is a non-solid material
-                    if (materialName.StartsWith("!"))
+                    if (materialName.Contains("!WATER") || materialName.Contains("!SEE"))
                     {
                         foundWater = true;
                         waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex1], actor.Matrix));

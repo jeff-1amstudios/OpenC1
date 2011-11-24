@@ -19,9 +19,9 @@ namespace OpenC1
     class Vehicle
     {
         CrushSection _crushSection;        
-        ParticleEmitter _vehicleBitsEmitter;
+        public ParticleEmitter _vehicleBitsEmitter;
 
-        public CarFile Config;
+        public VehicleFile Config;
         public VehicleChassis Chassis { get; set; }
         public SkidMarkBuffer SkidMarkBuffer;
         public Stack<SpecialVolume> CurrentSpecialVolume = new Stack<SpecialVolume>();
@@ -40,10 +40,13 @@ namespace OpenC1
             Driver = driver;
             Driver.Vehicle = this;
 
-            Config = new CarFile(filename);
+            Config = new VehicleFile(filename);
 
-            if (Config.WindscreenMaterial != "none")
-                Config.Funks.Add(new WindscreenFunk(Config.WindscreenMaterial, this));
+			if (driver is PlayerDriver)
+			{
+				if (Config.WindscreenMaterial != "none")
+					Config.Funks.Add(new WindscreenFunk(Config.WindscreenMaterial, this));
+			}
 
             _model = new VehicleModel(Config, false);
 
@@ -90,7 +93,7 @@ namespace OpenC1
                 if (force > 50000)
                 {
 
-                    _vehicleBitsEmitter.DumpParticles(position, particles);
+                    _vehicleBitsEmitter.DumpParticles(position, particles, Vector3.Zero);
                     GameConsole.WriteEvent("dump particles " + particles);
                 }
                 //else
@@ -98,7 +101,7 @@ namespace OpenC1
 
                 if (force > 400)
                 {
-                    GameVars.SparksEmitter.DumpParticles(position, 6);
+                    GameVars.SparksEmitter.DumpParticles(position, 6, Vector3.Zero);
                 }
 
                 if (Driver is PlayerDriver)
@@ -154,12 +157,14 @@ namespace OpenC1
 
         public void Render()
         {
+			//Engine.Device.RenderState.FillMode = FillMode.WireFrame;
             ModelShadow.Render(Config.BoundingBox, Chassis);
             SkidMarkBuffer.Render();
             
             Vector3 pos2 = Vector3.Transform(new Vector3(0, Chassis._heightOffset, 0), Chassis.Actor.GlobalOrientation);
             Matrix pose = Matrix.CreateFromQuaternion(Chassis.Actor.GlobalOrientationQuat) * Matrix.CreateTranslation(Chassis.Actor.GlobalPosition) * Matrix.CreateTranslation(pos2);
             _model.Render(pose);
+			
 
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
@@ -176,6 +181,8 @@ namespace OpenC1
             }
 
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].End();
+
+			Engine.Device.RenderState.FillMode = FillMode.Solid;
         }
 
         public Vector3 Position

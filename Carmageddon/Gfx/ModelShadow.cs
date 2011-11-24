@@ -54,11 +54,13 @@ namespace OpenC1
             Engine.Device.RenderState.CullMode = CullMode.None;
             
             GameVars.CurrentEffect.World = Matrix.Identity;
-            GameVars.CurrentEffect.Texture = null;
+            GameVars.CurrentEffect.TextureEnabled = false;
             GameVars.CurrentEffect.VertexColorEnabled = true;
             VertexDeclaration oldVertDecl = device.VertexDeclaration;
             device.VertexDeclaration = _vertexDeclaration;
-            Engine.Device.RenderState.ReferenceAlpha = 0;
+            Engine.Device.RenderState.AlphaTestEnable = false;
+			GameVars.CurrentEffect.PreferPerPixelLighting = false;
+			//GameVars.CurrentEffect.LightingEnabled = false;
 
             device.RenderState.AlphaBlendEnable = true;
             device.RenderState.AlphaBlendOperation = BlendFunction.Add;
@@ -76,7 +78,9 @@ namespace OpenC1
             device.VertexDeclaration = oldVertDecl;
             Engine.Device.RenderState.CullMode = oldCullMode;
 
-            Engine.Device.RenderState.ReferenceAlpha = 200;
+			GameVars.CurrentEffect.PreferPerPixelLighting = true;
+			Engine.Device.RenderState.AlphaTestEnable = true;
+			GameVars.CurrentEffect.TextureEnabled = true;
             
         }
     }

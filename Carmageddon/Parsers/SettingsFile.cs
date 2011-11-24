@@ -13,13 +13,8 @@ namespace OpenC1.Parsers
         public SettingsFile()
             : base(Path.Combine(StorageContainer.TitleLocation, "OpenC1Settings.txt"))
         {
-            GameVars.BasePath = ReadLine();
-            if (!GameVars.BasePath.EndsWith("\\")) GameVars.BasePath += "\\";
             GameVars.DrawDistance = ReadLineAsInt() * 10;
-
             GameVars.FullScreen = ReadLineAsBool();
-            GameVars.DisableFog = ReadLineAsBool();
-            GameVars.ForceCullModeOff = ReadLineAsBool();
             
             CloseFile();
         }

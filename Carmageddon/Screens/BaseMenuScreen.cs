@@ -21,12 +21,15 @@ namespace OpenC1.Screens
         protected int _selectedOption;
         protected List<IMenuOption> _options = new List<IMenuOption>();
         protected bool _waitingForOutAnimation;
+		public SpriteFont _font;
+		private int _currentLine;
 
         public BaseMenuScreen(IGameScreen parent)
         {
             Parent = parent;
             _rect = new Rectangle(0, 0, Engine.Window.Width, Engine.Window.Height);
             Engine.Camera = new SimpleCamera();
+			_font = Engine.ContentManager.Load<SpriteFont>("content/M42");
         }
 
         public void ReturnToParent()
@@ -38,6 +41,29 @@ namespace OpenC1.Screens
 			}
             Engine.Screen = Parent;
         }
+
+		public void RenderDefaultBackground()
+		{
+			Engine.SpriteBatch.Draw(Engine.ContentManager.Load<Texture2D>("content/menu-background"), new Rectangle(0, 0, Engine.Window.Width, Engine.Window.Height), Color.White);
+		}
+
+		public void WriteTitleLine(string text)
+		{
+			Engine.SpriteBatch.DrawString(_font, text, new Vector2(20, 50), Color.Red, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+			_currentLine = 80;
+		}
+
+		public void WriteLine(string text)
+		{
+			Engine.SpriteBatch.DrawString(_font, text, new Vector2(30, _currentLine), Color.LightGray);
+			_currentLine += 20;
+		}
+
+		public void WriteLine(string text, int line)
+		{
+			_currentLine = line;
+			WriteLine(text);
+		}
 
         #region IGameScreen Members
 
@@ -95,8 +121,6 @@ namespace OpenC1.Screens
         {
             Engine.Device.Clear(Color.Black);
 
-            Engine.Device.RenderState.AlphaTestEnable = true;
-            Engine.Device.RenderState.ReferenceAlpha = 200;
             Engine.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
 
             if (_outAnimation != null && _waitingForOutAnimation)
@@ -106,7 +130,7 @@ namespace OpenC1.Screens
 
             Vector2 pos = BaseHUDItem.ScaleVec2(0.01f, 0.96f);
             Version v = Assembly.GetExecutingAssembly().GetName().Version;
-            Engine.SpriteBatch.DrawString(Engine.ContentManager.Load<SpriteFont>("content/M42"), "Open C1 v" + v.Major + "." + v.Minor + "." + v.Build + " - " + GameVars.BasePath , pos, Color.Red, 0, Vector2.Zero, 1.1f, SpriteEffects.None, 0);
+            Engine.SpriteBatch.DrawString(_font, "Open C1 v" + v.Major + "." + v.Minor + "." + v.Build + " - " + GameVars.BasePath , pos, Color.Red, 0, Vector2.Zero, 1.1f, SpriteEffects.None, 0);
 
             if (ShouldRenderOptions())
             {

@@ -84,10 +84,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sg14.spritefont">
-      <Name>Sg14</Name>
+    <Compile Include="M42.spritefont">
+      <Name>M42</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="menu-background.jpg">
+      <Name>menu-background</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\v3.0\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

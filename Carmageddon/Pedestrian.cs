@@ -35,6 +35,7 @@ namespace OpenC1
         private float _groundHeight;        
         private float _hitSpeed, _hitSpinSpeed, _hitUpSpeed, _hitCurrentSpin;
         private bool _isFalling;
+		private Vector3 _hitVelocity;
         
         public bool _stopUpdating;
 
@@ -100,11 +101,17 @@ namespace OpenC1
                 if (Engine.Random.Next() % 2 == 0) _hitSpinSpeed *= -1;
                 _hitUpSpeed = speed * 0.10f;
                 _hitSpeed = speed * Behaviour.Acceleration * 10000;
+				if (!IsPowerup)
+					PedestrianGibsController.AddGibs(Position + new Vector3(0, 1.2f, 0), vehicle.Chassis.Actor.LinearVelocity);
             }
             else
             {
+				if (!IsPowerup && speed > 50)
+					PedestrianGibsController.AddGibs(Position + new Vector3(0, 0.5f, 0), vehicle.Chassis.Actor.LinearVelocity);
                 _hitSpeed = speed * Behaviour.Acceleration * 19000;
             }
+			
+			
             _direction = Vector3.Normalize(vehicle.Chassis.Actor.LinearVelocity);
             if (float.IsNaN(_direction.X))
             {
@@ -320,6 +327,14 @@ namespace OpenC1
             effect.CommitChanges();
             Engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
         }
+
+		bool IsPowerup
+		{
+			get
+			{
+				return RefNumber >= 100;
+			}
+		}
     }
 
     class PedestrianInstruction

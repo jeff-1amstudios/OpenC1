@@ -20,7 +20,6 @@ namespace OpenC1.Gfx
         {
             settings.Texture = Engine.ContentManager.Load<Texture2D>("Content/smoke");
 
-
             settings.MaxParticles = 150;
 
             settings.Duration = TimeSpan.FromSeconds(1);

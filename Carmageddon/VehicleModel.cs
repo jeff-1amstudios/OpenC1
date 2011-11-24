@@ -13,10 +13,10 @@ namespace OpenC1
     {
         CActorHierarchy _actors;
         List<BaseGroove> _grooves;
-        CarFile Config;
+        VehicleFile Config;
         public string ModelName;
 
-        public VehicleModel(CarFile file, bool forDisplayOnly)
+        public VehicleModel(VehicleFile file, bool forDisplayOnly)
         {
             Config = file;
             

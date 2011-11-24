@@ -35,6 +35,8 @@ namespace OpenC1.Parsers
             get { return _pixMaps; }
         }
 
+		bool _skipNextPixelSection;
+
         public PixFile(string filename)
 		{
             Stream file = OpenDataFile(filename);
@@ -57,10 +59,16 @@ namespace OpenC1.Parsers
 				switch (blockType)
 				{
 					case PixBlockType.Attributes:
-
-                        currentPix = new PixMap();
-                                                
+                        
 						int type = reader.ReadByte();
+						if (type == 7) 
+						{
+							/* bmp palette data? - seen in some splat pack textures. Jump over it, and its pixel data */
+							reader.Seek(blockLength-1, SeekOrigin.Current);
+							_skipNextPixelSection = true;
+							break;
+						}
+						currentPix = new PixMap();
                         currentPix.Width = reader.ReadInt16();
 						int width2 = reader.ReadInt16();
                         currentPix.Height = reader.ReadInt16();
@@ -71,9 +79,19 @@ namespace OpenC1.Parsers
 						break;
 
 					case PixBlockType.PixelData:
+						
+						if (_skipNextPixelSection)
+						{
+							reader.Seek(blockLength, SeekOrigin.Current);
+							_skipNextPixelSection = false;
+							break;
+						}
 						int pixelCount = reader.ReadInt32();
 						int bytesPerPixel = reader.ReadInt32();
-                        if (bytesPerPixel > 3) bytesPerPixel = 1;  //PixEd sometimes doesnt get this right
+						if (bytesPerPixel > 3)
+						{
+							bytesPerPixel = 1;  //PixEd sometimes doesnt get this right
+						}
 
                         if (currentPix == null)
                         {

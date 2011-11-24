@@ -30,7 +30,7 @@ namespace OpenC1.Parsers
 					decrypted = TextFileDecryptor.DecryptDemoFile(filename);
 				else
 					decrypted = TextFileDecryptor.DecryptFile(filename);
-                File.WriteAllBytes("c:\\temp\\dec.txt", decrypted);
+                //File.WriteAllBytes("c:\\temp\\dec.txt", decrypted);
                 _file = new StreamReader(new MemoryStream(decrypted));
             }
             _file.BaseStream.Position = 0;

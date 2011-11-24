@@ -76,7 +76,6 @@ namespace OpenC1
                 if (_recoverPositions.Count > 10)
                     _recoverPositions.RemoveAt(0);
 
-
                 _lastRecoverTime = Engine.TotalSeconds;
             }
         }

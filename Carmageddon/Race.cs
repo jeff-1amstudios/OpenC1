@@ -97,45 +97,22 @@ namespace OpenC1
 
 			List<int> opponentIds = new List<int>();
 
-            if (GameVars.Emulation == EmulationMode.Demo)
-            {
-                Opponents.Add(new Opponent("kutter.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-                Opponents.Add(new Opponent("grimm.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-                Opponents.Add(new Opponent("screwie.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-                Opponents.Add(new Opponent("otis.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-                Opponents.Add(new Opponent("dump.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-            }
-			else if (GameVars.Emulation == EmulationMode.SplatPackDemo)
+			List<int> pickedNbrs = new List<int>();
+			for (int i = 0; i < 5; i++)
 			{
-				Opponents.Add(new Opponent("monster.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-				Opponents.Add(new Opponent("muscle.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-				Opponents.Add(new Opponent("semi.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-				Opponents.Add(new Opponent("SPAGHETI.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-				Opponents.Add(new Opponent("SUBFRAME.txt", ConfigFile.GridPosition, ConfigFile.GridDirection));
-			}
-			else
-			{
-				List<int> pickedNbrs = new List<int>();
-				for (int i = 0; i < 6; i++)
+				int index = 0;
+				while (true)
 				{
-					int index = 0;
-					while (true)
+					index = Engine.Random.Next(1, OpponentsFile.Instance.Opponents.Count);
+					if (!pickedNbrs.Contains(index))
 					{
-						index = Engine.Random.Next(1, OpponentsFile.Instance.Opponents.Count);
-						if (OpponentsFile.Instance.Opponents.Count <= 6)
-						{
-							break;
-						}
-						if (!pickedNbrs.Contains(index))
-						{
-							pickedNbrs.Add(index);
-							break;
-						}
+						pickedNbrs.Add(index);
+						break;
 					}
-					Opponents.Add(new Opponent(OpponentsFile.Instance.Opponents[index].FileName, ConfigFile.GridPosition, ConfigFile.GridDirection));
 				}
+				Opponents.Add(new Opponent(OpponentsFile.Instance.Opponents[index].FileName, ConfigFile.GridPosition, ConfigFile.GridDirection));
 			}
-
+			
             foreach (CopStartPoint point in ConfigFile.CopStartPoints)
             {
                 Opponents.Add(new Opponent(point.IsSpecialForces ? "bigapc.txt" : "apc.txt", point.Position, 0, new CopDriver()));
@@ -360,9 +337,12 @@ namespace OpenC1
             NbrDeadPeds++;
             ped.OnHit(vehicle);
 
-            int time = GeneralSettingsFile.Instance.TimePerPedKill[GameVars.SkillLevel];
-            RaceTime.TimeRemaining += time;
-            MessageRenderer.Instance.PostTimerMessage(time);
+			if (vehicle == PlayerVehicle)
+			{
+				int time = GeneralSettingsFile.Instance.TimePerPedKill[GameVars.SkillLevel];
+				RaceTime.TimeRemaining += time;
+				MessageRenderer.Instance.PostTimerMessage(time);
+			}
 
             if (NbrDeadPeds == Peds.Count)
             {

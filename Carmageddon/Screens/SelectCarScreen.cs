@@ -43,9 +43,10 @@ namespace OpenC1.Screens
             _effect.Projection = Engine.Camera.Projection;
 
             _opponents = OpponentsFile.Instance.Opponents;
-            if (GameVars.Emulation != EmulationMode.Demo)
+            if (GameVars.Emulation != EmulationMode.Demo && GameVars.Emulation != EmulationMode.SplatPackDemo)
             {
                 // If we're not in demo mode, add car files in directory that havent been added to opponent.txt
+				/*
                 List<string> carFiles = new List<string>(Directory.GetFiles(GameVars.BasePath + "cars"));
                 carFiles.RemoveAll(a => !a.ToUpper().EndsWith(".TXT"));
                 carFiles.Sort();
@@ -58,6 +59,7 @@ namespace OpenC1.Screens
                         _opponents.Insert(0, new OpponentInfo { FileName = filename, Name = Path.GetFileNameWithoutExtension(filename), StrengthRating = 1 });
                     }
                 }
+				 */
             }
             
             _options.Add(new CarModelMenuOption(_effect, _opponents[0]));
@@ -98,7 +100,7 @@ namespace OpenC1.Screens
             _info = info;
             try
             {
-                var carfile = new CarFile(GameVars.BasePath + "cars\\" + info.FileName);
+                var carfile = new VehicleFile(GameVars.BasePath + "cars\\" + info.FileName);
                 _model = new VehicleModel(carfile, true);
             }
             catch (Exception ex)
@@ -126,7 +128,10 @@ namespace OpenC1.Screens
             _model.Update();
             Engine.Device.RenderState.DepthBufferEnable = true;
             Engine.Device.RenderState.CullMode = CullMode.None;
+			//Engine.Device.RenderState.FillMode = FillMode.WireFrame;
+			_effect.TextureEnabled = true;
             _model.Render(Matrix.CreateScale(1.2f) * Matrix.CreateRotationY(2.55f));
+			Engine.Device.RenderState.FillMode = FillMode.Solid;
 
             _effect.End();
         }

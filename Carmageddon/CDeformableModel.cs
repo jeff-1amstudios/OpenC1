@@ -31,7 +31,7 @@ namespace OpenC1
         bool _changed;
         
         List<int> _lastHitPts = new List<int>();
-        public CarFile _carFile;
+        public VehicleFile _carFile;
 
 
         public override void Resolve(List<ushort> indices, List<VertexPositionNormalTexture> vertices, List<Vector2> vertexTextureMap, List<Vector3> vertexPositions)
@@ -223,6 +223,9 @@ namespace OpenC1
 
                     foreach (CrushPoint point in data.Points)
                     {
+						if (point.VertexIndex < 0)
+							continue;
+
                         if (float.IsNaN(normalforce.X) || float.IsNaN(normalforce.Y) || float.IsNaN(normalforce.Z))
                         {
                             break;
@@ -425,7 +428,7 @@ namespace OpenC1
                 Polygon poly = Polygons[i];
                 if (poly.Skip) continue;
 
-                if (!GameVars.ForceCullModeOff && GameVars.CullingOff != poly.DoubleSided)
+                if (GameVars.CullingOff != poly.DoubleSided)
                 {
                     device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
                     GameVars.CullingOff = poly.DoubleSided;

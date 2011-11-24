@@ -122,10 +122,10 @@ namespace OneAmEngine
 
         public void DumpParticles(Vector3 newPosition)
         {
-            DumpParticles(newPosition, ParticlesPerSecond);
+            DumpParticles(newPosition, ParticlesPerSecond, Vector3.Zero);
         }
 
-        public void DumpParticles(Vector3 newPosition, float nbr)
+        public void DumpParticles(Vector3 newPosition, float nbr, Vector3 velocity)
         {
             //only allow dumpparticles every 0.2 of a second
             if (LastDumpTime + DumpsPerSecond > Engine.TotalSeconds)
@@ -133,7 +133,7 @@ namespace OneAmEngine
 
             for (int i = 0; i < nbr; i++)
             {
-                ParticleSystem.AddParticle(newPosition, Vector3.Zero);
+                ParticleSystem.AddParticle(newPosition, velocity);
             }
             LastDumpTime = Engine.TotalSeconds;
         }

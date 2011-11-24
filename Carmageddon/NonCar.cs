@@ -21,6 +21,7 @@ namespace OpenC1
         public Vector3 LastForce;
         public Vector3 LastForcePosition;
         bool _initialized;
+		public Vehicle LastVehicleToHit;
 
         public void OnHit()
         {

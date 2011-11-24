@@ -72,7 +72,7 @@ namespace OpenC1.Physics
 
         public BaseGearbox(List<float> ratios, float changeTime)
         {
-            ratios.Insert(0, -ratios[0] * 1.5f); //insert reverse
+            ratios.Insert(0, -ratios[0] * 2.5f); //insert reverse
             ratios.Insert(1, 0); //insert neutral
 
             _ratios = ratios;

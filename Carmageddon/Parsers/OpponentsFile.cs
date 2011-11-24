@@ -60,6 +60,11 @@ namespace OpenC1.Parsers
                     if (i != 0 && i != 16 && i != 12 && i != 22 && i != 19 && i != 7)
                         continue;
                 }
+				else if (GameVars.Emulation == EmulationMode.SplatPackDemo)
+				{
+					if (i != 0 && i != 28 && i != 14 && i != 23 && i != 8 && i != 5)
+						continue;
+				}
                 Opponents.Add(opp);
             }
 

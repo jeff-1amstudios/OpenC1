@@ -95,6 +95,7 @@
     <Compile Include="IGameScreen.cs" />
     <Compile Include="InputProvider.cs" />
     <Compile Include="IPlayer.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="ParticleSystem\ParticleEmitter.cs" />
     <Compile Include="ParticleSystem\ParticleSettings.cs" />
     <Compile Include="ParticleSystem\ParticleSystem.cs" />

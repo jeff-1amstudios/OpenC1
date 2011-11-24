@@ -153,7 +153,8 @@ namespace OpenC1.Gfx
 
             device.Vertices[0].SetSource(_buffer, 0, VertexPositionTexture.SizeInBytes);
             device.VertexDeclaration = _vertexDeclaration;
-
+            GameVars.CurrentEffect.World = Matrix.Identity;
+            
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
             device.RenderState.DepthBias = -0.00002f;
@@ -262,7 +263,7 @@ namespace OpenC1.Gfx
             int p1, p2;
 
             float thickness = 0.13f;
-            float length = _vehicle.Chassis.Speed * 0.045f;
+            float length = _vehicle.Chassis.Speed * 0.2f;
 
             Vector3 direction = skid.EndPosition - skid.StartPosition;
             direction.Normalize();
@@ -292,8 +293,11 @@ namespace OpenC1.Gfx
             _vertices[_firstFreeVert].TextureCoordinate = new Vector2(length, 0);
                         
             _firstFreeVert = (_firstFreeVert + 1) % _vertices.Length;
-             
-            _skids[_skidPtr] = _texture ?? _defaultTexture;
+
+            if (_texture == null)
+            {
+            }
+            _skids[_skidPtr] = _texture; // ?? _defaultTexture;
             _skidPtr = (_skidPtr + 1) % _maxSkids;
         }
 

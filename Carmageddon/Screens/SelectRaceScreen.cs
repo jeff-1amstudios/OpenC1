@@ -29,7 +29,7 @@ namespace OpenC1.Screens
             Engine.Camera.Orientation = new Vector3(0, -0.28f, -1);
             base.Update();
             
-            if (GameVars.Emulation == EmulationMode.Demo)  //only 1 track in demo mode
+            if (GameVars.Emulation == EmulationMode.Demo || GameVars.Emulation == EmulationMode.SplatPackDemo)  //only 1 track in demo mode
                 return;
             
             if (_selectedOption == _options.Count - 1 && RacesFile.Instance.Races.Count > _selectedOption + 1)

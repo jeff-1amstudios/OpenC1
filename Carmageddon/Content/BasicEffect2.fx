@@ -557,7 +557,7 @@ PixelLightingVSOutputTx VSBasicPixelLightingNmTx(VSInputNmTx vin)
 	vout.PositionWS.w	= 0; //ComputeFogFactor(length(EyePosition - pos_ws));
 	vout.NormalWS		= normalize(mul(vin.Normal, World));
 	vout.Diffuse		= float4(1, 1, 1, Alpha);
-	vout.TexCoord		= vin.TexCoord;
+	vout.TexCoord = (vin.TexCoord + TexCoordsOffset) * TexCoordsMultiplier;
 
 	return vout;
 }
@@ -614,7 +614,7 @@ float4 PSBasicPixelLighting(PixelLightingPSInput pin) : COLOR
 
 	float4 diffuse = float4(lightResult.Diffuse * pin.Diffuse.rgb, pin.Diffuse.a);
 	float4 color = diffuse + float4(lightResult.Specular, 0);
-	color.rgb = lerp(color.rgb, FogColor, pin.PositionWS.w);
+	color = float4(1,1,1,1); //.rgb = lerp(color.rgb, FogColor, pin.PositionWS.w);
 	
 	return color;
 }

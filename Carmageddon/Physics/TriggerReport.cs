@@ -55,13 +55,13 @@ namespace OpenC1.Physics
             {
                 NonCar noncar = otherShape.Actor.UserData as NonCar;
 
-                // if the trigger is a noncar that was hit within 5 seconds
-                if (triggerShape.Actor.UserData is Pedestrian && noncar.LastTouchTime + 10f > Engine.TotalSeconds)
+                // if the trigger is a noncar that was hit within 7 seconds
+                if (triggerShape.Actor.UserData is Pedestrian && noncar.LastTouchTime + 7f > Engine.TotalSeconds)
                 {
                     Pedestrian ped = (Pedestrian)triggerShape.Actor.UserData;
                     if (!ped.IsHit)
                     {
-                        Race.Current.OnPedestrianHit(ped, Race.Current.PlayerVehicle);  //assume player
+                        Race.Current.OnPedestrianHit(ped, noncar.LastVehicleToHit);
                         if (GameVars.Emulation == EmulationMode.Demo)
                             MessageRenderer.Instance.PostHeaderMessage("Nice shot, sir!", 3);
                         else

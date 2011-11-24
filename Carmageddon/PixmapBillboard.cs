@@ -54,11 +54,9 @@ namespace OpenC1
             BasicEffect2 effect = GameVars.CurrentEffect;
             effect.World = _scaleMatrix * world;
             effect.Texture = _pixmaps[_currentFrame].Texture;
-            effect.LightingEnabled = false;
             effect.CommitChanges(); 
             Engine.Device.RenderState.CullMode = CullMode.None;
             Engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-            effect.LightingEnabled = true;
             EndBatch();
         }
 

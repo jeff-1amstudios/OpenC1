@@ -32,11 +32,11 @@ namespace OpenC1
                 if (injectHardEdges)
                 {
                     Vector2 uv = Vector2.Zero;
-                    if (TextureMapCount > 0) uv = vertexTextureMap[poly.Vertex1 + VertexBaseIndex];
+                    if (TextureMapCount > 0 && poly.Vertex1 + VertexBaseIndex < vertexTextureMap.Count) uv = vertexTextureMap[poly.Vertex1 + VertexBaseIndex];
                     vertices.Add(new VertexPositionNormalTexture(vertexPositions[poly.Vertex1 + VertexBaseIndex], poly.Normal, uv));
-                    if (TextureMapCount > 0) uv = vertexTextureMap[poly.Vertex2 + VertexBaseIndex];
+					if (TextureMapCount > 0 && poly.Vertex2 + VertexBaseIndex < vertexTextureMap.Count) uv = vertexTextureMap[poly.Vertex2 + VertexBaseIndex];
                     vertices.Add(new VertexPositionNormalTexture(vertexPositions[poly.Vertex2 + VertexBaseIndex], poly.Normal, uv));
-                    if (TextureMapCount > 0) uv = vertexTextureMap[poly.Vertex3 + VertexBaseIndex];
+					if (TextureMapCount > 0 && poly.Vertex3 + VertexBaseIndex < vertexTextureMap.Count) uv = vertexTextureMap[poly.Vertex3 + VertexBaseIndex];
                     vertices.Add(new VertexPositionNormalTexture(vertexPositions[poly.Vertex3 + VertexBaseIndex], poly.Normal, uv));
                 }
 
@@ -107,7 +107,7 @@ namespace OpenC1
                 Polygon poly = Polygons[i];
                 if (poly.Skip) continue;
 
-				if (!GameVars.ForceCullModeOff && GameVars.CullingOff != poly.DoubleSided)
+				if (GameVars.CullingOff != poly.DoubleSided)
                 {
                     device.RenderState.CullMode = (poly.DoubleSided ? CullMode.None : CullMode.CullClockwiseFace);
                     GameVars.CullingOff = poly.DoubleSided;

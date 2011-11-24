@@ -132,6 +132,8 @@ namespace OpenC1.Physics
                 return;
             }
 
+			nonCar.LastVehicleToHit = vehicle;
+
             if (nonCar.IsAttached)
             {
                 if (normalforce == Vector3.Zero) return;
@@ -150,7 +152,6 @@ namespace OpenC1.Physics
                 nonCar.Rotation.X += -directedForce.X * factor;
                 nonCar.Rotation.Z += directedForce.Z * factor;
 
-                nonCar.Hit = true;
                 nonCar.LastTouchTime = Engine.TotalSeconds;
                 nonCar.LastForcePosition = pos;
                 nonCar.LastForce = directedForce;

@@ -28,12 +28,10 @@ namespace OpenC1
         public static int NbrSectionsChecked = 0;
         public static int NbrDrawCalls = 0;
         public static bool CullingOff { get; set; }
-        public static bool ForceCullModeOff;
         public static Color FogColor;
         public static string BasePath;
         public static BasicEffect2 CurrentEffect;
         public static ParticleEmitter SparksEmitter;
-        public static bool LightingEnabled = true;
         public static string SelectedCarFileName;
         public static RaceInfo SelectedRaceInfo;
         public static Texture2D SelectedRaceScene;
@@ -44,7 +42,7 @@ namespace OpenC1
 
 		public static void DetectEmulationMode()
 		{
-			if (File.Exists(GameVars.BasePath + "RACES\\CASTLE.TXT"))
+			if (File.Exists(GameVars.BasePath + "RACES\\CASTLE.TXT") || File.Exists(GameVars.BasePath + "RACES\\TINSEL.TXT"))
 			{
 				if (!File.Exists(GameVars.BasePath + "NETRACES.TXT"))
 					GameVars.Emulation = EmulationMode.SplatPackDemo;

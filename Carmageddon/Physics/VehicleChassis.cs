@@ -43,7 +43,7 @@ namespace OpenC1.Physics
 
             Wheels = new List<VehicleWheel>();
 
-            CarFile carFile = vehicle.Config;
+            VehicleFile carFile = vehicle.Config;
             
             ActorDescription actorDesc = new ActorDescription();
 

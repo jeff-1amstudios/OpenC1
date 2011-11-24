@@ -43,7 +43,7 @@ namespace OpenC1.Parsers.Funks
                 FramesFunk frames = new FramesFunk();
                 frames.MaterialName = materialName;
 
-                frames.Speed = 1 / file.ReadLineAsFloat();
+                frames.Speed = 1 / file.ReadLineAsFloat(false);
                 int nbrFrames = file.ReadLineAsInt();
                 for (int i = 0; i < nbrFrames; i++)
                 {

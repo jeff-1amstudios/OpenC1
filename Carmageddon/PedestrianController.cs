@@ -120,9 +120,8 @@ namespace OpenC1
         {
             Engine.Device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionTexture.SizeInBytes);
             Engine.Device.VertexDeclaration = _vertexDeclaration;
-            GameVars.CurrentEffect.LightingEnabled = false;
             Engine.Device.RenderState.CullMode = CullMode.None;
-            Engine.Device.RenderState.ReferenceAlpha = 100;
+			Engine.Device.RenderState.ReferenceAlpha = 100;
 
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].Begin();
 
@@ -133,7 +132,6 @@ namespace OpenC1
             }
 
             GameVars.CurrentEffect.CurrentTechnique.Passes[0].End();
-            GameVars.CurrentEffect.LightingEnabled = true;
         }
 
         private void CreateGeometry()
