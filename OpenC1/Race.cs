@@ -350,5 +350,20 @@ namespace OpenC1
                 RaceTime.IsOver = true;
             }
         }
+
+		public void ExitAndReturnToMenu()
+		{
+			ResourceCache.Clear();
+			ParticleSystem.AllParticleSystems.Clear();
+			Race.Current = null;
+			PhysX.Instance.Delete();
+			var screen = Engine.Screen.Parent;
+			if (screen is PlayGameScreen)  //this will be true if called from the pause screen
+				screen = screen.Parent;
+
+			Engine.Screen = null;
+			GC.Collect();
+			Engine.Screen = screen;
+		}
     }
 }

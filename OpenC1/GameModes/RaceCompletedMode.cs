@@ -82,7 +82,7 @@ namespace OpenC1.GameModes
 
             if (Engine.Input.WasPressed(Keys.Enter))
             {
-                Engine.Game.Exit();
+				Race.Current.ExitAndReturnToMenu();
             }
         }
 

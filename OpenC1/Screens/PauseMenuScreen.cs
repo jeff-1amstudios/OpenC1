@@ -47,9 +47,7 @@ namespace OpenC1.Screens
                     ReturnToParent();
                     break;
                 case 1:
-                    Engine.Game.Exit();
-                    //PhysX.Instance.Delete();
-                    //Engine.Screen = Parent.Parent;
+					Race.Current.ExitAndReturnToMenu();
                     break;
                 case 2:
                     Engine.Game.Exit();

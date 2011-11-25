@@ -11,8 +11,8 @@ namespace OpenC1
 {
     class PedestrianController
     {
-        static List<PedestrianBehaviour> _behaviours;
-        static List<PixMap> _pixMaps = new List<PixMap>();
+        List<PedestrianBehaviour> _behaviours;
+        List<PixMap> _pixMaps = new List<PixMap>();
 
         List<Pedestrian> _peds;
         public int Count;
