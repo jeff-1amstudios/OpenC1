@@ -310,12 +310,13 @@ namespace OpenC1
 
             PedestrianFrame frame = _inLoopingFrames ? _currentSequence.LoopingFrames[_frameIndex] : _currentSequence.InitialFrames[_frameIndex];
 			if (frame.Texture == null) return;
-			
-            Vector3 texSize = new Vector3(frame.Texture.Width, frame.Texture.Height, 1);
-			//float heightMultiplier = Behaviour.Height / texSize.Y;
-            
-            Vector3 scale = texSize * new Vector3(Behaviour.Height, Behaviour.Height, 1) * 0.01f;
 
+            Vector3 scale = new Vector3(frame.Texture.Width, frame.Texture.Height, 1);
+            if (!IsPowerup)
+                scale *= 0.015f;
+            else
+                scale *= 0.02f;
+   
             if (frame.Flipped)
             {
                 world = Matrix.CreateRotationY(MathHelper.Pi) * world;

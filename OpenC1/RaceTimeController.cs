@@ -61,6 +61,13 @@ namespace OpenC1
                     IsOver = true;
                     GameMode.Current = new RaceCompletedMode(CompletionType.TimeUp);
                 }
+                else if (TimeRemaining < 10)
+                {
+                    int second = (int)TimeRemaining;
+                    if (second != _lastSecond)
+                        SoundCache.Play(SoundIds.TimeBuzzer, null, false);
+                    _lastSecond = second;
+                }
             }
             if (CountingDown)
             {

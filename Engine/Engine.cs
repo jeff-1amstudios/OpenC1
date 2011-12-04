@@ -108,7 +108,7 @@ namespace OneAmEngine
         {
             get
             {
-                if (false)
+                if (_isFullScreen)
                     return ScreenSize.X / ScreenSize.Y;
                 else
                     return (float)Window.Width / (float)Window.Height;

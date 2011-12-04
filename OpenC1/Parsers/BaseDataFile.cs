@@ -27,10 +27,7 @@ namespace OpenC1.Parsers
             _pixPaths.Add(GameVars.BasePath + "32X20X8\\pixelmap\\");
 
             _pixFontPaths = new List<string>();
-            if (GameVars.Emulation != EmulationMode.Demo)
-            {
-                _pixFontPaths.Add(GameVars.BasePath + "64X48X8\\fonts\\");
-            }
+            _pixFontPaths.Add(GameVars.BasePath + "64X48X8\\fonts\\");
             _pixFontPaths.Add(GameVars.BasePath + "32X20X8\\fonts\\");
             _pixFontPaths.Add(GameVars.BasePath + "32X20X8\\pixelmap\\");
 

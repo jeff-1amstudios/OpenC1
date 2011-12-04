@@ -79,7 +79,7 @@ namespace OpenC1.Gfx
 
         private void Update()
         {
-            if (!Helpers.HasTimePassed(0.9f, _vehicle.LastRunOverPedTime))
+            if (!Helpers.HasTimePassed(0.5f, _vehicle.LastRunOverPedTime))
             {
                 foreach (var wheel in _vehicle.Chassis.Wheels)
                 {

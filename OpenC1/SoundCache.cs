@@ -29,6 +29,7 @@ namespace OpenC1
         public const int UI_UpDown = 3000;
         public const int UI_Ok = 3004;
         public const int UI_Esc = 3005;
+        public const int TimeBuzzer = 1001;
     }
 
     static class SoundCache
