@@ -19,6 +19,5 @@ namespace OpenC1
         public float MinSpeedAtEnd, MaxSpeedAtEnd;
         public float Width;
         public PathType Type;
-        public bool UserSet = false;
     }
 }

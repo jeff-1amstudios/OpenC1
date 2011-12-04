@@ -47,7 +47,6 @@ namespace OpenC1.CameraViews
             
             _camera = new SimpleCamera();
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
-            _camera.AspectRatio = Engine.AspectRatio;
 
         }
 

@@ -38,7 +38,7 @@ namespace OpenC1
 
                 ped.Initialize();
 
-                if (ped.RefNumber < 100)
+                if (!ped.IsPowerup)
                     Count++;
             }
         }
@@ -91,7 +91,7 @@ namespace OpenC1
             for (int i = 0; i < _peds.Count; i++)
             {
                 Pedestrian ped = _peds[i];
-                if (ped.RefNumber >= 100)
+                if (ped.IsPowerup)
                 {
                     // remove used powerups & mines
                     if (ped._stopUpdating)

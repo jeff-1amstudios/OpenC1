@@ -42,7 +42,7 @@ namespace OpenC1.Screens
 
 			RenderDefaultBackground();
 
-			WriteTitleLine("OpenC1 game data:");
+			WriteTitleLine("OpenC1 - choose game:");
 
 			float y = 120;
 			for (int i = 0; i < _mods.Count; i++)
@@ -55,25 +55,7 @@ namespace OpenC1.Screens
 				y += 35;
 			}
             
-            
-            string raceText, vehicleText;
-
-            if (Helpers.HasTimePassed(1.5f, _showTime))
-            {
-                //raceText = RacesFile.Instance.Races.Count.ToString();
-                //vehicleText = OpponentsFile.Instance.Opponents.Count.ToString();
-
-                //Engine.SpriteBatch.DrawString(_font, "< continue >", new Vector2(40, 250), Color.White);
-            }
-            else
-            {
-                // do some lame spinny animation for a second
-                //raceText = "" + (char)Engine.Random.Next(33, 122);
-                //vehicleText = "" + (char)Engine.Random.Next(33, 122);
-            }
-
             Engine.SpriteBatch.End();
-
         }
 
 		public override void Update()

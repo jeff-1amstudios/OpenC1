@@ -108,7 +108,7 @@ namespace OneAmEngine
         {
             get
             {
-                if (_isFullScreen)
+                if (false)
                     return ScreenSize.X / ScreenSize.Y;
                 else
                     return (float)Window.Width / (float)Window.Height;
@@ -125,27 +125,5 @@ namespace OneAmEngine
         {
             get { return _fpsCounter.FrameRate; }
         }
-
-        //public bool EnableBloom
-        //{
-        //    set
-        //    {
-        //        if (value)
-        //        {
-        //            _game.Components.Add(new BloomComponent(_game));
-        //        }
-        //        else
-        //        {
-        //            foreach (IGameComponent component in _game.Components)
-        //            {
-        //                if (component is BloomComponent)
-        //                {
-        //                    _game.Components.Remove(component);
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
     }
 }

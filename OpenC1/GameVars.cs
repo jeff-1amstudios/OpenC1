@@ -38,7 +38,6 @@ namespace OpenC1
         public static EmulationMode Emulation;
         public static int SkillLevel = 1;
         public static bool FullScreen;
-        public static bool DisableFog;
 
 		public static void DetectEmulationMode()
 		{

@@ -10,6 +10,7 @@ using OpenC1.Parsers;
 using OneAmEngine;
 using System.IO;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace OpenC1.Screens
 {
@@ -23,11 +24,13 @@ namespace OpenC1.Screens
         protected bool _waitingForOutAnimation;
 		public SpriteFont _font;
 		private int _currentLine;
+		private Viewport v;
 
         public BaseMenuScreen(IGameScreen parent)
         {
             Parent = parent;
-            _rect = new Rectangle(0, 0, Engine.Window.Width, Engine.Window.Height);
+			Viewport viewport = Engine.Device.Viewport;
+			_rect = new Rectangle(0, 0, Engine.Device.Viewport.Width, Engine.Device.Viewport.Height);
             Engine.Camera = new SimpleCamera();
 			_font = Engine.ContentManager.Load<SpriteFont>("content/M42");
         }
@@ -44,7 +47,7 @@ namespace OpenC1.Screens
 
 		public void RenderDefaultBackground()
 		{
-			Engine.SpriteBatch.Draw(Engine.ContentManager.Load<Texture2D>("content/menu-background"), new Rectangle(0, 0, Engine.Window.Width, Engine.Window.Height), Color.White);
+			Engine.SpriteBatch.Draw(Engine.ContentManager.Load<Texture2D>("content/menu-background"), _rect, Color.White);
 		}
 
 		public void WriteTitleLine(string text)
@@ -170,20 +173,6 @@ namespace OpenC1.Screens
                 return new List<Texture2D> { pix.PixMaps[0].Texture };
 
             return null;
-            
-
-            //switch (GameVars.Emulation)
-            //{
-            //    case EmulationMode.Demo:
-            //        return new FliFile(GameVars.BasePath + @"DATA\32X20X8\ANIM\" + filename);
-
-            //    case EmulationMode.Full:
-            //    case EmulationMode.SplatPack:
-            //        return new FliFile(GameVars.BasePath + @"DATA\ANIM\" + filename);
-
-            //    default:
-            //        throw new NotImplementedException();
-            //}
         }
     }
 }

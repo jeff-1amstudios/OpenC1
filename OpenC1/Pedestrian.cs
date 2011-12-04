@@ -309,17 +309,19 @@ namespace OpenC1
             Matrix world = Matrix.CreateConstrainedBillboard(Position, Engine.Camera.Position, Vector3.Up, null, null);
 
             PedestrianFrame frame = _inLoopingFrames ? _currentSequence.LoopingFrames[_frameIndex] : _currentSequence.InitialFrames[_frameIndex];
-            Vector3 texSize = new Vector3(50, 70, 1);
-            if (frame.Texture != null) texSize = new Vector3(frame.Texture.Width, frame.Texture.Height, 1);
-            texSize /= Math.Max(texSize.X, texSize.Y);
-            Vector3 scale = texSize * new Vector3(Behaviour.Height, Behaviour.Height, 1);
+			if (frame.Texture == null) return;
+			
+            Vector3 texSize = new Vector3(frame.Texture.Width, frame.Texture.Height, 1);
+			//float heightMultiplier = Behaviour.Height / texSize.Y;
+            
+            Vector3 scale = texSize * new Vector3(Behaviour.Height, Behaviour.Height, 1) * 0.01f;
 
             if (frame.Flipped)
             {
                 world = Matrix.CreateRotationY(MathHelper.Pi) * world;
             }
 
-            world = Matrix.CreateScale(scale) * Matrix.CreateRotationZ(_hitCurrentSpin) * world * Matrix.CreateTranslation(frame.Offset) *Matrix.CreateTranslation(0, scale.Y * 0.5f, 0);
+            world = Matrix.CreateScale(scale) * Matrix.CreateRotationZ(_hitCurrentSpin) * world * Matrix.CreateTranslation(frame.Offset) * Matrix.CreateTranslation(0, scale.Y * 0.5f, 0);
 
             BasicEffect2 effect = GameVars.CurrentEffect;
             effect.World = world;
@@ -328,7 +330,7 @@ namespace OpenC1
             Engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
         }
 
-		bool IsPowerup
+		public bool IsPowerup
 		{
 			get
 			{

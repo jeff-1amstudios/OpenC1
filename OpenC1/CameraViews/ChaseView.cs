@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using OpenC1.Physics;
 using OneAmEngine;
+using Microsoft.Xna.Framework.Input;
 
 namespace OpenC1.CameraViews
 {
@@ -15,18 +16,20 @@ namespace OpenC1.CameraViews
         List<BaseHUDItem> _hudItems = new List<BaseHUDItem>();
         Vehicle _vehicle;
         FixedChaseCamera _camera;
+		const float DefaultChaseDistance = 6.3f;
+		const float DefaultChaseHeight = 2.3f;
+		float _chaseCameraPositionMultiplier = 1;
 
         public ChaseView(Vehicle vehicle)
         {
-            _camera = new FixedChaseCamera(6.3f, 2.3f);
+			_camera = new FixedChaseCamera(DefaultChaseDistance, DefaultChaseHeight);
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
 
             _vehicle = vehicle;
 
             _hudItems.Add(new StandardHudItem());
             _hudItems.Add(new RevCounter(_vehicle.Chassis));
-            _hudItems.Add(new Timer());
-            
+            _hudItems.Add(new Timer());   
         }
 
         #region ICameraView Members
@@ -39,6 +42,18 @@ namespace OpenC1.CameraViews
 
         public void Update()
         {
+			
+			if (Engine.Input.IsKeyDown(Keys.PageDown))
+			{
+				_chaseCameraPositionMultiplier += Engine.ElapsedSeconds;
+			}
+			else if (Engine.Input.IsKeyDown(Keys.PageUp))
+			{
+				_chaseCameraPositionMultiplier -= Engine.ElapsedSeconds;
+				if (_chaseCameraPositionMultiplier < 1)
+					_chaseCameraPositionMultiplier = 1;
+			}
+
             VehicleChassis chassis = _vehicle.Chassis;
             _camera.Position = _vehicle.GetBodyBottom();
             
@@ -50,13 +65,12 @@ namespace OpenC1.CameraViews
                     _camera.RotateTo(chassis.Backwards ? MathHelper.Pi : 0);
                 }
                 if (Race.Current.RaceTime.IsStarted) _camera.HeightOverride = 0;
-                _camera.ChaseDistance = new Vector3(6.3f, 1, 6.3f);
+				_camera.SetChaseDistance(DefaultChaseDistance * _chaseCameraPositionMultiplier, DefaultChaseHeight * _chaseCameraPositionMultiplier);
             }
             else
             {
                 if (Race.Current.RaceTime.IsStarted) _camera.HeightOverride = 2;
-                _camera.ChaseDistance = new Vector3(7f, 1, 7f);
-                
+				_camera.SetChaseDistance(7, DefaultChaseHeight);
             }
 
             foreach (BaseHUDItem item in _hudItems)

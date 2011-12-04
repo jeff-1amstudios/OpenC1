@@ -137,7 +137,7 @@ namespace OpenC1
                 {
                     Trace.Assert(false);
                 }
-                _effect.FogEnabled = !GameVars.DisableFog;
+				_effect.FogEnabled = true;
                 _effect.FogColor = GameVars.FogColor.ToVector3();
                 _effect.FogEnd = Engine.DrawDistance * 6 * (1 / Race.Current.ConfigFile.FogAmount);
 				_effect.FogStart = _effect.FogEnd - 200;

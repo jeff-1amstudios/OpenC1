@@ -74,6 +74,7 @@ namespace OpenC1.Physics
                                             ((CpuDriver)vehicle2.Driver).OnPlayerHit(force);
                                         }
 
+										// stop cars rearing up if they are both trying to push each other.
                                         if (vehicle.Chassis.Wheels.Find(a => !a.IsRear && a.InAir) != null)
                                         {
                                             vehicle.Chassis.Actor.AddForceAtPosition(Vector3.Down * 0.35f * force, pos, ForceMode.Force);
