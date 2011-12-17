@@ -152,7 +152,7 @@ namespace OpenC1
 
         private void UpdateShaderIndex()
         {
-			bool lightingEnabled2 = lightingEnabled;
+			bool lightingEnabled2 = true;
 			int num = ((this.vertexColorEnabled ? 1 : 0) | (this.textureEnabled ? 2 : 0)) | (lightingEnabled2 ? 4 : 0);
 			num += ((lightingEnabled2 && this.preferPerPixelLighting) && this.hasPS20) ? 4 : 0;
             this.shaderIndexParam.SetValue(num);

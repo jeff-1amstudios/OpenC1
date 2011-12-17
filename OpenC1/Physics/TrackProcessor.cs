@@ -172,6 +172,9 @@ namespace OpenC1.Physics
 
         private static void CreateDefaultWaterSpecVols(RaceFile file, List<CActor> actors, CModelGroup models)
         {
+            // Water specvols don't seem to be included anywhere in the map definition. We figure them out here by
+            // looking for non-solid horizontal polygons
+
             if (file.SpecialVolumes.Count == 0) return;
 
             for (int i = 0; i < actors.Count; i++)
@@ -188,12 +191,23 @@ namespace OpenC1.Physics
                     if (poly.MaterialIndex < 0) continue;
                     string materialName = actor.Model.MaterialNames == null ? "none" : actor.Model.MaterialNames[poly.MaterialIndex];
                     //this is a non-solid material
-                    if (materialName.Contains("!WATER") || materialName.Contains("!SEE"))
+                    if (materialName.StartsWith("!"))
                     {
-                        foundWater = true;
-                        waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex1], actor.Matrix));
-                        waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex2], actor.Matrix));
-                        waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex3], actor.Matrix));
+                        // if this is a flat horizontal plane, mark it as water
+                        float y1 = Math.Abs(models._vertexPositions[model.VertexBaseIndex + poly.Vertex1].Y);
+                        float y2 = Math.Abs(models._vertexPositions[model.VertexBaseIndex + poly.Vertex2].Y);
+                        float y3 = Math.Abs(models._vertexPositions[model.VertexBaseIndex + poly.Vertex3].Y);
+
+                        if (y1 - y2 < 0.3f && y1 - y3 < 0.3f)
+                        {
+                            foundWater = true;
+                            waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex1], actor.Matrix));
+                            waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex2], actor.Matrix));
+                            waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex3], actor.Matrix));
+                        }
+                        else
+                        {
+                        }
                     }
                 }
 
