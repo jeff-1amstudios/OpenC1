@@ -64,12 +64,12 @@ namespace OpenC1.CameraViews
                 {
                     _camera.RotateTo(chassis.Backwards ? MathHelper.Pi : 0);
                 }
-                if (Race.Current.RaceTime.IsStarted) _camera.HeightOverride = 0;
+                if (Race.Current.RaceTime.IsStarted) _camera.MinHeight = 0;
 				_camera.SetChaseDistance(DefaultChaseDistance * _chaseCameraPositionMultiplier, DefaultChaseHeight * _chaseCameraPositionMultiplier);
             }
             else
             {
-                if (Race.Current.RaceTime.IsStarted) _camera.HeightOverride = 2;
+                if (Race.Current.RaceTime.IsStarted) _camera.MinHeight = 2;
 				_camera.SetChaseDistance(7, DefaultChaseHeight);
             }
 

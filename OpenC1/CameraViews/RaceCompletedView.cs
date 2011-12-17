@@ -16,7 +16,7 @@ namespace OpenC1.CameraViews
             _camera = new FixedChaseCamera(6.3f, 2.3f);
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
             _camera.RotationSpeed = 0.8f;
-            _camera.HeightOverride = 10;
+            _camera.MinHeight = 10;
         }
 
         #region ICameraView Members

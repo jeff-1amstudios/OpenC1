@@ -62,8 +62,8 @@ namespace OpenC1.Physics
                     if (!ped.IsHit)
                     {
                         Race.Current.OnPedestrianHit(ped, noncar.LastVehicleToHit);
-                        if (GameVars.Emulation == EmulationMode.Demo)
-                            MessageRenderer.Instance.PostHeaderMessage("Nice shot, sir!", 3);
+                        if (GameVars.Emulation == EmulationMode.Demo)  // billiard.pix doesn't exist in c1 demo
+                            MessageRenderer.Instance.PostHeaderMessage("Nice shot, sir!", 3);  
                         else
                             MessageRenderer.Instance.PostMainMessage("billiard.pix", 3, 0.7f, 0.003f, 1.4f);
                     }

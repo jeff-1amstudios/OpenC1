@@ -100,7 +100,7 @@
     <Compile Include="FontRenderer.cs" />
     <Compile Include="GameModes\FlyMode.cs" />
     <Compile Include="GameModes\GameMode.cs" />
-    <Compile Include="GameModes\NormalMode.cs" />
+    <Compile Include="GameModes\StandardGameMode.cs" />
     <Compile Include="GameModes\OpponentEditMode.cs" />
     <Compile Include="GameModes\PedEditMode.cs" />
     <Compile Include="GameModes\RaceCompletedMode.cs" />
@@ -138,7 +138,6 @@
     <Compile Include="PlayerDriver.cs" />
     <Compile Include="RaceMap.cs" />
     <Compile Include="RaceTimeController.cs" />
-    <Compile Include="RotatingCamera.cs" />
     <Compile Include="Screens\BaseMenuScreen.cs" />
     <Compile Include="Screens\ChooseDownloadDataScreen.cs" />
     <Compile Include="Screens\DownloadGameDataScreen.cs" />

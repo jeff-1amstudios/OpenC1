@@ -35,7 +35,7 @@ namespace OpenC1
 
             _race = new Race(GameVars.BasePath + "races\\" + GameVars.SelectedRaceInfo.RaceFilename, GameVars.SelectedCarFileName);
             
-            _modes.Add(new NormalMode());
+            _modes.Add(new StandardGameMode());
             _modes.Add(new FlyMode());
             _modes.Add(new OpponentEditMode());
             _modes.Add(new PedEditMode());
@@ -53,12 +53,6 @@ namespace OpenC1
 
             foreach (ParticleSystem system in ParticleSystem.AllParticleSystems)
                 system.Update();
-
-            if (Engine.Input.WasPressed(Keys.Escape))
-            {
-                Engine.Screen = new PauseMenuScreen(this);
-                return;
-            }
 
             if (Engine.Input.WasPressed(Keys.F4))
             {

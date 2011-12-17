@@ -26,7 +26,7 @@ namespace OpenC1.GameModes
             _camera = new FixedChaseCamera(6.3f, 2.3f);
             _camera.FieldOfView = MathHelper.ToRadians(55.55f);
             _camera.RotationSpeed = 0.8f;
-            _camera.HeightOverride = 10;
+            _camera.MinHeight = 10;
 
             switch (type)
             {
@@ -80,7 +80,7 @@ namespace OpenC1.GameModes
                 _camera.RotateTo(MathHelper.Pi * 2);
             }
 
-            if (Engine.Input.WasPressed(Keys.Enter))
+            if (Engine.Input.WasPressed(Keys.Enter) || Engine.Input.WasPressed(Keys.Escape))
             {
 				Race.Current.ExitAndReturnToMenu();
             }

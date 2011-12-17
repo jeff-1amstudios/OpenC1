@@ -153,7 +153,7 @@ namespace OpenC1
                 if (Engine.Camera is FixedChaseCamera)
                 {
                     float height = 55 - (RaceTime.CountdownTime * 35f);
-                    ((FixedChaseCamera)Engine.Camera).HeightOverride = Math.Max(0, height);
+                    ((FixedChaseCamera)Engine.Camera).MinHeight = Math.Max(0, height);
                 }
                 var closestPath = OpponentController.GetClosestPath(ConfigFile.GridPosition);
                 

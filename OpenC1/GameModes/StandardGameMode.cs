@@ -4,15 +4,16 @@ using System.Text;
 using OpenC1.CameraViews;
 using Microsoft.Xna.Framework.Input;
 using OneAmEngine;
+using OpenC1.Screens;
 
 namespace OpenC1.GameModes
 {
-    class NormalMode : GameMode
+    class StandardGameMode : GameMode
     {
         int _currentView = 0;
         List<ICameraView> _views = new List<ICameraView>();
 
-        public NormalMode()
+        public StandardGameMode()
         {
             _views.Add(new ChaseView(Race.Current.PlayerVehicle));
             if (GameVars.Emulation == EmulationMode.Demo)
@@ -30,6 +31,12 @@ namespace OpenC1.GameModes
 
         public override void Update()
         {
+			if (Engine.Input.WasPressed(Keys.Escape))
+			{
+				Engine.Screen = new PauseMenuScreen((PlayGameScreen)Engine.Screen);
+				return;
+			}
+
             if (Engine.Input.WasPressed(Keys.C))  //cockpit / external view
             {
                 _views[_currentView].Deactivate();

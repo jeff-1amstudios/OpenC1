@@ -12,13 +12,13 @@ namespace OneAmEngine
     {
         Vector3 _chaseDistance;
         float _currentRotation;
-        public float HeightOverride;
+        public float MinHeight;
         float _height;
 		AverageValueVector3 _lookAt = new AverageValueVector3(45);
 
         public FixedChaseCamera(float chaseDistance, float height)
 		{
-            _chaseDistance = new Vector3(chaseDistance, 1, chaseDistance);
+            _chaseDistance = new Vector3(chaseDistance);
             _height = height;
             AspectRatio = Engine.AspectRatio;
             FieldOfView = MathHelper.ToRadians(45f);
@@ -31,6 +31,7 @@ namespace OneAmEngine
 		{
 			_chaseDistance.X = distance;
 			_chaseDistance.Z = distance;
+			_chaseDistance.Y = distance;
 			_height = height;
 		}
 
@@ -106,10 +107,8 @@ namespace OneAmEngine
             }
 
             Vector3 pos = (-Vector3.Normalize(Orientation) * _chaseDistance);
-            if (HeightOverride != 0)
-                pos.Y = HeightOverride;
-            else
-                pos.Y += _height;
+			pos.Y += _height;
+            pos.Y += MinHeight;            
             _lookAt.AddValue(pos);
             Vector3 avgLookAt = _lookAt.GetAveragedValue();
             Vector3 cameraPosition = Position + Vector3.Transform(avgLookAt, Matrix.CreateRotationY(_currentRotation));
