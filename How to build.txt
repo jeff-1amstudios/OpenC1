@@ -1,0 +1,10 @@
+OpenC1 - Jeffrey Harris
+http://www.1amstudios.com/games/OpenC1
+
+
+How to build:
+
+1. Install the pre-reqs listed in readme.txt
+2. Install fontana.ttf
+3. Open the project in Visual Studio 2008
+4. Compile and run!

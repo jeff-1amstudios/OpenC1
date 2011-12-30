@@ -32,7 +32,7 @@ namespace OpenC1.Screens
 			Viewport viewport = Engine.Device.Viewport;
 			_rect = new Rectangle(0, 0, Engine.Device.Viewport.Width, Engine.Device.Viewport.Height);
             Engine.Camera = new SimpleCamera();
-			_font = Engine.ContentManager.Load<SpriteFont>("content/M42");
+			_font = Engine.ContentManager.Load<SpriteFont>("content/Fontana");
         }
 
         public void ReturnToParent()
@@ -52,14 +52,14 @@ namespace OpenC1.Screens
 
 		public void WriteTitleLine(string text)
 		{
-			Engine.SpriteBatch.DrawString(_font, text, new Vector2(20, 50), Color.Red, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+			Engine.SpriteBatch.DrawString(_font, text, new Vector2(20, 30), Color.Red, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
 			_currentLine = 80;
 		}
 
 		public void WriteLine(string text)
 		{
 			Engine.SpriteBatch.DrawString(_font, text, new Vector2(30, _currentLine), Color.LightGray);
-			_currentLine += 20;
+			_currentLine += 35;
 		}
 
 		public void WriteLine(string text, int line)

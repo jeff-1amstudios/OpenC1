@@ -44,12 +44,12 @@ namespace OpenC1.Screens
 			{
 				Engine.SpriteBatch.DrawString(_font, "[", new Vector2(30, 150), Color.White);
 				int ratio = (int)(((double)_dataDownloaded / (double)_dataContentLength) * 40);
-				Engine.SpriteBatch.DrawString(_font, new string('*', ratio), new Vector2(45, 150), Color.White);
-				Engine.SpriteBatch.DrawString(_font, "]", new Vector2(650, 150), Color.White);
+				Engine.SpriteBatch.DrawString(_font, new string('|', ratio), new Vector2(45, 150), Color.White);
+				Engine.SpriteBatch.DrawString(_font, "]", new Vector2(750, 150), Color.White);
 
 				long downloadedMb = _dataDownloaded / 1024 / 1024;
 				long contentLengthMb = _dataContentLength / 1024 / 1024;
-				WriteLine(String.Format("Downloaded {0}mb / {1}mb", downloadedMb, contentLengthMb), 180);
+				WriteLine(String.Format("Downloaded {0}mb / {1}mb", downloadedMb, contentLengthMb), 200);
 			}
 
 			if (_unpacking)
@@ -59,9 +59,10 @@ namespace OpenC1.Screens
 
 			if (_downloadError)
 			{
-				WriteLine("An error occured while downloading.", 220);
+				WriteLine("An error occured while downloading.", 270);
 				WriteLine("Please check OpenC1.log for more details.");
-				WriteLine("Press Enter to exit.", 280);
+				WriteLine("");
+				WriteLine("Press Enter to exit.");
 			}
 			
 			Engine.SpriteBatch.End();
