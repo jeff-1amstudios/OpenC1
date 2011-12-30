@@ -41,27 +41,30 @@ namespace OpenC1
                 _defaultTyreSmokeSystem = new TyreSmokeParticleSystem();
         }
 
-        public void UpdateWheelShape(VehicleChassis chassis, VehicleWheel wheel)
-        {
-            if (Bumpiness > 0)
-            {
-                if (wheel.Index == _nextWheel && chassis.Speed > 5 && _lastBump + 0.3f < Engine.TotalSeconds && !wheel.InAir)
-                {
-                    chassis.Actor.AddForceAtLocalPosition(new Vector3(0, Bumpiness * 65, 0), wheel.Shape.LocalPosition, ForceMode.Impulse, true);
-                    _lastBump = Engine.TotalSeconds;
-                    _nextWheel = Engine.Random.Next(0, chassis.Wheels.Count - 1);
-                }
-            }
+		public void UpdateWheelShape(VehicleChassis chassis, VehicleWheel wheel)
+		{
+			if (Bumpiness > 0)
+			{
+				if (wheel.Index == _nextWheel && chassis.Speed > 5 && _lastBump + 0.3f < Engine.TotalSeconds && !wheel.InAir)
+				{
+					chassis.Actor.AddForceAtLocalPosition(new Vector3(0, Bumpiness * 65, 0), wheel.Shape.LocalPosition, ForceMode.Impulse, true);
+					_lastBump = Engine.TotalSeconds;
+					_nextWheel = Engine.Random.Next(0, chassis.Wheels.Count - 1);
+				}
+			}
 
-            if (SmokeParticles != null)
-            {
-                wheel.SmokeEmitter.ParticleSystem = SmokeParticles;
-                wheel.SmokeEmitter.Enabled = chassis.Speed > 5;
-            }
-            else
-                wheel.SmokeEmitter.ParticleSystem = _defaultTyreSmokeSystem;
+			if (SmokeParticles != null)
+			{
+				wheel.SmokeEmitter.ParticleSystem = SmokeParticles;
+				wheel.SmokeEmitter.Enabled = chassis.Speed > 5;
+			}
+			else
+				wheel.SmokeEmitter.ParticleSystem = _defaultTyreSmokeSystem;
 
-            chassis.Vehicle.SkidMarkBuffer.SetTexture(SkidMaterial == null ? null : SkidMaterial.Texture);
-        }
+			if (SkidMaterial != null)
+				chassis.Vehicle.SkidMarkBuffer.SetTexture(SkidMaterial.Texture);
+			else
+				chassis.Vehicle.SkidMarkBuffer.Enabled = false;
+		}
     }
 }

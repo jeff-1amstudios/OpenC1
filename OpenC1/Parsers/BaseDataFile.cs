@@ -100,11 +100,7 @@ namespace OpenC1.Parsers
                 {
                     fullname = path + filename;
 					if (File.Exists(fullname))
-					{
-						if (fullname.Contains("32X"))
-							File.AppendAllText("c:\\temp\\anim.txt", filename + "\r\n");
 						return fullname;
-					}
                 }
                 Debug.WriteLine("File not found: " + filename);
                 Exists = false;

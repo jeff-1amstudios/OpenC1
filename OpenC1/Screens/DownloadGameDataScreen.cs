@@ -54,7 +54,7 @@ namespace OpenC1.Screens
 
 			if (_unpacking)
 			{
-				WriteLine("Unpacking into GameData folder...", 220);
+				WriteLine("Unpacking into GameData folder...", 270);
 			}
 
 			if (_downloadError)

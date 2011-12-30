@@ -38,6 +38,7 @@ namespace OpenC1.Gfx
 
         private List<CurrentSkid> _currentSkids = new List<CurrentSkid>();
 
+		public bool Enabled { get; set; }
 
         public SkidMarkBuffer(Vehicle vehicle, int maxSkids)
         {
@@ -68,6 +69,7 @@ namespace OpenC1.Gfx
         public void SetTexture(Texture2D texture)
         {
             if (_usingBloodTexture) return;
+			Enabled = true;
 
             if (_texture != texture)
             {
@@ -79,30 +81,33 @@ namespace OpenC1.Gfx
 
         private void Update()
         {
-            if (!Helpers.HasTimePassed(0.5f, _vehicle.LastRunOverPedTime))
-            {
-                foreach (var wheel in _vehicle.Chassis.Wheels)
-                {
-                    if (!wheel.IsRear) RegisterSkid(wheel, wheel.ContactPoint);
-                }
-                SetTexture(_bloodTexture);
-            }
-            else
-            {
-                if (_usingBloodTexture)
-                {
-                    _usingBloodTexture = false;
-                    SetTexture(_defaultTexture);
-                }
+			if (Enabled)
+			{
+				if (!Helpers.HasTimePassed(0.5f, _vehicle.LastRunOverPedTime))
+				{
+					foreach (var wheel in _vehicle.Chassis.Wheels)
+					{
+						if (!wheel.IsRear) RegisterSkid(wheel, wheel.ContactPoint);
+					}
+					SetTexture(_bloodTexture);
+				}
+				else
+				{
+					if (_usingBloodTexture)
+					{
+						_usingBloodTexture = false;
+						SetTexture(_defaultTexture);
+					}
 
-                foreach (var wheel in _vehicle.Chassis.Wheels)
-                {
-                    if (wheel.IsSkiddingLat || wheel.IsSkiddingLng)
-                    {
-                        RegisterSkid(wheel, wheel.ContactPoint);
-                    }
-                }
-            }
+					foreach (var wheel in _vehicle.Chassis.Wheels)
+					{
+						if (wheel.IsSkiddingLat || wheel.IsSkiddingLng)
+						{
+							RegisterSkid(wheel, wheel.ContactPoint);
+						}
+					}
+				}
+			}
 
             for (int i = 0; i < _currentSkids.Count; i++)
             {
@@ -231,9 +236,7 @@ namespace OpenC1.Gfx
         }
 
 
-        #region Public Methods
-
-        public void RegisterSkid(VehicleWheel wheel, Vector3 pos)
+        private void RegisterSkid(VehicleWheel wheel, Vector3 pos)
         {
             if (pos == Vector3.Zero)
                 return;
@@ -300,9 +303,6 @@ namespace OpenC1.Gfx
             _skids[_skidPtr] = _texture; // ?? _defaultTexture;
             _skidPtr = (_skidPtr + 1) % _maxSkids;
         }
-
-        
-        #endregion
 
         internal void Reset()
         {

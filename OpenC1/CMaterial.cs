@@ -34,35 +34,34 @@ namespace OpenC1
         {
             if (Texture != null) return;  //weve already resolved this material
 
-            if (PixName == null)
-            {
-                //simp mat
-                if (SimpMatGradientCount >0)
-                    GenerateSimpMatGradient();
-                else
-                    Texture = TextureGenerator.Generate(GameVars.Palette.GetRGBColorForPixel(SimpMatPixelIndex));
-            }
-            else
-            {
-                PixMap pixmap = pixmaps.Find(p => p.Name.Equals(PixName, StringComparison.InvariantCultureIgnoreCase));
-                if (pixmap != null)
-                    Texture = pixmap.Texture;
-            }
+			if (!String.IsNullOrEmpty(PixName))
+			{
+				PixMap pixmap = null;
+				if (pixmaps != null)
+					pixmap = pixmaps.Find(p => p.Name.Equals(PixName, StringComparison.InvariantCultureIgnoreCase));
+				else
+				{
+					PixFile pixfile = new PixFile(PixName);
+					if (pixfile.Exists)
+						pixmap = pixfile.PixMaps[0];
+				}
+				if (pixmap != null)
+					Texture = pixmap.Texture;
+			}
+
+			if (Texture == null)
+			{
+				//simp mat
+				if (SimpMatGradientCount > 1)
+					GenerateSimpMatGradient();
+				else
+					Texture = TextureGenerator.Generate(GameVars.Palette.GetRGBColorForPixel(SimpMatPixelIndex));
+			}
         }
 
         public void ResolveTexture()
         {
-            if (PixName == null)
-            {
-                //simp mat
-                Texture = TextureGenerator.Generate(GameVars.Palette.GetRGBColorForPixel(SimpMatPixelIndex));
-            }
-            else
-            {
-                PixFile pix = new PixFile(PixName);
-                if (pix.Exists)
-                    Texture = pix.PixMaps[0].Texture;
-            }
+			ResolveTexture(null);
         }
 
         private void GenerateSimpMatGradient()
@@ -70,7 +69,7 @@ namespace OpenC1
             Texture2D tex = new Texture2D(Engine.Device, 1, SimpMatGradientCount + 1, 1, TextureUsage.None, SurfaceFormat.Color);
             Color[] pixels = new Color[1 * SimpMatGradientCount+1];
             for (int i = 0; i < SimpMatGradientCount+1; i++)
-                pixels[i] = GameVars.Palette.GetRGBColorForPixel(SimpMatPixelIndex+i);
+                pixels[i] = GameVars.Palette.GetRGBColorForPixel((SimpMatPixelIndex+i) % 255);
             tex.SetData<Color>(pixels);
 
             Texture = tex;            
