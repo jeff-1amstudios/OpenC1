@@ -106,7 +106,7 @@ namespace OpenC1
             }
             else
             {
-				if (!IsPowerup && speed > 50)
+				if (!IsPowerup && speed > 30)
 					PedestrianGibsController.AddGibs(Position + new Vector3(0, 0.5f, 0), vehicle.Chassis.Actor.LinearVelocity, speed);
                 _hitSpeed = speed * Behaviour.Acceleration * 19000;
             }

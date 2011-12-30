@@ -134,9 +134,12 @@ namespace OpenC1.Screens
             else if (_inAnimation != null)
                 Engine.SpriteBatch.Draw(_inAnimation.GetCurrentFrame(), _rect, Color.White);
 
-            Vector2 pos = BaseHUDItem.ScaleVec2(0.01f, 0.96f);
-            Version v = Assembly.GetExecutingAssembly().GetName().Version;
-            Engine.SpriteBatch.DrawString(_font, "Open C1 v" + v.Major + "." + v.Minor + "." + v.Build + " - " + GameVars.BasePath , pos, Color.Red, 0, Vector2.Zero, 1.1f, SpriteEffects.None, 0);
+			if (GameVars.BasePath != null)
+			{
+				Vector2 pos = BaseHUDItem.ScaleVec2(0.01f, 0.96f);
+				Version v = Assembly.GetExecutingAssembly().GetName().Version;
+				Engine.SpriteBatch.DrawString(_font, "Open C1 v" + v.Major + "." + v.Minor + "." + v.Build + " - " + new DirectoryInfo(GameVars.BasePath).Name, pos, Color.Red, 0, Vector2.Zero, 1.1f, SpriteEffects.None, 0);
+			}
 
             if (ShouldRenderOptions())
             {
