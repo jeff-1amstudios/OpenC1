@@ -22,7 +22,7 @@ namespace OpenC1
         List<NonCar> _nonCars;
         public RaceTimeController RaceTime;
         SkyBox _skybox;
-        public int NextCheckpoint = 0, CurrentLap, NbrDeadOpponents, NbrDeadPeds;
+        public int NextCheckpoint = 0, CurrentLap, NbrOpponents, NbrDeadOpponents, NbrDeadPeds;
         public Vehicle PlayerVehicle;
         public List<Opponent> Opponents = new List<Opponent>();
         public List<IDriver> Drivers = new List<IDriver>(); //opponent + player drivers
@@ -90,13 +90,13 @@ namespace OpenC1
                 _skybox.HeightOffset = -220 + ConfigFile.SkyboxPositionY * 1.5f;
             }
 
-            Physics.TrackProcessor.GenerateTrackActor(ConfigFile, _actors);
-            _nonCars = Physics.TrackProcessor.GenerateNonCars(_actors, ConfigFile.NonCars);
+            Physics.TrackProcessor.GenerateTrackActor(ConfigFile, _actors, out _nonCars);
+
+			Logger.Log("NonCars: " + _nonCars.Count);
 
             GridPlacer.Reset();
 
 			List<int> opponentIds = new List<int>();
-
 			List<int> pickedNbrs = new List<int>();
 			for (int i = 0; i < 5; i++)
 			{
@@ -110,7 +110,15 @@ namespace OpenC1
 						break;
 					}
 				}
-				Opponents.Add(new Opponent(OpponentsFile.Instance.Opponents[index].FileName, ConfigFile.GridPosition, ConfigFile.GridDirection));
+				try
+				{
+					Opponents.Add(new Opponent(OpponentsFile.Instance.Opponents[index].FileName, ConfigFile.GridPosition, ConfigFile.GridDirection));
+					NbrOpponents++;
+				}
+				catch(Exception ex)
+				{
+					Logger.Log("Error while loading opponent " + OpponentsFile.Instance.Opponents[index].FileName + ", " + ex.Message);
+				}
 			}
 			
             foreach (CopStartPoint point in ConfigFile.CopStartPoints)
@@ -297,12 +305,13 @@ namespace OpenC1
         {
             foreach (Opponent opponent in Opponents)
             {
-                if (opponent.Vehicle == vehicle)
-                {
-                    opponent.Kill();
-                    NbrDeadOpponents++;
-                    break;
-                }
+				if (opponent.Vehicle == vehicle)
+				{
+					opponent.Kill();
+					if (!(opponent.Driver is CopDriver))
+						NbrDeadOpponents++;
+					break;
+				}
             }
 
             int time = GeneralSettingsFile.Instance.TimePerCarKill[GameVars.SkillLevel];

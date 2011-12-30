@@ -70,49 +70,52 @@ namespace OpenC1.Screens
 
         #region IGameScreen Members
 
-        public virtual void Update()
-        {
-            if (_waitingForOutAnimation)
-            {
-                if (_outAnimation == null || !_outAnimation.IsPlaying)
-                {
-                    _waitingForOutAnimation = false;
-                    OnOutAnimationFinished();
-                    return;
-                }
-            }
-            else
-            {
-                if (Engine.Input.WasPressed(Keys.Escape) && Parent != null)
-                {
-                    if (SoundCache.IsInitialized) SoundCache.Play(SoundIds.UI_Esc, null, false);
-                    ReturnToParent();
-                }
-                if (Engine.Input.WasPressed(Keys.Down))
-                {
-                    if (_selectedOption < _options.Count - 1)
-                        _selectedOption++;
-                    else
-                        _selectedOption = 0;
-                    if (SoundCache.IsInitialized) SoundCache.Play(SoundIds.UI_UpDown, null, false);
-                }
-                else if (Engine.Input.WasPressed(Keys.Up))
-                {
-                    if (_selectedOption > 0)
-                        _selectedOption--;
-                    else
-                        _selectedOption = _options.Count - 1;
-                    if (SoundCache.IsInitialized)  SoundCache.Play(SoundIds.UI_UpDown, null, false);
-                }
-                else if (Engine.Input.WasPressed(Keys.Enter))
-                {
-                    if (SoundCache.IsInitialized) SoundCache.Play(SoundIds.UI_Ok, null, false);
-                    PlayOutAnimation();
-                }
-            }
-            if (_inAnimation != null)            _inAnimation.Update();
-            if (_outAnimation != null)  _outAnimation.Update();
-        }
+		public virtual void Update()
+		{
+			if (_waitingForOutAnimation)
+			{
+				if (_outAnimation == null || !_outAnimation.IsPlaying)
+				{
+					_waitingForOutAnimation = false;
+					OnOutAnimationFinished();
+					return;
+				}
+			}
+			else
+			{
+				if (Engine.Input.WasPressed(Keys.Escape) && Parent != null)
+				{
+					if (SoundCache.IsInitialized) SoundCache.Play(SoundIds.UI_Esc, null, false);
+					ReturnToParent();
+				}
+				if (Engine.Input.WasPressed(Keys.Down))
+				{
+					if (_selectedOption < _options.Count - 1)
+						_selectedOption++;
+					else
+						_selectedOption = 0;
+					if (SoundCache.IsInitialized) SoundCache.Play(SoundIds.UI_UpDown, null, false);
+				}
+				else if (Engine.Input.WasPressed(Keys.Up))
+				{
+					if (_selectedOption > 0)
+						_selectedOption--;
+					else
+						_selectedOption = _options.Count - 1;
+					if (SoundCache.IsInitialized) SoundCache.Play(SoundIds.UI_UpDown, null, false);
+				}
+				else if (Engine.Input.WasPressed(Keys.Enter))
+				{
+					if (_options.Count == 0 || _options[_selectedOption].CanBeSelected)
+					{
+						if (SoundCache.IsInitialized) SoundCache.Play(SoundIds.UI_Ok, null, false);
+						PlayOutAnimation();
+					}
+				}
+			}
+			if (_inAnimation != null) _inAnimation.Update();
+			if (_outAnimation != null) _outAnimation.Update();
+		}
 
         private void PlayOutAnimation()
         {

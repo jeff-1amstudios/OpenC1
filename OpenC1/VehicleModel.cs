@@ -19,6 +19,9 @@ namespace OpenC1
         public VehicleModel(VehicleFile file, bool forDisplayOnly)
         {
             Config = file;
+
+			if (file.DrivenWheelRefs.Count == 0 || file.NonDrivenWheelRefs.Count == 0)
+				throw new Exception("No wheel refs specified");
             
             foreach (string pixFileName in file.PixFiles)
             {

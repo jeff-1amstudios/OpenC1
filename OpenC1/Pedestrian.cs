@@ -102,12 +102,12 @@ namespace OpenC1
                 _hitUpSpeed = speed * 0.10f;
                 _hitSpeed = speed * Behaviour.Acceleration * 10000;
 				if (!IsPowerup)
-					PedestrianGibsController.AddGibs(Position + new Vector3(0, 1.2f, 0), vehicle.Chassis.Actor.LinearVelocity);
+					PedestrianGibsController.AddGibs(Position + new Vector3(0, 1.2f, 0), vehicle.Chassis.Actor.LinearVelocity, speed);
             }
             else
             {
 				if (!IsPowerup && speed > 50)
-					PedestrianGibsController.AddGibs(Position + new Vector3(0, 0.5f, 0), vehicle.Chassis.Actor.LinearVelocity);
+					PedestrianGibsController.AddGibs(Position + new Vector3(0, 0.5f, 0), vehicle.Chassis.Actor.LinearVelocity, speed);
                 _hitSpeed = speed * Behaviour.Acceleration * 19000;
             }
 			

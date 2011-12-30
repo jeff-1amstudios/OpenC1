@@ -11,6 +11,7 @@ namespace OpenC1.Screens
     {
         void RenderInSpriteBatch();
         void RenderOutsideSpriteBatch();
+		bool CanBeSelected { get; }
     }
 
     class TextureMenuOption : IMenuOption
@@ -23,6 +24,11 @@ namespace OpenC1.Screens
             _rect = rect;
             _texture = texture;
         }
+
+		public bool CanBeSelected
+		{
+			get { return true; }
+		}
 
         #region IMenuOption Members
 

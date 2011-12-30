@@ -107,7 +107,7 @@ namespace OpenC1.Parsers
             int nbrShadeTables = ReadLineAsInt();
             SkipLines(nbrShadeTables);
 
-            if (GameVars.Emulation != EmulationMode.Demo) //demo files have only 1 set of mat entries
+            if (GameVars.Emulation != EmulationMode.Demo) //demo files have only 1 set of mat entries (TODO: should be txt version based)
             {
                 int nbrLowMemMats = ReadLineAsInt();
                 SkipLines(nbrLowMemMats);

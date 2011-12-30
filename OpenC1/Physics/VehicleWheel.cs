@@ -106,7 +106,7 @@ namespace OpenC1.Physics
             if (amount == 1)
             {
                 Shape.MotorTorque = 0;
-                Shape.BrakeTorque = 800;
+                Shape.BrakeTorque = 820;
             }
         }
 

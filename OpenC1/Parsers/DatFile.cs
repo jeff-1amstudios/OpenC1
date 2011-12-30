@@ -40,6 +40,9 @@ namespace OpenC1.Parsers
 
         public DatFile(string filename, bool deformMainModel)
         {
+			if (filename.EndsWith(".ACT", StringComparison.InvariantCultureIgnoreCase))
+				filename = filename.ToUpper().Replace(".ACT", ".DAT"); //fix up some 3rd party vehicle weirdness
+
             CModel currentModel = null;
 
             Stream file = OpenDataFile(filename);
@@ -105,7 +108,9 @@ namespace OpenC1.Parsers
             }
 
             reader.Close();
-
+			if (filename == "FAUST.DAT")
+			{
+			}
             _models.Resolve(true);
         }
 

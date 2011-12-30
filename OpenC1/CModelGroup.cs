@@ -41,15 +41,18 @@ namespace OpenC1
                 model.Resolve(indices, _vertices, _vertexTextureMap, _vertexPositions);
             }
 
-            _vertexBuffer = new VertexBuffer(Engine.Device, VertexPositionNormalTexture.SizeInBytes * _vertices.Count, BufferUsage.WriteOnly);
-            _vertexBuffer.SetData<VertexPositionNormalTexture>(_vertices.ToArray());
+			if (_vertices.Count > 0)
+			{
+				_vertexBuffer = new VertexBuffer(Engine.Device, VertexPositionNormalTexture.SizeInBytes * _vertices.Count, BufferUsage.WriteOnly);
+				_vertexBuffer.SetData<VertexPositionNormalTexture>(_vertices.ToArray());
 
-            if (!injectHardEdges)
-            {
-                _indexBuffer = new IndexBuffer(Engine.Device, typeof(UInt16), indices.Count, BufferUsage.WriteOnly);
-                _indexBuffer.SetData<UInt16>(indices.ToArray());
-                _indices = indices;
-            }
+				if (!injectHardEdges)
+				{
+					_indexBuffer = new IndexBuffer(Engine.Device, typeof(UInt16), indices.Count, BufferUsage.WriteOnly);
+					_indexBuffer.SetData<UInt16>(indices.ToArray());
+					_indices = indices;
+				}
+			}
 
             _vertexDeclaration = new VertexDeclaration(Engine.Device, VertexPositionNormalTexture.VertexElements);
             _vertexTextureMap = null; //dont need this data anymore
@@ -59,8 +62,11 @@ namespace OpenC1
         public void SetupRender()
         {
             GraphicsDevice device = Engine.Device;
-            device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionNormalTexture.SizeInBytes);
-            device.Indices = _indexBuffer;
+			if (_vertexBuffer != null)
+			{
+				device.Vertices[0].SetSource(_vertexBuffer, 0, VertexPositionNormalTexture.SizeInBytes);
+				device.Indices = _indexBuffer;
+			}
             device.VertexDeclaration = _vertexDeclaration;
         }
 

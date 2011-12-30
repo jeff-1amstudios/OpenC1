@@ -37,7 +37,7 @@ namespace OpenC1.Parsers
 
             _fliPaths = new List<string>();
             _fliPaths.Add(GameVars.BasePath + "anim\\");
-            _fliPaths.Add(GameVars.BasePath + "32x20x8\\anim\\");
+            _fliPaths.Add(GameVars.BasePath + "32X20X8\\anim\\");
         }
 
         protected Stream OpenDataFile(string filename)
@@ -61,8 +61,10 @@ namespace OpenC1.Parsers
                 foreach (string path in _pixPaths)
                 {
                     fullname = path + filename;
-                    if (File.Exists(fullname))
-                        return fullname;
+					if (File.Exists(fullname))
+					{
+						return fullname;
+					}
                 }
                 Debug.WriteLine("File not found: " + filename);
                 Exists = false;
@@ -97,8 +99,12 @@ namespace OpenC1.Parsers
                 foreach (string path in _fliPaths)
                 {
                     fullname = path + filename;
-                    if (File.Exists(fullname))
-                        return fullname;
+					if (File.Exists(fullname))
+					{
+						if (fullname.Contains("32X"))
+							File.AppendAllText("c:\\temp\\anim.txt", filename + "\r\n");
+						return fullname;
+					}
                 }
                 Debug.WriteLine("File not found: " + filename);
                 Exists = false;

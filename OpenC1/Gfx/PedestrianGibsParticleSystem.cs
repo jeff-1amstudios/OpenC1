@@ -10,25 +10,23 @@ namespace OpenC1.Gfx
 {
 	class PedestrianGibsParticleSystem : ParticleSystem
 	{
-		CMaterial _material;
-
-		public PedestrianGibsParticleSystem(CMaterial material)
+		string _pixFileName;
+		float _sizeMultiplier;
+		public PedestrianGibsParticleSystem(string gibPixFile, float sizeMultiplier)
 		{
-			_material = material;
+			_pixFileName = gibPixFile;
+			_sizeMultiplier = sizeMultiplier;
 			InitializeSystem();
 		}
 
 
 		protected override void InitializeSettings(ParticleSettings settings)
 		{
-			PixFile pix = new PixFile("BIGGIBS3.PIX");
+			PixFile pix = new PixFile(_pixFileName);
 
 			settings.Texture = pix.PixMaps[0].Texture;
 
 			settings.MaxParticles = 200;
-
-			settings.MinColor = new Color(1, 1, 1, 0.3f);
-			settings.MaxColor = new Color(1, 1, 1, 1f);
 
 			settings.Duration = TimeSpan.FromSeconds(1f);
 
@@ -44,11 +42,11 @@ namespace OpenC1.Gfx
 
 			settings.EndVelocity = 1f;
 
-			settings.MinStartSize = 0.65f;
-			settings.MaxStartSize = 1.25f;
+			settings.MinStartSize = 0.25f * _sizeMultiplier;
+			settings.MaxStartSize = 0.65f * _sizeMultiplier;
 
-			settings.MinEndSize = 0.45f;
-			settings.MaxEndSize = 0.65f;
+			settings.MinEndSize = 0.25f * _sizeMultiplier;
+			settings.MaxEndSize = 1.15f * _sizeMultiplier;
 
 			settings.MinRotateSpeed = 0f;
 			settings.MaxRotateSpeed = 6f;

@@ -33,7 +33,7 @@ namespace OpenC1.HUD
             FontRenderer.Render(Fonts.White, "WASTED", pos, Color.White);
             
             pos.X += 65f;
-            FontRenderer.Render(Fonts.White, Race.Current.NbrDeadOpponents + "/" + Race.Current.Opponents.Count, pos, Color.White);
+            FontRenderer.Render(Fonts.White, Race.Current.NbrDeadOpponents + "/" + Race.Current.NbrOpponents, pos, Color.White);
 
             pos.X += 240;
             DrawShadow(new Rectangle((int)pos.X - 5, (int)pos.Y - 5, 140, 24));
