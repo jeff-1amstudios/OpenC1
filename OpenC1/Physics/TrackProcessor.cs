@@ -216,9 +216,6 @@ namespace OpenC1.Physics
 							waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex2], actor.Matrix));
 							waterVerts.Add(Vector3.Transform(models._vertexPositions[model.VertexBaseIndex + poly.Vertex3], actor.Matrix));
 						}
-						else
-						{
-						}
 					}
 				}
 

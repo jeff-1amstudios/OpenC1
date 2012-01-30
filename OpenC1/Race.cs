@@ -341,7 +341,12 @@ namespace OpenC1
 
         public void OnPedestrianHit(Pedestrian ped, Vehicle vehicle)
         {
-            if (ped.IsHit) return;
+			vehicle.LastRunOverPedTime = Engine.TotalSeconds;
+			if (ped.IsHit)
+			{
+				SoundCache.Play(SoundIds.PedSquelch, vehicle, true);
+				return;
+			}
 
             NbrDeadPeds++;
             ped.OnHit(vehicle);

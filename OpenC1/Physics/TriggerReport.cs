@@ -47,7 +47,6 @@ namespace OpenC1.Physics
                 }
                 else if (triggerShape.Actor.UserData is Pedestrian)
                 {
-                    vehicle.LastRunOverPedTime = Engine.TotalSeconds;
                     Race.Current.OnPedestrianHit((Pedestrian)triggerShape.Actor.UserData, vehicle);
                 }
             }
