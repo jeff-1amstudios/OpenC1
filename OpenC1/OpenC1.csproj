@@ -225,6 +225,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Lib\StillDesign.PhysX.Net.dll" />
+    <Content Include="license.txt" />
     <Content Include="OpenC1Settings.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

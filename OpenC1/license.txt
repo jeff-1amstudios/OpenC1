@@ -1,0 +1,9 @@
+You must not install, copy, access or use OpenC1 unless you accept all of the following licence terms. 
+
+By installing, copying, accessing or using OpenC1 you agree that you have read, understood and accepted the following licence terms, and agree to be bound by them.
+ 
+ * You are not permitted to use OpenC1 with any data, files, or content that infringes any copyright or any other right of any third party.  You must ensure that you have all necessary rights (including appropriate licences) for any data, files, or content that you use with OpenC1.  You are liable for any consequences of your failure to comply with these licence terms.
+ 
+ * You shall fully indemnify and hold us harmless for any loss, damage, claim, cost or expense (including legal fees on a solicitor/own client basis) which may arise as a result of any action or claim that may be made or initiated against us by any person making a claim in relation to your actions.
+
+ * You are not employed by Square Enix Ltd, or acting on behalf of Square Enix Ltd or Square Enix Holdings Co., Ltd
