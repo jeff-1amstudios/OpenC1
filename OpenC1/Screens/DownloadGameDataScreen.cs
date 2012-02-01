@@ -44,8 +44,8 @@ namespace OpenC1.Screens
 			{
 				Engine.SpriteBatch.DrawString(_font, "[", new Vector2(30, 150), Color.White);
 				int ratio = (int)(((double)_dataDownloaded / (double)_dataContentLength) * 40);
-				Engine.SpriteBatch.DrawString(_font, new string('|', ratio), new Vector2(45, 150), Color.White);
-				Engine.SpriteBatch.DrawString(_font, "]", new Vector2(750, 150), Color.White);
+				Engine.SpriteBatch.DrawString(_font, new string('=', ratio), new Vector2(45, 150), Color.White);
+				Engine.SpriteBatch.DrawString(_font, "]", new Vector2(610, 150), Color.White);
 
 				long downloadedMb = _dataDownloaded / 1024 / 1024;
 				long contentLengthMb = _dataContentLength / 1024 / 1024;

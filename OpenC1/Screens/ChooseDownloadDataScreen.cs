@@ -32,14 +32,14 @@ namespace OpenC1.Screens
 
 			WriteTitleLine("No game data found");
 
-			WriteLine("Do you want to download and use", 110);
-			WriteLine("Carmageddon demo content?");
+			WriteLine("Download and use Carmageddon demo content", 120);
+			WriteLine("(C1 demo, SplatPack demo & SplatPack Xmas demo)?");
 			
 			//Engine.SpriteBatch.DrawString(_font, "Do you want to download and use", new Vector2(20, 110), Color.White);
 			//Engine.SpriteBatch.DrawString(_font, "Carmageddon demo content?", new Vector2(20, 130), Color.White);
 			
 			string[] options = { "OK", "Cancel" };
-			float y = 200;
+			float y = 250;
 			for (int i = 0; i < options.Length; i++)
 			{
 				Color c = Color.White;
@@ -49,16 +49,9 @@ namespace OpenC1.Screens
 					Engine.SpriteBatch.DrawString(_font, "  " + options[i], new Vector2(40, y), Color.White);
 				y += 35;
 			}
-
-			WriteLine("Carmageddon demo content contains:", 280);
-			WriteLine("- Carmageddon 1 demo", 310);
-			WriteLine("- Splat Pack demo");
-			WriteLine("- Splat Pack Xmas demo");
-			WriteLine("");
-			WriteLine("These demos are property");
-			WriteLine("of Stainless Software Ltd.");
-
-			WriteLine("See readme.txt for more information.");
+			
+			WriteLine("Carmageddon demo content is property of Stainless", 470);
+			WriteLine("Software Ltd.  See GameData\\readme.txt.");
 
 			Engine.SpriteBatch.End();
 		}
