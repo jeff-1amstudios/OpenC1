@@ -38,7 +38,7 @@ namespace OpenC1.Screens
 			//Engine.SpriteBatch.DrawString(_font, "Do you want to download and use", new Vector2(20, 110), Color.White);
 			//Engine.SpriteBatch.DrawString(_font, "Carmageddon demo content?", new Vector2(20, 130), Color.White);
 			
-			string[] options = { "Yes", "No" };
+			string[] options = { "OK", "Cancel" };
 			float y = 200;
 			for (int i = 0; i < options.Length; i++)
 			{
@@ -59,9 +59,6 @@ namespace OpenC1.Screens
 			WriteLine("of Stainless Software Ltd.");
 
 			WriteLine("See readme.txt for more information.");
-
-
-
 
 			Engine.SpriteBatch.End();
 		}
@@ -87,7 +84,7 @@ namespace OpenC1.Screens
 			}
 			else
 			{
-
+				Engine.Game.Exit();
 			}
 		}
 	}

@@ -214,6 +214,9 @@ namespace OpenC1
 
             if (Engine.Input.WasPressed(Keys.Tab))
                 _map.Show = !_map.Show;
+
+			if (Engine.Input.WasPressed(Keys.T))
+				RaceTime.TimeRemaining += 60;
         }
 
         public void Render()
@@ -368,6 +371,9 @@ namespace OpenC1
 		public void ExitAndReturnToMenu()
 		{
 			ResourceCache.Clear();
+			foreach (var d in Drivers)
+				d.Vehicle.Audio.Stop();
+
 			ParticleSystem.AllParticleSystems.Clear();
 			Race.Current = null;
 			PhysX.Instance.Delete();

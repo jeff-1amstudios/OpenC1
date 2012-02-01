@@ -68,5 +68,10 @@ namespace OpenC1
                 _sound.Play(true);
             }
         }
+
+		public void Stop()
+		{
+			if (_sound != null) _sound.Stop();
+		}
     }
 }

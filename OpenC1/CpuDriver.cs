@@ -150,7 +150,7 @@ namespace OpenC1
 
                 // now see if we're at the target ignoring height (if we jump over it for example)
                 distanceFromNode = Vector2.Distance(new Vector2(pos.X, pos.Z), new Vector2(_targetNode.Position.X, _targetNode.Position.Z));
-                if (distanceFromNode < 14 && pos.Y >= _targetNode.Position.Y)
+                if (distanceFromNode < 11 && pos.Y >= _targetNode.Position.Y)
                 {
                     _nbrFails = 0; //reset fail counter
 
